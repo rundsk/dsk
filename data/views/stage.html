@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link type="text/css" rel="stylesheet" href="/embed/{{ .N.URL }}.css">
+		<script type="text/javascript" src="/embed/{{ .N.URL }}.js"></script>
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				mount(
+					'main',
+					{{ .PropSet }}
+				)
+			});
+		</script>
+	</head>
+	<body>
+		<main>
+			<div>{{ .N.Title }}</div>
+		</main>
+	</body>
+</html>

@@ -1,0 +1,24 @@
+# Copyright 2017 Atelier Disko. All rights reserved.
+#
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+# See http://editorconfig.org/ on how to put this file to good use.
+
+root = true
+
+[*]
+end_of_line = lf
+charset = utf-8
+
+[*.html]
+indent_style = tab
+tab_width = 4
+insert_final_newline = false
+trim_trailing_whitespace = true
+
+[*.{js,css}]
+indent_style = space
+indent_size = 2
+insert_final_newline = false
+trim_trailing_whitespace = true

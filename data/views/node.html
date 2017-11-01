@@ -1,0 +1,17 @@
+<nav class="crumbs-nav">
+	{{range $url, $title := .N.Crumbs}}
+	<a href="{{ $url }}" class="crumbs-nav__crumb">{{ $title }}</a>
+	{{end}}
+</nav>
+
+<h1>{{ .N.Title }}</h1>
+
+<iframe class="component-stage" src="/embed/{{ .N.URL }}"></iframe>
+
+<section class="documentation">
+	{{ .N.Documentation }}
+</section>
+
+{{range $index, $demo := .N.Meta.Demo}}
+<iframe class="component-stage" src="/embed/{{ $.N.URL }}:{{ $index }}"></iframe>
+{{end}}
