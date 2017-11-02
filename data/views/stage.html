@@ -5,17 +5,20 @@
 		<link type="text/css" rel="stylesheet" href="/embed/{{ .N.URL }}.css">
 		<script type="text/javascript" src="/embed/{{ .N.URL }}.js"></script>
 		<script>
-			document.addEventListener('DOMContentLoaded', function() {
-				mount(
-					'main',
-					{{ .PropSet }}
-				)
-			});
+			if (typeof window.renderComponent === "undefined") {
+				console.error("No renderComponent function found.");
+			} else {
+				document.addEventListener('DOMContentLoaded', function() {
+					renderComponent(
+						document.getElementById('root'),
+						{{ .N.Import }},
+						{{ .PropSet }}
+					)
+				});
+			}
 		</script>
 	</head>
 	<body>
-		<main>
-			<div>{{ .N.Title }}</div>
-		</main>
+		<div id="root"></div>
 	</body>
 </html>

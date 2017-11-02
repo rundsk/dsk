@@ -92,18 +92,26 @@ func embedHandler(w http.ResponseWriter, r *http.Request) {
 		path = strings.TrimSuffix(path, ".css")
 		n := NewNodeFromPath(path, root)
 
-		contents, _ := n.CSS()
+		buf, err := n.CSS()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
 
 		w.Header().Add("Content-Type", "text/css")
-		w.Write(contents)
+		w.Write(buf.Bytes())
 	} else if strings.HasSuffix(path, ".js") {
 		path = strings.TrimSuffix(path, ".js")
 		n := NewNodeFromPath(path, root)
 
-		contents, _ := n.JS()
+		buf, err := n.JS()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
 
 		w.Header().Add("Content-Type", "application/javascript")
-		w.Write(contents)
+		w.Write(buf.Bytes())
 	} else {
 		var propSet PropSet
 		var n *Node

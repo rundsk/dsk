@@ -6,6 +6,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -26,8 +27,9 @@ type Node struct {
 }
 
 type NodeMeta struct {
-	Foo  string    `json:"foo"`
-	Demo []PropSet `json:"demo"`
+	// optional, if missing will use the URL
+	Import string    `json:"import"`
+	Demo   []PropSet `json:"demo"`
 }
 
 type PropSet interface{}
@@ -46,6 +48,19 @@ func NewNodeFromPath(path string, root string) *Node {
 	}
 }
 
+// Result is passed as component import name to renderComponent()
+// JavaScript glue function.
+func (n Node) Import() (string, error) {
+	m, err := n.Meta()
+	if err != nil {
+		return "", err
+	}
+	if m.Import != "" {
+		return m.Import, nil
+	}
+	return n.URL, nil
+}
+
 func (n Node) Crumbs() map[string]string {
 	var crumbs map[string]string // maps url to title
 	//
@@ -58,21 +73,48 @@ func (n Node) Crumbs() map[string]string {
 	return crumbs
 }
 
-// Returns CSS for the node.
-func (n Node) CSS() ([]byte, error) {
-	return ioutil.ReadFile(filepath.Join(n.path, "component.css"))
+func (n Node) CSS() (bytes.Buffer, error) {
+	return n.bundledAssets("css")
 }
 
-// Returns JS for the node.
-func (n Node) JS() ([]byte, error) {
-	return ioutil.ReadFile(filepath.Join(n.path, "component.js"))
+func (n Node) JS() (bytes.Buffer, error) {
+	return n.bundledAssets("js")
 }
 
-// Reads index.json file when present and returns values.
+// Looks for i.e. CSS files in node directory and concatenates them.
+// This way we don't need a naming convention for these assets.
+func (n Node) bundledAssets(suffix string) (bytes.Buffer, error) {
+	var b bytes.Buffer
+
+	files, err := filepath.Glob(filepath.Join(n.path, "*."+suffix))
+	if err != nil {
+		return b, err
+	}
+	if len(files) == 0 {
+		return b, fmt.Errorf("no .%s assets in path %s", suffix, n.path)
+	}
+
+	for _, f := range files {
+		c, err := ioutil.ReadFile(f)
+		if err != nil {
+			return b, err
+		}
+		b.Write(c)
+	}
+	return b, nil
+}
+
+// Reads index.json file when present and returns values. When index.json
+// is not present will simply return an empty Meta.
 func (n Node) Meta() (NodeMeta, error) {
 	var meta NodeMeta
+	f := filepath.Join(n.path, "index.json")
 
-	content, err := ioutil.ReadFile(filepath.Join(n.path, "index.json"))
+	if _, err := os.Stat(f); os.IsNotExist(err) {
+		return meta, nil
+	}
+
+	content, err := ioutil.ReadFile(f)
 	if err != nil {
 		return meta, err
 	}
