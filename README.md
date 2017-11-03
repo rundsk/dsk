@@ -65,7 +65,7 @@ If you're setting up a Go environment from scratch, add
 Go's `bin` directory to your `PATH`, so that go binaries like `go-bindata` can
 be found. In `.profile` add the following line.
 ```
-export PATH+=:$(go env GOPATH)/bin
+export PATH=$PATH:$(go env GOPATH)/bin
 ```
 
 The `make dev` command assumes your test design system definitions are below a
