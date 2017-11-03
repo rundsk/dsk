@@ -195,7 +195,7 @@ h1 {
   line-height: 1.5em;
 
   margin: 6rem 0;
-  max-width: 700px;
+  max-width: 600px;
 }
 
 .documentation h1 {
@@ -224,3 +224,14 @@ h1 {
 .documentation p:last-child {
   margin-bottom: 0;
 }
+
+.documentation a {
+  color: inherit;
+}
+
+/*.documentation a::before {
+ content: "→";
+ display: inline-block;
+ color: #B2B2B2;
+ border-bottom: none;
+}*/

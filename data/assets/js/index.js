@@ -27,7 +27,26 @@ document.addEventListener('DOMContentLoaded', function() {
     data = json.data.nodeList;
     renderNav(data[0]);
 
+    setTimeout(triggerSearch, 600);
   });
+
+  let triggerSearch = function() {
+    var options = {
+      tokenize: true,
+      threshold: 0.4,
+      location: 0,
+      distance: 100,
+      maxPatternLength: 32,
+      minMatchCharLength: 1,
+      keys: [
+        "title"
+    ]
+    };
+    var fuse = new Fuse(data, options);
+    var result = fuse.search("Dis");
+    console.log(result)
+    //renderNav(result);
+  }
 
   let renderNav = function(data) {
     nav.innerHTML = '';
