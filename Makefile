@@ -12,10 +12,11 @@ VERSION ?= head-$(shell git rev-parse --short HEAD)
 
 GOFLAGS = -X main.Version=$(VERSION)
 
-.PHONY: run
-run:
+.PHONY: dev
+dev:
 	go-bindata -debug -o data.go data/...
 	go build
+	@if [ ! -d _test ]; then mkdir _test; fi
 	./dsk _test
 
 .PHONY: install
@@ -28,7 +29,7 @@ uninstall:
 .PHONY: clean
 clean:
 	if [ -d ./dist ]; then rm -r ./dist; fi
-	if [ -f ./dsk ]; then rm ./dskl; fi
+	if [ -f ./dsk ]; then rm ./dsk; fi
 
 .PHONY: dist
 dist: dist/dsk dist/dsk-darwin-amd64 dist/dsk-linux-amd64

@@ -3,7 +3,11 @@
 	<head>
 		<meta charset="utf-8">
 		<link type="text/css" rel="stylesheet" href="/embed/{{ .N.URL }}.css">
-		<script type="text/javascript" src="/embed/{{ .N.URL }}.js"></script>
+		<script>
+			// Allow following loaded script to detect, that they are used for embedding.
+			const INSIDE_DSK = true;
+		</script>
+		<script src="/embed/{{ .N.URL }}.js"></script>
 		<script>
 			if (typeof window.renderComponent === "undefined") {
 				console.error("No renderComponent function found.");
