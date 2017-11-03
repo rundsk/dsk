@@ -59,7 +59,58 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Handles requests for non-node assets.
+//
+// Handles these kinds of URLs:
+//   /assets/css/base.css
+//   /assets/js/index.js
+func assetsHandler(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path[len("/assets/"):]
+
+	typ := mime.TypeByExtension(filepath.Ext(path))
+	w.Header().Set("Content-Type", typ)
+
+	// Rebase to prevent traversing anything outside assets directory.
+	data, err := Asset("data/assets/" + path)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	w.Write(data[:])
+}
+
+// Returns JSEND response. Currently only used for returning
+// information about the tree for the left hand side navigation:
+//
+// Handles this URL:
+//   /api/tree
+func apiHandler(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path[len("/api/"):]
+	wr := jsend.Wrap(w)
+
+	if path == "tree" {
+		nodeList, _ := NewNodeListFromPath(root)
+		data := struct {
+			NodeList []*Node `json:"nodeList"`
+		}{
+			NodeList: nodeList,
+		}
+		wr.
+			Data(data).
+			Status(201).
+			Send()
+		return
+	}
+	wr.
+		Status(404).
+		Send()
+}
+
 // Renders a page for given node.
+//
+// Handles these kinds of URLs:
+//   /tree/DisplayData/Table
+//   /tree/DisplayData/Table/Row
 func nodeHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path[len("/tree/"):]
 
@@ -85,6 +136,13 @@ func nodeHandler(w http.ResponseWriter, r *http.Request) {
 
 // Renders a HTML page that will be rendered into the components
 // stage. It will be embeded using an iframe.
+//
+// Handles these kinds of URLs:
+//   /embed/DisplayData/Table
+//   /embed/DisplayData/Table:0
+//   /embed/DisplayData/Table:1
+//   /embed/DisplayData/Table.js
+//   /embed/DisplayData/Table.css
 func embedHandler(w http.ResponseWriter, r *http.Request) {
 	path := filepath.Join(root, r.URL.Path[len("/embed/"):])
 
@@ -152,48 +210,6 @@ func embedHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Returns JSEND response. Currently only used for returning
-// information about the tree for the left hand side navigation:
-//
-// /api/tree
-func apiHandler(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path[len("/api/"):]
-	wr := jsend.Wrap(w)
-
-	if path == "tree" {
-		nodeList, _ := NewNodeListFromPath(root)
-		data := struct {
-			NodeList []*Node `json:"nodeList"`
-		}{
-			NodeList: nodeList,
-		}
-		wr.
-			Data(data).
-			Status(201).
-			Send()
-		return
-	}
-	wr.
-		Status(404).
-		Send()
-}
-
-// Handles request for CSS and JS files.
-func assetsHandler(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path[len("/assets/"):]
-
-	typ := mime.TypeByExtension(filepath.Ext(path))
-	w.Header().Set("Content-Type", typ)
-
-	// Rebase to prevent traversing anything outside assets directory.
-	data, err := Asset("data/assets/" + path)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-	w.Write(data[:])
-}
-
 func main() {
 	if len(os.Args) > 2 {
 		log.Fatalf("too many arguments given, expecting exectly 0 or 1")
@@ -227,10 +243,10 @@ func main() {
 	log.Print("hit STRG+C to quit")
 
 	http.HandleFunc("/", indexHandler)
+	http.HandleFunc("/assets/", assetsHandler)
+	http.HandleFunc("/api/", apiHandler)
 	http.HandleFunc("/tree/", nodeHandler)
 	http.HandleFunc("/embed/", embedHandler)
-	http.HandleFunc("/api/", apiHandler)
-	http.HandleFunc("/assets/", assetsHandler)
 
 	http.ListenAndServe(addr, nil)
 }
