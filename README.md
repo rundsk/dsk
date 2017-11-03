@@ -34,7 +34,7 @@ function is the only little glue code required.
 ```javascript
 window.renderComponent = function(root, name, props) {
   return import('./' + name).then(c => {
-	ReactDOM.render(React.createElement(c.default, props), root);
+    ReactDOM.render(React.createElement(c.default, props), root);
   });
 };
 ```
