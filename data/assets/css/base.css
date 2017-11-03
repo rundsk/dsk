@@ -30,7 +30,7 @@ body {
   grid-template-columns: 1fr 4fr;
   grid-template-areas:
     "sidebar main";
-  min-height: 100vh;
+  height: 100vh;
 
   font-family: "Neuzeit S LT Std", sans-serif;
   font-size: 16px;
@@ -89,9 +89,56 @@ aside nav {
   padding: 4rem 2rem;
 }
 
+/* All ul */
+
+aside nav ul {
+  margin-left: 3rem;
+  list-style: none;
+}
+
+aside nav ul li a {
+  text-decoration: none;
+  color: inherit;
+  transition: color .3s;
+  width: 100%;
+  display: inline-block;
+  padding-top: 1.5rem;
+}
+
+aside nav ul li a:hover {
+  color: #0E26FC;
+}
+
+/* Top Level ul */
+
+aside nav > ul {
+  margin-left: 0;
+  font-weight: bold;
+}
+
+/* Lower Level ul */
+
+aside nav ul ul li {
+  font-weight: 300;
+}
+
+aside nav ul ul li::before {
+  display: inline-block;
+  content: "—";
+  width: 1.3em;
+  position: absolute;
+  top: .7em;
+  left: -1.3em;
+}
+
+aside nav ul ul li:hover::before {
+  content: "→";
+}
+
 main {
   grid-area: main;
   padding: 8rem;
+  overflow-y: auto;
 }
 
 /* Node */
@@ -161,8 +208,9 @@ h1 {
   font-size: 12px;
   color: #848484;
   text-transform: uppercase;
-  letter-spacing: 0.09rem;
+  letter-spacing: 0.1rem;
   margin-top: 3rem;
+  margin-bottom: .5rem;
 }
 
 .documentation h1:first-child, .documentation h2:first-child {

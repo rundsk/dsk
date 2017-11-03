@@ -22,21 +22,53 @@ document.addEventListener('DOMContentLoaded', function() {
   fetch('/api/tree').then((res) => {
     return res.json();
   }).then((json) => {
-    let ul = document.createElement('ul');
+    // let ul = document.createElement('ul');
+    //
+    //
+    // // TODO: built tree, currently a flat list
+    // for (let n of json.data.nodeList) {
+    //   let li = document.createElement('li');
+    //   let a  = document.createElement('a');
+    //   a.href = '/tree/' + n.url;
+    //   a.innerHTML = n.url;
+    //   a.addEventListener('click', handleNav);
+    //
+    //   li.appendChild(a);
+    //   ul.appendChild(li);
+    // }
+    nav.innerHTML = '';
 
-    // TODO: built tree, currently a flat list
-    for (let n of json.data.nodeList) {
+    let list = createList(json.data.nodeList[0])
+    let ul = document.createElement('ul');
+    ul.appendChild(list);
+    nav.appendChild(ul);
+  });
+
+  let createList = function(obj) {
+    if (obj.children !== null) {
       let li = document.createElement('li');
       let a  = document.createElement('a');
-      a.href = '/tree/' + n.url;
-      a.innerHTML = n.url;
+      a.href = '/tree/' + obj.url;
+      a.innerHTML = obj.title;
+      a.addEventListener('click', handleNav);
+      li.appendChild(a);
+
+      let ul = document.createElement('ul');
+      li.appendChild(ul);
+
+      for (var child in obj.children) {
+          ul.appendChild(createList(obj.children[child]));
+      }
+      return li;
+    } else {
+      let li = document.createElement('li');
+      let a  = document.createElement('a');
+      a.href = '/tree/' + obj.url;
+      a.innerHTML = obj.title;
       a.addEventListener('click', handleNav);
 
       li.appendChild(a);
-      ul.appendChild(li);
+      return li;
     }
-    nav.innerHTML = '';
-    nav.appendChild(ul);
-    console.log('tree json', json);
-  });
+  }
 });
