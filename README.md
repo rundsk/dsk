@@ -1,6 +1,9 @@
 # DSK
 ## Design System Kit
 
+DSK is currently in development and **should not yet be considered for general production use**. 
+Please see the _Development_ section for how to build the tool from source.
+
 ## Abstract
 
 tbd
