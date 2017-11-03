@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   let nav = $1('.tree-nav');
 
+  var data= {};
+
   let handleNav = function(ev) {
       ev.preventDefault();
       fetch(this.href).then((res) => {
@@ -22,27 +24,24 @@ document.addEventListener('DOMContentLoaded', function() {
   fetch('/api/tree').then((res) => {
     return res.json();
   }).then((json) => {
-    // let ul = document.createElement('ul');
-    //
-    //
-    // // TODO: built tree, currently a flat list
-    // for (let n of json.data.nodeList) {
-    //   let li = document.createElement('li');
-    //   let a  = document.createElement('a');
-    //   a.href = '/tree/' + n.url;
-    //   a.innerHTML = n.url;
-    //   a.addEventListener('click', handleNav);
-    //
-    //   li.appendChild(a);
-    //   ul.appendChild(li);
-    // }
-    nav.innerHTML = '';
+    data = json.data.nodeList;
+    renderNav(data[0]);
 
-    let list = createList(json.data.nodeList[0])
-    let ul = document.createElement('ul');
-    ul.appendChild(list);
-    nav.appendChild(ul);
   });
+
+  let renderNav = function(data) {
+    nav.innerHTML = '';
+    let list = createList(data);
+    let ul = document.createElement('ul');
+
+    // Append full list
+    //ul.appendChild(list);
+    //nav.appendChild(ul);
+
+    // Append list withouth root node (a bit hacky)
+    list.querySelector("li a").remove();
+    nav.appendChild(list.childNodes[0]);
+  }
 
   let createList = function(obj) {
     if (obj.children !== null) {
