@@ -6,6 +6,18 @@
 
 <h1>{{ .N.Title }}</h1>
 
+<section class="description">
+	{{ .N.Meta.Description }}
+</section>
+
+<section class="keywords">
+	<ul>
+		{{range $index, $keyword := .N.Meta.Keywords}}
+		<li>{{ $keyword }}</li>
+		{{end}}
+	<ul>
+</section>
+
 <iframe class="component-stage" src="/embed/{{ .N.URL }}"></iframe>
 
 <section class="documentation">

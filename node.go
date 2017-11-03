@@ -30,6 +30,8 @@ type Node struct {
 // Meta data as specified in a node configuration file.
 type NodeMeta struct {
 	// Optional, if missing will use the URL.
+	Description string    `json:"description"`
+	Keywords []string `json:"keywords"`
 	Import string    `json:"import"`
 	Demo   []PropSet `json:"demo"`
 }
