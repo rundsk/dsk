@@ -72,9 +72,9 @@ The `make dev` command assumes your test design system definitions are below a
 directory called `_test`.
 
 ```
-$ go get -u github.com/jteeuwen/go-bindata/...
+$ go get github.com/jteeuwen/go-bindata/...
 $ go get github.com/atelierdisko/dsk
-$ cd $(go env GOPATH)/github.com/atelierdisko/dsk
+$ cd $(go env GOPATH)/src/github.com/atelierdisko/dsk
 $ make dev
 ```
 
