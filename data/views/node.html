@@ -20,9 +20,9 @@
 
 <iframe class="component-stage" src="/embed/{{.N.URL}}"></iframe>
 
-{{if .N.HasDocumentation}}
-<section class="documentation text">
-	{{.N.Documentation}}
+{{if .N.HasGeneralDoc}}
+<section class="general-doc text">
+	{{.N.GeneralDoc}}
 </section>
 {{endif}}
 
@@ -30,8 +30,8 @@
 <iframe class="component-stage" src="/embed/{{$.N.URL}}:{{$index}}"></iframe>
 {{end}}
 
-{{if .N.HasProperties}}
-<section class="properties text">
-	{{.N.Properties}}
+{{if .N.HasAPIDoc}}
+<section class="api-doc text">
+	{{.N.APIDoc}}
 </section>
 {{endif}}

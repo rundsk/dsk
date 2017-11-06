@@ -196,14 +196,14 @@ h1 {
   margin: 6rem 0;
 }
 
-.documentation {
+.general-doc {
   line-height: 1.5em;
 
   margin: 6rem 0;
   max-width: 600px;
 }
 
-.properties {
+.api-doc {
   line-height: 1.5em;
 
   margin: 6rem 0;
@@ -282,7 +282,7 @@ h1 {
   border-bottom: none;
 }
 
-/*.documentation a::before {
+/*.general-doc a::before {
  content: "→";
  display: inline-block;
  color: #B2B2B2;

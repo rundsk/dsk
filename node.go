@@ -40,8 +40,8 @@ type NodeMeta struct {
 type PropSet interface{}
 
 const (
-	DocGeneralBasename = "readme.md"
-	DocPropBasename    = "props.md"
+	GeneralDocBasename = "readme.md"
+	APIDocBasename     = "api.md"
 )
 
 // Constructs a new node using its path in the filesystem.
@@ -158,29 +158,29 @@ func (n Node) bundledAssets(suffix string) (bytes.Buffer, error) {
 }
 
 // Checks whether general documentation is available.
-func (n Node) HasDocumentation() bool {
-	_, err := os.Stat(filepath.Join(n.path, DocGeneralBasename))
+func (n Node) HasGeneralDoc() bool {
+	_, err := os.Stat(filepath.Join(n.path, GeneralDocBasename))
 	return !os.IsNotExist(err)
 }
 
 // Returns general documentation parsed from markdown into HTML format.
-func (n Node) Documentation() (template.HTML, error) {
-	contents, err := ioutil.ReadFile(filepath.Join(n.path, DocGeneralBasename))
+func (n Node) GeneralDoc() (template.HTML, error) {
+	contents, err := ioutil.ReadFile(filepath.Join(n.path, GeneralDocBasename))
 	if err != nil {
 		return template.HTML(""), err
 	}
 	return template.HTML(blackfriday.Run(contents)), nil
 }
 
-// Checks whether property documentation is available.
-func (n Node) HasProperties() bool {
-	_, err := os.Stat(filepath.Join(n.path, DocPropBasename))
+// Checks whether API documentation is available.
+func (n Node) HasAPIDoc() bool {
+	_, err := os.Stat(filepath.Join(n.path, APIDocBasename))
 	return !os.IsNotExist(err)
 }
 
-// Returns property documentation parsed from markdown into HTML format.
-func (n Node) Properties() (template.HTML, error) {
-	contents, err := ioutil.ReadFile(filepath.Join(n.path, DocPropBasename))
+// Returns API documentation parsed from markdown into HTML format.
+func (n Node) APIDoc() (template.HTML, error) {
+	contents, err := ioutil.ReadFile(filepath.Join(n.path, APIDocBasename))
 	if err != nil {
 		return template.HTML(""), err
 	}
