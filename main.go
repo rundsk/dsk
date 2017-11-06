@@ -49,6 +49,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	_, err = t.Parse(string(html[:]))
 	if err != nil {
 		log.Fatal(err)
@@ -131,7 +132,12 @@ func nodeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	t.Parse(string(html[:]))
+
+	_, err = t.Parse(string(html[:]))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	if err := t.Execute(w, tVars); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -226,7 +232,12 @@ func embedHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		t.Parse(string(html[:]))
+
+		_, err = t.Parse(string(html[:]))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
 		if err := t.Execute(w, tVars); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

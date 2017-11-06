@@ -24,7 +24,7 @@
 <section class="general-doc text">
 	{{.N.GeneralDoc}}
 </section>
-{{endif}}
+{{end}}
 
 {{range $index, $demo := .N.Meta.Demo}}
 <iframe class="component-stage" src="/embed/{{$.N.URL}}:{{$index}}"></iframe>
@@ -34,4 +34,4 @@
 <section class="api-doc text">
 	{{.N.APIDoc}}
 </section>
-{{endif}}
+{{end}}
