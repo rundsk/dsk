@@ -13,12 +13,12 @@ document.addEventListener('DOMContentLoaded', function() {
   let data = {};
 
   let handleSearch = function(ev) {
-    if (this.value != "") {
+    if (this.value !== "") {
       runSearch(data, this.value);
     } else {
       renderNav(data);
     }
-  }
+  };
 
   search.addEventListener("input", handleSearch);
 
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let fuse = new Fuse(data, options);
     let result = fuse.search(query);
     renderNav(data, result);
-  }
+  };
 
   // Renders the nav structure
   let renderNav = function(data, searchResult) {
@@ -67,17 +67,14 @@ document.addEventListener('DOMContentLoaded', function() {
     let list = createList(data[0]);
     let ul = document.createElement('ul');
 
-    // Append full list
-    //ul.appendChild(list);
-    //nav.appendChild(ul);
-
     // Append list withouth root node (a bit hacky)
     if (list) {
       nav.appendChild(list.childNodes[1]);
     }
-  }
+  };
 
-  // If a searchResult is given, checks for each node if it exists in the searchResult and should therefore be kept.
+  // If a searchResult is given, checks for each node if it exists in
+  // the searchResult and should therefore be kept.
   let checkIfNodeShouldBeKept = function(data, filterBy) {
     if (filterBy !== undefined) {
       if (data.children !== null) {
@@ -96,13 +93,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (filterBy && data.url !== "/") {
           var keep = false;
-          for (i of filterBy) {
+          for (let i of filterBy) {
             if (i.url == data.url) {
-              keep = true
+              keep = true;
             }
           }
 
-          if (keep == true) {
+          if (keep === true) {
             data.keep = true;
             return true;
           } else {
@@ -115,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
       // When no searchResult is given, alle nodes should be kept.
       if (data.children !== null) {
-        for (var child in data.children) {
+        for (let child in data.children) {
             var keepChild = checkIfNodeShouldBeKept(data.children[child], filterBy);
         }
       }
@@ -123,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
       data.keep = true;
       return true;
     }
-  }
+  };
 
   // Turns the given data into a "ul li" structure
   let createList = function(data) {
@@ -160,5 +157,5 @@ document.addEventListener('DOMContentLoaded', function() {
         return li;
       }
     }
-  }
+  };
 });
