@@ -37,14 +37,14 @@ dist: dist/dsk dist/dsk-darwin-amd64 dist/dsk-linux-amd64
 $(PREFIX)/bin/%: dist/%
 	install -m 555 $< $@
 
-dist/%: % data.go
+dist/%: data.go
 	go build -ldflags "$(GOFLAGS)" -o $@
 
-dist/%-darwin-amd64: % data.go
+dist/%-darwin-amd64: data.go
 	GOOS=darwin GOARCH=amd64 go build -ldflags "$(GOFLAGS)" -o $@
 
-dist/%-linux-amd64: % data.go
-	GOOS=linux GOARCH=amd64 go build -ldflags "$(_GOFLAGS)" -o $@
+dist/%-linux-amd64: data.go
+	GOOS=linux GOARCH=amd64 go build -ldflags "$(GOFLAGS)" -o $@
 
 data.go: $(shell find data -type f) 
 ifeq ($(DEBUG),n)
