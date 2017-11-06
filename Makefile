@@ -38,13 +38,13 @@ $(PREFIX)/bin/%: dist/%
 	install -m 555 $< $@
 
 dist/%: % data.go
-	go build -ldflags "$(GOFLAGS)" -o $@ ./$<
+	go build -ldflags "$(GOFLAGS)" -o $@
 
 dist/%-darwin-amd64: % data.go
-	GOOS=darwin GOARCH=amd64 go build -ldflags "$(GOFLAGS)" -o $@ ./$<
+	GOOS=darwin GOARCH=amd64 go build -ldflags "$(GOFLAGS)" -o $@
 
 dist/%-linux-amd64: % data.go
-	GOOS=linux GOARCH=amd64 go build -ldflags "$(_GOFLAGS)" -o $@ ./$<
+	GOOS=linux GOARCH=amd64 go build -ldflags "$(_GOFLAGS)" -o $@
 
 data.go: $(shell find data -type f) 
 ifeq ($(DEBUG),n)
