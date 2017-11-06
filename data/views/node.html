@@ -26,7 +26,7 @@
 </section>
 {{end}}
 
-{{range $index, $demo := .N.Meta.Demo}}
+{{range $index, $demo := .N.Meta.Demos}}
 <iframe class="component-stage" src="/embed/{{$.N.URL}}:{{$index}}"></iframe>
 {{end}}
 

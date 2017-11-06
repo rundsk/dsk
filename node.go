@@ -35,7 +35,7 @@ type NodeMeta struct {
 	// Optional, if missing will use the URL.
 	Import string
 	// Optionally defines a list of property sets.
-	Demo []PropSet `json:"demo"`
+	Demos []PropSet `json:"demos"`
 }
 
 // A set of component properties, usually parsed from JSON.
@@ -213,10 +213,6 @@ func (n Node) Crumbs() map[string]string {
 	return crumbs
 }
 
-func (n Node) GetDemos() ([]PropSet, error) {
-	return n.Meta.Demo, nil
-}
-
-func (n Node) GetDemo(index int) (PropSet, error) {
-	return n.Meta.Demo[index], nil
+func (n Node) Demo(index int) (PropSet, error) {
+	return n.Meta.Demos[index], nil
 }

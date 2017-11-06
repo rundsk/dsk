@@ -208,7 +208,7 @@ func embedHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			propSet, _ = n.GetDemo(demoIndex)
+			propSet, _ = n.Demo(demoIndex)
 		} else {
 			n, err = NewNodeFromPath(path, root)
 			if err != nil {
