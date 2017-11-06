@@ -2,12 +2,12 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<link type="text/css" rel="stylesheet" href="/embed/{{ .N.URL }}.css">
+		<link type="text/css" rel="stylesheet" href="/embed/{{.N.URL}}.css">
 		<script>
 			// Allow following loaded script to detect, that they are used for embedding.
 			const INSIDE_DSK = true;
 		</script>
-		<script src="/embed/{{ .N.URL }}.js"></script>
+		<script src="/embed/{{.N.URL}}.js"></script>
 		<script>
 			if (typeof window.renderComponent === "undefined") {
 				console.error("No renderComponent function found.");
@@ -15,8 +15,8 @@
 				document.addEventListener('DOMContentLoaded', function() {
 					renderComponent(
 						document.getElementById('root'),
-						{{ .N.Import }},
-						{{ .PropSet }}
+						{{.N.Import}},
+						{{.PropSet}}
 					)
 				});
 			}

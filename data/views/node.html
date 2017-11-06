@@ -1,37 +1,37 @@
 <nav class="crumbs-nav">
-	{{range $url, $title := .N.Crumbs}}
-	<a href="{{ $url }}" class="crumbs-nav__crumb">{{ $title }}</a>
-	{{end}}
+{{range $url, $title := .N.Crumbs}}
+	<a href="{{$url}}" class="crumbs-nav__crumb">{{$title}}</a>
+{{end}}
 </nav>
 
-<h1>{{ .N.Title }}</h1>
+<h1>{{.N.Title}}</h1>
 
 <section class="description">
-	{{ .N.Meta.Description }}
+	{{.N.Meta.Description}}
 </section>
 
 <section class="keywords">
 	<ul>
-		{{range $index, $keyword := .N.Meta.Keywords}}
-		<li>{{ $keyword }}</li>
-		{{end}}
+	{{range $index, $keyword := .N.Meta.Keywords}}
+		<li>{{$keyword}}</li>
+	{{end}}
 	<ul>
 </section>
 
-<iframe class="component-stage" src="/embed/{{ .N.URL }}"></iframe>
+<iframe class="component-stage" src="/embed/{{.N.URL}}"></iframe>
 
 {{if .N.HasDocumentation}}
 <section class="documentation text">
-	{{ .N.Documentation }}
+	{{.N.Documentation}}
 </section>
 {{endif}}
 
 {{range $index, $demo := .N.Meta.Demo}}
-<iframe class="component-stage" src="/embed/{{ $.N.URL }}:{{ $index }}"></iframe>
+<iframe class="component-stage" src="/embed/{{$.N.URL}}:{{$index}}"></iframe>
 {{end}}
 
 {{if .N.HasProperties}}
 <section class="properties text">
-	{{ .N.Properties }}
+	{{.N.Properties}}
 </section>
 {{endif}}
