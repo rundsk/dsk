@@ -203,13 +203,19 @@ h1 {
   max-width: 600px;
 }
 
-.documentation h1 {
+.properties {
+  line-height: 1.5em;
+
+  margin: 6rem 0;
+}
+
+.text h1 {
   font-size: inherit;
   margin-bottom: 1rem;
   margin-top: 4rem;
 }
 
-.documentation h2 {
+.text h2 {
   font-size: 12px;
   color: #848484;
   text-transform: uppercase;
@@ -218,61 +224,61 @@ h1 {
   margin-bottom: .5rem;
 }
 
-.documentation h1:first-child, .documentation h2:first-child {
+.text h1:first-child, .text h2:first-child {
   margin-top: 0;
 }
 
-.documentation p {
+.text p {
   margin-bottom: 1.5rem;
 }
 
-.documentation p:last-child {
+.text p:last-child {
   margin-bottom: 0;
 }
 
-.documentation a {
+.text a {
   color: inherit;
 }
 
-.documentation ul {
+.text ul {
   margin-left: -4rem;
 }
 
-.documentation ul ul {
+.text ul ul {
   margin-left: 0;
 }
 
-.documentation ul li {
+.text ul li {
   margin-left: 4rem;
 }
 
-table {
+.text table {
   border-collapse: collapse;
   width: 100%;
-  margin: 3rem 0;
+  margin: 2rem 0;
 }
 
-table td, table th {
+.text table td, .text table th {
   text-align: left;
   padding: 1rem 4rem 1rem 0;
 }
 
-table td:last-child, table th:last-child {
+.text table td:last-child, .text table th:last-child {
   padding-right: 0;
 }
 
-table th {
+.text table th {
   font-size: 12px;
   color: #848484;
   text-transform: uppercase;
   letter-spacing: 0.1rem;
 }
 
-table tr {
+.text table tr {
   border-bottom: 1px dotted #CCCCCC;
 }
 
-table tbody tr:last-child {
+.text table tbody tr:last-child {
   border-bottom: none;
 }
 

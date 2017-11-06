@@ -166,6 +166,20 @@ func (n Node) Documentation() (template.HTML, error) {
 	return template.HTML(blackfriday.Run(contents)), nil
 }
 
+// Returns documentation parsed from markdown into HTML format.
+func (n Node) Properties() (template.HTML, error) {
+	file := filepath.Join(n.path, "props.md")
+
+	if _, err := os.Stat(file); os.IsNotExist(err) {
+		return "", nil
+	}
+	contents, err := ioutil.ReadFile(file)
+	if err != nil {
+		return "", err
+	}
+	return template.HTML(blackfriday.Run(contents)), nil
+}
+
 // Returns a mapping of URLs to title strings for easily creating a
 // breadcrumb navigation. The last element is the current active one.
 // Does not include the very root element.
