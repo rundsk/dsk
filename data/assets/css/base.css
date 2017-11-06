@@ -229,6 +229,48 @@ h1 {
   color: inherit;
 }
 
+.documentation ul {
+  margin-left: -4rem;
+}
+
+.documentation ul ul {
+  margin-left: 0;
+}
+
+.documentation ul li {
+  margin-left: 4rem;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 3rem 0;
+}
+
+table td, table th {
+  text-align: left;
+  padding: 1rem 4rem 1rem 0;
+}
+
+table td:last-child, table th:last-child {
+  padding-right: 0;
+}
+
+table th {
+  font-size: 12px;
+  color: #848484;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+}
+
+table tr {
+  border-bottom: 1px dotted #CCCCCC;
+}
+
+table tbody tr:last-child {
+  border-bottom: none;
+}
+
 /*.documentation a::before {
  content: "→";
  display: inline-block;
