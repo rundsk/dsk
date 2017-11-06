@@ -46,6 +46,7 @@ aside {
 
   display: flex;
   flex-direction: column;
+  max-height: 100vh;
 }
 
 aside header {
@@ -113,6 +114,10 @@ aside nav ul li a:hover {
 
 aside nav > ul {
   margin-left: 0;
+}
+
+aside nav > ul > li {
+  margin-bottom: 4rem;
   font-weight: bold;
 }
 
@@ -122,7 +127,7 @@ aside nav ul ul li {
   font-weight: 300;
 }
 
-aside nav ul ul li::before {
+aside nav ul ul li a::before {
   display: inline-block;
   content: "—";
   width: 1.3em;
@@ -131,8 +136,8 @@ aside nav ul ul li::before {
   left: -1.3em;
 }
 
-aside nav ul ul li:hover::before {
-  content: "→";
+aside nav ul ul li a:hover::before {
+  //content: "→";
 }
 
 main {
