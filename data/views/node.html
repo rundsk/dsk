@@ -20,15 +20,18 @@
 
 <iframe class="component-stage" src="/embed/{{ .N.URL }}"></iframe>
 
+{{if .N.HasDocumentation}}
 <section class="documentation text">
 	{{ .N.Documentation }}
 </section>
+{{endif}}
 
 {{range $index, $demo := .N.Meta.Demo}}
 <iframe class="component-stage" src="/embed/{{ $.N.URL }}:{{ $index }}"></iframe>
 {{end}}
 
-
+{{if .N.HasProperties}}
 <section class="properties text">
 	{{ .N.Properties }}
 </section>
+{{endif}}

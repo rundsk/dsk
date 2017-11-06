@@ -31,13 +31,18 @@ type Node struct {
 type NodeMeta struct {
 	// Optional, if missing will use the URL.
 	Description string    `json:"description"`
-	Keywords []string `json:"keywords"`
-	Import string    `json:"import"`
-	Demo   []PropSet `json:"demo"`
+	Keywords    []string  `json:"keywords"`
+	Import      string    `json:"import"`
+	Demo        []PropSet `json:"demo"`
 }
 
 // A set of component properties, usually parsed from JSON.
 type PropSet interface{}
+
+const (
+	DocGeneralBasename = "readme.md"
+	DocPropBasename    = "props.md"
+)
 
 // Constructs a new node using its path in the filesystem.
 func NewNodeFromPath(path string, root string) *Node {
@@ -152,30 +157,32 @@ func (n Node) bundledAssets(suffix string) (bytes.Buffer, error) {
 	return b, nil
 }
 
-// Returns documentation parsed from markdown into HTML format.
-func (n Node) Documentation() (template.HTML, error) {
-	file := filepath.Join(n.path, "readme.md")
+// Checks whether general documentation is available.
+func (n Node) HasDocumentation() bool {
+	_, err := os.Stat(filepath.Join(n.path, DocGeneralBasename))
+	return !os.IsNotExist(err)
+}
 
-	if _, err := os.Stat(file); os.IsNotExist(err) {
-		return "", nil
-	}
-	contents, err := ioutil.ReadFile(file)
+// Returns general documentation parsed from markdown into HTML format.
+func (n Node) Documentation() (template.HTML, error) {
+	contents, err := ioutil.ReadFile(filepath.Join(n.path, DocGeneralBasename))
 	if err != nil {
-		return "", err
+		return template.HTML(""), err
 	}
 	return template.HTML(blackfriday.Run(contents)), nil
 }
 
-// Returns documentation parsed from markdown into HTML format.
-func (n Node) Properties() (template.HTML, error) {
-	file := filepath.Join(n.path, "props.md")
+// Checks whether property documentation is available.
+func (n Node) HasProperties() bool {
+	_, err := os.Stat(filepath.Join(n.path, DocPropBasename))
+	return !os.IsNotExist(err)
+}
 
-	if _, err := os.Stat(file); os.IsNotExist(err) {
-		return "", nil
-	}
-	contents, err := ioutil.ReadFile(file)
+// Returns property documentation parsed from markdown into HTML format.
+func (n Node) Properties() (template.HTML, error) {
+	contents, err := ioutil.ReadFile(filepath.Join(n.path, DocPropBasename))
 	if err != nil {
-		return "", err
+		return template.HTML(""), err
 	}
 	return template.HTML(blackfriday.Run(contents)), nil
 }
