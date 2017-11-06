@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Runs the search and rebuilds the nav
   let runSearch = function(data, query) {
     let options = {
-      tokenize: true,
+      tokenize: false,
       threshold: 0.4,
       location: 0,
       distance: 100,
