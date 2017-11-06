@@ -115,7 +115,11 @@ func nodeHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path[len("/tree/"):]
 
 	t := template.New("node.html")
-	n := NewNodeFromPath(filepath.Join(root, path), root)
+	n, err := NewNodeFromPath(filepath.Join(root, path), root)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	tVars := struct {
 		N *Node
@@ -148,7 +152,12 @@ func embedHandler(w http.ResponseWriter, r *http.Request) {
 
 	if strings.HasSuffix(path, ".css") {
 		path = strings.TrimSuffix(path, ".css")
-		n := NewNodeFromPath(path, root)
+
+		n, err := NewNodeFromPath(path, root)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
 		buf, err := n.CSS()
 		if err != nil {
@@ -160,7 +169,12 @@ func embedHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(buf.Bytes())
 	} else if strings.HasSuffix(path, ".js") {
 		path = strings.TrimSuffix(path, ".js")
-		n := NewNodeFromPath(path, root)
+
+		n, err := NewNodeFromPath(path, root)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
 		buf, err := n.JS()
 		if err != nil {
@@ -173,6 +187,7 @@ func embedHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		var propSet PropSet
 		var n *Node
+		var err error
 
 		// Check for variant suffix i.e. :0 or :1.
 		r := regexp.MustCompile(`^(.+):([0-9]+)$`)
@@ -181,10 +196,19 @@ func embedHandler(w http.ResponseWriter, r *http.Request) {
 			path := m[1]
 			demoIndex, _ := strconv.Atoi(m[2])
 
-			n = NewNodeFromPath(path, root)
+			n, err = NewNodeFromPath(path, root)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
 			propSet, _ = n.GetDemo(demoIndex)
 		} else {
-			n = NewNodeFromPath(path, root)
+			n, err = NewNodeFromPath(path, root)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		}
 		t := template.New("stage.html")
 

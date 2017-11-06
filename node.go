@@ -21,42 +21,53 @@ import (
 // Node represents a directory inside the design definitions tree.
 type Node struct {
 	path     string
-	Title    string  `json:"title"`
-	URL      string  `json:"url"`
-	Parent   *Node   `json:"parent"`
-	Children []*Node `json:"children"`
+	Title    string   `json:"title"`
+	URL      string   `json:"url"`
+	Parent   *Node    `json:"parent"`
+	Children []*Node  `json:"children"`
+	Meta     NodeMeta `json:"meta"`
 }
 
 // Meta data as specified in a node configuration file.
 type NodeMeta struct {
+	Description string   `json:"description"`
+	Keywords    []string `json:"keywords"`
 	// Optional, if missing will use the URL.
-	Description string    `json:"description"`
-	Keywords    []string  `json:"keywords"`
-	Import      string    `json:"import"`
-	Demo        []PropSet `json:"demo"`
+	Import string
+	// Optionally defines a list of property sets.
+	Demo []PropSet `json:"demo"`
 }
 
 // A set of component properties, usually parsed from JSON.
 type PropSet interface{}
 
 const (
+	ConfigBasename     = "index.json"
 	GeneralDocBasename = "readme.md"
 	APIDocBasename     = "api.md"
 )
 
 // Constructs a new node using its path in the filesystem.
-func NewNodeFromPath(path string, root string) *Node {
+func NewNodeFromPath(path string, root string) (*Node, error) {
 	var url string
+
 	if path == root {
 		url = "/"
 	} else {
 		url = strings.TrimSuffix(strings.TrimPrefix(path, root+"/"), "/")
 	}
+
+	meta, err := parseNodeConfig(path)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Node{
 		path:  path,
 		URL:   url,
 		Title: filepath.Base(path),
-	}
+		Meta:  meta,
+	}, nil
 }
 
 // Recursively crawls the given root directory, constructing a flat list
@@ -69,7 +80,11 @@ func NewNodeListFromPath(root string) ([]*Node, error) {
 			return err
 		}
 		if f.IsDir() {
-			nodes = append(nodes, NewNodeFromPath(path, root))
+			n, err := NewNodeFromPath(path, root)
+			if err != nil {
+				return err
+			}
+			nodes = append(nodes, n)
 		}
 		return nil
 	})
@@ -93,11 +108,11 @@ func NewNodeListFromPath(root string) ([]*Node, error) {
 	return nodes, nil
 }
 
-// Reads index.json file when present and returns values. When index.json
+// Reads node configuration file when present and returns values. When file
 // is not present will simply return an empty Meta.
-func (n Node) Meta() (NodeMeta, error) {
+func parseNodeConfig(path string) (NodeMeta, error) {
 	var meta NodeMeta
-	f := filepath.Join(n.path, "index.json")
+	f := filepath.Join(path, ConfigBasename)
 
 	if _, err := os.Stat(f); os.IsNotExist(err) {
 		return meta, nil
@@ -116,12 +131,8 @@ func (n Node) Meta() (NodeMeta, error) {
 // Result is passed as component import name to renderComponent()
 // JavaScript glue function.
 func (n Node) Import() (string, error) {
-	m, err := n.Meta()
-	if err != nil {
-		return "", err
-	}
-	if m.Import != "" {
-		return m.Import, nil
+	if n.Meta.Import != "" {
+		return n.Meta.Import, nil
 	}
 	return n.URL, nil
 }
@@ -203,17 +214,9 @@ func (n Node) Crumbs() map[string]string {
 }
 
 func (n Node) GetDemos() ([]PropSet, error) {
-	meta, err := n.Meta()
-	if err != nil {
-		return nil, err
-	}
-	return meta.Demo, nil
+	return n.Meta.Demo, nil
 }
 
 func (n Node) GetDemo(index int) (PropSet, error) {
-	meta, err := n.Meta()
-	if err != nil {
-		return nil, err
-	}
-	return meta.Demo[index], nil
+	return n.Meta.Demo[index], nil
 }
