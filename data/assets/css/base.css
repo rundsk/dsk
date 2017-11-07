@@ -155,8 +155,8 @@ aside nav ul ul li a::before {
   left: -1.3em;
 }
 
-aside nav ul ul li a:hover::before {
-  //content: "→";
+aside nav ul ul li:hover > a::before {
+  content: "→";
 }
 
 main {
@@ -237,8 +237,7 @@ h1 {
 
 .api-doc {
   line-height: 1.5em;
-
-  margin: 8rem 0;
+  margin-top: 8rem;
 }
 
 .text h1 {
@@ -290,6 +289,10 @@ h1 {
   margin: 2rem 0;
 }
 
+.text table:last-child {
+  margin-bottom: 0;
+}
+
 .text table td, .text table th {
   text-align: left;
   padding: 1rem 4rem 1rem 0;
@@ -312,6 +315,13 @@ h1 {
 
 .text table tbody tr:last-child {
   border-bottom: none;
+}
+
+.text hr {
+  margin: 3rem 0;
+  padding: 0;
+  border: none;
+  border-bottom: 1px dotted #CCCCCC;
 }
 
 /*.general-doc a::before {
