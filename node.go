@@ -125,7 +125,7 @@ func parseNodeConfig(path string) (NodeMeta, error) {
 		return meta, err
 	}
 	if err := json.Unmarshal(content, &meta); err != nil {
-		return meta, fmt.Errorf("failed parsing %s: %s", f, err)
+		return meta, fmt.Errorf("failed parsing %s: %s", prettyPath(f), err)
 	}
 	return meta, nil
 }

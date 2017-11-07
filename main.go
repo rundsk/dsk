@@ -28,12 +28,6 @@ var (
 	root    string // root path
 )
 
-// TODO: Ensures given path is absolute and below root path, if not
-// will panic. Used for preventing path traversal.
-func MustSafePath(path string) string {
-	return path
-}
-
 // The root page.
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	t := template.New("index.html")
