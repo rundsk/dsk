@@ -56,16 +56,16 @@ $ npm run build
 $ cp build/static/*/main*.{css,js} example/DataEntry/Password/
 ```
 
-## Node Configuration File
+## Component Configuration File
 
-Each node directory may hold an `index.json` file. The file and any of its
+Each component directory may hold an `index.json` file. The file and any of its
 configuration settings are entirely optional.
 
-Using the configuration file, we can add meta data to the node (i.e. keywords)
+Using the configuration file, we can add meta data to the component (i.e. keywords)
 to improve the search experience in the interface. We can also configure
-socalled `demos` that describe variants of the component.
+so called `demos` that describe variants of the component.
 
-An example of a full node configuration looks like this:
+An example of a full component configuration looks like this:
 
 ```json
 {
@@ -85,9 +85,9 @@ Possible configuration options are:
 - `description`: A single sentence that roughly describes the component.
 - `keywords`: An array of keywords to group related components together.
 - `import`: The name under which the component can be imported. By default the
-   import name is the same as the node's path, i.e. `DataEntry/Password`. When your
+   import name is the same as the directory path, i.e. `DataEntry/Password`. When your
    component is known under a different name, this option allows you to override
-   the default.
+   the default one.
 - `demos`: An object, which defines variations of the component. The object's
   keys are the names of the variations, the corresponding values hold property sets.
 
