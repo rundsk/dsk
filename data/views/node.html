@@ -18,7 +18,9 @@
 	<ul>
 </section>
 
+{{if .N.HasComponent}}
 <iframe class="component-stage" src="/embed/{{.N.URL}}"></iframe>
+{{end}}
 
 {{if .N.HasGeneralDoc}}
 <section class="general-doc text">

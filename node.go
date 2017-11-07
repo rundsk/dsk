@@ -137,12 +137,26 @@ func (n Node) Import() (string, error) {
 	return n.URL, nil
 }
 
-func (n Node) CSS() (bytes.Buffer, error) {
-	return n.bundledAssets("css")
+func (n Node) HasComponent() bool {
+	return n.HasJS()
+}
+
+func (n Node) HasJS() bool {
+	files, _ := filepath.Glob(filepath.Join(n.path, "*.js"))
+	return len(files) > 0
 }
 
 func (n Node) JS() (bytes.Buffer, error) {
 	return n.bundledAssets("js")
+}
+
+func (n Node) HasCSS() bool {
+	files, _ := filepath.Glob(filepath.Join(n.path, "*.css"))
+	return len(files) > 0
+}
+
+func (n Node) CSS() (bytes.Buffer, error) {
+	return n.bundledAssets("css")
 }
 
 // Looks for i.e. CSS files in node directory and concatenates them.

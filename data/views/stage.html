@@ -2,7 +2,10 @@
 <html>
 	<head>
 		<meta charset="utf-8">
+		{{if .N.HasCSS}}
 		<link type="text/css" rel="stylesheet" href="/embed/{{.N.URL}}.css">
+		{{end}}
+		{{if .N.HasJS}}
 		<script>
 			// Allow following loaded script to detect, that they are used for embedding.
 			const INSIDE_DSK = true;
@@ -21,6 +24,7 @@
 				});
 			}
 		</script>
+		{{end}}
 	</head>
 	<body>
 		<div id="root"></div>
