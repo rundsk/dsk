@@ -49,12 +49,14 @@ document.addEventListener('DOMContentLoaded', function() {
       minMatchCharLength: 1,
       keys: [
         "title",
-        "url"
+        "url",
+        "meta.keywords"
     ]
     };
 
     let fuse = new Fuse(data, options);
     let result = fuse.search(query);
+
     renderNav(data, result);
   };
 
@@ -79,6 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (filterBy !== undefined) {
       if (data.children !== null) {
 
+        // Iterate over children, if one of the children should be kept, this node should be kept
         var keep = false;
         for (var child in data.children) {
             var keepChild = checkIfNodeShouldBeKept(data.children[child], filterBy);
@@ -87,10 +90,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        // If this parent node itself is in the searchResults, it should be kept
+        if (filterBy && data.url !== "/") {
+          for (let i of filterBy) {
+            if (i.url == data.url) {
+              keep = true;
+            }
+          }
+        }
+
         data.keep = keep;
         return keep;
       } else {
-
+        // If this leaf node itself is in the searchResults, it should be kept
         if (filterBy && data.url !== "/") {
           var keep = false;
           for (let i of filterBy) {
@@ -110,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       }
     } else {
-      // When no searchResult is given, alle nodes should be kept.
+      // When no searchResult is given, all nodes should be kept.
       if (data.children !== null) {
         for (let child in data.children) {
             var keepChild = checkIfNodeShouldBeKept(data.children[child], filterBy);
