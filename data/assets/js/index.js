@@ -74,7 +74,8 @@ document.addEventListener('DOMContentLoaded', function() {
   let runSearch = function(data, query) {
     let options = {
       tokenize: false,
-      threshold: 0.4,
+      matchAllTokens: true,
+      threshold: 0.1,
       location: 0,
       distance: 100,
       maxPatternLength: 32,
