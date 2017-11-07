@@ -22,11 +22,19 @@
 <iframe class="component-stage" src="/embed/{{.N.URL}}"></iframe>
 {{end}}
 
-{{if .N.HasGeneralDoc}}
-<section class="general-doc text">
-	{{.N.GeneralDoc}}
-</section>
-{{end}}
+<div class="info">
+	{{if .N.HasGeneralDoc}}
+	<section class="general-doc text">
+		{{.N.GeneralDoc}}
+	</section>
+	{{end}}
+
+	{{if .N.HasGeneralDoc}}
+	<section class="files text">
+		<h1>Dateien</h1>
+	</section>
+	{{end}}
+</div>
 
 {{range $index, $demo := .N.Meta.Demos}}
 <iframe class="component-stage" src="/embed/{{$.N.URL}}:{{$index}}"></iframe>

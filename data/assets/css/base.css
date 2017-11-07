@@ -220,23 +220,31 @@ h1 {
   margin: 6rem 0;
 }
 
+.info {
+  display: flex;
+  margin: 8rem 0;
+
+}
+
 .general-doc {
   line-height: 1.5em;
-
-  margin: 6rem 0;
   max-width: 600px;
+}
+
+.files {
+  padding-left: 6rem;
 }
 
 .api-doc {
   line-height: 1.5em;
 
-  margin: 6rem 0;
+  margin: 8rem 0;
 }
 
 .text h1 {
   font-size: inherit;
-  margin-bottom: 1rem;
-  margin-top: 4rem;
+  margin-bottom: 2rem;
+  margin-top: 5rem;
 }
 
 .text h2 {
