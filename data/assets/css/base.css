@@ -65,7 +65,11 @@ aside header .title {
   margin-bottom: 1rem;
 }
 
-aside header input {
+aside header .search {
+  display: relative;
+}
+
+aside header .search-field {
   display: block;
   width: 100%;
   border: none;
@@ -78,8 +82,23 @@ aside header input {
   border-radius: .5rem;
 }
 
-aside header input:focus {
+aside header .search-field:focus {
   outline: none;
+}
+
+aside header .search-clear {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 1rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #CCCCCC;
+  border-radius: 50%;
+  color: white;
+  line-height: 2.5rem;
+  text-align: center;
+  cursor: pointer;
 }
 
 aside nav {

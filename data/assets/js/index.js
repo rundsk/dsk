@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let $1 = document.querySelector.bind(document);
 
   let nav = $1('.tree-nav');
-  let search = $1('.search');
+  let search = $1('.search-field');
   let data = {};
 
   // Runs the search from the input field
@@ -25,10 +25,19 @@ document.addEventListener('DOMContentLoaded', function() {
   // Runs the search with a given query
   let handleSearchWithQuery = function(q) {
     search.value = q;
-    runSearch(data, q);
+    if (q !== "") {
+      runSearch(data, q);
+    } else {
+      renderNav(data);
+    }
+  };
+
+  let clearSearch = function() {
+    handleSearchWithQuery("");
   };
 
   search.addEventListener("input", handleSearch);
+  $1('.search-clear').addEventListener("click", clearSearch);
 
   // Loads the node when a link the nav is clicked
   let handleNav = function(ev) {
