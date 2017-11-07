@@ -167,7 +167,7 @@ h1 {
 }
 
 .keywords {
-
+  user-select: none;
 }
 
 .keywords ul {
@@ -185,6 +185,11 @@ h1 {
   letter-spacing: .1em;
   padding: .8em .8em .6em .8em;
   border-radius: .25rem;
+}
+
+.keyword {
+  user-select: none;
+  cursor: pointer;
 }
 
 .component-stage {

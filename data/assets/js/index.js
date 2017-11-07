@@ -4,6 +4,7 @@
  * Use of this source code is governed by a BSD-style
  * license that can be found in the LICENSE file.
  */
+
 document.addEventListener('DOMContentLoaded', function() {
   let $ = document.querySelectorAll.bind(document);
   let $1 = document.querySelector.bind(document);
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let search = $1('.search');
   let data = {};
 
+  // Runs the search from the input field
   let handleSearch = function(ev) {
     if (this.value !== "") {
       runSearch(data, this.value);
@@ -20,17 +22,38 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   };
 
+  // Runs the search with a given query
+  let handleSearchWithQuery = function(q) {
+    search.value = q;
+    runSearch(data, q);
+  };
+
   search.addEventListener("input", handleSearch);
 
+  // Loads the node when a link the nav is clicked
   let handleNav = function(ev) {
       ev.preventDefault();
       fetch(this.href).then((res) => {
         return res.text();
       }).then((html) => {
         $1('main').innerHTML = html;
+        handleKeywords();
       });
   };
 
+  // Calls the search when a keyword is clicked
+  let handleKeywordClick = function(ev) {
+    handleSearchWithQuery(ev.target.innerHTML);
+  };
+
+  // Attaches a click-Event to every keyword
+  let handleKeywords = function() {
+    for (let k of $('.keyword')) {
+      k.addEventListener("click", handleKeywordClick);
+    }
+  };
+
+  // Gets the tree and creates the nav structure
   fetch('/api/tree').then((res) => {
     return res.json();
   }).then((json) => {
@@ -78,13 +101,14 @@ document.addEventListener('DOMContentLoaded', function() {
   // If a searchResult is given, checks for each node if it exists in
   // the searchResult and should therefore be kept.
   let checkIfNodeShouldBeKept = function(data, filterBy) {
+    var keep = false;
+
     if (filterBy !== undefined) {
       if (data.children !== null) {
 
         // Iterate over children, if one of the children should be kept, this node should be kept
-        var keep = false;
         for (var child in data.children) {
-            var keepChild = checkIfNodeShouldBeKept(data.children[child], filterBy);
+            let keepChild = checkIfNodeShouldBeKept(data.children[child], filterBy);
             if (keepChild) {
               keep = true;
             }
@@ -104,7 +128,6 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         // If this leaf node itself is in the searchResults, it should be kept
         if (filterBy && data.url !== "/") {
-          var keep = false;
           for (let i of filterBy) {
             if (i.url == data.url) {
               keep = true;
@@ -124,8 +147,9 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
       // When no searchResult is given, all nodes should be kept.
       if (data.children !== null) {
+        // Make sure all children are kept
         for (let child in data.children) {
-            var keepChild = checkIfNodeShouldBeKept(data.children[child], filterBy);
+            checkIfNodeShouldBeKept(data.children[child], filterBy);
         }
       }
 
@@ -150,9 +174,9 @@ document.addEventListener('DOMContentLoaded', function() {
         li.appendChild(ul);
 
         for (var child in data.children) {
-            var child = createList(data.children[child]);
-            if (child) {
-              ul.appendChild(child);
+            childList = createList(data.children[child]);
+            if (childList) {
+              ul.appendChild(childList);
             }
         }
 
