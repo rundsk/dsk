@@ -36,9 +36,14 @@
 	{{end}}
 </div>
 
-{{range $index, $demo := .N.Meta.Demos}}
-<iframe class="component-stage" src="/embed/{{$.N.URL}}:{{$index}}"></iframe>
+<section class="demos">
+{{range $name, $propSet := .N.Meta.Demos}}
+	<article class="demo">
+		<h1>{{$name}}</h1>
+		<iframe class="component-stage" src="/embed/{{$.N.URL}}:{{$name}}"></iframe>
+	</article>
 {{end}}
+</section>
 
 {{if .N.HasAPIDoc}}
 <section class="api-doc text">

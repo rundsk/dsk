@@ -17,7 +17,6 @@ import (
 	"os/signal"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/gamegos/jsend"
@@ -149,8 +148,8 @@ func nodeHandler(w http.ResponseWriter, r *http.Request) {
 //
 // Handles these kinds of URLs:
 //   /embed/DisplayData/Table
-//   /embed/DisplayData/Table:0
-//   /embed/DisplayData/Table:1
+//   /embed/DisplayData/Table:foo%20bar
+//   /embed/DisplayData/Table:bar
 //   /embed/DisplayData/Table.js
 //   /embed/DisplayData/Table.css
 func embedHandler(w http.ResponseWriter, r *http.Request) {
@@ -195,20 +194,16 @@ func embedHandler(w http.ResponseWriter, r *http.Request) {
 		var n *Node
 		var err error
 
-		// Check for variant suffix i.e. :0 or :1.
-		r := regexp.MustCompile(`^(.+):([0-9]+)$`)
+		// Check for variant suffix i.e. :foo or :foo%20bar.
+		r := regexp.MustCompile(`^(.+):(.+)$`)
 		m := r.FindStringSubmatch(path)
 		if m != nil {
-			path := m[1]
-			demoIndex, _ := strconv.Atoi(m[2])
-
-			n, err = NewNodeFromPath(path, root)
+			n, err = NewNodeFromPath(m[1], root)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-
-			propSet, _ = n.Demo(demoIndex)
+			propSet, _ = n.Demo(m[2]) // Is auto-unescaped.
 		} else {
 			n, err = NewNodeFromPath(path, root)
 			if err != nil {

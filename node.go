@@ -34,8 +34,8 @@ type NodeMeta struct {
 	Keywords    []string `json:"keywords"`
 	// Optional, if missing will use the URL.
 	Import string
-	// Optionally defines a list of property sets.
-	Demos []PropSet `json:"demos"`
+	// Optionally defines a list of property sets, keyed by their names.
+	Demos map[string]PropSet `json:"demos"`
 }
 
 // A set of component properties, usually parsed from JSON.
@@ -227,10 +227,10 @@ func (n Node) Crumbs() map[string]string {
 	return crumbs
 }
 
-// Access a node's demo by index. Zero based.
-func (n Node) Demo(index int) (PropSet, error) {
-	if len(n.Meta.Demos) > index {
-		return n.Meta.Demos[index], nil
+// Access a node's demo by its name.
+func (n Node) Demo(name string) (PropSet, error) {
+	if val, ok := n.Meta.Demos[name]; ok {
+		return val, nil
 	}
-	return nil, fmt.Errorf("no demo at index %d", index)
+	return nil, fmt.Errorf("no demo with name: %s", name)
 }
