@@ -247,7 +247,7 @@ func embedHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	if len(os.Args) > 2 {
-		log.Fatalf("too many arguments given, expecting exectly 0 or 1")
+		log.Fatalf("too many arguments given, expecting exactly 0 or 1")
 	}
 
 	if len(os.Args) == 2 {
