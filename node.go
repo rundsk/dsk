@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -80,11 +81,12 @@ func NewNodeListFromPath(root string) ([]*Node, error) {
 			return err
 		}
 		if f.IsDir() {
-			n, err := NewNodeFromPath(path, root)
-			if err != nil {
-				return err
+			n, nErr := NewNodeFromPath(path, root)
+			if nErr != nil {
+				log.Printf("skipping node: %s", nErr)
+			} else {
+				nodes = append(nodes, n)
 			}
-			nodes = append(nodes, n)
 		}
 		return nil
 	})
@@ -123,7 +125,7 @@ func parseNodeConfig(path string) (NodeMeta, error) {
 		return meta, err
 	}
 	if err := json.Unmarshal(content, &meta); err != nil {
-		return meta, err
+		return meta, fmt.Errorf("failed parsing %s: %s", f, err)
 	}
 	return meta, nil
 }
