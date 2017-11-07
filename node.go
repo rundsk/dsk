@@ -213,6 +213,10 @@ func (n Node) Crumbs() map[string]string {
 	return crumbs
 }
 
+// Access a node's demo by index. Zero based.
 func (n Node) Demo(index int) (PropSet, error) {
-	return n.Meta.Demos[index], nil
+	if len(n.Meta.Demos) > index {
+		return n.Meta.Demos[index], nil
+	}
+	return nil, fmt.Errorf("no demo at index %d", index)
 }
