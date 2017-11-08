@@ -32,6 +32,8 @@ var (
 )
 
 func main() {
+	log.Printf("starting DSK Version %s", Version)
+
 	if len(os.Args) > 2 {
 		log.Fatalf("too many arguments given, expecting exactly 0 or 1")
 	}
@@ -45,7 +47,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("using root directory: %s", root)
+	log.Printf("using %s as root directory", root)
 
 	sigc = make(chan os.Signal, 1)
 	signal.Notify(sigc, os.Interrupt)
@@ -62,9 +64,9 @@ func main() {
 	flag.Parse()
 
 	addr := fmt.Sprintf("%s:%s", *host, *port)
-	log.Printf("starting web server on %s...", addr)
+	log.Printf("listening on %s", addr)
 
-	log.Printf("open in your browser http://%s", addr)
+	log.Printf("DSK started, please go to: http://%s", addr)
 	log.Print("hit STRG+C to quit")
 
 	http.HandleFunc("/", indexHandler)
