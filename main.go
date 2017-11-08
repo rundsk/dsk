@@ -109,6 +109,11 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 func assetsHandler(w http.ResponseWriter, r *http.Request) {
 	path := filepath.Join("data/assets", r.URL.Path[len("/assets/"):])
 
+	if err := checkSafePath(path, root); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	typ := mime.TypeByExtension(filepath.Ext(path))
 	w.Header().Set("Content-Type", typ)
 
@@ -127,6 +132,14 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/tree
 func apiHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path[len("/api/"):]
+
+	// Security: Although path is not yet used for file access, we check it, to prevent
+	// programmer mistakenly opening a security hole when the code section below is expanded
+	// and the path then used.
+	if err := checkSafePath(path, root); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	wr := jsend.Wrap(w)
 
@@ -156,12 +169,17 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 func nodeHandler(w http.ResponseWriter, r *http.Request) {
 	path := filepath.Join(root, r.URL.Path[len("/tree/"):])
 
-	t := template.New("node.html")
+	if err := checkSafePath(path, root); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	n, err := NewNodeFromPath(path, root)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	t := template.New("node.html")
 
 	tVars := struct {
 		N *Node
@@ -206,6 +224,11 @@ func embedHandler(w http.ResponseWriter, r *http.Request) {
 
 func embedHandlerCSS(w http.ResponseWriter, r *http.Request) {
 	path := filepath.Join(root, r.URL.Path[len("/embed/"):])
+
+	if err := checkSafePath(path, root); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	path = strings.TrimSuffix(path, ".css")
 
 	n, err := NewNodeFromPath(path, root)
@@ -226,6 +249,11 @@ func embedHandlerCSS(w http.ResponseWriter, r *http.Request) {
 
 func embedHandlerJS(w http.ResponseWriter, r *http.Request) {
 	path := filepath.Join(root, r.URL.Path[len("/embed/"):])
+
+	if err := checkSafePath(path, root); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	path = strings.TrimSuffix(path, ".js")
 
 	n, err := NewNodeFromPath(path, root)
