@@ -14,6 +14,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/russross/blackfriday"
@@ -227,6 +228,19 @@ func (n Node) Crumbs() map[string]string {
 	//		url :=
 	//	}
 	return crumbs
+}
+
+// Returns the names of all available demos in order. The prop set of
+// each demo can be retrieved via Demo(). This approach is needed as
+// Go's maps are not guaranteed to keep order.
+func (n Node) DemoNames() []string {
+	var names []string
+
+	for name := range n.Meta.Demos {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return names
 }
 
 // Access a node's demo by its name.

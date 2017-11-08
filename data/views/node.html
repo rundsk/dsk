@@ -39,7 +39,7 @@
 <section class="demos text">
 	<h1>Demos</h1>
 
-	{{range $name, $propSet := .N.Meta.Demos}}
+	{{range $name := .N.DemoNames}}
 			<h2>{{$name}}</h2>
 			<iframe class="component-stage" src="/embed/{{$.N.URL}}:{{$name}}"></iframe>
 	{{end}}
