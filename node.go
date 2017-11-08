@@ -17,6 +17,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/fatih/color"
 	"github.com/russross/blackfriday"
 )
 
@@ -84,7 +85,8 @@ func NewNodeListFromPath(root string) ([]*Node, error) {
 		if f.IsDir() {
 			n, nErr := NewNodeFromPath(path, root)
 			if nErr != nil {
-				log.Printf("skipping node: %s", nErr)
+				red := color.New(color.FgRed).SprintFunc()
+				log.Printf("skipping node: %s", red(nErr))
 			} else {
 				nodes = append(nodes, n)
 			}

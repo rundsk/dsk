@@ -18,8 +18,11 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"syscall"
 
+	"github.com/fatih/color"
 	"github.com/gamegos/jsend"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 var (
@@ -61,12 +64,18 @@ func main() {
 
 	host := flag.String("host", "127.0.0.1", "host IP to bind to")
 	port := flag.String("port", "8080", "port to bind to")
+	noColor := flag.Bool("no-color", false, "disables color output")
 	flag.Parse()
+
+	if *noColor || !terminal.IsTerminal(syscall.Stdin) {
+		color.NoColor = true
+	}
 
 	addr := fmt.Sprintf("%s:%s", *host, *port)
 	log.Printf("listening on %s", addr)
 
-	log.Printf("DSK started, please go to: http://%s", addr)
+	green := color.New(color.FgGreen).SprintFunc()
+	log.Printf("DSK started, please go to: %s", green("http://"+addr))
 	log.Print("hit STRG+C to quit")
 
 	http.HandleFunc("/", indexHandler)
