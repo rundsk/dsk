@@ -25,8 +25,56 @@ import (
 var (
 	Version string
 	sigc    chan os.Signal
-	root    string // root path
+	// Absolute path to design definitions root direcrtory.
+	root string
+	// Check for variant suffix i.e. :foo or :foo%20bar.
+	demoRouteRegex = regexp.MustCompile(`^(.+):(.+)$`)
 )
+
+func main() {
+	if len(os.Args) > 2 {
+		log.Fatalf("too many arguments given, expecting exactly 0 or 1")
+	}
+
+	if len(os.Args) == 2 {
+		root = os.Args[1]
+	} else {
+		root, _ = os.Getwd()
+	}
+	root, err := filepath.Abs(root)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("using root directory: %s", root)
+
+	sigc = make(chan os.Signal, 1)
+	signal.Notify(sigc, os.Interrupt)
+	go func() {
+		for sig := range sigc {
+			log.Printf("caught %v signal, bye!", sig)
+			// implement cleanup when necessary
+			os.Exit(1)
+		}
+	}()
+
+	host := flag.String("host", "127.0.0.1", "host IP to bind to")
+	port := flag.String("port", "8080", "port to bind to")
+	flag.Parse()
+
+	addr := fmt.Sprintf("%s:%s", *host, *port)
+	log.Printf("starting web server on %s...", addr)
+
+	log.Printf("open in your browser http://%s", addr)
+	log.Print("hit STRG+C to quit")
+
+	http.HandleFunc("/", indexHandler)
+	http.HandleFunc("/assets/", assetsHandler)
+	http.HandleFunc("/api/", apiHandler)
+	http.HandleFunc("/tree/", nodeHandler)
+	http.HandleFunc("/embed/", embedHandler)
+
+	http.ListenAndServe(addr, nil)
+}
 
 // The root page.
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -59,13 +107,12 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 //   /assets/css/base.css
 //   /assets/js/index.js
 func assetsHandler(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path[len("/assets/"):]
+	path := filepath.Join("data/assets", r.URL.Path[len("/assets/"):])
 
 	typ := mime.TypeByExtension(filepath.Ext(path))
 	w.Header().Set("Content-Type", typ)
 
-	// Rebase to prevent traversing anything outside assets directory.
-	data, err := Asset("data/assets/" + path)
+	data, err := Asset(path)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -80,6 +127,7 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/tree
 func apiHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path[len("/api/"):]
+
 	wr := jsend.Wrap(w)
 
 	if path == "tree" {
@@ -106,10 +154,10 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 //   /tree/DisplayData/Table
 //   /tree/DisplayData/Table/Row
 func nodeHandler(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path[len("/tree/"):]
+	path := filepath.Join(root, r.URL.Path[len("/tree/"):])
 
 	t := template.New("node.html")
-	n, err := NewNodeFromPath(filepath.Join(root, path), root)
+	n, err := NewNodeFromPath(path, root)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -147,130 +195,106 @@ func nodeHandler(w http.ResponseWriter, r *http.Request) {
 //   /embed/DisplayData/Table.js
 //   /embed/DisplayData/Table.css
 func embedHandler(w http.ResponseWriter, r *http.Request) {
-	path := filepath.Join(root, r.URL.Path[len("/embed/"):])
-
-	if strings.HasSuffix(path, ".css") {
-		path = strings.TrimSuffix(path, ".css")
-
-		n, err := NewNodeFromPath(path, root)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		buf, err := n.CSS()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusNotFound)
-			return
-		}
-
-		w.Header().Add("Content-Type", "text/css")
-		w.Write(buf.Bytes())
-	} else if strings.HasSuffix(path, ".js") {
-		path = strings.TrimSuffix(path, ".js")
-
-		n, err := NewNodeFromPath(path, root)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		buf, err := n.JS()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusNotFound)
-			return
-		}
-
-		w.Header().Add("Content-Type", "application/javascript")
-		w.Write(buf.Bytes())
+	if strings.HasSuffix(r.URL.Path, ".css") {
+		embedHandlerCSS(w, r)
+	} else if strings.HasSuffix(r.URL.Path, ".js") {
+		embedHandlerJS(w, r)
 	} else {
-		var propSet PropSet
-		var n *Node
-		var err error
-
-		// Check for variant suffix i.e. :foo or :foo%20bar.
-		r := regexp.MustCompile(`^(.+):(.+)$`)
-		m := r.FindStringSubmatch(path)
-		if m != nil {
-			n, err = NewNodeFromPath(m[1], root)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			propSet, _ = n.Demo(m[2]) // Is auto-unescaped.
-		} else {
-			n, err = NewNodeFromPath(path, root)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-		}
-		t := template.New("stage.html")
-
-		mPropSet, _ := json.Marshal(propSet)
-
-		tVars := struct {
-			N       *Node
-			PropSet template.JS // marshalled PropSet
-		}{
-			N:       n,
-			PropSet: template.JS(mPropSet),
-		}
-		html, err := Asset("data/views/stage.html")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		_, err = t.Parse(string(html[:]))
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		if err := t.Execute(w, tVars); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
+		embedHandlerDemo(w, r)
 	}
 }
 
-func main() {
-	if len(os.Args) > 2 {
-		log.Fatalf("too many arguments given, expecting exactly 0 or 1")
+func embedHandlerCSS(w http.ResponseWriter, r *http.Request) {
+	path := filepath.Join(root, r.URL.Path[len("/embed/"):])
+	path = strings.TrimSuffix(path, ".css")
+
+	n, err := NewNodeFromPath(path, root)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	if len(os.Args) == 2 {
-		root, _ = filepath.Abs(os.Args[1])
-	} else {
-		root, _ = os.Getwd()
+	buf, err := n.CSS()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
 	}
-	log.Printf("using root directory: %s", root)
 
-	sigc = make(chan os.Signal, 1)
-	signal.Notify(sigc, os.Interrupt)
-	go func() {
-		for sig := range sigc {
-			log.Printf("caught %v signal, bye!", sig)
-			// implement cleanup when necessary
-			os.Exit(1)
+	w.Header().Add("Content-Type", "text/css")
+	w.Write(buf.Bytes())
+}
+
+func embedHandlerJS(w http.ResponseWriter, r *http.Request) {
+	path := filepath.Join(root, r.URL.Path[len("/embed/"):])
+	path = strings.TrimSuffix(path, ".js")
+
+	n, err := NewNodeFromPath(path, root)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	buf, err := n.JS()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Add("Content-Type", "application/javascript")
+	w.Write(buf.Bytes())
+}
+
+func embedHandlerDemo(w http.ResponseWriter, r *http.Request) {
+	path := filepath.Join(root, r.URL.Path[len("/embed/"):])
+
+	if err := checkSafePath(path, root); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var propSet PropSet
+	var n *Node
+	var err error
+
+	if m := demoRouteRegex.FindStringSubmatch(path); m != nil {
+		n, err = NewNodeFromPath(m[1], root)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
-	}()
+		propSet, _ = n.Demo(m[2]) // Is auto-unescaped.
+	} else {
+		n, err = NewNodeFromPath(path, root)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+	t := template.New("stage.html")
 
-	host := flag.String("host", "127.0.0.1", "host IP to bind to")
-	port := flag.String("port", "8080", "port to bind to")
-	flag.Parse()
+	mPropSet, _ := json.Marshal(propSet)
 
-	addr := fmt.Sprintf("%s:%s", *host, *port)
-	log.Printf("starting web server on %s...", addr)
+	tVars := struct {
+		N       *Node
+		PropSet template.JS // marshalled PropSet
+	}{
+		N:       n,
+		PropSet: template.JS(mPropSet),
+	}
+	html, err := Asset("data/views/stage.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	log.Printf("open in your browser http://%s", addr)
-	log.Print("hit STRG+C to quit")
+	_, err = t.Parse(string(html[:]))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	http.HandleFunc("/", indexHandler)
-	http.HandleFunc("/assets/", assetsHandler)
-	http.HandleFunc("/api/", apiHandler)
-	http.HandleFunc("/tree/", nodeHandler)
-	http.HandleFunc("/embed/", embedHandler)
-
-	http.ListenAndServe(addr, nil)
+	if err := t.Execute(w, tVars); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
