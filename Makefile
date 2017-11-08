@@ -3,13 +3,8 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-DEBUG ?= n
-
 PREFIX ?= /usr/local
-FLAG_PREFIX ?= $(PREFIX)
-
 VERSION ?= head-$(shell git rev-parse --short HEAD)
-
 GOFLAGS = -X main.Version=$(VERSION)
 
 .PHONY: dev
@@ -47,8 +42,4 @@ dist/%-linux-amd64: data.go
 	GOOS=linux GOARCH=amd64 go build -ldflags "$(GOFLAGS)" -o $@
 
 data.go: $(shell find data -type f) 
-ifeq ($(DEBUG),n)
 	go-bindata -o data.go data/...
-else
-	go-bindata -debug -o data.go data/...
-endif
