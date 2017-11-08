@@ -36,6 +36,7 @@
 	{{end}}
 </div>
 
+{{if .N.HasDemos}}
 <section class="demos text">
 	<h1>Demos</h1>
 
@@ -44,6 +45,7 @@
 			<iframe class="component-stage" src="/embed/{{$.N.URL}}:{{$name}}"></iframe>
 	{{end}}
 </section>
+{{end}}
 
 {{if .N.HasAPIDoc}}
 <section class="api-doc text">

@@ -230,6 +230,10 @@ func (n Node) Crumbs() map[string]string {
 	return crumbs
 }
 
+func (n Node) HasDemos() bool {
+	return len(n.Meta.Demos) > 0
+}
+
 // Returns the names of all available demos in order. The prop set of
 // each demo can be retrieved via Demo(). This approach is needed as
 // Go's maps are not guaranteed to keep order.
