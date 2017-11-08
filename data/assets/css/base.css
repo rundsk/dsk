@@ -229,10 +229,12 @@ h1 {
 .general-doc {
   line-height: 1.5em;
   max-width: 600px;
+  flex-grow: 1;
 }
 
 .files {
   padding-left: 6rem;
+  flex-grow: 0;
 }
 
 .api-doc {
