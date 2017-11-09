@@ -313,7 +313,7 @@ h1 {
 }
 
 .text ul li {
-  margin-left: 4rem;
+  margin: .5rem 0 .5rem 4rem;
 }
 
 .text table {

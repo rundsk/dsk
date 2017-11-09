@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   };
 
+  // Clears the search field
   let clearSearch = function() {
     handleSearchWithQuery("");
   };
