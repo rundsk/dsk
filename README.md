@@ -2,7 +2,7 @@
 
 ## Abstract
 
-Design System Kit is a tool in the sprit of Storybook and Styleguidest.
+Design System Kit is a tool in the sprit of Storybook and Styleguidist.
 
 Component design definitions are organized in simple directories. Adding
 documentation is as easy as adding a Markdown formatted file to a component's
