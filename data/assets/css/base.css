@@ -168,9 +168,26 @@ main {
 /* Node */
 
 .crumbs-nav {
-  color: #B2B2B2;
-  font-size: 20px;
+  margin-bottom: 2rem;
+}
+.crumbs {
+  list-style: none;
+  font-size: 16px;
   line-height: 1em;
+}
+.crumbs__crumb {
+  display: inline;
+}
+.crumbs__crumb + .crumbs__crumb:before {
+  color: #B2B2B2;
+  content: " / ";
+}
+.crumbs__crumb a {
+  color: #B2B2B2;
+  text-decoration: none;
+}
+.crumbs__crumb a:hover {
+  color: #0E26FC;
 }
 
 h1 {

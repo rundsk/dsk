@@ -217,19 +217,21 @@ func (n Node) APIDoc() (template.HTML, error) {
 	return template.HTML(blackfriday.Run(contents)), nil
 }
 
-// Returns a mapping of URLs to title strings for easily creating a
-// breadcrumb navigation. The last element is the current active one.
-// Does not include the very root element.
-func (n Node) Crumbs() map[string]string {
-	var crumbs map[string]string // maps url to title
-	// TODO
-	//	parts := strings.Split(n.url, "/")
-	//
-	//	for _, p := range parts {
-	//		title := p
-	//		url :=
-	//	}
-	return crumbs
+// Returns a list of crumb URLs (relative to root). The last element is
+// the current. active one. Does not include a root element.
+func (n Node) CrumbURLs() []string {
+	var urls []string
+
+	parts := strings.Split(n.URL, "/")
+	for index, _ := range parts {
+		urls = append(urls, strings.Join(parts[:index+1], "/"))
+	}
+	return urls
+}
+
+// Returns the name for a given crumb URL.
+func (n Node) CrumbName(url string) string {
+	return filepath.Base(url)
 }
 
 func (n Node) HasDemos() bool {

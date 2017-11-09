@@ -1,7 +1,9 @@
 <nav class="crumbs-nav">
-{{range $url, $title := .N.Crumbs}}
-	<a href="{{$url}}" class="crumbs-nav__crumb">{{$title}}</a>
-{{end}}
+	<ul class="crumbs">
+	{{range $url := .N.CrumbURLs}}
+		<li class="crumbs__crumb"><a href="/{{$url}}">{{$.N.CrumbName $url}}</a>
+	{{end}}
+	</ul>
 </nav>
 
 <h1>{{.N.Title}}</h1>
