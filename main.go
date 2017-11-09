@@ -18,11 +18,9 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	"syscall"
 
 	"github.com/fatih/color"
 	"github.com/gamegos/jsend"
-	"golang.org/x/crypto/ssh/terminal"
 )
 
 var (
@@ -67,7 +65,9 @@ func main() {
 	noColor := flag.Bool("no-color", false, "disables color output")
 	flag.Parse()
 
-	if *noColor || !terminal.IsTerminal(syscall.Stdin) {
+	// Color package automatically disables colors when not a TTY. We
+	// don't need to do it here.
+	if *noColor {
 		color.NoColor = true
 	}
 
