@@ -8,6 +8,7 @@ package main
 import (
 	"errors"
 	"log"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -40,6 +41,26 @@ func checkSafePath(path string, root string) error {
 	if strings.HasPrefix(path, root) {
 		return nil
 	}
-	log.Printf("directory traversal detected, failed check: %s", path)
+	log.Printf("directory traversal detected, failed check: path %s, root %s", path, root)
 	return DirectoryTraversalError
+}
+
+// Tries to find root directory either by looking at args or the
+// current working directory.
+func detectRoot() (string, error) {
+	var here string
+
+	if len(os.Args) == 2 {
+		here = os.Args[1]
+	} else {
+		here, err := os.Getwd()
+		if err != nil {
+			return here, err
+		}
+	}
+	here, err := filepath.Abs(here)
+	if err != nil {
+		return here, err
+	}
+	return filepath.EvalSymlinks(here)
 }
