@@ -187,10 +187,15 @@ main {
 .crumbs__crumb {
   display: inline;
 }
-.crumbs__crumb + .crumbs__crumb:before {
+.crumbs__crumb:after {
   color: var(--color-midgray);
   content: " / ";
 }
+
+.crumbs__crumb:last-child {
+  display: none;
+}
+
 .crumbs__crumb a {
   color: var(--color-midgray);
   text-decoration: none;
