@@ -33,7 +33,8 @@ var (
 )
 
 func main() {
-	log.Printf("starting DSK Version %s", Version)
+	whiteOnBlue := color.New(color.FgWhite, color.BgBlue).SprintFunc()
+	log.Printf("starting %s Version %s", whiteOnBlue("DSK"), Version)
 
 	if len(os.Args) > 2 {
 		log.Fatalf("too many arguments given, expecting exactly 0 or 1")
@@ -79,7 +80,7 @@ func main() {
 	log.Printf("listening on %s", addr)
 
 	green := color.New(color.FgGreen).SprintFunc()
-	log.Printf("DSK started, please go to: %s", green("http://"+addr))
+	log.Printf("please visit: %s", green("http://"+addr))
 	log.Print("hit STRG+C to quit")
 
 	http.HandleFunc("/", indexHandler)
