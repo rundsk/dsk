@@ -81,7 +81,7 @@ func main() {
 
 	green := color.New(color.FgGreen).SprintFunc()
 	log.Printf("please visit: %s", green("http://"+addr))
-	log.Print("hit STRG+C to quit")
+	log.Print("hit Ctrl+C to quit")
 
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/assets/", assetsHandler)
