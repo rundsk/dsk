@@ -48,6 +48,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	root, err = filepath.EvalSymlinks(root)
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Printf("using %s as root directory", root)
 
 	sigc = make(chan os.Signal, 1)
