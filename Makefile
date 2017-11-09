@@ -25,6 +25,7 @@ uninstall:
 clean:
 	if [ -d ./dist ]; then rm -r ./dist; fi
 	if [ -f ./dsk ]; then rm ./dsk; fi
+	if [ -f ./data.go ]; then rm ./data.go; fi
 
 .PHONY: dist
 dist: dist/dsk dist/dsk-darwin-amd64 dist/dsk-linux-amd64
