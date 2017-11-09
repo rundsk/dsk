@@ -5,6 +5,15 @@
  * license that can be found in the LICENSE file.
  */
 
+:root {
+  --color-white: white;
+  --color-blue: #0E26FC;
+  --color-cyan: #52D0AF;
+  --color-black: #3D3D3D;
+  --color-lightgray: #F8F8F8;
+  --color-lightgray2: #848484;
+  --color-midgray: #CCC;
+}
 
 /* Reset */
 
@@ -35,7 +44,7 @@ body {
   font-family: "Neuzeit S LT Std", sans-serif;
   font-size: 16px;
   line-height: 1em;
-  color: #3D3D3D;
+  color: var(--color-black);
 }
 
 /* Sidebar */
@@ -53,13 +62,13 @@ aside header {
   flex-grow: 0;
   flex-shrink: 0;
 
-  background-color: #0E26FC;
+  background-color: var(--color-blue);
   padding: 2rem;
   padding-top: 8rem;
 }
 
 aside header .title {
-  color: white;
+  color: var(--color-white);
   font-size: 20px;
   line-height: 1em;
   margin-bottom: 1rem;
@@ -93,9 +102,9 @@ aside header .search-clear {
   right: 1rem;
   width: 2.5rem;
   height: 2.5rem;
-  background-color: #CCCCCC;
+  background-color: var(--color-midgray);
   border-radius: 50%;
-  color: white;
+  color: var(--color-white);
   line-height: 2.5rem;
   text-align: center;
   cursor: pointer;
@@ -105,7 +114,7 @@ aside nav {
   flex-grow: 1;
   overflow-y: auto;
 
-  background-color: #F8F8F8;
+  background-color: var(--color-lightgray);
   padding: 4rem 2rem;
 }
 
@@ -126,7 +135,7 @@ aside nav ul li a {
 }
 
 aside nav ul li a:hover {
-  color: #0E26FC;
+  color: var(--color-blue);
 }
 
 /* Top Level ul */
@@ -179,15 +188,15 @@ main {
   display: inline;
 }
 .crumbs__crumb + .crumbs__crumb:before {
-  color: #B2B2B2;
+  color: var(--color-midgray);
   content: " / ";
 }
 .crumbs__crumb a {
-  color: #B2B2B2;
+  color: var(--color-midgray);
   text-decoration: none;
 }
 .crumbs__crumb a:hover {
-  color: #0E26FC;
+  color: var(--color-blue);
 }
 
 h1 {
@@ -212,8 +221,8 @@ h1 {
 
 .keywords ul li {
   display: inline-block;
-  background-color: #52D0AF;
-  color: white;
+  background-color: var(--color-cyan);
+  color: var(--color-white);
   font-size: 10px;
   line-height: 1em;
   font-weight: 600;
@@ -267,7 +276,7 @@ h1 {
 
 .text h2 {
   font-size: 12px;
-  color: #848484;
+  color: var(--color-lightgray2);
   text-transform: uppercase;
   letter-spacing: 0.1rem;
   margin-top: 3rem;
@@ -323,13 +332,13 @@ h1 {
 
 .text table th {
   font-size: 12px;
-  color: #848484;
+  color: var(--color-lightgray2);
   text-transform: uppercase;
   letter-spacing: 0.1rem;
 }
 
 .text table tr {
-  border-bottom: 1px dotted #CCCCCC;
+  border-bottom: 1px dotted var(--color-midgray);
 }
 
 .text table tbody tr:last-child {
@@ -340,7 +349,7 @@ h1 {
   margin: 3rem 0;
   padding: 0;
   border: none;
-  border-bottom: 1px dotted #CCCCCC;
+  border-bottom: 1px dotted var(--color-midgray);
 }
 
 .demos .component-stage {
