@@ -2,7 +2,11 @@
 
 ## Abstract
 
-tbd
+Design System Kit is a tool in the sprit of Storybook and Styleguidist.
+
+Component design definitions are organized in simple directories. Adding
+documentation is as easy as adding a Markdown formatted file to a component's
+directory.
 
 ## Status
 
@@ -11,19 +15,19 @@ Please see the _Development_ section for how to build the tool from source. We e
 
 ## Quickstart
 
-[Download the binary](https://github.com/atelierdisko/hoi/releases) from GitHub and make it exectuable.
+[Download the binary](https://github.com/atelierdisko/hoi/releases) from GitHub and make it executable.
 
 ```
 curl -L https://github.com/atelierdisko/dsk/releases/download/v0.5.0/dsk-darwin-amd64 -o dsk
 chmod +x dsk
 ```
 
-Now run the `dsk` command pointing it to the directory that contains your desing system definitions.
+Now run the `dsk` command pointing it to the directory that contains your _design definitions tree_.
 ```
 ./dsk example
 ```
 
-Finally go to [open the Web Application in your browser](http://localhost:8080).
+Finally [open the Web Application in your browser](http://localhost:8080).
 
 ## Use it with [Create React App](https://github.com/facebookincubator/create-react-app) 
 
@@ -53,7 +57,27 @@ When ready, create the bundle and copy it into our DSK tree.
 
 ```
 $ npm run build 
-$ cp build/static/*/main*.{css,js} example/DataEntry/Password/
+$ cp build/static/*/main*.{css,js} example/DataEntry/TextField/Password/
+```
+
+## The Design Definitions Tree
+
+```
+example
+├── DataEntry
+│   ├── Button
+│   │   ├── exploration.sketch
+│   │   ├── index.json
+│   │   └── readme.md
+│   ├── TextField
+│   │   ├── Password
+│   │   │   └── readme.md
+│   │   ├── api.md
+│   │   ├── index.json
+│   │   ├── main.css
+│   │   ├── main.js
+│   │   ├── readme.md
+│   │   └── unmask.svg
 ```
 
 ## Component Configuration File
@@ -85,7 +109,7 @@ Possible configuration options are:
 - `description`: A single sentence that roughly describes the component.
 - `keywords`: An array of keywords to group related components together.
 - `import`: The name under which the component can be imported. By default the
-   import name is the same as the directory path, i.e. `DataEntry/Password`. When your
+   import name is the same as the directory path, i.e. `DataEntry/TextField/Password`. When your
    component is known under a different name, this option allows you to override
    the default one.
 - `demos`: An object, which defines variations of the component. The object's
