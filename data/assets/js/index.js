@@ -151,6 +151,10 @@ document.addEventListener('DOMContentLoaded', function() {
           for (let i of filterBy) {
             if (i.url == data.url) {
               keep = true;
+
+              for (let child in data.children) {
+                  checkIfNodeShouldBeKept(data.children[child], undefined);
+              }
             }
           }
         }
@@ -181,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (data.children !== null) {
         // Make sure all children are kept
         for (let child in data.children) {
-            checkIfNodeShouldBeKept(data.children[child], filterBy);
+            checkIfNodeShouldBeKept(data.children[child], undefined);
         }
       }
 
