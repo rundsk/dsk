@@ -5,7 +5,7 @@
 Using Design System Kit (DSK) you quickly organize components into a
 browsable and live-searchable component library.
 
-Hirachies between components are created using plain simple directories. Adding
+Hierachies between components are created using plain simple directories. Adding
 documentation is as easy as dropping a Markdown formatted file into such a
 directory.
 
