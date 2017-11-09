@@ -9,6 +9,8 @@ Hirachies between components are created using plain simple directories. Adding
 documentation is as easy as dropping a Markdown formatted file into such a
 directory.
 
+![screenshot](https://atelierdisko.de/assets/app/img/github_dsk.png)
+
 ## Status
 
 DSK is currently in development and **should not yet be considered for general production use**. 
