@@ -13,6 +13,32 @@ document.addEventListener('DOMContentLoaded', function() {
   let search = $1('.search-field');
   let data = {};
 
+  // Gets the tree and creates the nav structure
+  fetch('/api/tree').then((res) => {
+    return res.json();
+  }).then((json) => {
+    data = json.data.nodeList;
+    renderNav(data);
+  });
+
+  // Loads the node based on url
+  let handleUrl = function(url) {
+    fetch(url).then((res) => {
+      return res.text();
+    }).then((html) => {
+      $1('main').innerHTML = html;
+      handleKeywords();
+    });
+  };
+
+  // Initial check for route and load node
+  if (window.location.pathname !== '/') {
+    let url = window.location.protocol + '//' +
+      window.location.host + '/tree' +
+      window.location.pathname;
+    handleUrl(url);
+  }
+
   // Runs the search from the input field
   let handleSearch = function(ev) {
     if (this.value !== "") {
@@ -40,14 +66,17 @@ document.addEventListener('DOMContentLoaded', function() {
   $1('.search-clear').addEventListener("click", clearSearch);
 
   // Loads the node when a link the nav is clicked
+  // and updates session history (uri)
   let handleNav = function(ev) {
-      ev.preventDefault();
-      fetch(this.href).then((res) => {
-        return res.text();
-      }).then((html) => {
-        $1('main').innerHTML = html;
-        handleKeywords();
-      });
+    ev.preventDefault();
+    fetch(this.href).then((res) => {
+      return res.text();
+    }).then((html) => {
+      let uri = this.href.split('tree').pop();
+      history.pushState(null, '', uri);
+      $1('main').innerHTML = html;
+      handleKeywords();
+    });
   };
 
   // Calls the search when a keyword is clicked
@@ -61,14 +90,6 @@ document.addEventListener('DOMContentLoaded', function() {
       k.addEventListener("click", handleKeywordClick);
     }
   };
-
-  // Gets the tree and creates the nav structure
-  fetch('/api/tree').then((res) => {
-    return res.json();
-  }).then((json) => {
-    data = json.data.nodeList;
-    renderNav(data);
-  });
 
   // Runs the search and rebuilds the nav
   let runSearch = function(data, query) {
