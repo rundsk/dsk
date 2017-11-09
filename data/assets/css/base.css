@@ -9,10 +9,10 @@
   --color-white: white;
   --color-blue: #0E26FC;
   --color-cyan: #52D0AF;
-  --color-black: #3D3D3D;
-  --color-lightgray: #F8F8F8;
-  --color-lightgray2: #848484;
-  --color-midgray: #CCC;
+  --color-black: #3D3D3D; /* 24% */
+  --color-darkgray: #848484; /* 52% */
+  --color-midgray: #CCC; /* 80% */
+  --color-lightgray: #F8F8F8; /* 97% */
 }
 
 /* Reset */
@@ -276,7 +276,7 @@ h1 {
 
 .text h2 {
   font-size: 12px;
-  color: var(--color-lightgray2);
+  color: var(--color-darkgray);
   text-transform: uppercase;
   letter-spacing: 0.1rem;
   margin-top: 3rem;
@@ -332,7 +332,7 @@ h1 {
 
 .text table th {
   font-size: 12px;
-  color: var(--color-lightgray2);
+  color: var(--color-darkgray);
   text-transform: uppercase;
   letter-spacing: 0.1rem;
 }
