@@ -329,10 +329,3 @@ h1 {
 .demos .component-stage {
   margin: 0;
 }
-
-/*.general-doc a::before {
- content: "→";
- display: inline-block;
- color: #B2B2B2;
- border-bottom: none;
-}*/
