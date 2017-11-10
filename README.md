@@ -2,11 +2,14 @@
 
 ## Abstract
 
-Design System Kit is a tool in the sprit of Storybook and Styleguidist.
+Using Design System Kit (DSK) you quickly organize components into a
+browsable and live-searchable component library.
 
-Component design definitions are organized in simple directories. Adding
-documentation is as easy as adding a Markdown formatted file to a component's
+Hierachies between components are created using plain simple directories. Adding
+documentation is as easy as dropping a Markdown formatted file into such a
 directory.
+
+![screenshot](https://atelierdisko.de/assets/app/img/github_dsk.png)
 
 ## Status
 

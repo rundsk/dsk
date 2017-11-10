@@ -40,19 +40,11 @@ func main() {
 		log.Fatalf("too many arguments given, expecting exactly 0 or 1")
 	}
 
-	if len(os.Args) == 2 {
-		root = os.Args[1]
-	} else {
-		root, _ = os.Getwd()
-	}
-	root, err := filepath.Abs(root)
+	here, err := detectRoot()
 	if err != nil {
 		log.Fatal(err)
 	}
-	root, err = filepath.EvalSymlinks(root)
-	if err != nil {
-		log.Fatal(err)
-	}
+	root = here // assign to global
 	log.Printf("using %s as root directory", root)
 
 	sigc = make(chan os.Signal, 1)
