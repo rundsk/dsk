@@ -5,9 +5,8 @@
 Using Design System Kit (DSK) you quickly organize components into a
 browsable and live-searchable component library.
 
-Hierachies between components are created using plain simple directories. Adding
-documentation is as easy as dropping a Markdown formatted file into such a
-directory.
+Hierachies between components are established using plain simple directories. Adding
+documentation is as easy as creating a Markdown formatted file to a directory inside the _design definitions tree_.
 
 ![screenshot](https://atelierdisko.de/assets/app/img/github_dsk.png)
 
@@ -25,43 +24,12 @@ curl -L https://github.com/atelierdisko/dsk/releases/download/v0.5.0/dsk-darwin-
 chmod +x dsk
 ```
 
-Now run the `dsk` command pointing it to the directory that contains your _design definitions tree_.
+Now run the `dsk` command pointing it to the directory that contains your design definitions tree.
 ```
 ./dsk example
 ```
 
 Finally [open the Web Application in your browser](http://localhost:8080).
-
-## Use it with [Create React App](https://github.com/facebookincubator/create-react-app) 
-
-After creating the react app, Modify the entry point in `src/index.js`. When
-loaded in DSK it must provide a `renderComponent()` function. This global
-function is the only little glue code required. 
-
-```javascript
-window.renderComponent = function(root, name, props) {
-  return import('./' + name).then(c => {
-    ReactDOM.render(React.createElement(c.default, props), root);
-  });
-};
-```
-
-Using the `INSIDE_DSK` constant, it's possible to conditionally activate certain
-default behavior while developing and deactivate it when embedded in DSK.
-
-```javascript
-if (typeof INSIDE_DSK === "undefined") {
-  ReactDOM.render(<App />, document.getElementById('root'));
-  registerServiceWorker();
-}
-```
-
-When ready, create the bundle and copy it into our DSK tree.
-
-```
-$ npm run build 
-$ cp build/static/*/main*.{css,js} example/DataEntry/TextField/Password/
-```
 
 ## The Design Definitions Tree
 
@@ -117,6 +85,37 @@ Possible configuration options are:
    the default one.
 - `demos`: An object, which defines variations of the component. The object's
   keys are the names of the variations, the corresponding values hold property sets.
+
+## Use it with [Create React App](https://github.com/facebookincubator/create-react-app) 
+
+After creating the react app, Modify the entry point in `src/index.js`. When
+loaded in DSK it must provide a `renderComponent()` function. This global
+function is the only little glue code required. 
+
+```javascript
+window.renderComponent = function(root, name, props) {
+  return import('./' + name).then(c => {
+    ReactDOM.render(React.createElement(c.default, props), root);
+  });
+};
+```
+
+Using the `INSIDE_DSK` constant, it's possible to conditionally activate certain
+default behavior while developing and deactivate it when embedded in DSK.
+
+```javascript
+if (typeof INSIDE_DSK === "undefined") {
+  ReactDOM.render(<App />, document.getElementById('root'));
+  registerServiceWorker();
+}
+```
+
+When ready, create the bundle and copy it into our definitions tree.
+
+```
+$ npm run build 
+$ cp build/static/*/main*.{css,js} example/DataEntry/TextField/Password/
+```
 
 ## Development
 
