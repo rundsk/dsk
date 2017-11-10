@@ -143,10 +143,11 @@ document.addEventListener('DOMContentLoaded', function() {
             let keepChild = checkIfNodeShouldBeKept(data.children[child], filterBy);
             if (keepChild) {
               keep = true;
+              data.keep = true;
             }
         }
 
-        // If this parent node itself is in the searchResults, it should be kept
+        // If this parent node itself is in the searchResults, it should be kept (with all its children)
         if (filterBy && data.url !== "/") {
           for (let i of filterBy) {
             if (i.url == data.url) {
