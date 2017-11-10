@@ -5,8 +5,8 @@
 Using Design System Kit (DSK) you quickly organize components into a
 browsable and live-searchable component library.
 
-Hierachies between components are established using plain simple directories. Adding
-documentation is as easy as creating a Markdown formatted file to a directory inside the _design definitions tree_.
+Hierachies between components are established using plain simple directories. Creating
+documentation is as easy as adding a Markdown formatted file to a directory inside the _design definitions tree_.
 
 ![screenshot](https://atelierdisko.de/assets/app/img/github_dsk.png)
 
