@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
             let keepChild = checkIfNodeShouldBeKept(node.children[child], filterBy);
             if (keepChild) {
               keep = true;
-              data.keep = true;
+              node.keep = true;
             }
         }
 
