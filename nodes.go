@@ -18,8 +18,7 @@ type NodeTree struct {
 	Root *Node `json:"root"`
 }
 
-// Recursively crawls the given root directory, constructing a flat list
-// of nodes.
+// Recursively crawls the given root directory, constructing a tree of nodes.
 func NewNodeTreeFromPath(root string) (*NodeTree, error) {
 	nodes := make(map[string]*Node)
 
