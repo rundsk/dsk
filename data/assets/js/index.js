@@ -38,7 +38,9 @@ document.addEventListener('DOMContentLoaded', function() {
     tree = json.data;
     list = flattenTree(tree.root);
 
-    renderNav(tree);
+    // Get the query from the current window path (handleSearchWithQuery will render the Nav)
+    let searchQuery = window.location.search.substring(1);
+    handleSearchWithQuery(searchQuery);
   });
 
   // Loads the node based on url
@@ -51,16 +53,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   };
 
-  // Initial check for route and load node
-  if (window.location.pathname !== '/') {
-    let url = window.location.protocol + '//' +
-      window.location.host + '/tree' +
-      window.location.pathname;
-    handleUrl(url);
-  }
-
   // Runs the search from the input field
   let handleSearch = function(ev) {
+    let uri = window.location.origin + window.location.pathname + "?" + this.value;
+    history.replaceState(null, '', uri);
+
     if (this.value !== "") {
       runSearch(list, this.value);
     } else {
@@ -70,7 +67,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Runs the search with a given query
   let handleSearchWithQuery = function(q) {
+    let uri = window.location.origin + window.location.pathname + "?" + q;
+    history.replaceState(null, '', uri);
+
     search.value = q;
+
     if (q !== "") {
       runSearch(list, q);
     } else {
@@ -86,6 +87,14 @@ document.addEventListener('DOMContentLoaded', function() {
   search.addEventListener("input", handleSearch);
   $1('.search-clear').addEventListener("click", clearSearch);
 
+  // Initial check for route and load node
+  if (window.location.pathname !== '/') {
+    let url = window.location.protocol + '//' +
+      window.location.host + '/tree' +
+      window.location.pathname;
+    handleUrl(url);
+  }
+
   // Loads the node when a link the nav is clicked
   // and updates session history (uri)
   let handleNav = function(ev) {
@@ -93,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch(this.href).then((res) => {
       return res.text();
     }).then((html) => {
-      let uri = this.href.split('tree').pop();
+      let uri = this.href.split('tree').pop() + window.location.search;
       history.pushState(null, '', uri);
       $1('main').innerHTML = html;
       handleKeywords();
