@@ -18,10 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function flattenTree(node) {
     let results = [];
 
-    if (!node.children) {
-      return results;
-    }
-    for (let child of node.children) {
+    for (let child of node.children || []) {
       results.push(child);
       results = results.concat(flattenTree(child));
     }
@@ -39,8 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
     list = flattenTree(tree.root);
 
     // Get the query from the current window path (handleSearchWithQuery will render the Nav)
-    let searchQuery = window.location.search.substring(1);
-    handleSearchWithQuery(searchQuery);
+    handleSearchWithQuery(window.location.search.substring(1));
   });
 
   // Loads the node based on url
@@ -53,8 +49,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   };
 
+  // Initial check for route and load node
+  if (window.location.pathname !== '/') {
+    let url = window.location.protocol + '//' +
+      window.location.host + '/tree' +
+      window.location.pathname;
+    handleUrl(url);
+  }
+
   // Runs the search from the input field
   let handleSearch = function(ev) {
+    // Add query to the url
     let uri = window.location.origin + window.location.pathname + "?" + this.value;
     history.replaceState(null, '', uri);
 
@@ -67,6 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Runs the search with a given query
   let handleSearchWithQuery = function(q) {
+    // Add query to the url
     let uri = window.location.origin + window.location.pathname + "?" + q;
     history.replaceState(null, '', uri);
 
@@ -86,14 +92,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   search.addEventListener("input", handleSearch);
   $1('.search-clear').addEventListener("click", clearSearch);
-
-  // Initial check for route and load node
-  if (window.location.pathname !== '/') {
-    let url = window.location.protocol + '//' +
-      window.location.host + '/tree' +
-      window.location.pathname;
-    handleUrl(url);
-  }
 
   // Loads the node when a link the nav is clicked
   // and updates session history (uri)
@@ -123,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Runs the search and rebuilds the nav
   let runSearch = function(list, query) {
-    let options = {
+    let fuse = new Fuse(list, {
       tokenize: false,
       matchAllTokens: true,
       threshold: 0.1,
@@ -135,13 +133,10 @@ document.addEventListener('DOMContentLoaded', function() {
         "title",
         "url",
         "meta.keywords"
-    ]
-    };
+      ]
+    });
 
-    let fuse = new Fuse(list, options);
-    let result = fuse.search(query);
-
-    renderNav(tree, result);
+    renderNav(tree, fuse.search(query));
   };
 
   // Renders the nav structure
@@ -226,38 +221,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Turns the given data into a "ul li" structure
   let createList = function(node) {
-    if (node.keep !== false) {
-      if (node.children !== null) {
-        let li = document.createElement('li');
-        let a  = document.createElement('a');
+    if (node.keep === false) {
+      return
+    }
 
-        a.href = '/tree/' + node.url;
-        a.innerHTML = node.title;
-        a.addEventListener('click', handleNav);
-        li.appendChild(a);
+    let li = document.createElement('li');
+    let a  = document.createElement('a');
+    a.href = '/tree/' + node.url;
+    a.innerHTML = node.title;
+    a.addEventListener('click', handleNav);
+    li.appendChild(a);
 
-        let ul = document.createElement('ul');
-        li.appendChild(ul);
+    if (node.children === null) {
+      return li;
+    }
 
-        for (var child in node.children) {
-            childList = createList(node.children[child]);
-            if (childList) {
-              ul.appendChild(childList);
-            }
-        }
+    let ul = document.createElement('ul');
+    li.appendChild(ul);
 
-        return li;
-      } else {
-        let li = document.createElement('li');
-        let a  = document.createElement('a');
-
-        a.href = '/tree/' + node.url;
-        a.innerHTML = node.title;
-        a.addEventListener('click', handleNav);
-        li.appendChild(a);
-
-        return li;
+    for (var child in node.children) {
+      var childList = createList(node.children[child]);
+      if (childList) {
+        ul.appendChild(childList);
       }
     }
+
+    return li;
   };
 });
