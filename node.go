@@ -11,13 +11,11 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 
-	"github.com/fatih/color"
 	"github.com/russross/blackfriday"
 )
 
@@ -26,7 +24,6 @@ type Node struct {
 	path     string
 	Title    string   `json:"title"`
 	URL      string   `json:"url"`
-	Parent   *Node    `json:"parent"`
 	Children []*Node  `json:"children"`
 	Meta     NodeMeta `json:"meta"`
 }
@@ -71,46 +68,6 @@ func NewNodeFromPath(path string, root string) (*Node, error) {
 		Title: filepath.Base(path),
 		Meta:  meta,
 	}, nil
-}
-
-// Recursively crawls the given root directory, constructing a flat list
-// of nodes.
-func NewNodeListFromPath(root string) ([]*Node, error) {
-	var nodes []*Node
-
-	err := filepath.Walk(root, func(path string, f os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if f.IsDir() {
-			n, nErr := NewNodeFromPath(path, root)
-			if nErr != nil {
-				red := color.New(color.FgRed).SprintFunc()
-				log.Printf("skipping node: %s", red(nErr))
-			} else {
-				nodes = append(nodes, n)
-			}
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to build node tree in %s: %s", root, err)
-	}
-
-	for _, n := range nodes {
-		for _, sn := range nodes {
-			if filepath.Dir(sn.path) == n.path {
-				n.Children = append(n.Children, sn)
-			}
-			// TODO: When adding parent, the conversion to JSON will create
-			// recursions.
-			// if filepath.Dir(n.path) == sn.path {
-			// 	n.Parent = sn
-			// }
-		}
-	}
-
-	return nodes, nil
 }
 
 // Reads node configuration file when present and returns values. When file

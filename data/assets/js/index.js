@@ -11,14 +11,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
   let nav = $1('.tree-nav');
   let search = $1('.search-field');
-  let data = {};
+
+  let tree = {};
+  let list = {};
+
+  function flattenTree(node) {
+    let results = [];
+
+    if (!node.children) {
+      return results;
+    }
+    for (let child of node.children) {
+      results.push(child);
+      results = results.concat(flattenTree(child));
+    }
+    return results;
+  }
 
   // Gets the tree and creates the nav structure
   fetch('/api/tree').then((res) => {
     return res.json();
   }).then((json) => {
-    data = json.data.nodeList;
-    renderNav(data);
+    // Initialize our primary data structure. Convert tree to list once, so we
+    // don't have to do it each time search is called. Tree is our single source
+    // of truth.
+    tree = json.data;
+    list = flattenTree(tree.root);
+
+    renderNav(tree);
   });
 
   // Loads the node based on url
@@ -42,9 +62,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Runs the search from the input field
   let handleSearch = function(ev) {
     if (this.value !== "") {
-      runSearch(data, this.value);
+      runSearch(list, this.value);
     } else {
-      renderNav(data);
+      renderNav(tree);
     }
   };
 
@@ -52,9 +72,9 @@ document.addEventListener('DOMContentLoaded', function() {
   let handleSearchWithQuery = function(q) {
     search.value = q;
     if (q !== "") {
-      runSearch(data, q);
+      runSearch(list, q);
     } else {
-      renderNav(data);
+      renderNav(tree);
     }
   };
 
@@ -93,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   // Runs the search and rebuilds the nav
-  let runSearch = function(data, query) {
+  let runSearch = function(list, query) {
     let options = {
       tokenize: false,
       matchAllTokens: true,
@@ -109,19 +129,19 @@ document.addEventListener('DOMContentLoaded', function() {
     ]
     };
 
-    let fuse = new Fuse(data, options);
+    let fuse = new Fuse(list, options);
     let result = fuse.search(query);
 
-    renderNav(data, result);
+    renderNav(tree, result);
   };
 
   // Renders the nav structure
-  let renderNav = function(data, searchResult) {
+  let renderNav = function(tree, searchResult) {
     nav.innerHTML = '';
 
-    data[0].keep = checkIfNodeShouldBeKept(data[0], searchResult);
+    tree.root.keep = checkIfNodeShouldBeKept(tree.root, searchResult);
 
-    let list = createList(data[0]);
+    let list = createList(tree.root);
     let ul = document.createElement('ul');
 
     // Append list withouth root node (a bit hacky)
@@ -132,15 +152,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // If a searchResult is given, checks for each node if it exists in
   // the searchResult and should therefore be kept.
-  let checkIfNodeShouldBeKept = function(data, filterBy) {
+  let checkIfNodeShouldBeKept = function(node, filterBy) {
     var keep = false;
 
     if (filterBy !== undefined) {
-      if (data.children !== null) {
+      if (node.children !== null) {
 
         // Iterate over children, if one of the children should be kept, this node should be kept
-        for (var child in data.children) {
-            let keepChild = checkIfNodeShouldBeKept(data.children[child], filterBy);
+        for (var child in node.children) {
+            let keepChild = checkIfNodeShouldBeKept(node.children[child], filterBy);
             if (keepChild) {
               keep = true;
               data.keep = true;
@@ -148,34 +168,34 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // If this parent node itself is in the searchResults, it should be kept (with all its children)
-        if (filterBy && data.url !== "/") {
+        if (filterBy && node.url !== "/") {
           for (let i of filterBy) {
-            if (i.url == data.url) {
+            if (i.url == node.url) {
               keep = true;
 
-              for (let child in data.children) {
-                  checkIfNodeShouldBeKept(data.children[child], undefined);
+              for (let child in node.children) {
+                  checkIfNodeShouldBeKept(node.children[child], undefined);
               }
             }
           }
         }
 
-        data.keep = keep;
+        node.keep = keep;
         return keep;
       } else {
         // If this leaf node itself is in the searchResults, it should be kept
-        if (filterBy && data.url !== "/") {
+        if (filterBy && node.url !== "/") {
           for (let i of filterBy) {
-            if (i.url == data.url) {
+            if (i.url == node.url) {
               keep = true;
             }
           }
 
           if (keep === true) {
-            data.keep = true;
+            node.keep = true;
             return true;
           } else {
-            data.keep = false;
+            node.keep = false;
             return false;
           }
         }
@@ -183,35 +203,35 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     } else {
       // When no searchResult is given, all nodes should be kept.
-      if (data.children !== null) {
+      if (node.children !== null) {
         // Make sure all children are kept
-        for (let child in data.children) {
-            checkIfNodeShouldBeKept(data.children[child], undefined);
+        for (let child in node.children) {
+            checkIfNodeShouldBeKept(node.children[child], undefined);
         }
       }
 
-      data.keep = true;
+      node.keep = true;
       return true;
     }
   };
 
   // Turns the given data into a "ul li" structure
-  let createList = function(data) {
-    if (data.keep !== false) {
-      if (data.children !== null) {
+  let createList = function(node) {
+    if (node.keep !== false) {
+      if (node.children !== null) {
         let li = document.createElement('li');
         let a  = document.createElement('a');
 
-        a.href = '/tree/' + data.url;
-        a.innerHTML = data.title;
+        a.href = '/tree/' + node.url;
+        a.innerHTML = node.title;
         a.addEventListener('click', handleNav);
         li.appendChild(a);
 
         let ul = document.createElement('ul');
         li.appendChild(ul);
 
-        for (var child in data.children) {
-            childList = createList(data.children[child]);
+        for (var child in node.children) {
+            childList = createList(node.children[child]);
             if (childList) {
               ul.appendChild(childList);
             }
@@ -222,8 +242,8 @@ document.addEventListener('DOMContentLoaded', function() {
         let li = document.createElement('li');
         let a  = document.createElement('a');
 
-        a.href = '/tree/' + data.url;
-        a.innerHTML = data.title;
+        a.href = '/tree/' + node.url;
+        a.innerHTML = node.title;
         a.addEventListener('click', handleNav);
         li.appendChild(a);
 

@@ -139,27 +139,31 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 // Handles this URL:
 //   /api/tree
 func apiHandler(w http.ResponseWriter, r *http.Request) {
+	wr := jsend.Wrap(w)
 	path := r.URL.Path[len("/api/"):]
 
 	// Security: Although path is not yet used for file access, we check it, to prevent
 	// programmer mistakenly opening a security hole when the code section below is expanded
 	// and the path then used.
 	if err := checkSafePath(path, root); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		wr.
+			Status(http.StatusBadRequest).
+			Message(err.Error()).
+			Send()
 		return
 	}
 
-	wr := jsend.Wrap(w)
-
 	if path == "tree" {
-		nodeList, _ := NewNodeListFromPath(root)
-		data := struct {
-			NodeList []*Node `json:"nodeList"`
-		}{
-			NodeList: nodeList,
+		tree, err := NewNodeTreeFromPath(root)
+		if err != nil {
+			wr.
+				Status(http.StatusInternalServerError).
+				Message(err.Error()).
+				Send()
+			return
 		}
 		wr.
-			Data(data).
+			Data(tree).
 			Status(201).
 			Send()
 		return
