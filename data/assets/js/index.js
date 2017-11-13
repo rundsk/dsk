@@ -157,65 +157,49 @@ document.addEventListener('DOMContentLoaded', function() {
   // If a searchResult is given, checks for each node if it exists in
   // the searchResult and should therefore be kept.
   let checkIfNodeShouldBeKept = function(node, filterBy) {
-    var keep = false;
-
-    if (filterBy !== undefined) {
-      if (node.children !== null) {
-
-        // Iterate over children, if one of the children should be kept, this node should be kept
-        for (var child in node.children) {
-            let keepChild = checkIfNodeShouldBeKept(node.children[child], filterBy);
-            if (keepChild) {
-              keep = true;
-              node.keep = true;
-            }
-        }
-
-        // If this parent node itself is in the searchResults, it should be kept (with all its children)
-        if (filterBy && node.url !== "/") {
-          for (let i of filterBy) {
-            if (i.url == node.url) {
-              keep = true;
-
-              for (let child in node.children) {
-                  checkIfNodeShouldBeKept(node.children[child], undefined);
-              }
-            }
-          }
-        }
-
-        node.keep = keep;
-        return keep;
-      } else {
-        // If this leaf node itself is in the searchResults, it should be kept
-        if (filterBy && node.url !== "/") {
-          for (let i of filterBy) {
-            if (i.url == node.url) {
-              keep = true;
-            }
-          }
-
-          if (keep === true) {
-            node.keep = true;
-            return true;
-          } else {
-            node.keep = false;
-            return false;
-          }
-        }
-
-      }
-    } else {
+    if (filterBy === undefined) {
       // When no searchResult is given, all nodes should be kept.
       if (node.children !== null) {
-        // Make sure all children are kept
         for (let child in node.children) {
             checkIfNodeShouldBeKept(node.children[child], undefined);
         }
       }
 
-      node.keep = true;
-      return true;
+      return node.keep = true;
+    } else {
+      if (node.children === null) {
+        // If this leaf node itself is in the searchResults, it should be kept
+        for (let i of filterBy) {
+          if (i.url == node.url) {
+            return node.keep = true;
+          }
+        }
+
+        return node.keep = false;
+      } else {
+        // If this parent node itself is in the searchResults, it should be kept (with all its children)
+        for (let i of filterBy) {
+          if (i.url == node.url) {
+            for (let child in node.children) {
+                checkIfNodeShouldBeKept(node.children[child], undefined);
+            }
+
+            return node.keep = true;
+          }
+        }
+
+        // Iterate over children, if one of the children should be kept, this node should be kept
+        var keepNode = false;
+
+        for (var child in node.children) {
+            let keepChild = checkIfNodeShouldBeKept(node.children[child], filterBy);
+            if (keepChild) {
+              keepNode = true;
+            }
+        }
+
+        return node.keep = keepNode;
+      }
     }
   };
 
