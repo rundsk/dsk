@@ -165,17 +165,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
 
-      return node.keep = true;
+      return (node.keep = true);
     } else {
       if (node.children === null) {
         // If this leaf node itself is in the searchResults, it should be kept
         for (let i of filterBy) {
           if (i.url == node.url) {
-            return node.keep = true;
+            return (node.keep = true);
           }
         }
 
-        return node.keep = false;
+        return (node.keep = false);
       } else {
         // If this parent node itself is in the searchResults, it should be kept (with all its children)
         for (let i of filterBy) {
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 checkIfNodeShouldBeKept(node.children[child], undefined);
             }
 
-            return node.keep = true;
+            return (node.keep = true);
           }
         }
 
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        return node.keep = keepNode;
+        return (node.keep = keepNode);
       }
     }
   };
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Turns the given data into a "ul li" structure
   let createList = function(node) {
     if (node.keep === false) {
-      return
+      return;
     }
 
     let li = document.createElement('li');
