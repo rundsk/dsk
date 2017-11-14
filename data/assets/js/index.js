@@ -12,32 +12,30 @@ document.addEventListener('DOMContentLoaded', function() {
   let nav = $1('.tree-nav');
   let search = $1('.search-field');
 
-  let tree = {};
-  let list = {};
+  let tree = new Tree();
 
-  function flattenTree(node) {
-    let results = [];
-
-    for (let child of node.children || []) {
-      results.push(child);
-      results = results.concat(flattenTree(child));
-    }
-    return results;
-  }
-
-  // Gets the tree and creates the nav structure
-  fetch('/api/tree').then((res) => {
-    return res.json();
-  }).then((json) => {
-    // Initialize our primary data structure. Convert tree to list once, so we
-    // don't have to do it each time search is called. Tree is our single source
-    // of truth.
-    tree = json.data;
-    list = flattenTree(tree.root);
-
-    // Get the query from the current window path (handleSearchWithQuery will render the Nav)
-    handleSearchWithQuery(window.location.search.substring(1));
+  let fuse = new Fuse([], {
+    tokenize: false,
+    matchAllTokens: true,
+    threshold: 0.1,
+    location: 0,
+    distance: 100,
+    maxPatternLength: 32,
+    minMatchCharLength: 1,
+    keys: [
+      "title",
+      "url",
+      "meta.keywords"
+    ]
   });
+
+  // Gets the tree and creates the nav structure.
+  // Get the query from the current window path (handleSearchWithQuery will render the Nav).
+  tree.sync()
+    .then(() => {
+      fuse.setCollection(tree.flatten());
+      handleSearchWithQuery(window.location.search.substring(1));
+    });
 
   // Loads the node based on url
   let handleUrl = function(url) {
@@ -64,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
     history.replaceState(null, '', uri);
 
     if (this.value !== "") {
-      runSearch(list, this.value);
+      renderNav(tree, fuse.search(this.value));
     } else {
       renderNav(tree);
     }
@@ -79,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
     search.value = q;
 
     if (q !== "") {
-      runSearch(list, q);
+      renderNav(tree, fuse.search(q));
     } else {
       renderNav(tree);
     }
@@ -119,89 +117,23 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   };
 
-  // Runs the search and rebuilds the nav
-  let runSearch = function(list, query) {
-    let fuse = new Fuse(list, {
-      tokenize: false,
-      matchAllTokens: true,
-      threshold: 0.1,
-      location: 0,
-      distance: 100,
-      maxPatternLength: 32,
-      minMatchCharLength: 1,
-      keys: [
-        "title",
-        "url",
-        "meta.keywords"
-      ]
-    });
-
-    renderNav(tree, fuse.search(query));
-  };
-
   // Renders the nav structure
-  let renderNav = function(tree, searchResult) {
+  let renderNav = function(tree, searchResults) {
     nav.innerHTML = '';
+    var list;
 
-    tree.root.keep = checkIfNodeShouldBeKept(tree.root, searchResult);
-
-    let list = createList(tree.root);
-    let ul = document.createElement('ul');
-
-    // Append list withouth root node (a bit hacky)
+    if (searchResults) {
+      list = createList(tree.filteredBy(searchResults).root);
+    } else {
+      // When none selected, all nodes should be kept, resets view.
+      list = createList(tree.root);
+    }
     if (list) {
+      // Append list withouth root node.
       nav.appendChild(list.childNodes[1]);
     }
   };
 
-  // If a searchResult is given, checks for each node if it exists in
-  // the searchResult and should therefore be kept.
-  let checkIfNodeShouldBeKept = function(node, filterBy) {
-    if (filterBy === undefined) {
-      // When no searchResult is given, all nodes should be kept.
-      if (node.children !== null) {
-        for (let child in node.children) {
-            checkIfNodeShouldBeKept(node.children[child], undefined);
-        }
-      }
-
-      return (node.keep = true);
-    } else {
-      if (node.children === null) {
-        // If this leaf node itself is in the searchResults, it should be kept
-        for (let i of filterBy) {
-          if (i.url == node.url) {
-            return (node.keep = true);
-          }
-        }
-
-        return (node.keep = false);
-      } else {
-        // If this parent node itself is in the searchResults, it should be kept (with all its children)
-        for (let i of filterBy) {
-          if (i.url == node.url) {
-            for (let child in node.children) {
-                checkIfNodeShouldBeKept(node.children[child], undefined);
-            }
-
-            return (node.keep = true);
-          }
-        }
-
-        // Iterate over children, if one of the children should be kept, this node should be kept
-        var keepNode = false;
-
-        for (var child in node.children) {
-            let keepChild = checkIfNodeShouldBeKept(node.children[child], filterBy);
-            if (keepChild) {
-              keepNode = true;
-            }
-        }
-
-        return (node.keep = keepNode);
-      }
-    }
-  };
 
   // Turns the given data into a "ul li" structure
   let createList = function(node) {
@@ -215,10 +147,6 @@ document.addEventListener('DOMContentLoaded', function() {
     a.innerHTML = node.title;
     a.addEventListener('click', handleNav);
     li.appendChild(a);
-
-    if (node.children === null) {
-      return li;
-    }
 
     let ul = document.createElement('ul');
     li.appendChild(ul);

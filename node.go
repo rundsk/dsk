@@ -63,10 +63,13 @@ func NewNodeFromPath(path string, root string) (*Node, error) {
 	}
 
 	return &Node{
-		path:  path,
-		URL:   url,
-		Title: filepath.Base(path),
-		Meta:  meta,
+		path: path,
+		URL:  url,
+		// Initialize, so JSON marshalling turns this into `[]` instead of
+		// `null` for easier iteration.
+		Children: []*Node{},
+		Title:    filepath.Base(path),
+		Meta:     meta,
 	}, nil
 }
 
