@@ -365,9 +365,10 @@ h1 {
 
 .text code {
   background-color: var(--color-semilightgray);
-  display: inline-block;
+  border: 3px solid var(--color-semilightgray);
+  border-left-width: 4px;
+  border-right-width: 4px;
   border-radius: 3px;
-  padding: 0 4px;
   font-family: "SF Mono", "Monaco", monospace;
   font-size: .9em;
 }
