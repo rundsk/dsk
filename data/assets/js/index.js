@@ -146,6 +146,11 @@ document.addEventListener('DOMContentLoaded', function() {
     a.href = '/tree/' + node.url;
     a.innerHTML = node.title;
     a.addEventListener('click', handleNav);
+
+    if (node.isGhost) {
+      a.classList.add('ghosted');
+    }
+
     li.appendChild(a);
 
     let ul = document.createElement('ul');

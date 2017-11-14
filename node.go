@@ -26,6 +26,9 @@ type Node struct {
 	URL      string   `json:"url"`
 	Children []*Node  `json:"children"`
 	Meta     NodeMeta `json:"meta"`
+	// Ghosted nodes are nodes that have incomplete information, for
+	// these nodes not all methods are guaranteed to succeed.
+	IsGhost bool `json:"isGhost"`
 }
 
 // Meta data as specified in a node configuration file.
@@ -47,7 +50,9 @@ const (
 	APIDocBasename     = "api.md"
 )
 
-// Constructs a new node using its path in the filesystem.
+// Constructs a new node using its path in the filesystem. Returns a
+// node instance even if errors happened. In which case the node will
+// be flagged as "ghost" node.
 func NewNodeFromPath(path string, root string) (*Node, error) {
 	var url string
 
@@ -57,20 +62,24 @@ func NewNodeFromPath(path string, root string) (*Node, error) {
 		url = strings.TrimSuffix(strings.TrimPrefix(path, root+"/"), "/")
 	}
 
-	meta, err := parseNodeConfig(path)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Node{
+	n := &Node{
 		path: path,
 		URL:  url,
 		// Initialize, so JSON marshalling turns this into `[]` instead of
 		// `null` for easier iteration.
 		Children: []*Node{},
 		Title:    filepath.Base(path),
-		Meta:     meta,
-	}, nil
+		IsGhost:  true,
+	}
+
+	meta, err := parseNodeConfig(path)
+	if err != nil {
+		return n, err
+	}
+	n.Meta = meta
+	n.IsGhost = false
+
+	return n, nil
 }
 
 // Reads node configuration file when present and returns values. When file

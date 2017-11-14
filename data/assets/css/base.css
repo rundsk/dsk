@@ -139,6 +139,10 @@ aside nav ul li a:hover {
   color: var(--color-blue);
 }
 
+aside .ghosted {
+  color: var(--color-midgray);
+}
+
 /* Top Level ul */
 
 aside nav > ul {

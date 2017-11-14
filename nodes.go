@@ -30,8 +30,7 @@ func NewNodeTreeFromPath(root string) (*NodeTree, error) {
 			n, nErr := NewNodeFromPath(path, root)
 			if nErr != nil {
 				red := color.New(color.FgRed).SprintFunc()
-				log.Printf("skipping node: %s", red(nErr))
-				return nil
+				log.Printf("ghosting node: %s", red(nErr))
 			}
 			nodes[path] = n
 		}
