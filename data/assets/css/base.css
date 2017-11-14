@@ -330,6 +330,7 @@ h1 {
 .text table td, .text table th {
   text-align: left;
   padding: 1rem 4rem 1rem 0;
+  vertical-align: top;
 }
 
 .text table td:last-child, .text table th:last-child {
@@ -364,7 +365,7 @@ h1 {
   border-radius: 3px;
   padding: 0 4px;
   font-family: "SF Mono", "Monaco", monospace;
-  font-size: .95em;
+  font-size: .9em;
 }
 
 .demos .component-stage {
