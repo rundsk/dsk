@@ -365,12 +365,13 @@ h1 {
 
 .text code {
   background-color: var(--color-semilightgray);
-  border: 3px solid var(--color-semilightgray);
-  border-left-width: 4px;
-  border-right-width: 4px;
+  border: 2px solid var(--color-semilightgray);
+  border-left-width: 3px;
+  border-right-width: 3px;
   border-radius: 3px;
   font-family: "SF Mono", "Monaco", monospace;
   font-size: .9em;
+  line-height: 1.2em;
 }
 
 .demos .component-stage {
