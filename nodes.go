@@ -20,7 +20,7 @@ type NodeTree struct {
 
 // Recursively crawls the given root directory, constructing a tree of nodes.
 func NewNodeTreeFromPath(root string) (*NodeTree, error) {
-	nodes := make(map[string]*Node)
+	var nodes []*Node
 
 	err := filepath.Walk(root, func(path string, f os.FileInfo, err error) error {
 		if err != nil {
@@ -32,7 +32,7 @@ func NewNodeTreeFromPath(root string) (*NodeTree, error) {
 				red := color.New(color.FgRed).SprintFunc()
 				log.Printf("ghosting node: %s", red(nErr))
 			}
-			nodes[path] = n
+			nodes = append(nodes, n)
 		}
 		return nil
 	})
@@ -47,5 +47,7 @@ func NewNodeTreeFromPath(root string) (*NodeTree, error) {
 			}
 		}
 	}
-	return &NodeTree{nodes[root]}, nil
+
+	// Assume root node is the first, found in tree walk above.
+	return &NodeTree{nodes[0]}, nil
 }
