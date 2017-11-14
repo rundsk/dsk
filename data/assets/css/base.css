@@ -12,6 +12,7 @@
   --color-black: #3D3D3D; /* 24% */
   --color-darkgray: #848484; /* 52% */
   --color-midgray: #CCC; /* 80% */
+  --color-semilightgray: #E6E6E6; /* 90% */
   --color-lightgray: #F8F8F8; /* 97% */
 }
 
@@ -355,6 +356,15 @@ h1 {
   padding: 0;
   border: none;
   border-bottom: 1px dotted var(--color-midgray);
+}
+
+.text code {
+  background-color: var(--color-semilightgray);
+  display: inline-block;
+  border-radius: 3px;
+  padding: 0 4px;
+  font-family: "SF Mono", "Monaco", monospace;
+  font-size: .95em;
 }
 
 .demos .component-stage {
