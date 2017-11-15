@@ -139,6 +139,10 @@ aside nav ul li a:hover {
   color: var(--color-blue);
 }
 
+aside nav ul li a.is-active {
+  color: var(--color-blue);
+}
+
 aside .ghosted {
   color: var(--color-midgray);
 }
@@ -170,6 +174,10 @@ aside nav ul ul li a::before {
 }
 
 aside nav ul ul li:hover > a::before {
+  content: "→";
+}
+
+aside nav ul ul li a.is-active::before {
   content: "→";
 }
 

@@ -35,6 +35,14 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(() => {
       fuse.setCollection(tree.flatten());
       handleSearchWithQuery(window.location.search.substring(1));
+
+      // Initial check for route and load node
+      if (window.location.pathname !== '/') {
+        let url = window.location.protocol + '//' +
+          window.location.host + '/tree' +
+          window.location.pathname;
+        handleUrl(url);
+      }
     });
 
   // Loads the node based on url
@@ -42,18 +50,11 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch(url).then((res) => {
       return res.text();
     }).then((html) => {
+      markNodeInNavAsActiveWithPath(url.split('tree').pop());
       $1('main').innerHTML = html;
       handleKeywords();
     });
   };
-
-  // Initial check for route and load node
-  if (window.location.pathname !== '/') {
-    let url = window.location.protocol + '//' +
-      window.location.host + '/tree' +
-      window.location.pathname;
-    handleUrl(url);
-  }
 
   // Runs the search from the input field
   let handleSearch = function(ev) {
@@ -100,6 +101,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }).then((html) => {
       let url = this.href.split('tree').pop() + window.location.search;
       history.pushState(null, '', url);
+
+      markNodeInNavAsActiveWithPath(this.href.split('tree').pop());
       $1('main').innerHTML = html;
       handleKeywords();
     });
@@ -165,4 +168,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     return li;
   };
+
+  let markNodeInNavAsActiveWithPath = function(path) {
+    for (let a of $('.tree-nav li a')) {
+      a.classList.remove("is-active");
+    }
+
+    $1(".tree-nav li a[href='/tree" + path + "']").classList.add("is-active");
+  }
 });
