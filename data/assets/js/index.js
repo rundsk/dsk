@@ -58,8 +58,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // Runs the search from the input field
   let handleSearch = function(ev) {
     // Add query to the url
-    let uri = window.location.origin + window.location.pathname + "?" + this.value;
-    history.replaceState(null, '', uri);
+    let url = window.location.origin + window.location.pathname + "?" + this.value;
+    history.replaceState(null, '', url);
 
     if (this.value !== "") {
       renderNav(tree, fuse.search(this.value));
@@ -71,8 +71,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // Runs the search with a given query
   let handleSearchWithQuery = function(q) {
     // Add query to the url
-    let uri = window.location.origin + window.location.pathname + "?" + q;
-    history.replaceState(null, '', uri);
+    let url = window.location.origin + window.location.pathname + "?" + q;
+    history.replaceState(null, '', url);
 
     search.value = q;
 
@@ -92,14 +92,14 @@ document.addEventListener('DOMContentLoaded', function() {
   $1('.search-clear').addEventListener("click", clearSearch);
 
   // Loads the node when a link the nav is clicked
-  // and updates session history (uri)
+  // and updates session history (url)
   let handleNav = function(ev) {
     ev.preventDefault();
     fetch(this.href).then((res) => {
       return res.text();
     }).then((html) => {
-      let uri = this.href.split('tree').pop() + window.location.search;
-      history.pushState(null, '', uri);
+      let url = this.href.split('tree').pop() + window.location.search;
+      history.pushState(null, '', url);
       $1('main').innerHTML = html;
       handleKeywords();
     });
