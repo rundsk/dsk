@@ -34,10 +34,10 @@ var (
 
 func main() {
 	whiteOnBlue := color.New(color.FgWhite, color.BgBlue).SprintFunc()
-	log.Printf("starting %s Version %s", whiteOnBlue("DSK"), Version)
+	log.Printf("| Starting %s Version %s", whiteOnBlue(" DSK "), Version)
 
 	if len(os.Args) > 2 {
-		log.Fatalf("too many arguments given, expecting exactly 0 or 1")
+		log.Fatalf("| Too many arguments given, expecting exactly 0 or 1")
 	}
 
 	here, err := detectRoot()
@@ -45,19 +45,19 @@ func main() {
 		log.Fatal(err)
 	}
 	root = here // assign to global
-	log.Printf("using %s as root directory", root)
+	log.Printf("| Using %s as root directory", root)
 
 	sigc = make(chan os.Signal, 1)
 	signal.Notify(sigc, os.Interrupt)
 	go func() {
 		for sig := range sigc {
-			log.Printf("caught %v signal, bye!", sig)
+			log.Printf("| Caught %v signal, bye!", sig)
 			// implement cleanup when necessary
 			os.Exit(1)
 		}
 	}()
 
-	host := flag.String("host", "127.0.0.1", "host IP to bind to")
+	host := flag.String("Host", "127.0.0.1", "host IP to bind to")
 	port := flag.String("port", "8080", "port to bind to")
 	noColor := flag.Bool("no-color", false, "disables color output")
 	flag.Parse()
@@ -69,11 +69,11 @@ func main() {
 	}
 
 	addr := fmt.Sprintf("%s:%s", *host, *port)
-	log.Printf("listening on %s", addr)
+	log.Printf("| Listening on %s", addr)
 
 	green := color.New(color.FgGreen).SprintFunc()
-	log.Printf("please visit: %s", green("http://"+addr))
-	log.Print("hit Ctrl+C to quit")
+	log.Printf("| Please visit: %s", green("http://"+addr))
+	log.Print("| Hit Ctrl+C to quit")
 
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/assets/", assetsHandler)
