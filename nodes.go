@@ -15,17 +15,21 @@ import (
 )
 
 type NodeTree struct {
-	path   string
+	// The absolute root path of the tree.
+	path string
+	// Maps node paths to nodes, for quick lookup.
 	lookup map[string]*Node
-	Root   *Node `json:"root"`
+	// The root node and entry point to the acutal tree.
+	Root *Node `json:"root"`
 }
 
 func NewNodeTreeFromPath(path string) *NodeTree {
 	return &NodeTree{path: path}
 }
 
-// One-way sync: updates tree from file system.
-// Recursively crawls the given root directory, constructing a tree of nodes.
+// One-way sync: updates tree from file system. Recursively crawls
+// the given root directory, constructing a tree of nodes. Does not
+// support symlinks inside the tree.
 func (t *NodeTree) Sync() error {
 	var nodes []*Node
 
@@ -47,8 +51,9 @@ func (t *NodeTree) Sync() error {
 		return fmt.Errorf("failed to walk directory tree %s: %s", root, err)
 	}
 
-	// In the second pass we, add the children to the nodes and build up a
-	// lookup table, as we're already iterating the nodes.
+	// In the second pass we're doing two thing: add the children
+	// to the nodes and build up a lookup table, as we're already
+	// iterating the nodes.
 	lookup := make(map[string]*Node)
 
 	for _, n := range nodes {
@@ -68,6 +73,7 @@ func (t *NodeTree) Sync() error {
 	return nil
 }
 
+// Returns the number of total nodes in the tree.
 func (t NodeTree) TotalNodes() uint16 {
 	return uint16(len(t.lookup))
 }
