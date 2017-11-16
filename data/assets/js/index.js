@@ -34,25 +34,26 @@ document.addEventListener('DOMContentLoaded', function() {
   tree.sync()
     .then(() => {
       fuse.setCollection(tree.flatten());
+
       handleSearchWithQuery(window.location.search.substring(1));
 
       // Initial check for route and load node
       if (window.location.pathname !== '/') {
-        let url = window.location.protocol + '//' +
-          window.location.host + '/tree' +
-          window.location.pathname;
-        handleUrl(url);
+        loadNodeWithPath(window.location.pathname, false);
       }
     });
 
-  // Loads the node based on url
-  let handleUrl = function(url) {
-    fetch(url).then((res) => {
+  // Load the node based on path
+  let loadNodeWithPath = function(path, pushToHistory) {
+    fetch("/tree" + path).then((res) => {
       return res.text();
     }).then((html) => {
-      markNodeInNavAsActiveWithPath(url.split('tree').pop());
+      markNodeInNavAsActiveWithPath(path);
       $1('main').innerHTML = html;
       handleKeywords();
+      if (pushToHistory) {
+        history.pushState(null, '', path + window.location.search);
+      }
     });
   };
 
@@ -96,16 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // and updates session history (url)
   let handleNav = function(ev) {
     ev.preventDefault();
-    fetch(this.href).then((res) => {
-      return res.text();
-    }).then((html) => {
-      let url = this.href.split('tree').pop() + window.location.search;
-      history.pushState(null, '', url);
-
-      markNodeInNavAsActiveWithPath(this.href.split('tree').pop());
-      $1('main').innerHTML = html;
-      handleKeywords();
-    });
+    loadNodeWithPath(this.href.split('8080').pop(), true);
   };
 
   // Calls the search when a keyword is clicked
@@ -146,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let li = document.createElement('li');
     let a  = document.createElement('a');
-    a.href = '/tree/' + node.url;
+    a.href = "/" + node.url;
     a.innerHTML = node.title;
     a.addEventListener('click', handleNav);
 
@@ -174,10 +166,10 @@ document.addEventListener('DOMContentLoaded', function() {
       a.classList.remove("is-active");
     }
 
-    let activeNode = $1(".tree-nav li a[href='/tree" + path + "']").parentNode;
-
+    let activeNode = $1(".tree-nav li a[href='" + path + "']");
+    //let activeNode = undefined;
     if (activeNode) {
-      activeNode.classList.add("is-active");
+      activeNode.parentNode.classList.add("is-active");
     }
   }
 });
