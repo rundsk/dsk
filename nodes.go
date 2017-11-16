@@ -15,14 +15,21 @@ import (
 )
 
 type NodeTree struct {
-	Root *Node `json:"root"`
+	path       string
+	totalNodes uint16
+	Root       *Node `json:"root"`
 }
 
+func NewNodeTreeFromPath(path string) *NodeTree {
+	return &NodeTree{path, 0, &Node{}}
+}
+
+// One-way sync: updates tree from file system.
 // Recursively crawls the given root directory, constructing a tree of nodes.
-func NewNodeTreeFromPath(root string) (*NodeTree, error) {
+func (t *NodeTree) Sync() error {
 	var nodes []*Node
 
-	err := filepath.Walk(root, func(path string, f os.FileInfo, err error) error {
+	err := filepath.Walk(t.path, func(path string, f os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -37,7 +44,7 @@ func NewNodeTreeFromPath(root string) (*NodeTree, error) {
 		return nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to walk directory tree %s: %s", root, err)
+		return fmt.Errorf("failed to walk directory tree %s: %s", root, err)
 	}
 
 	for _, n := range nodes {
@@ -48,6 +55,14 @@ func NewNodeTreeFromPath(root string) (*NodeTree, error) {
 		}
 	}
 
+	// Keep statistics, it's cheap to do it here.
+	t.totalNodes = uint16(len(nodes))
 	// Assume root node is the first, found in tree walk above.
-	return &NodeTree{nodes[0]}, nil
+	t.Root = nodes[0]
+
+	return nil
+}
+
+func (t NodeTree) TotalNodes() uint16 {
+	return t.totalNodes
 }

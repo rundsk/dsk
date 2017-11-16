@@ -28,6 +28,8 @@ var (
 	sigc    chan os.Signal
 	// Absolute path to design definitions root direcrtory.
 	root string
+	// Instance of the design defintions tree.
+	tree *NodeTree
 	// Check for variant suffix i.e. :foo or :foo%20bar.
 	demoRouteRegex = regexp.MustCompile(`^(.+):(.+)$`)
 )
@@ -46,6 +48,12 @@ func main() {
 	}
 	root = here // assign to global
 	log.Printf("| Using %s as root directory", root)
+
+	tree = NewNodeTreeFromPath(here) // assign to global
+	if err := tree.Sync(); err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("| Synced tree with %d total nodes.", tree.TotalNodes())
 
 	sigc = make(chan os.Signal, 1)
 	signal.Notify(sigc, os.Interrupt)
@@ -163,8 +171,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if path == "tree" {
-		tree, err := NewNodeTreeFromPath(root)
-		if err != nil {
+		if err := tree.Sync(); err != nil {
 			wr.
 				Status(http.StatusInternalServerError).
 				Message(err.Error()).
