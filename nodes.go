@@ -15,13 +15,13 @@ import (
 )
 
 type NodeTree struct {
-	path       string
-	totalNodes uint16
-	Root       *Node `json:"root"`
+	path   string
+	lookup map[string]*Node
+	Root   *Node `json:"root"`
 }
 
 func NewNodeTreeFromPath(path string) *NodeTree {
-	return &NodeTree{path, 0, &Node{}}
+	return &NodeTree{path: path}
 }
 
 // One-way sync: updates tree from file system.
@@ -47,7 +47,13 @@ func (t *NodeTree) Sync() error {
 		return fmt.Errorf("failed to walk directory tree %s: %s", root, err)
 	}
 
+	// In the second pass we, add the children to the nodes and build up a
+	// lookup table, as we're already iterating the nodes.
+	lookup := make(map[string]*Node)
+
 	for _, n := range nodes {
+		lookup[n.path] = n
+
 		for _, sn := range nodes {
 			if filepath.Dir(sn.path) == n.path {
 				n.Children = append(n.Children, sn)
@@ -55,32 +61,22 @@ func (t *NodeTree) Sync() error {
 		}
 	}
 
-	// Keep statistics, it's cheap to do it here.
-	t.totalNodes = uint16(len(nodes))
-	// Assume root node is the first, found in tree walk above.
-	t.Root = nodes[0]
+	// Swap late, in event of error we keep the previous state.
+	t.lookup = lookup
+	t.Root = lookup[root]
 
 	return nil
 }
 
 func (t NodeTree) TotalNodes() uint16 {
-	return t.totalNodes
+	return uint16(len(t.lookup))
 }
 
-// Checks if a node with given path (relative to root) exists in the tree.
-func (t NodeTree) HasPath(path string) bool {
-	var check func(n *Node) bool
-
-	check = func(n *Node) bool {
-		if filepath.Join(t.path, path) == n.path {
-			return true
-		}
-		for _, c := range n.Children {
-			if check(c) {
-				return true
-			}
-		}
-		return false
+// Retrieves a node from the tree. The given path must be relative to the
+// root of the tree.
+func (t NodeTree) Get(path string) (*Node, error) {
+	if n, ok := t.lookup[filepath.Join(t.path, path)]; ok {
+		return n, nil
 	}
-	return check(t.Root)
+	return &Node{}, fmt.Errorf("no node with path %s in tree", path)
 }

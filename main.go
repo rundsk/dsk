@@ -115,8 +115,8 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !tree.HasPath(path) {
-		http.Error(w, fmt.Sprintf("no node with path %s in tree", path), http.StatusNotFound)
+	if _, err := tree.Get(path); err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 	if !strings.HasSuffix(r.URL.Path, "/") {
@@ -203,7 +203,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 //   /tree/DisplayData/Table
 //   /tree/DisplayData/Table/Row
 func nodeHandler(w http.ResponseWriter, r *http.Request) {
-	path := filepath.Join(root, r.URL.Path[len("/tree/"):])
+	path := r.URL.Path[len("/tree/"):]
 
 	if err := checkSafePath(path, root); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -215,9 +215,9 @@ func nodeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	n, err := NewNodeFromPath(path, root)
+	n, err := tree.Get(path)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
@@ -251,7 +251,7 @@ func embedHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func embedHandlerCSS(w http.ResponseWriter, r *http.Request) {
-	path := filepath.Join(root, r.URL.Path[len("/embed/"):])
+	path := r.URL.Path[len("/embed/"):]
 
 	if err := checkSafePath(path, root); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -259,9 +259,9 @@ func embedHandlerCSS(w http.ResponseWriter, r *http.Request) {
 	}
 	path = strings.TrimSuffix(path, ".css")
 
-	n, err := NewNodeFromPath(path, root)
+	n, err := tree.Get(path)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
@@ -276,7 +276,7 @@ func embedHandlerCSS(w http.ResponseWriter, r *http.Request) {
 }
 
 func embedHandlerJS(w http.ResponseWriter, r *http.Request) {
-	path := filepath.Join(root, r.URL.Path[len("/embed/"):])
+	path := r.URL.Path[len("/embed/"):]
 
 	if err := checkSafePath(path, root); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -284,9 +284,9 @@ func embedHandlerJS(w http.ResponseWriter, r *http.Request) {
 	}
 	path = strings.TrimSuffix(path, ".js")
 
-	n, err := NewNodeFromPath(path, root)
+	n, err := tree.Get(path)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
@@ -301,7 +301,7 @@ func embedHandlerJS(w http.ResponseWriter, r *http.Request) {
 }
 
 func embedHandlerDemo(w http.ResponseWriter, r *http.Request) {
-	path := filepath.Join(root, r.URL.Path[len("/embed/"):])
+	path := r.URL.Path[len("/embed/"):]
 
 	if err := checkSafePath(path, root); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -313,17 +313,14 @@ func embedHandlerDemo(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	if m := demoRouteRegex.FindStringSubmatch(path); m != nil {
-		n, err = NewNodeFromPath(m[1], root)
-
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+		if _, err = tree.Get(m[1]); err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
 		propSet, _ = n.Demo(m[2]) // Is auto-unescaped.
 	} else {
-		n, err = NewNodeFromPath(path, root)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+		if _, err = tree.Get(path); err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
 	}
