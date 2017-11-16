@@ -51,6 +51,8 @@ document.addEventListener('DOMContentLoaded', function() {
       markNodeInNavAsActiveWithPath(path);
       $1('main').innerHTML = html;
       handleKeywords();
+      handleTextLinks();
+
       if (pushToHistory) {
         history.pushState(null, '', path + window.location.search);
       }
@@ -113,6 +115,19 @@ document.addEventListener('DOMContentLoaded', function() {
   let handleKeywords = function() {
     for (let k of $('.keyword')) {
       k.addEventListener("click", handleKeywordClick);
+    }
+  };
+
+  // Calls the search when a link in text is clicked
+  let handleTextLinkClick = function(ev) {
+    ev.preventDefault();
+    loadNodeWithPath(this.href.split('8080').pop(), true);
+  };
+
+  // Attaches a click-Event to every link in text
+  let handleTextLinks = function() {
+    for (let k of $('.text a')) {
+      k.addEventListener("click", handleTextLinkClick);
     }
   };
 
