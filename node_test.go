@@ -11,13 +11,13 @@ import (
 )
 
 func TestCrumbs(t *testing.T) {
-	n := &Node{URL: "foo/bar/baz"}
+	n := &Node{URL: "foo/bar/baz/"}
 
 	result := n.CrumbURLs()
 	expected := []string{
-		"foo",
-		"foo/bar",
-		"foo/bar/baz",
+		"foo/",
+		"foo/bar/",
+		"foo/bar/baz/",
 	}
 	if !reflect.DeepEqual(result, expected) {
 		t.Logf("%+v != %+v", result, expected)

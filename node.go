@@ -53,13 +53,15 @@ const (
 // Constructs a new node using its path in the filesystem. Returns a
 // node instance even if errors happened. In which case the node will
 // be flagged as "ghost" node.
+//
+// The URL of each node should end with a trailing slash as to allow
+// contained assets to references it as if it was a directory.
 func NewNodeFromPath(path string, root string) (*Node, error) {
 	var url string
-
 	if path == root {
 		url = "/"
 	} else {
-		url = strings.TrimSuffix(strings.TrimPrefix(path, root+"/"), "/")
+		url = strings.TrimPrefix(path, root+"/") + "/"
 	}
 
 	n := &Node{
@@ -191,9 +193,9 @@ func (n Node) APIDoc() (template.HTML, error) {
 func (n Node) CrumbURLs() []string {
 	var urls []string
 
-	parts := strings.Split(n.URL, "/")
+	parts := strings.Split(strings.TrimSuffix(n.URL, "/"), "/")
 	for index, _ := range parts {
-		urls = append(urls, strings.Join(parts[:index+1], "/"))
+		urls = append(urls, strings.Join(parts[:index+1], "/")+"/")
 	}
 	return urls
 }

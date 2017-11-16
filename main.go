@@ -85,7 +85,16 @@ func main() {
 }
 
 // The root page.
+//
+// Handles these kinds of URLs:
+//   /DataEntry/Components/Button
+//   /DataEntry/Components/Button/
+//   /DataEntry/Components/Button/test.png
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+	if !strings.HasSuffix(r.URL.Path, "/") {
+		http.Redirect(w, r, fmt.Sprintf("%s/?%s", r.URL.Path, r.URL.RawQuery), 302)
+		return
+	}
 	t := template.New("index.html")
 
 	tVars := struct {
@@ -179,6 +188,10 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 //   /tree/DisplayData/Table
 //   /tree/DisplayData/Table/Row
 func nodeHandler(w http.ResponseWriter, r *http.Request) {
+	if !strings.HasSuffix(r.URL.Path, "/") {
+		http.Redirect(w, r, r.URL.Path+"/", 302)
+		return
+	}
 	path := filepath.Join(root, r.URL.Path[len("/tree/"):])
 
 	if err := checkSafePath(path, root); err != nil {
