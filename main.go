@@ -25,13 +25,22 @@ import (
 
 var (
 	Version string
-	sigc    chan os.Signal
+
+	sigc chan os.Signal
+
 	// Absolute path to design definitions root direcrtory.
 	root string
+
 	// Instance of the design defintions tree.
 	tree *NodeTree
+
 	// Check for variant suffix i.e. :foo or :foo%20bar.
 	demoRouteRegex = regexp.MustCompile(`^(.+):(.+)$`)
+
+	// Handful of pre-parsed templates.
+	templateIndex = mustPrepareTemplate("index.html")
+	templateNode  = mustPrepareTemplate("node.html")
+	templateStage = mustPrepareTemplate("stage.html")
 )
 
 func main() {
@@ -100,6 +109,7 @@ func main() {
 //   /DataEntry/Components/Button/test.png
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path[len("/"):]
+
 	if err := checkSafePath(path, root); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -109,31 +119,18 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("no node with path %s in tree", path), http.StatusNotFound)
 		return
 	}
-
 	if !strings.HasSuffix(r.URL.Path, "/") {
 		http.Redirect(w, r, fmt.Sprintf("%s/?%s", r.URL.Path, r.URL.RawQuery), 302)
 		return
 	}
-	t := template.New("index.html")
 
 	tVars := struct {
 		ProjectName string
 	}{
 		ProjectName: filepath.Base(root),
 	}
-	html, err := Asset("data/views/index.html")
-	if err != nil {
+	if err := templateIndex.Execute(w, tVars); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	_, err = t.Parse(string(html[:]))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if err := t.Execute(w, tVars); err != nil {
-		log.Fatal(err)
 	}
 }
 
@@ -206,14 +203,15 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 //   /tree/DisplayData/Table
 //   /tree/DisplayData/Table/Row
 func nodeHandler(w http.ResponseWriter, r *http.Request) {
-	if !strings.HasSuffix(r.URL.Path, "/") {
-		http.Redirect(w, r, r.URL.Path+"/", 302)
-		return
-	}
 	path := filepath.Join(root, r.URL.Path[len("/tree/"):])
 
 	if err := checkSafePath(path, root); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if !strings.HasSuffix(r.URL.Path, "/") {
+		http.Redirect(w, r, r.URL.Path+"/", 302)
 		return
 	}
 
@@ -222,26 +220,13 @@ func nodeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	t := template.New("node.html")
 
 	tVars := struct {
 		N *Node
 	}{
 		N: n,
 	}
-	html, err := Asset("data/views/node.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	_, err = t.Parse(string(html[:]))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if err := t.Execute(w, tVars); err != nil {
+	if err := templateNode.Execute(w, tVars); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
@@ -342,7 +327,6 @@ func embedHandlerDemo(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	t := template.New("stage.html")
 
 	mPropSet, _ := json.Marshal(propSet)
 
@@ -353,19 +337,7 @@ func embedHandlerDemo(w http.ResponseWriter, r *http.Request) {
 		N:       n,
 		PropSet: template.JS(mPropSet),
 	}
-	html, err := Asset("data/views/stage.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	_, err = t.Parse(string(html[:]))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if err := t.Execute(w, tVars); err != nil {
+	if err := templateStage.Execute(w, tVars); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
