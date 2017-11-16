@@ -66,3 +66,21 @@ func (t *NodeTree) Sync() error {
 func (t NodeTree) TotalNodes() uint16 {
 	return t.totalNodes
 }
+
+// Checks if a node with given path (relative to root) exists in the tree.
+func (t NodeTree) HasPath(path string) bool {
+	var check func(n *Node) bool
+
+	check = func(n *Node) bool {
+		if filepath.Join(t.path, path) == n.path {
+			return true
+		}
+		for _, c := range n.Children {
+			if check(c) {
+				return true
+			}
+		}
+		return false
+	}
+	return check(t.Root)
+}

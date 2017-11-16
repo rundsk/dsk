@@ -99,6 +99,17 @@ func main() {
 //   /DataEntry/Components/Button/
 //   /DataEntry/Components/Button/test.png
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path[len("/"):]
+	if err := checkSafePath(path, root); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if !tree.HasPath(path) {
+		http.Error(w, fmt.Sprintf("no node with path %s in tree", path), http.StatusNotFound)
+		return
+	}
+
 	if !strings.HasSuffix(r.URL.Path, "/") {
 		http.Redirect(w, r, fmt.Sprintf("%s/?%s", r.URL.Path, r.URL.RawQuery), 302)
 		return
