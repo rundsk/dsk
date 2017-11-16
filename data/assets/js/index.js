@@ -68,6 +68,8 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
       renderNav(tree);
     }
+
+    markNodeInNavAsActiveWithPath(window.location.pathname);
   };
 
   // Runs the search with a given query
@@ -83,6 +85,8 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
       renderNav(tree);
     }
+
+    markNodeInNavAsActiveWithPath(window.location.pathname);
   };
 
   // Clears the search field
