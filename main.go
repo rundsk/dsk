@@ -28,7 +28,7 @@ var (
 
 	sigc chan os.Signal
 
-	// Absolute path to design definitions root direcrtory.
+	// Absolute path to design definitions root directory.
 	root string
 
 	// Instance of the design defintions tree.
@@ -44,53 +44,52 @@ var (
 )
 
 func main() {
-	whiteOnBlue := color.New(color.FgWhite, color.BgBlue).SprintFunc()
-	log.Printf("| Starting %s Version %s", whiteOnBlue(" DSK "), Version)
-
 	if len(os.Args) > 2 {
-		log.Fatalf("| Too many arguments given, expecting exactly 0 or 1")
+		log.Fatalf("Too many arguments given, expecting exactly 0 or 1")
 	}
+
+	host := flag.String("host", "127.0.0.1", "host IP to bind to")
+	port := flag.String("port", "8080", "port to bind to")
+	noColor := flag.Bool("no-color", false, "disables color output")
+	flag.Parse()
+
+	// Color package automatically disables colors when not a TTY. We
+	// don't need to check for an interactive terminal here again.
+	if *noColor {
+		color.NoColor = true
+	}
+	whiteOnBlue := color.New(color.FgWhite, color.BgBlue).SprintFunc()
+	green := color.New(color.FgGreen).SprintFunc()
+
+	log.Printf("Starting %s Version %s", whiteOnBlue(" DSK "), Version)
+
+	sigc = make(chan os.Signal, 1)
+	signal.Notify(sigc, os.Interrupt)
+	go func() {
+		for sig := range sigc {
+			log.Printf("Caught %v signal, bye!", sig)
+			os.Exit(1)
+		}
+	}()
 
 	here, err := detectRoot()
 	if err != nil {
 		log.Fatal(err)
 	}
 	root = here // assign to global
-	log.Printf("| Using %s as root directory", root)
+	log.Printf("Using %s as root directory", root)
 
 	tree = NewNodeTreeFromPath(here) // assign to global
 	if err := tree.Sync(); err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("| Synced tree with %d total nodes.", tree.TotalNodes())
-
-	sigc = make(chan os.Signal, 1)
-	signal.Notify(sigc, os.Interrupt)
-	go func() {
-		for sig := range sigc {
-			log.Printf("| Caught %v signal, bye!", sig)
-			// implement cleanup when necessary
-			os.Exit(1)
-		}
-	}()
-
-	host := flag.String("Host", "127.0.0.1", "host IP to bind to")
-	port := flag.String("port", "8080", "port to bind to")
-	noColor := flag.Bool("no-color", false, "disables color output")
-	flag.Parse()
-
-	// Color package automatically disables colors when not a TTY. We
-	// don't need to do it here.
-	if *noColor {
-		color.NoColor = true
-	}
+	log.Printf("Synced tree with %d total nodes", tree.TotalNodes())
 
 	addr := fmt.Sprintf("%s:%s", *host, *port)
-	log.Printf("| Listening on %s", addr)
+	log.Printf("Listening on %s", addr)
 
-	green := color.New(color.FgGreen).SprintFunc()
-	log.Printf("| Please visit: %s", green("http://"+addr))
-	log.Print("| Hit Ctrl+C to quit")
+	log.Printf("Please visit: %s", green("http://"+addr))
+	log.Print("Hit Ctrl+C to quit")
 
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/assets/", assetsHandler)
