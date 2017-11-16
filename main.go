@@ -214,7 +214,7 @@ func nodeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	n, err := tree.Get(path)
+	n, err := tree.GetSynced(path)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -258,7 +258,7 @@ func embedHandlerCSS(w http.ResponseWriter, r *http.Request) {
 	}
 	path = strings.TrimSuffix(path, ".css")
 
-	n, err := tree.Get(path)
+	n, err := tree.GetSynced(path)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -283,7 +283,7 @@ func embedHandlerJS(w http.ResponseWriter, r *http.Request) {
 	}
 	path = strings.TrimSuffix(path, ".js")
 
-	n, err := tree.Get(path)
+	n, err := tree.GetSynced(path)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -315,7 +315,7 @@ func embedHandlerDemo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	n, err := tree.Get(path)
+	n, err := tree.GetSynced(path)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
