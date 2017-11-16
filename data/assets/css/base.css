@@ -164,7 +164,7 @@ aside nav ul ul li {
   font-weight: 300;
 }
 
-aside nav ul ul li a::before {
+aside nav ul ul li::before {
   display: inline-block;
   content: "—";
   width: 1.3em;
@@ -173,13 +173,26 @@ aside nav ul ul li a::before {
   left: -1.3em;
 }
 
-aside nav ul ul li:hover > a::before {
-  content: "→";
+aside nav ul ul li:hover::before {
+  visibility: hidden;
 }
 
+aside nav ul ul li a::before {
+  visibility: hidden;
+  content: "→";
+  width: 1.3em;
+  position: absolute;
+  top: .7em;
+  left: -1.3em;
+}
+
+aside nav ul ul li:hover > a::before {
+  visibility: visible;
+}
+/*
 aside nav ul ul li a.is-active::before {
   content: "→";
-}
+}*/
 
 main {
   grid-area: main;

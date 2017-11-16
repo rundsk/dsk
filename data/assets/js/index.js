@@ -174,6 +174,10 @@ document.addEventListener('DOMContentLoaded', function() {
       a.classList.remove("is-active");
     }
 
-    $1(".tree-nav li a[href='/tree" + path + "']").classList.add("is-active");
+    let activeNode = $1(".tree-nav li a[href='/tree" + path + "']");
+
+    if (activeNode) {
+      activeNode.classList.add("is-active");
+    }
   }
 });
