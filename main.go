@@ -303,28 +303,28 @@ func embedHandlerJS(w http.ResponseWriter, r *http.Request) {
 func embedHandlerDemo(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path[len("/embed/"):]
 
+	var propSet PropSet
+	var demo string
+
+	if m := demoRouteRegex.FindStringSubmatch(path); m != nil {
+		path = m[1]
+		demo = m[2] // Is auto-unescaped.
+	}
+
 	if err := checkSafePath(path, root); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	var propSet PropSet
-	var n *Node
-	var err error
-
-	if m := demoRouteRegex.FindStringSubmatch(path); m != nil {
-		if _, err = tree.Get(m[1]); err != nil {
-			http.Error(w, err.Error(), http.StatusNotFound)
-			return
-		}
-		propSet, _ = n.Demo(m[2]) // Is auto-unescaped.
-	} else {
-		if _, err = tree.Get(path); err != nil {
-			http.Error(w, err.Error(), http.StatusNotFound)
-			return
-		}
+	n, err := tree.Get(path)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
 	}
 
+	if demo != "" {
+		propSet, _ = n.Demo(demo)
+	}
 	mPropSet, _ := json.Marshal(propSet)
 
 	tVars := struct {
