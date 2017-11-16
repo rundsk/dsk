@@ -170,11 +170,11 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   let markNodeInNavAsActiveWithPath = function(path) {
-    for (let a of $('.tree-nav li a')) {
+    for (let a of $('.tree-nav li')) {
       a.classList.remove("is-active");
     }
 
-    let activeNode = $1(".tree-nav li a[href='/tree" + path + "']");
+    let activeNode = $1(".tree-nav li a[href='/tree" + path + "']").parentNode;
 
     if (activeNode) {
       activeNode.classList.add("is-active");

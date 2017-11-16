@@ -111,7 +111,7 @@ aside header .search-clear {
   cursor: pointer;
 }
 
-aside nav {
+.tree-nav {
   flex-grow: 1;
   overflow-y: auto;
 
@@ -121,12 +121,12 @@ aside nav {
 
 /* All ul */
 
-aside nav ul {
+.tree-nav ul {
   margin-left: 3rem;
   list-style: none;
 }
 
-aside nav ul li a {
+.tree-nav ul li a {
   text-decoration: none;
   color: inherit;
   transition: color .3s;
@@ -135,11 +135,11 @@ aside nav ul li a {
   padding-top: 1.5rem;
 }
 
-aside nav ul li a:hover {
+.tree-nav ul li a:hover {
   color: var(--color-blue);
 }
 
-aside nav ul li a.is-active {
+.tree-nav ul li.is-active > a {
   color: var(--color-blue);
 }
 
@@ -149,22 +149,22 @@ aside .ghosted {
 
 /* Top Level ul */
 
-aside nav > ul {
+.tree-nav > ul {
   margin-left: 0;
 }
 
-aside nav > ul > li {
+.tree-nav > ul > li {
   margin-bottom: 4rem;
   font-weight: bold;
 }
 
 /* Lower Level ul */
 
-aside nav ul ul li {
+.tree-nav ul ul li {
   font-weight: 300;
 }
 
-aside nav ul ul li::before {
+.tree-nav ul ul li::before {
   display: inline-block;
   content: "—";
   width: 1.3em;
@@ -173,11 +173,11 @@ aside nav ul ul li::before {
   left: -1.3em;
 }
 
-aside nav ul ul li:hover::before {
+.tree-nav ul ul li:hover::before, .tree-nav ul ul li.is-active::before {
   visibility: hidden;
 }
 
-aside nav ul ul li a::before {
+.tree-nav ul ul li a::before {
   visibility: hidden;
   content: "→";
   width: 1.3em;
@@ -186,13 +186,11 @@ aside nav ul ul li a::before {
   left: -1.3em;
 }
 
-aside nav ul ul li:hover > a::before {
+.tree-nav ul ul li:hover > a::before, .tree-nav ul ul li.is-active > a::before {
   visibility: visible;
 }
-/*
-aside nav ul ul li a.is-active::before {
-  content: "→";
-}*/
+
+/* Main */
 
 main {
   grid-area: main;
