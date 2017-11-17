@@ -35,12 +35,9 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(() => {
       fuse.setCollection(tree.flatten());
 
-      handleSearchWithQuery(window.location.search.substring(1));
-
       // Initial check for route and load node
-      if (window.location.pathname !== '/') {
-        loadNodeWithPath(window.location.pathname, false);
-      }
+      loadNodeWithPath(window.location.pathname, false);
+      handleSearchWithQuery(window.location.search.substring(1));
     });
 
   // Load the node based on path
@@ -53,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
       handleKeywords();
       handleTextLinks();
 
-      let state = { path: path };
+      let state = { path: path, search: window.location.search.substring(1) };
       if (pushToHistory) {
         history.pushState(state, '', path + window.location.search);
       } else {
@@ -69,8 +66,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Add query to the url
+    let state = { path: window.location.pathname, search: q };
     let url = window.location.origin + window.location.pathname + "?" + q;
-    history.replaceState(null, '', url);
+    history.replaceState(state, '', url);
 
     if (q !== "") {
       renderNav(tree, fuse.search(q));
@@ -188,8 +186,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   window.onpopstate = function(event) {
+    console.log(event.state);
     if (event.state) {
       loadNodeWithPath(event.state.path, false);
+      handleSearchWithQuery(event.state.search);
     }
   };
 });
