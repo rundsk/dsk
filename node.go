@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"mime"
 
 	"github.com/russross/blackfriday"
 )
@@ -113,7 +114,7 @@ func (n Node) Asset(name string) (bytes.Buffer, string, error) {
 
 	c, err := ioutil.ReadFile(filepath.Join(n.path, name))
 	if err != nil {
-		return b, err
+		return b, "", err
 	}
 
 	typ := mime.TypeByExtension(filepath.Ext(name))
