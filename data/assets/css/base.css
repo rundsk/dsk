@@ -330,6 +330,8 @@ h1 {
 
 .text ul {
   margin-left: -4rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
 }
 
 .text ul ul {
@@ -391,6 +393,11 @@ h1 {
   font-family: "SF Mono", "Monaco", monospace;
   font-size: .9em;
   line-height: 1.2em;
+}
+
+.text img {
+  width: 100%;
+  margin: 2rem 0;
 }
 
 .demos .component-stage {

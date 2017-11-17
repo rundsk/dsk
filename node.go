@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"mime"
 
 	"github.com/russross/blackfriday"
 )
@@ -105,6 +106,21 @@ func (n *Node) parseNodeConfig() (NodeMeta, error) {
 		return meta, fmt.Errorf("failed parsing %s: %s", prettyPath(f), err)
 	}
 	return meta, nil
+}
+
+// Checks node's directory for given asset.
+func (n Node) Asset(name string) (bytes.Buffer, string, error) {
+	var b bytes.Buffer
+
+	c, err := ioutil.ReadFile(filepath.Join(n.path, name))
+	if err != nil {
+		return b, "", err
+	}
+
+	typ := mime.TypeByExtension(filepath.Ext(name))
+
+	b.Write(c)
+	return b, typ, nil
 }
 
 // Result is passed as component import name to renderComponent()
