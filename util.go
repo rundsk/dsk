@@ -54,10 +54,8 @@ func detectRoot() (string, error) {
 	if len(os.Args) == 2 {
 		here = os.Args[1]
 	} else {
-		here, err := os.Getwd()
-		if err != nil {
-			return here, err
-		}
+		// When no path is given as an argument, take the path to the process itself. This makes sure that when opening the binary from Finder the folder it is stored in is used.
+		here = filepath.Dir(os.Args[0])
 	}
 	here, err := filepath.Abs(here)
 	if err != nil {
