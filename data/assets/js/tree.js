@@ -66,8 +66,12 @@ class Tree {
     };
 
     let select = function(n) {
+      if (selectedURLs.includes(n.url)) {
+        return true;
+      }
+
       n.children = n.children.filter(select);
-      return selectedURLs.includes(n.url) || n.children.some(check);
+      return n.children.some(check);
     };
     tree.root.children = tree.root.children.filter(select);
 
