@@ -53,8 +53,11 @@ document.addEventListener('DOMContentLoaded', function() {
       handleKeywords();
       handleTextLinks();
 
+      let state = { path: path };
       if (pushToHistory) {
-        history.pushState(null, '', path + window.location.search);
+        history.pushState(state, '', path + window.location.search);
+      } else {
+        history.replaceState(state, '', path + window.location.search)
       }
     });
   };
@@ -183,4 +186,10 @@ document.addEventListener('DOMContentLoaded', function() {
       activeNode.parentNode.classList.add("is-active");
     }
   }
+
+  window.onpopstate = function(event) {
+    if (event.state) {
+      loadNodeWithPath(event.state.path, false);
+    }
+  };
 });
