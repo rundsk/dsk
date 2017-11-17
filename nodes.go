@@ -78,10 +78,21 @@ func (t NodeTree) TotalNodes() uint16 {
 	return uint16(len(t.lookup))
 }
 
-// Retrieves a node from the tree. The given path must be relative to the
-// root of the tree.
+// Retrieves a node from the tree. The given path must be relative to
+// the root of the tree.
 func (t NodeTree) Get(path string) (*Node, error) {
 	if n, ok := t.lookup[filepath.Join(t.path, path)]; ok {
+		return n, nil
+	}
+	return &Node{}, fmt.Errorf("no node with path %s in tree", path)
+}
+
+// Retrieves a node from tree and syncs it.
+func (t NodeTree) GetSynced(path string) (*Node, error) {
+	if n, ok := t.lookup[filepath.Join(t.path, path)]; ok {
+		if err := n.Sync(); err != nil {
+			return n, err
+		}
 		return n, nil
 	}
 	return &Node{}, fmt.Errorf("no node with path %s in tree", path)

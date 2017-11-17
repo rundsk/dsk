@@ -73,22 +73,25 @@ func NewNodeFromPath(path string, root string) (*Node, error) {
 		Title:    filepath.Base(path),
 		IsGhost:  true,
 	}
+	return n, n.Sync()
+}
 
-	meta, err := parseNodeConfig(path)
+// One way sync: update node meta data from file system.
+func (n *Node) Sync() error {
+	meta, err := n.parseNodeConfig()
 	if err != nil {
-		return n, err
+		return err
 	}
 	n.Meta = meta
 	n.IsGhost = false
-
-	return n, nil
+	return nil
 }
 
 // Reads node configuration file when present and returns values. When file
 // is not present will simply return an empty Meta.
-func parseNodeConfig(path string) (NodeMeta, error) {
+func (n *Node) parseNodeConfig() (NodeMeta, error) {
 	var meta NodeMeta
-	f := filepath.Join(path, ConfigBasename)
+	f := filepath.Join(n.path, ConfigBasename)
 
 	if _, err := os.Stat(f); os.IsNotExist(err) {
 		return meta, nil
