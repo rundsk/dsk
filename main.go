@@ -116,7 +116,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check if path contains file, if yes: strip file
 	// from path, leaving just the node path.
-	file := ""
+	var file string
 	if filepath.Ext(path) != "" {
 		file = filepath.Base(path)
 		path = filepath.Dir(path) + "/"
@@ -131,15 +131,15 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	// If we had a file see above, then retrieve and deliver
 	// it here.
 	if file != "" {
-		buf, err := n.Asset(file)
+		buf, typ, err := n.Asset(file)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
 
-		typ := mime.TypeByExtension(filepath.Ext(file))
 		w.Header().Add("Content-Type", typ)
 		w.Write(buf.Bytes())
+		return
 	}
 
 	if !strings.HasSuffix(r.URL.Path, "/") {

@@ -108,24 +108,18 @@ func (n *Node) parseNodeConfig() (NodeMeta, error) {
 }
 
 // Checks node's directory for given asset.
-func (n Node) Asset(name string) (bytes.Buffer, error) {
+func (n Node) Asset(name string) (bytes.Buffer, string, error) {
 	var b bytes.Buffer
 
-	files, err := filepath.Glob(filepath.Join(n.path, name))
+	c, err := ioutil.ReadFile(filepath.Join(n.path, name))
 	if err != nil {
 		return b, err
-	}
-	if len(files) == 0 {
-		return b, fmt.Errorf("no .%s assets in path %s", n.path, name)
 	}
 
-	c, err := ioutil.ReadFile(files[0])
-	if err != nil {
-		return b, err
-	}
+	typ := mime.TypeByExtension(filepath.Ext(name))
 
 	b.Write(c)
-	return b, nil
+	return b, typ, nil
 }
 
 // Result is passed as component import name to renderComponent()
