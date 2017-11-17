@@ -114,10 +114,34 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, err := tree.Get(path); err != nil {
+	// Check if path contains file, if yes: strip file
+	// from path, leaving just the node path.
+	file := ""
+	if filepath.Ext(path) != "" {
+		file = filepath.Base(path)
+		path = filepath.Dir(path) + "/"
+	}
+
+	n, err := tree.Get(path)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
+
+	// If we had a file see above, then retrieve and deliver
+	// it here.
+	if file != "" {
+		buf, err := n.Asset(file)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+
+		typ := mime.TypeByExtension(filepath.Ext(file))
+		w.Header().Add("Content-Type", typ)
+		w.Write(buf.Bytes())
+	}
+
 	if !strings.HasSuffix(r.URL.Path, "/") {
 		http.Redirect(w, r, fmt.Sprintf("%s/?%s", r.URL.Path, r.URL.RawQuery), 302)
 		return

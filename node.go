@@ -107,6 +107,28 @@ func (n *Node) parseNodeConfig() (NodeMeta, error) {
 	return meta, nil
 }
 
+// Checks node's directory for given asset.
+func (n Node) Asset(name string) (bytes.Buffer, error) {
+	var b bytes.Buffer
+
+	files, err := filepath.Glob(filepath.Join(n.path, name))
+	if err != nil {
+		return b, err
+	}
+	if len(files) == 0 {
+		return b, fmt.Errorf("no .%s assets in path %s", n.path, name)
+	}
+
+	for _, f := range files {
+		c, err := ioutil.ReadFile(f)
+		if err != nil {
+			return b, err
+		}
+		b.Write(c)
+	}
+	return b, nil
+}
+
 // Result is passed as component import name to renderComponent()
 // JavaScript glue function.
 func (n Node) Import() (string, error) {
