@@ -114,7 +114,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if path contains file, if yes: strip file
+	// Check if the path contains a file, if yes strip file
 	// from path, leaving just the node path.
 	var file string
 	if filepath.Ext(path) != "" {
@@ -128,8 +128,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// If we had a file see above, then retrieve and deliver
-	// it here.
+	// If the path contained a file, return the file
 	if file != "" {
 		buf, typ, err := n.Asset(file)
 		if err != nil {
