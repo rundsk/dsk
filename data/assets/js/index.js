@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // and updates session history (url)
   let handleNav = function(ev) {
     ev.preventDefault();
-    loadNodeWithPath(this.href.split('8080').pop(), true);
+    loadNodeWithPath(this.pathname, true);
   };
 
   // Calls the search when a keyword is clicked
@@ -109,8 +109,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Calls the search when a link in text is clicked
   let handleTextLinkClick = function(ev) {
-    ev.preventDefault();
-    loadNodeWithPath(this.href.split('8080').pop(), true);
+    // Only handle local links
+    if (this.host === window.location.host) {
+      ev.preventDefault();
+      loadNodeWithPath(this.pathname, true);
+    }
   };
 
   // Attaches a click-Event to every link in text
