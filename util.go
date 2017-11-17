@@ -54,10 +54,7 @@ func detectRoot() (string, error) {
 	if len(os.Args) == 2 {
 		here = os.Args[1]
 	} else {
-		here, err := os.Getwd()
-		if err != nil {
-			return here, err
-		}
+		here = filepath.Dir(os.Args[0])
 	}
 	here, err := filepath.Abs(here)
 	if err != nil {
