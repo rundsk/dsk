@@ -20,7 +20,7 @@ Please see the _Development_ section for how to build the tool from source. We e
 Visit [the releases page](https://github.com/atelierdisko/dsk/releases) and download the binary 
 from GitHub, i.e. with cURL.
 ```
-curl -L https://github.com/atelierdisko/dsk/releases/download/v0.5.1/dsk-darwin-amd64 -o dsk
+curl -L https://github.com/atelierdisko/dsk/releases/download/v0.6.0-alpha/dsk-darwin-amd64 -o dsk
 ```
 
 Before you can run the downloaded binary, you must make it executable.
