@@ -59,28 +59,15 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   };
 
-  // Runs the search from the input field
-  let handleSearch = function(ev) {
-    // Add query to the url
-    let url = window.location.origin + window.location.pathname + "?" + this.value;
-    history.replaceState(null, '', url);
-
-    if (this.value !== "") {
-      renderNav(tree, fuse.search(this.value));
-    } else {
-      renderNav(tree);
-    }
-
-    markNodeInNavAsActiveWithPath(window.location.pathname);
-  };
-
   // Runs the search with a given query
   let handleSearchWithQuery = function(q) {
+    if ($1('.search-field').value !== q) {
+      $1('.search-field').value = q;
+    }
+
     // Add query to the url
     let url = window.location.origin + window.location.pathname + "?" + q;
     history.replaceState(null, '', url);
-
-    search.value = q;
 
     if (q !== "") {
       renderNav(tree, fuse.search(q));
@@ -96,7 +83,9 @@ document.addEventListener('DOMContentLoaded', function() {
     handleSearchWithQuery("");
   };
 
-  search.addEventListener("input", handleSearch);
+  $1('.search-field').addEventListener("input", function() {
+    handleSearchWithQuery(this.value);
+  });
   $1('.search-clear').addEventListener("click", clearSearch);
 
   // Loads the node when a link the nav is clicked
