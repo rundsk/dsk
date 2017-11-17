@@ -44,6 +44,8 @@ var (
 )
 
 func main() {
+	log.SetFlags(0) // disable prefix, we are invoked directly.
+
 	if len(os.Args) > 2 {
 		log.Fatalf("Too many arguments given, expecting exactly 0 or 1")
 	}
