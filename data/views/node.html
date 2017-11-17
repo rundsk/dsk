@@ -33,7 +33,14 @@
 
 	{{if .N.HasGeneralDoc}}
 	<section class="files text">
-		<!-- <h1>Dateien</h1> -->
+		<h1>Files</h1>
+		<ul>
+		{{range $index, $file := .N.Files}}
+			{{if not $file.IsDir}}
+			<li><a href="/{{$.N.URL}}{{$file.Name}}" download>{{$file.Name}}</a></li>
+			{{end}}
+		{{end}}
+		</ul>
 	</section>
 	{{end}}
 </div>

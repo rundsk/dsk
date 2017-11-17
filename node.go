@@ -16,6 +16,7 @@ import (
 	"sort"
 	"strings"
 	"mime"
+	//"log"
 
 	"github.com/russross/blackfriday"
 )
@@ -30,6 +31,7 @@ type Node struct {
 	// Ghosted nodes are nodes that have incomplete information, for
 	// these nodes not all methods are guaranteed to succeed.
 	IsGhost bool `json:"isGhost"`
+	Files []os.FileInfo
 }
 
 // Meta data as specified in a node configuration file.
@@ -85,7 +87,9 @@ func (n *Node) Sync() error {
 	}
 	n.Meta = meta
 	n.IsGhost = false
-	return nil
+	n.Files, err = n.filesForNode()
+	//log.Printf(n.Files)
+	return err
 }
 
 // Reads node configuration file when present and returns values. When file
@@ -121,6 +125,11 @@ func (n Node) Asset(name string) (bytes.Buffer, string, error) {
 
 	b.Write(c)
 	return b, typ, nil
+}
+
+// Checks node's directory for files
+func (n Node) filesForNode() ([]os.FileInfo, error) {
+	return ioutil.ReadDir(n.path)
 }
 
 // Result is passed as component import name to renderComponent()
