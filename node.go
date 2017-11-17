@@ -119,13 +119,12 @@ func (n Node) Asset(name string) (bytes.Buffer, error) {
 		return b, fmt.Errorf("no .%s assets in path %s", n.path, name)
 	}
 
-	for _, f := range files {
-		c, err := ioutil.ReadFile(f)
-		if err != nil {
-			return b, err
-		}
-		b.Write(c)
+	c, err := ioutil.ReadFile(files[0])
+	if err != nil {
+		return b, err
 	}
+
+	b.Write(c)
 	return b, nil
 }
 
