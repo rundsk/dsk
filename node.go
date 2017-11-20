@@ -16,7 +16,7 @@ import (
 	"sort"
 	"strings"
 	"mime"
-	//"log"
+	"log"
 
 	"github.com/russross/blackfriday"
 )
@@ -129,7 +129,28 @@ func (n Node) Asset(name string) (bytes.Buffer, string, error) {
 
 // Checks node's directory for files
 func (n Node) filesForNode() ([]os.FileInfo, error) {
-	return ioutil.ReadDir(n.path)
+	files, err := ioutil.ReadDir(n.path);
+
+	if err != nil {
+		return nil, err
+	}
+
+	var filteredFiles []os.FileInfo
+
+	for _, f := range files {
+		var name string
+		name = f.Name()
+		path, err := filepath.Abs(filepath.Join(n.path, name))
+
+		if err != nil {
+			return nil, err
+		}
+
+		log.Printf(path)
+		filteredFiles = append(filteredFiles, f)
+	}
+
+	return filteredFiles, nil
 }
 
 // Result is passed as component import name to renderComponent()
