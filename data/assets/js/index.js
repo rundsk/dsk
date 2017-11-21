@@ -46,8 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
       return res.text();
     }).then((html) => {
       markNodeInNavAsActiveWithPath(path);
-      handleKeywords();
-      handleTextLinks();
 
       let state = { path: path, search: window.location.search.substring(1) };
       if (pushToHistory) {
@@ -57,6 +55,8 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       $1('main').innerHTML = html;
+      handleKeywords();
+      handleTextLinks();
     });
   };
 
