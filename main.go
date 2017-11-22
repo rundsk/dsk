@@ -62,6 +62,7 @@ func main() {
 	}
 	whiteOnBlue := color.New(color.FgWhite, color.BgBlue).SprintFunc()
 	green := color.New(color.FgGreen).SprintFunc()
+	red := color.New(color.FgRed).SprintFunc()
 
 	log.Printf("Starting %s Version %s", whiteOnBlue(" DSK "), Version)
 
@@ -76,19 +77,19 @@ func main() {
 
 	here, err := detectRoot()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to detect root of design definitions tree: %s", red(err))
 	}
 	root = here // assign to global
 	log.Printf("Using %s as root directory", root)
 
 	tree = NewNodeTreeFromPath(here) // assign to global
 	if err := tree.Sync(); err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to do initial tree sync: %s", red(err))
 	}
 	log.Printf("Synced tree with %d total nodes", tree.TotalNodes())
 
 	addr := fmt.Sprintf("%s:%s", *host, *port)
-	log.Printf("Listening on %s", addr)
+	log.Printf("Will listen on %s", addr)
 
 	log.Printf("Please visit: %s", green("http://"+addr))
 	log.Print("Hit Ctrl+C to quit")
@@ -99,7 +100,9 @@ func main() {
 	http.HandleFunc("/tree/", nodeHandler)
 	http.HandleFunc("/embed/", embedHandler)
 
-	http.ListenAndServe(addr, nil)
+	if err := http.ListenAndServe(addr, nil); err != nil {
+		log.Fatalf("Failed to start web interface: %s", red(err))
+	}
 }
 
 // The root page.
