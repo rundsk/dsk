@@ -41,6 +41,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Load the node based on path
   let loadNodeWithPath = function(path, pushToHistory) {
+    if (path.charAt(path.length - 1) !== "/") {
+      path += "/";
+    }
+
     fetch("/tree" + path).then((res) => {
       return res.text();
     }).then((html) => {
