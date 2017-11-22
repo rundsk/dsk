@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
   let $1 = document.querySelector.bind(document);
 
   let nav = $1('.tree-nav');
-  let search = $1('.search-field');
 
   let tree = new Tree();
 
@@ -193,4 +192,11 @@ document.addEventListener('DOMContentLoaded', function() {
       handleSearchWithQuery(event.state.search);
     }
   };
+
+  window.addEventListener("keydown", function (event) {
+    if (event.key === "k" && event.metaKey) { // CMD + k
+      event.preventDefault();
+      $1('.search-field').focus();
+    }
+  });
 });
