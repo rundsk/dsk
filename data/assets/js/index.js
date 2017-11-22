@@ -122,6 +122,10 @@ document.addEventListener('DOMContentLoaded', function() {
     for (let k of $('.text a')) {
       k.addEventListener("click", handleTextLinkClick);
     }
+
+    for (let k of $('.crumbs-nav a')) {
+      k.addEventListener("click", handleTextLinkClick);
+    }
   };
 
   // Renders the nav structure
