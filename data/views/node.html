@@ -31,6 +31,21 @@
 	</section>
 	{{end}}
 
+	{{if not .N.HasGeneralDoc}}
+	<section class="general-doc text">
+		{{if .N.Children}}
+			<table class="children-table">
+			{{range $index, $child := .N.Children}}
+				<tr>
+					<td><a href="/{{$child.URL}}">{{$child.Title}}</a></td>
+					<td><a href="/{{$child.URL}}">{{$child.Meta.Description}}</a></td>
+				</tr>
+			{{end}}
+			</table>
+		{{end}}
+	</section>
+	{{end}}
+
 	{{if .N.HasGeneralDoc}}
 	<section class="files text">
 		<!-- <h1>Dateien</h1> -->

@@ -287,6 +287,31 @@ h1 {
   flex-grow: 1;
 }
 
+.text table.children-table tr {
+}
+
+.text table.children-table td {
+  padding: 2rem 4rem 1.5rem 0;
+}
+
+.text table.children-table td:first-child {
+  text-align: right;
+  max-width: 30%;
+}
+
+.text table.children-table td:first-child a {
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.text table.children-table td:last-child {
+  width: 65%;
+}
+
+.text table.children-table td:last-child a {
+  text-decoration: none;
+}
+
 .files {
   padding-left: 6rem;
   flex-grow: 0;
@@ -354,7 +379,7 @@ h1 {
 
 .text table td, .text table th {
   text-align: left;
-  padding: 1rem 4rem 1rem 0;
+  padding: 1rem 4rem .75rem 0;
   vertical-align: top;
 }
 
