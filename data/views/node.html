@@ -37,7 +37,7 @@
 		<ul>
 		{{range $index, $file := .N.Files}}
 			{{if not $file.IsDir}}
-			<li><a href="/{{$.N.URL}}{{$file.Name}}" download>{{$file.Name}}</a></li>
+			<li><a href="file://{{$file.Path}}">{{$file.Name}}</a></li>
 			{{end}}
 		{{end}}
 		</ul>

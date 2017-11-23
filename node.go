@@ -31,7 +31,7 @@ type Node struct {
 	// Ghosted nodes are nodes that have incomplete information, for
 	// these nodes not all methods are guaranteed to succeed.
 	IsGhost bool `json:"isGhost"`
-	Files []os.FileInfo
+	Files []FileInfo
 }
 
 // Meta data as specified in a node configuration file.
@@ -127,29 +127,50 @@ func (n Node) Asset(name string) (bytes.Buffer, string, error) {
 	return b, typ, nil
 }
 
+type FileInfo struct {
+    Name    string
+    Size    int64
+    Mode    os.FileMode
+    IsDir   bool
+		Path    string
+		Type		string
+}
+
 // Checks node's directory for files
-func (n Node) filesForNode() ([]os.FileInfo, error) {
+func (n Node) filesForNode() ([]FileInfo, error) {
 	files, err := ioutil.ReadDir(n.path);
 
 	if err != nil {
 		return nil, err
 	}
 
-	var filteredFiles []os.FileInfo
+	filteredFiles := []FileInfo{}
 
-	for _, f := range files {
+	for _, entry := range files {
 		var name string
-		name = f.Name()
+		name = entry.Name()
 		path, err := filepath.Abs(filepath.Join(n.path, name))
+		type, err := filepath.Ext(name)
 
 		if err != nil {
 			return nil, err
 		}
 
 		log.Printf(path)
-		filteredFiles = append(filteredFiles, f)
-	}
 
+		f := FileInfo{
+			Name:    entry.Name(),
+			Size:    entry.Size(),
+			Mode:    entry.Mode(),
+			IsDir:   entry.IsDir(),
+			Path: path,
+			Type: type,
+		}
+
+		if (f.Name != "readme.md" && f.Type != ".css") {
+			filteredFiles = append(filteredFiles, f)
+		}
+	}
 	return filteredFiles, nil
 }
 
