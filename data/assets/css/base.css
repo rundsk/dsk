@@ -68,11 +68,12 @@ aside header {
   padding-top: 8rem;
 }
 
-aside header .title {
+aside header .title, aside header .title a {
   color: var(--color-white);
   font-size: 20px;
   line-height: 1em;
   margin-bottom: 1rem;
+  text-decoration: none;
 }
 
 aside header .search {
@@ -370,7 +371,7 @@ h1 {
 .text table {
   border-collapse: collapse;
   width: 100%;
-  margin: 2rem 0;
+  margin: 4rem 0;
 }
 
 .text table:last-child {

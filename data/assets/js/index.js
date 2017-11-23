@@ -207,4 +207,6 @@ document.addEventListener('DOMContentLoaded', function() {
       $1('.search-field').focus();
     }
   });
+
+  $1("header a").addEventListener("click", handleTextLinkClick);
 });
