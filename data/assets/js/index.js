@@ -58,7 +58,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       $1('main').innerHTML = html;
-      handleKeywords();
       handleTextLinks();
     });
   };
@@ -100,18 +99,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadNodeWithPath(this.pathname, true);
   };
 
-  // Calls the search when a keyword is clicked
-  let handleKeywordClick = function(ev) {
-    handleSearchWithQuery(ev.target.innerHTML);
-  };
-
-  // Attaches a click-Event to every keyword
-  let handleKeywords = function() {
-    for (let k of $('.keyword')) {
-      k.addEventListener("click", handleKeywordClick);
-    }
-  };
-
   // Calls the search when a link in text is clicked
   let handleTextLinkClick = function(ev) {
 
@@ -136,6 +123,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     for (let k of $('.crumbs-nav a')) {
+      k.addEventListener("click", handleTextLinkClick);
+    }
+
+    for (let k of $('.keywords a')) {
       k.addEventListener("click", handleTextLinkClick);
     }
   };
