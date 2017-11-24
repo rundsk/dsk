@@ -5,6 +5,8 @@
  * license that can be found in the LICENSE file.
  */
 
+/* --- Variables --- */
+
 :root {
   --color-white: white;
   --color-blue: #0E26FC;
@@ -16,7 +18,7 @@
   --color-lightgray: #F8F8F8; /* 97% */
 }
 
-/* Reset */
+/* --- Reset --- */
 
 html {
   box-sizing: border-box;
@@ -29,7 +31,7 @@ html {
   box-sizing: inherit;
 }
 
-/* Main */
+/* --- General --- */
 
 html {
   font-size: 8px;
@@ -48,7 +50,7 @@ body {
   color: var(--color-black);
 }
 
-/* Sidebar */
+/* --- Sidebar --- */
 
 aside {
   grid-area: sidebar;
@@ -58,6 +60,8 @@ aside {
   flex-direction: column;
   max-height: 100vh;
 }
+
+/* Header */
 
 aside header {
   flex-grow: 0;
@@ -76,11 +80,13 @@ aside header .title, aside header .title a {
   text-decoration: none;
 }
 
-aside header .search {
+/* Search */
+
+.search {
   display: relative;
 }
 
-aside header .search-field {
+.search__field {
   display: block;
   width: 100%;
   border: none;
@@ -93,11 +99,11 @@ aside header .search-field {
   border-radius: .5rem;
 }
 
-aside header .search-field:focus {
+.search__field:focus {
   outline: none;
 }
 
-aside header .search-clear {
+.search__clear {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -111,6 +117,8 @@ aside header .search-clear {
   text-align: center;
   cursor: pointer;
 }
+
+/* Tree Navigation */
 
 .tree-nav {
   flex-grow: 1;
@@ -191,7 +199,7 @@ aside .ghosted {
   visibility: visible;
 }
 
-/* Main */
+/* --- Main --- */
 
 main {
   grid-area: main;
@@ -199,12 +207,14 @@ main {
   overflow-y: auto;
 }
 
-/* Node */
+/* --- Node --- */
 
-.crumbs-nav {
+/* Crumbs */
+
+.crumbs {
   margin-bottom: 2rem;
 }
-.crumbs {
+.crumbs ul {
   list-style: none;
   font-size: 16px;
   line-height: 1em;
@@ -217,6 +227,7 @@ main {
   content: " / ";
 }
 
+/* Hide the current node*/
 .crumbs__crumb:last-child {
   display: none;
 }
@@ -224,10 +235,13 @@ main {
 .crumbs__crumb a {
   color: var(--color-midgray);
   text-decoration: none;
+  transition: color .2s;
 }
 .crumbs__crumb a:hover {
   color: var(--color-blue);
 }
+
+/* Title */
 
 h1 {
   font-size: 48px;
@@ -235,11 +249,15 @@ h1 {
   margin-bottom: 4rem;
 }
 
+/* Description */
+
 .description {
   font-size: 28px;
   line-height: 1.5em;
   margin-bottom: 2rem;
 }
+
+/* Keywords */
 
 .keywords {
   user-select: none;
@@ -249,10 +267,16 @@ h1 {
   list-style: none;
 }
 
-.keywords ul li {
+.keywords__keyword {
   display: inline-block;
+  user-select: none;
+}
+
+.keywords__keyword a {
+  cursor: pointer;
   background-color: var(--color-cyan);
   color: var(--color-white);
+  text-decoration: none;
   font-size: 10px;
   line-height: 1em;
   font-weight: 600;
@@ -262,71 +286,102 @@ h1 {
   border-radius: .25rem;
 }
 
-.keyword {
-  user-select: none;
-  cursor: pointer;
+/* Top-Stage */
+.top-stage {
+  margin: 8rem 0;
+  width: 100%;
 }
 
-.component-stage {
-  display: block;
-  width: 100%;
-  min-height: 300px;
-  background-color: #F2F2F2;
-  border: none;
-  margin: 6rem 0;
-}
+/* Info */
 
 .info {
-  display: flex;
-  margin: 8rem 0;
-
+  /*display: flex;*/
+  flex-wrap: wrap;
+  width: 100%;
+  margin-bottom: -8rem;
 }
+
+/* Children Table */
+
+.children-table {
+  margin: 8rem 0;
+  line-height: 1.6em;
+  max-width: 650px;
+}
+
+.children-table table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.children-table table tr {
+  border-bottom: 1px solid var(--color-semilightgray);
+}
+
+.children-table table tr:last-child {
+  border-bottom: none;
+}
+
+.children-table table td {
+  padding: 2.5rem 3rem 2rem 0;
+  vertical-align: top;
+}
+
+
+.children-table table td a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.children-table table td:first-child {
+  text-align: right;
+  width: 20%;
+  font-weight: bold;
+}
+
+
+
+/* General-Doc */
 
 .general-doc {
-  line-height: 1.5em;
-  max-width: 600px;
+  max-width: 650px;
   flex-grow: 1;
+  margin: 8rem 0;
 }
 
-.text table.children-table tr {
-}
-
-.text table.children-table td {
-  padding: 2rem 4rem 1.5rem 0;
-}
-
-.text table.children-table td:first-child {
-  text-align: right;
-  max-width: 30%;
-}
-
-.text table.children-table td:first-child a {
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.text table.children-table td:last-child {
-  width: 65%;
-}
-
-.text table.children-table td:last-child a {
-  text-decoration: none;
-}
+/* Files */
 
 .files {
   padding-left: 6rem;
   flex-grow: 0;
+  float: right;
 }
 
+/* Demos */
+
+.demos {
+  width: 100%;
+  margin: 8rem 0;
+}
+
+/* API-Doc */
+
 .api-doc {
+  width: 100%;
   line-height: 1.5em;
-  margin-top: 8rem;
+  margin: 8rem 0;
+}
+
+/* --- Text Styling --- */
+
+.text {
+  line-height: 1.6em;
 }
 
 .text h1 {
   font-size: inherit;
   margin-bottom: 2rem;
-  margin-top: 5rem;
+  margin-top: 6rem;
 }
 
 .text h2 {
@@ -334,7 +389,7 @@ h1 {
   color: var(--color-darkgray);
   text-transform: uppercase;
   letter-spacing: 0.1rem;
-  margin-top: 3rem;
+  margin-top: 4rem;
   margin-bottom: .5rem;
 }
 
@@ -343,7 +398,7 @@ h1 {
 }
 
 .text p {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.7rem;
 }
 
 .text p:last-child {
@@ -419,6 +474,7 @@ h1 {
   font-family: "SF Mono", "Monaco", monospace;
   font-size: .9em;
   line-height: 1.2em;
+  font-weight: normal;
 }
 
 .text img {
@@ -426,6 +482,10 @@ h1 {
   margin: 2rem 0;
 }
 
-.demos .component-stage {
-  margin: 0;
+.component-stage {
+  display: block;
+  width: 100%;
+  min-height: 300px;
+  background-color: #F2F2F2;
+  border: none;
 }

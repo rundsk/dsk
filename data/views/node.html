@@ -1,12 +1,14 @@
-<nav class="crumbs-nav">
-	<ul class="crumbs">
+<nav class="crumbs">
+	<ul>
 	{{range $url := .N.CrumbURLs}}
 		<li class="crumbs__crumb"><a href="/{{$url}}">{{$.N.CrumbName $url}}</a>
 	{{end}}
 	</ul>
 </nav>
 
-<h1>{{.N.Title}}</h1>
+<section class="title">
+	<h1>{{.N.Title}}</h1>
+</section>
 
 <section class="description">
 	{{.N.Meta.Description}}
@@ -15,26 +17,21 @@
 <section class="keywords">
 	<ul>
 	{{range $index, $keyword := .N.Meta.Keywords}}
-		<li class="keyword"><a href="search:{{$keyword}}">{{$keyword}}</a></li>
+		<li class="keywords__keyword"><a href="search:{{$keyword}}">{{$keyword}}</a></li>
 	{{end}}
 	</ul>
 </section>
 
 {{if .N.HasComponent}}
-<iframe class="component-stage" src="/embed/{{.N.URL}}"></iframe>
+<section class="top-stage">
+	<iframe class="component-stage" src="/embed/{{.N.URL}}"></iframe>
+</section>
 {{end}}
 
 <div class="info">
-	{{if .N.HasGeneralDoc}}
-	<section class="general-doc text">
-		{{.N.GeneralDoc}}
-	</section>
-	{{end}}
-
-	{{if not .N.HasGeneralDoc}}
-	<section class="general-doc text">
-		{{if .N.Children}}
-			<table class="children-table">
+	{{if not .N.HasGeneralDoc}} {{if .N.Children}}
+	<section class="children-table">
+			<table>
 			{{range $index, $child := .N.Children}}
 				<tr>
 					<td><a href="/{{$child.URL}}">{{$child.Title}}</a></td>
@@ -42,30 +39,37 @@
 				</tr>
 			{{end}}
 			</table>
+	</section>
+	{{end}} {{end}}
+
+
+	<!-- {{if .N.HasGeneralDoc}}
+	<section class="files">
+		<h1>Dateien</h1>
+	</section>
+	{{end}} -->
+
+
+	{{if .N.HasGeneralDoc}}
+	<section class="general-doc text">
+		{{.N.GeneralDoc}}
+	</section>
+	{{end}}
+
+	{{if .N.HasDemos}}
+	<section class="demos text">
+		<h1>Demos</h1>
+
+		{{range $name := .N.DemoNames}}
+				<h2>{{$name}}</h2>
+				<iframe class="component-stage" src="/embed/{{$.N.URL}}:{{$name}}"></iframe>
 		{{end}}
 	</section>
 	{{end}}
 
-	{{if .N.HasGeneralDoc}}
-	<section class="files text">
-		<!-- <h1>Dateien</h1> -->
+	{{if .N.HasAPIDoc}}
+	<section class="api-doc text">
+		{{.N.APIDoc}}
 	</section>
 	{{end}}
 </div>
-
-{{if .N.HasDemos}}
-<section class="demos text">
-	<h1>Demos</h1>
-
-	{{range $name := .N.DemoNames}}
-			<h2>{{$name}}</h2>
-			<iframe class="component-stage" src="/embed/{{$.N.URL}}:{{$name}}"></iframe>
-	{{end}}
-</section>
-{{end}}
-
-{{if .N.HasAPIDoc}}
-<section class="api-doc text">
-	{{.N.APIDoc}}
-</section>
-{{end}}
