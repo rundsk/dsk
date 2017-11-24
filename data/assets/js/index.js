@@ -114,6 +114,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Calls the search when a link in text is clicked
   let handleTextLinkClick = function(ev) {
+
+    // When the link starts with "search:" it is not a link to be followed, but a query to be entered into the search bar
+    if (this.href.split(":")[0] === "search") {
+      ev.preventDefault();
+      handleSearchWithQuery(this.href.substring(7));
+      return
+    }
+
     // Only handle local links
     if (this.host === window.location.host) {
       ev.preventDefault();
@@ -194,7 +202,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   window.onpopstate = function(event) {
-    console.log(event.state);
     if (event.state) {
       loadNodeWithPath(event.state.path, false);
       handleSearchWithQuery(event.state.search);
