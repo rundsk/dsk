@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
     ]
   });
 
+  let pageTitle = document.title;
+
   // Gets the tree and creates the nav structure.
   // Get the query from the current window path (handleSearchWithQuery will render the Nav).
   tree.sync()
@@ -55,6 +57,16 @@ document.addEventListener('DOMContentLoaded', function() {
         history.pushState(state, '', path + window.location.search);
       } else {
         history.replaceState(state, '', path + window.location.search)
+      }
+
+      // Set document title to the name of the node
+      var title = path.split("/");
+      title = title[title.length - 2];
+
+      if (title !== "") {
+        document.title = pageTitle + ": " + title;
+      } else {
+        document.title = pageTitle;
       }
 
       $1('main').innerHTML = html;
