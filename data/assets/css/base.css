@@ -482,6 +482,14 @@ h1 {
   margin: 2rem 0;
 }
 
+.text blockquote {
+  border-left: 2px solid var(--color-cyan);
+  color: var(--color-darkgray);
+  padding-left: 1.5rem;
+  margin-left: -1.6rem;
+  padding-top: .3em;
+}
+
 .component-stage {
   display: block;
   width: 100%;
