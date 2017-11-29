@@ -148,7 +148,7 @@ func (n Node) filesForNode() ([]FileInfo, error) {
 	for _, entry := range files {
 		var name string
 		name = entry.Name()
-		path, err := filepath.Abs(filepath.Join(n.path, name))
+		path := filepath.Join(n.path, name)
 		filetype := filepath.Ext(name)
 
 		if err != nil {
