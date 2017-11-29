@@ -16,7 +16,6 @@ import (
 	"sort"
 	"strings"
 	"mime"
-	"log"
 
 	"github.com/russross/blackfriday"
 )
@@ -150,13 +149,11 @@ func (n Node) filesForNode() ([]FileInfo, error) {
 		var name string
 		name = entry.Name()
 		path, err := filepath.Abs(filepath.Join(n.path, name))
-		type, err := filepath.Ext(name)
+		filetype := filepath.Ext(name)
 
 		if err != nil {
 			return nil, err
 		}
-
-		log.Printf(path)
 
 		f := FileInfo{
 			Name:    entry.Name(),
@@ -164,10 +161,17 @@ func (n Node) filesForNode() ([]FileInfo, error) {
 			Mode:    entry.Mode(),
 			IsDir:   entry.IsDir(),
 			Path: path,
-			Type: type,
+			Type: filetype,
 		}
 
-		if (f.Name != "readme.md" && f.Type != ".css") {
+		if (
+			f.IsDir != true &&
+			f.Name != "readme.md" &&
+			f.Name != "api.md" &&
+			f.Name != ".DS_Store" &&
+			f.Type != ".css" &&
+			f.Type != ".js" &&
+			f.Type != ".json") {
 			filteredFiles = append(filteredFiles, f)
 		}
 	}

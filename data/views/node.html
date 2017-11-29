@@ -42,18 +42,25 @@
 	</section>
 	{{end}} {{end}}
 
-
-	<!-- {{if .N.HasGeneralDoc}}
-	<section class="files">
-		<h1>Dateien</h1>
-	</section>
-	{{end}} -->
-
-
 	{{if .N.HasGeneralDoc}}
-	<section class="general-doc text">
-		{{.N.GeneralDoc}}
-	</section>
+	<div class="two-columns">
+		<section class="general-doc text">
+			{{.N.GeneralDoc}}
+		</section>
+
+		{{if .N.Files}}
+		<section class="files text">
+			<h1>Files</h1>
+			<ul>
+			{{range $index, $file := .N.Files}}
+				{{if not $file.IsDir}}
+				<li><a href="file://{{$file.Path}}">{{$file.Name}}</a></li>
+				{{end}}
+			{{end}}
+			</ul>
+		</section>
+		{{end}}
+	</div>
 	{{end}}
 
 	{{if .N.HasDemos}}
