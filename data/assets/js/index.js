@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
     ]
   });
 
+  let pageTitle = document.title;
+
   // Gets the tree and creates the nav structure.
   // Get the query from the current window path (handleSearchWithQuery will render the Nav).
   tree.sync()
@@ -57,16 +59,25 @@ document.addEventListener('DOMContentLoaded', function() {
         history.replaceState(state, '', path + window.location.search)
       }
 
+      // Set document title to the name of the node
+      var title = path.split("/");
+      title = title[title.length - 2];
+
+      if (title !== "") {
+        document.title = pageTitle + ": " + title;
+      } else {
+        document.title = pageTitle;
+      }
+
       $1('main').innerHTML = html;
-      handleKeywords();
       handleTextLinks();
     });
   };
 
   // Runs the search with a given query
   let handleSearchWithQuery = function(q) {
-    if ($1('.search-field').value !== q) {
-      $1('.search-field').value = q;
+    if ($1('.search__field').value !== q) {
+      $1('.search__field').value = q;
     }
 
     // Add query to the url
@@ -83,15 +94,12 @@ document.addEventListener('DOMContentLoaded', function() {
     markNodeInNavAsActiveWithPath(window.location.pathname);
   };
 
-  // Clears the search field
-  let clearSearch = function() {
-    handleSearchWithQuery("");
-  };
-
-  $1('.search-field').addEventListener("input", function() {
+  $1('.search__field').addEventListener("input", function() {
     handleSearchWithQuery(this.value);
   });
-  $1('.search-clear').addEventListener("click", clearSearch);
+  $1('.search__clear').addEventListener("click", function() {
+    handleSearchWithQuery("");
+  });
 
   // Loads the node when a link the nav is clicked
   // and updates session history (url)
@@ -100,20 +108,16 @@ document.addEventListener('DOMContentLoaded', function() {
     loadNodeWithPath(this.pathname, true);
   };
 
-  // Calls the search when a keyword is clicked
-  let handleKeywordClick = function(ev) {
-    handleSearchWithQuery(ev.target.innerHTML);
-  };
-
-  // Attaches a click-Event to every keyword
-  let handleKeywords = function() {
-    for (let k of $('.keyword')) {
-      k.addEventListener("click", handleKeywordClick);
-    }
-  };
-
   // Calls the search when a link in text is clicked
   let handleTextLinkClick = function(ev) {
+
+    // When the link starts with "search:" it is not a link to be followed, but a query to be entered into the search bar
+    if (this.href.split(":")[0] === "search") {
+      ev.preventDefault();
+      handleSearchWithQuery(this.href.substring(7));
+      return
+    }
+
     // Only handle local links
     if (this.host === window.location.host) {
       ev.preventDefault();
@@ -127,7 +131,11 @@ document.addEventListener('DOMContentLoaded', function() {
       k.addEventListener("click", handleTextLinkClick);
     }
 
-    for (let k of $('.crumbs-nav a')) {
+    for (let k of $('.crumbs a')) {
+      k.addEventListener("click", handleTextLinkClick);
+    }
+
+    for (let k of $('.keywords a')) {
       k.addEventListener("click", handleTextLinkClick);
     }
   };
@@ -194,7 +202,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   window.onpopstate = function(event) {
-    console.log(event.state);
     if (event.state) {
       loadNodeWithPath(event.state.path, false);
       handleSearchWithQuery(event.state.search);
@@ -204,7 +211,9 @@ document.addEventListener('DOMContentLoaded', function() {
   window.addEventListener("keydown", function (event) {
     if (event.key === "k" && event.metaKey) { // CMD + k
       event.preventDefault();
-      $1('.search-field').focus();
+      $1('.search__field').focus();
     }
   });
+
+  $1("header a").addEventListener("click", handleTextLinkClick);
 });
