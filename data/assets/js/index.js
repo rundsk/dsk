@@ -120,8 +120,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Only handle local links
     if (this.host === window.location.host) {
-      ev.preventDefault();
-      loadNodeWithPath(this.pathname, true);
+
+      // Only handle the link, when it is not a file (== the last part of the path doesn’t contain a ".")
+      if (path.split("/").pop().split(".").length === 1) {
+        ev.preventDefault();
+        loadNodeWithPath(this.pathname, true);
+      }
     }
   };
 
