@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (pushToHistory) {
         history.pushState(state, '', path + window.location.search);
       } else {
-        history.replaceState(state, '', path + window.location.search)
+        history.replaceState(state, '', path + window.location.search);
       }
 
       // Set document title to the name of the node
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (this.href.split(":")[0] === "search") {
       ev.preventDefault();
       handleSearchWithQuery(this.href.substring(7));
-      return
+      return;
     }
 
     // Only handle local links
@@ -198,11 +198,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     let activeNode = $1(".tree-nav li a[href='" + path + "']");
-    //let activeNode = undefined;
     if (activeNode) {
       activeNode.parentNode.classList.add("is-active");
     }
-  }
+  };
 
   window.onpopstate = function(event) {
     if (event.state) {
