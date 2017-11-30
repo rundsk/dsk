@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
       path += "/";
     }
 
-    fetch("/tree" + path).then((res) => {
+    fetch("/api/tree" + path).then((res) => {
       return res.text();
     }).then((html) => {
       markNodeInNavAsActiveWithPath(path);
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (pushToHistory) {
         history.pushState(state, '', path + window.location.search);
       } else {
-        history.replaceState(state, '', path + window.location.search)
+        history.replaceState(state, '', path + window.location.search);
       }
 
       // Set document title to the name of the node
@@ -115,14 +115,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (this.href.split(":")[0] === "search") {
       ev.preventDefault();
       handleSearchWithQuery(this.href.substring(7));
-      return
+      return;
     }
 
     // Only handle local links
     if (this.host === window.location.host) {
-
       // Only handle the link, when it is not a file (== the last part of the path doesn’t contain a ".")
-      if (path.split("/").pop().split(".").length === 1) {
+      if (this.href.split("/").pop().split(".").length === 1) {
         ev.preventDefault();
         loadNodeWithPath(this.pathname, true);
       }
@@ -199,11 +198,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     let activeNode = $1(".tree-nav li a[href='" + path + "']");
-    //let activeNode = undefined;
     if (activeNode) {
       activeNode.parentNode.classList.add("is-active");
     }
-  }
+  };
 
   window.onpopstate = function(event) {
     if (event.state) {

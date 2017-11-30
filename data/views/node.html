@@ -24,7 +24,7 @@
 
 {{if .N.HasComponent}}
 <section class="top-stage">
-	<iframe class="component-stage" src="/embed/{{.N.URL}}"></iframe>
+	<iframe class="component-stage" src="/api/embed/{{.N.URL}}"></iframe>
 </section>
 {{end}}
 
@@ -69,7 +69,7 @@
 
 		{{range $name := .N.DemoNames}}
 				<h2>{{$name}}</h2>
-				<iframe class="component-stage" src="/embed/{{$.N.URL}}:{{$name}}"></iframe>
+				<iframe class="component-stage" src="/api/embed/{{$.N.URL}}:{{$name}}"></iframe>
 		{{end}}
 	</section>
 	{{end}}
