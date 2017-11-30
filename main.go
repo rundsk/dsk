@@ -96,9 +96,9 @@ func main() {
 
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/assets/", assetsHandler)
-	http.HandleFunc("/api/", apiHandler)
-	http.HandleFunc("/tree/", nodeHandler)
-	http.HandleFunc("/embed/", embedHandler)
+	http.HandleFunc("/api/tree.json", treeHandler)
+	http.HandleFunc("/api/tree/", treeHandler)
+	http.HandleFunc("/api/embed/", embedHandler)
 
 	if err := http.ListenAndServe(addr, nil); err != nil {
 		log.Fatalf("Failed to start web interface: %s", red(err))
@@ -108,6 +108,7 @@ func main() {
 // The root page.
 //
 // Handles these kinds of URLs:
+//   /
 //   /DataEntry/Components/Button
 //   /DataEntry/Components/Button/
 //   /DataEntry/Components/Button/test.png
@@ -185,12 +186,23 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(data[:])
 }
 
+// Handles these URLs:
+//   /api/tree.json
+//   /api/tree/Foo/Bar
+func treeHandler(w http.ResponseWriter, r *http.Request) {
+	if strings.HasSuffix(r.URL.Path, ".json") {
+		treeJSONHandler(w, r)
+	} else {
+		treeNodeHandler(w, r)
+	}
+}
+
 // Returns JSEND response. Currently only used for returning
 // information about the tree for the left hand side navigation:
 //
 // Handles this URL:
-//   /api/tree
-func apiHandler(w http.ResponseWriter, r *http.Request) {
+//   /api/tree.json
+func treeJSONHandler(w http.ResponseWriter, r *http.Request) {
 	wr := jsend.Wrap(w)
 	path := r.URL.Path[len("/api/"):]
 
@@ -205,32 +217,33 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if path == "tree" {
-		if err := tree.Sync(); err != nil {
-			wr.
-				Status(http.StatusInternalServerError).
-				Message(err.Error()).
-				Send()
-			return
-		}
+	if path != "tree.json" {
 		wr.
-			Data(tree).
-			Status(201).
+			Status(http.StatusNotFound).
+			Send()
+		return
+	}
+
+	if err := tree.Sync(); err != nil {
+		wr.
+			Status(http.StatusInternalServerError).
+			Message(err.Error()).
 			Send()
 		return
 	}
 	wr.
-		Status(404).
+		Data(tree).
+		Status(http.StatusOK).
 		Send()
 }
 
-// Renders a page for given node.
+// Renders a given HTML fragment for given node.
 //
 // Handles these kinds of URLs:
-//   /tree/DisplayData/Table
-//   /tree/DisplayData/Table/Row
-func nodeHandler(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path[len("/tree/"):]
+//   /api/tree/DisplayData/Table
+//   /api/tree/DisplayData/Table/Row
+func treeNodeHandler(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path[len("/api/tree/"):]
 
 	if err := checkSafePath(path, root); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -262,23 +275,23 @@ func nodeHandler(w http.ResponseWriter, r *http.Request) {
 // stage. It will be embeded using an iframe.
 //
 // Handles these kinds of URLs:
-//   /embed/DisplayData/Table
-//   /embed/DisplayData/Table:foo%20bar
-//   /embed/DisplayData/Table:bar
-//   /embed/DisplayData/Table.js
-//   /embed/DisplayData/Table.css
+//   /api/embed/DisplayData/Table
+//   /api/embed/DisplayData/Table:foo%20bar
+//   /api/embed/DisplayData/Table:bar
+//   /api/embed/DisplayData/Table.js
+//   /api/embed/DisplayData/Table.css
 func embedHandler(w http.ResponseWriter, r *http.Request) {
 	if strings.HasSuffix(r.URL.Path, ".css") {
-		embedHandlerCSS(w, r)
+		embedCSSHandler(w, r)
 	} else if strings.HasSuffix(r.URL.Path, ".js") {
-		embedHandlerJS(w, r)
+		embedJSHandler(w, r)
 	} else {
-		embedHandlerDemo(w, r)
+		embedDemoHandler(w, r)
 	}
 }
 
-func embedHandlerCSS(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path[len("/embed/"):]
+func embedCSSHandler(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path[len("/api/embed/"):]
 
 	if err := checkSafePath(path, root); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -302,8 +315,8 @@ func embedHandlerCSS(w http.ResponseWriter, r *http.Request) {
 	w.Write(buf.Bytes())
 }
 
-func embedHandlerJS(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path[len("/embed/"):]
+func embedJSHandler(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path[len("/api/embed/"):]
 
 	if err := checkSafePath(path, root); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -327,8 +340,8 @@ func embedHandlerJS(w http.ResponseWriter, r *http.Request) {
 	w.Write(buf.Bytes())
 }
 
-func embedHandlerDemo(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path[len("/embed/"):]
+func embedDemoHandler(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path[len("/api/embed/"):]
 
 	var propSet PropSet
 	var demo string

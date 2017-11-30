@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
       path += "/";
     }
 
-    fetch("/tree" + path).then((res) => {
+    fetch("/api/tree" + path).then((res) => {
       return res.text();
     }).then((html) => {
       markNodeInNavAsActiveWithPath(path);
