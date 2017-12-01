@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/fatih/color"
 )
@@ -38,10 +39,19 @@ func (t *NodeTree) Sync() error {
 			return err
 		}
 		if f.IsDir() {
+
+			name := f.Name()
+
+			if(strings.HasPrefix(name, "x_") || strings.HasPrefix(name, "x-")) {
+				red := color.New(color.FgRed).SprintFunc()
+				log.Printf("Ignoring node: %s", red(path));
+				return filepath.SkipDir
+			}
+
 			n, nErr := NewNodeFromPath(path, root)
 			if nErr != nil {
 				red := color.New(color.FgRed).SprintFunc()
-				log.Printf("ghosting node: %s", red(nErr))
+				log.Printf("Ghosting node: %s", red(nErr))
 			}
 			nodes = append(nodes, n)
 		}
