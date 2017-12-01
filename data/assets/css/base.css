@@ -340,21 +340,25 @@ h1 {
 }
 
 
+.two-columns {
+  display: flex;
+  flex-direction: row;
+  margin: 8rem 0;
+}
 
 /* General-Doc */
 
 .general-doc {
   max-width: 650px;
   flex-grow: 1;
-  margin: 8rem 0;
 }
 
 /* Files */
 
 .files {
-  padding-left: 6rem;
+  padding-left: 8rem;
   flex-grow: 0;
-  float: right;
+  color: var(--color-darkgray);
 }
 
 /* Demos */

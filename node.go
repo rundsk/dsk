@@ -30,6 +30,7 @@ type Node struct {
 	// Ghosted nodes are nodes that have incomplete information, for
 	// these nodes not all methods are guaranteed to succeed.
 	IsGhost bool `json:"isGhost"`
+	Files []FileInfo
 }
 
 // Meta data as specified in a node configuration file.
@@ -85,7 +86,9 @@ func (n *Node) Sync() error {
 	}
 	n.Meta = meta
 	n.IsGhost = false
-	return nil
+	n.Files, err = n.filesForNode()
+	//log.Printf(n.Files)
+	return err
 }
 
 // Reads node configuration file when present and returns values. When file
@@ -121,6 +124,58 @@ func (n Node) Asset(name string) (bytes.Buffer, string, error) {
 
 	b.Write(c)
 	return b, typ, nil
+}
+
+type FileInfo struct {
+    Name    string
+    Size    int64
+    Mode    os.FileMode
+    IsDir   bool
+		Path    string
+		Type		string
+}
+
+// Checks node's directory for files
+func (n Node) filesForNode() ([]FileInfo, error) {
+	files, err := ioutil.ReadDir(n.path);
+
+	if err != nil {
+		return nil, err
+	}
+
+	filteredFiles := []FileInfo{}
+
+	for _, entry := range files {
+		var name string
+		name = entry.Name()
+		path := filepath.Join(n.path, name)
+		filetype := filepath.Ext(name)
+
+		if err != nil {
+			return nil, err
+		}
+
+		f := FileInfo{
+			Name:    entry.Name(),
+			Size:    entry.Size(),
+			Mode:    entry.Mode(),
+			IsDir:   entry.IsDir(),
+			Path: path,
+			Type: filetype,
+		}
+
+		if (
+			f.IsDir != true &&
+			f.Name != "readme.md" &&
+			f.Name != "api.md" &&
+			f.Name != ".DS_Store" &&
+			f.Type != ".css" &&
+			f.Type != ".js" &&
+			f.Type != ".json") {
+			filteredFiles = append(filteredFiles, f)
+		}
+	}
+	return filteredFiles, nil
 }
 
 // Result is passed as component import name to renderComponent()
