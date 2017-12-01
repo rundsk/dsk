@@ -10,7 +10,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
+	"regexp"
 
 	"github.com/fatih/color"
 )
@@ -40,9 +40,15 @@ func (t *NodeTree) Sync() error {
 		}
 		if f.IsDir() {
 
-			name := f.Name()
-
-			if(strings.HasPrefix(name, "x_") || strings.HasPrefix(name, "x-")) {
+			// Ignore directories
+			//	- that start with x_ or x-
+			//	- that start with .
+			//	- node_modules
+			matched, err := regexp.MatchString("^x{1}[-_]{1}|node_modules|^\\.", f.Name())
+			if err != nil {
+				return err
+			}
+			if(matched) {
 				red := color.New(color.FgRed).SprintFunc()
 				log.Printf("Ignoring node: %s", red(path));
 				return filepath.SkipDir
