@@ -16,6 +16,7 @@ import (
 	"sort"
 	"strings"
 	"mime"
+	"regexp"
 
 	"github.com/russross/blackfriday"
 )
@@ -87,6 +88,7 @@ func (n *Node) Sync() error {
 	n.Meta = meta
 	n.IsGhost = false
 	n.Files, err = n.filesForNode()
+	n.Title = n.titleForUrl(n.URL)
 	//log.Printf(n.Files)
 	return err
 }
@@ -276,7 +278,7 @@ func (n Node) CrumbURLs() []string {
 
 // Returns the name for a given crumb URL.
 func (n Node) CrumbName(url string) string {
-	return filepath.Base(url)
+	return n.titleForUrl(url)
 }
 
 func (n Node) HasDemos() bool {
@@ -302,4 +304,16 @@ func (n Node) Demo(name string) (PropSet, error) {
 		return val, nil
 	}
 	return nil, fmt.Errorf("no demo with name: %s", name)
+}
+
+func (n Node) titleForUrl(url string) string {
+	title := filepath.Base(url)
+	re := regexp.MustCompile("^\\d+[_,-]{1}(.*)")
+	s := re.FindStringSubmatch(title)
+
+	if (len(s) > 0) {
+		title = s[1]
+	}
+
+	return title
 }
