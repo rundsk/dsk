@@ -44,7 +44,7 @@ func (t *NodeTree) Sync() error {
 			//	- that start with x_ or x-
 			//	- that start with .
 			//	- node_modules
-			matched, err := regexp.MatchString("^x{1}[-_]{1}|node_modules|^\\.", f.Name())
+			matched, err := regexp.MatchString("^x{1}[-_]{1}|^\\.|node_modules", f.Name())
 			if err != nil {
 				return err
 			}
