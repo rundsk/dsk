@@ -88,7 +88,10 @@ func (n *Node) Sync() error {
 	n.Meta = meta
 	n.IsGhost = false
 	n.Files, err = n.filesForNode()
-	n.Title = n.titleForUrl(n.URL)
+
+	if (n.URL != "/") {
+		n.Title = n.titleForUrl(n.URL)
+	}
 	//log.Printf(n.Files)
 	return err
 }
