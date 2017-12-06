@@ -104,6 +104,11 @@ document.addEventListener('DOMContentLoaded', function() {
   // Loads the node when a link the nav is clicked
   // and updates session history (url)
   let handleNav = function(ev) {
+    // If CMD is pressed default behavior is triggered (open link in new tab)
+    if (event.metaKey) {
+      return
+    }
+
     ev.preventDefault();
     loadNodeWithPath(this.pathname, true);
   };
@@ -116,6 +121,11 @@ document.addEventListener('DOMContentLoaded', function() {
       ev.preventDefault();
       handleSearchWithQuery(this.href.substring(7));
       return;
+    }
+
+    // If CMD is pressed default behavior is triggered (open link in new tab)
+    if (event.metaKey) {
+      return
     }
 
     // Only handle local links
@@ -139,6 +149,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     for (let k of $('.keywords a')) {
+      k.addEventListener("click", handleTextLinkClick);
+    }
+
+    for (let k of $('.children-table a')) {
       k.addEventListener("click", handleTextLinkClick);
     }
   };
