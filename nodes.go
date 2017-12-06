@@ -41,15 +41,15 @@ func (t *NodeTree) Sync() error {
 		if f.IsDir() {
 
 			// Ignore directories
-			//	- that start with x_ or x-
-			//	- that start with .
-			//	- node_modules
-			matched, err := regexp.MatchString("^x{1}[-_]{1}|^\\.|node_modules", f.Name())
+			//	- that start with x_ or x- (^x[-_])
+			//	- that start with . (^\.)
+			//	- node_modules (node_modules)
+			matched, err := regexp.MatchString(`^x[-_]|^\.|node_modules`, f.Name())
 			if err != nil {
 				return err
 			}
 			if(matched) {
-				red := color.New(color.FgRed).SprintFunc()
+				red := color.New(color.FgYellow).SprintFunc()
 				log.Printf("Ignoring node: %s", red(path));
 				return filepath.SkipDir
 			}

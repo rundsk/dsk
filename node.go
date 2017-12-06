@@ -311,7 +311,7 @@ func (n Node) Demo(name string) (PropSet, error) {
 
 func (n Node) titleForUrl(url string) string {
 	title := filepath.Base(url)
-	re := regexp.MustCompile("^\\d+[_,-]{1}(.*)")
+	re := regexp.MustCompile(`^\d+[_,-]{1}(.*)`)
 	s := re.FindStringSubmatch(title)
 
 	if (len(s) > 0) {
