@@ -278,7 +278,7 @@ h1 {
   color: var(--color-white);
   text-decoration: none;
   font-size: 10px;
-  line-height: 1em;
+  line-height: 2.85em;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: .1em;
@@ -495,7 +495,7 @@ h1 {
   border: none;
 }
 
-.text img {
+.text img, .text video {
   max-width: 100%;
   margin: 2rem 0;
 }
