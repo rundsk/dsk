@@ -64,7 +64,7 @@ func (t *NodeTree) Sync() error {
 		return nil
 	})
 	if err != nil {
-		return fmt.Errorf("failed to walk directory tree %s: %s", root, err)
+		return fmt.Errorf("Failed to walk directory tree %s: %s", root, err)
 	}
 
 	// In the second pass we're doing two thing: add the children
