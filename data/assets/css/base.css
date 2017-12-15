@@ -413,6 +413,18 @@ h1 {
   color: inherit;
 }
 
+.text a[href^='search'] {
+  cursor: pointer;
+  background-color: var(--color-semilightgray);
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  padding: .8em .8em .6em .8em;
+  border-radius: .25rem;
+}
+
 .text ul {
   margin-left: -4rem;
   margin-top: 2rem;
