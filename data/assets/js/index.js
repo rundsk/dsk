@@ -61,10 +61,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Set document title to the name of the node
       var title = path.split("/");
-      title = title[title.length - 2];
+      title = decodeURIComponent(title[title.length - 2]);
+      titleArray = /^\d+[_,-]{1}(.*)/.exec(title)
 
       if (title !== "") {
-        document.title = pageTitle + ": " + title;
+        if (titleArray) {
+          document.title = pageTitle + ": " + titleArray[1];
+        } else {
+          document.title = pageTitle + ": " + title;
+        }
       } else {
         document.title = pageTitle;
       }
