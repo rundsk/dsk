@@ -128,14 +128,14 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		path = filepath.Dir(path) + "/"
 	}
 
-	n, err := tree.Get(path)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
 	// If the path contained a file, return the file
 	if file != "" {
+		n, err := tree.Get(path)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+
 		buf, typ, err := n.Asset(file)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusNotFound)
