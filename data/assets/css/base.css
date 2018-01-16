@@ -353,6 +353,17 @@ h1 {
   flex-grow: 1;
 }
 
+.no-content-placeholder {
+  border-radius: .5rem;
+  background-color: var(--color-lightgray);
+  padding: 2rem;
+  padding-top: 2.6rem;
+  width: 100%;
+  font-size: 1.2em;
+  line-height: 1em;
+  color: var(--color-darkgray)
+}
+
 /* Files */
 
 .files {

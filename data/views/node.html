@@ -1,82 +1,89 @@
 <nav class="crumbs">
 	<ul>
-	{{range $url := .N.CrumbURLs}}
+		{{range $url := .N.CrumbURLs}}
 		<li class="crumbs__crumb"><a href="/{{$url}}">{{$.N.CrumbName $url}}</a>
+			{{end}}
+		</ul>
+	</nav>
+
+	<section class="title">
+		<h1>{{.N.Title}}</h1>
+	</section>
+
+	<section class="description">
+		{{.N.Meta.Description}}
+	</section>
+
+	<section class="keywords">
+		<ul>
+			{{range $index, $keyword := .N.Meta.Keywords}}
+			<li class="keywords__keyword"><a href="search:{{$keyword}}">{{$keyword}}</a></li>
+			{{end}}
+		</ul>
+	</section>
+
+	{{if .N.HasComponent}}
+	<section class="top-stage">
+		<iframe class="component-stage" src="/api/embed/{{.N.URL}}"></iframe>
+	</section>
 	{{end}}
-	</ul>
-</nav>
 
-<section class="title">
-	<h1>{{.N.Title}}</h1>
-</section>
-
-<section class="description">
-	{{.N.Meta.Description}}
-</section>
-
-<section class="keywords">
-	<ul>
-	{{range $index, $keyword := .N.Meta.Keywords}}
-		<li class="keywords__keyword"><a href="search:{{$keyword}}">{{$keyword}}</a></li>
-	{{end}}
-	</ul>
-</section>
-
-{{if .N.HasComponent}}
-<section class="top-stage">
-	<iframe class="component-stage" src="/api/embed/{{.N.URL}}"></iframe>
-</section>
-{{end}}
-
-<div class="info">
-	{{if not .N.HasGeneralDoc}} {{if .N.Children}}
-	<section class="children-table">
+	<div class="info">
+		{{if not .N.HasGeneralDoc}} {{if .N.Children}}
+		<section class="children-table">
 			<table>
-			{{range $index, $child := .N.Children}}
+				{{range $index, $child := .N.Children}}
 				<tr>
 					<td><a href="/{{$child.URL}}">{{$child.Title}}</a></td>
 					<td><a href="/{{$child.URL}}">{{$child.Meta.Description}}</a></td>
 				</tr>
-			{{end}}
-			</table>
-	</section>
-	{{end}} {{end}}
-
-	{{if .N.HasGeneralDoc}}
-	<div class="two-columns">
-		<section class="general-doc text">
-			{{.N.GeneralDoc}}
-		</section>
-
-		{{if .N.Files}}
-		<section class="files text">
-			<h1>Files</h1>
-			<ul>
-			{{range $index, $file := .N.Files}}
-				{{if not $file.IsDir}}
-				<li><a href="/{{$.N.URL}}{{$file.Name}}" download>{{$file.Name}}</a></li>
 				{{end}}
+			</table>
+		</section>
+		{{end}} {{end}}
+
+		<div class="two-columns">
+			{{if .N.HasGeneralDoc}}
+			<section class="general-doc text">
+				{{.N.GeneralDoc}}
+			</section>
 			{{end}}
-			</ul>
+			{{if not .N.HasGeneralDoc}}
+			<section class="general-doc text">
+				{{if not .N.HasAPIDoc}} {{if not .N.Children}}
+				<div class="no-content-placeholder">Dieses Element hat im Moment noch keine Beschreibung.</div>
+				{{end}} {{end}}
+			</section>
+			{{end}}
+
+			{{if .N.Files}}
+			<section class="files text">
+				<h1>Files</h1>
+				<ul>
+					{{range $index, $file := .N.Files}}
+					{{if not $file.IsDir}}
+					<li><a href="/{{$.N.URL}}{{$file.Name}}" download>{{$file.Name}}</a></li>
+					{{end}}
+					{{end}}
+				</ul>
+			</section>
+			{{end}}
+		</div>
+
+		{{if .N.HasDemos}}
+		<section class="demos text">
+			<h1>Demos</h1>
+
+			{{range $name := .N.DemoNames}}
+			<h2>{{$name}}</h2>
+			<iframe class="component-stage" src="/api/embed/{{$.N.URL}}:{{$name}}"></iframe>
+			{{end}}
+		</section>
+		{{end}}
+
+		{{if .N.HasAPIDoc}}
+		<section class="api-doc text">
+			{{.N.APIDoc}}
 		</section>
 		{{end}}
 	</div>
-	{{end}}
-
-	{{if .N.HasDemos}}
-	<section class="demos text">
-		<h1>Demos</h1>
-
-		{{range $name := .N.DemoNames}}
-				<h2>{{$name}}</h2>
-				<iframe class="component-stage" src="/api/embed/{{$.N.URL}}:{{$name}}"></iframe>
-		{{end}}
-	</section>
-	{{end}}
-
-	{{if .N.HasAPIDoc}}
-	<section class="api-doc text">
-		{{.N.APIDoc}}
-	</section>
-	{{end}}
-</div>
