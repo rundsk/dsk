@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
       a.classList.remove("is-active");
     }
 
-    let activeNode = $1(".tree-nav li a[href='" + path + "']");
+    let activeNode = $1(".tree-nav li a[href='" + decodeURIComponent(path) + "']");
     if (activeNode) {
       activeNode.parentNode.classList.add("is-active");
     }
