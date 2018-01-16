@@ -16,7 +16,7 @@
 
 	<section class="keywords">
 		<ul>
-			{{range $index, $keyword := .N.Meta.Keywords}}
+			{{range $keyword := .N.Meta.Keywords}}
 			<li class="keywords__keyword"><a href="search:{{$keyword}}">{{$keyword}}</a></li>
 			{{end}}
 		</ul>
@@ -32,7 +32,7 @@
 		{{if not .N.HasGeneralDoc}} {{if .N.Children}}
 		<section class="children-table">
 			<table>
-				{{range $index, $child := .N.Children}}
+				{{range $child := .N.Children}}
 				<tr>
 					<td><a href="/{{$child.URL}}">{{$child.Title}}</a></td>
 					<td><a href="/{{$child.URL}}">{{$child.Meta.Description}}</a></td>
@@ -60,7 +60,7 @@
 			<section class="files text">
 				<h1>Files</h1>
 				<ul>
-					{{range $index, $file := .N.Files}}
+					{{range $file := .N.Files}}
 					{{if not $file.IsDir}}
 					<li><a href="/{{$.N.URL}}{{$file.Name}}" download>{{$file.Name}}</a></li>
 					{{end}}
