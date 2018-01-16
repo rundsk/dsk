@@ -11,12 +11,12 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
+	"mime"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
-	"mime"
-	"regexp"
 
 	"github.com/russross/blackfriday"
 )
@@ -31,7 +31,7 @@ type Node struct {
 	// Ghosted nodes are nodes that have incomplete information, for
 	// these nodes not all methods are guaranteed to succeed.
 	IsGhost bool `json:"isGhost"`
-	Files []FileInfo
+	Files   []FileInfo
 }
 
 // Meta data as specified in a node configuration file.
@@ -89,7 +89,7 @@ func (n *Node) Sync() error {
 	n.IsGhost = false
 	n.Files, err = n.filesForNode()
 
-	if (n.URL != "/") {
+	if n.URL != "/" {
 		n.Title = n.titleForUrl(n.URL)
 	}
 	//log.Printf(n.Files)
@@ -132,17 +132,17 @@ func (n Node) Asset(name string) (bytes.Buffer, string, error) {
 }
 
 type FileInfo struct {
-    Name    string
-    Size    int64
-    Mode    os.FileMode
-    IsDir   bool
-		Path    string
-		Type		string
+	Name  string
+	Size  int64
+	Mode  os.FileMode
+	IsDir bool
+	Path  string
+	Type  string
 }
 
 // Checks node's directory for files
 func (n Node) filesForNode() ([]FileInfo, error) {
-	files, err := ioutil.ReadDir(n.path);
+	files, err := ioutil.ReadDir(n.path)
 
 	if err != nil {
 		return nil, err
@@ -161,22 +161,21 @@ func (n Node) filesForNode() ([]FileInfo, error) {
 		}
 
 		f := FileInfo{
-			Name:    entry.Name(),
-			Size:    entry.Size(),
-			Mode:    entry.Mode(),
-			IsDir:   entry.IsDir(),
-			Path: path,
-			Type: filetype,
+			Name:  entry.Name(),
+			Size:  entry.Size(),
+			Mode:  entry.Mode(),
+			IsDir: entry.IsDir(),
+			Path:  path,
+			Type:  filetype,
 		}
 
-		if (
-			f.IsDir != true &&
+		if f.IsDir != true &&
 			f.Name != "readme.md" &&
 			f.Name != "api.md" &&
 			f.Name != ".DS_Store" &&
 			f.Type != ".css" &&
 			f.Type != ".js" &&
-			f.Type != ".json") {
+			f.Type != ".json" {
 			filteredFiles = append(filteredFiles, f)
 		}
 	}
@@ -314,7 +313,7 @@ func (n Node) titleForUrl(url string) string {
 	re := regexp.MustCompile(`^\d+[_,-]{1}(.*)`)
 	s := re.FindStringSubmatch(title)
 
-	if (len(s) > 0) {
+	if len(s) > 0 {
 		title = s[1]
 	}
 
