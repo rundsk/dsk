@@ -182,6 +182,14 @@ func (n Node) filesForNode() ([]FileInfo, error) {
 	return filteredFiles, nil
 }
 
+// Returns an alphabetically sorted list of keywords.
+func (n Node) Keywords() []string {
+	keywords := n.Meta.Keywords
+
+	sort.Strings(keywords)
+	return keywords
+}
+
 // Result is passed as component import name to renderComponent()
 // JavaScript glue function.
 func (n Node) Import() (string, error) {

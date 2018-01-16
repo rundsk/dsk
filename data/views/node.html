@@ -16,7 +16,7 @@
 
 	<section class="keywords">
 		<ul>
-			{{range $keyword := .N.Meta.Keywords}}
+			{{range $keyword := .N.Keywords}}
 			<li class="keywords__keyword"><a href="search:{{$keyword}}">{{$keyword}}</a></li>
 			{{end}}
 		</ul>
