@@ -190,6 +190,13 @@ func (n Node) Keywords() []string {
 	return keywords
 }
 
+// Returns the full description of the node. Provided for symmetry of
+// the node API. There should be no reason to access .Meta directly
+// anymore.
+func (n Node) Description() string {
+	return n.Meta.Description
+}
+
 // Result is passed as component import name to renderComponent()
 // JavaScript glue function.
 func (n Node) Import() (string, error) {

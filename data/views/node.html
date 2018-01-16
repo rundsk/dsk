@@ -35,7 +35,7 @@
 				{{range $child := .N.Children}}
 				<tr>
 					<td><a href="/{{$child.URL}}">{{$child.Title}}</a></td>
-					<td><a href="/{{$child.URL}}">{{$child.Meta.Description}}</a></td>
+					<td><a href="/{{$child.URL}}">{{$child.Description}}</a></td>
 				</tr>
 				{{end}}
 			</table>
