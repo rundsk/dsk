@@ -304,8 +304,8 @@ h1 {
 /* Children Table */
 
 .children-table {
-  margin: 8rem 0;
   line-height: 1.6em;
+  flex-grow: 1;
   max-width: 650px;
 }
 
@@ -359,7 +359,7 @@ h1 {
   padding: 2rem;
   padding-top: 2.6rem;
   width: 100%;
-  font-size: 1.2em;
+
   line-height: 1em;
   color: var(--color-darkgray)
 }
