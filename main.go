@@ -46,14 +46,14 @@ var (
 func main() {
 	log.SetFlags(0) // disable prefix, we are invoked directly.
 
-	if len(os.Args) > 2 {
-		log.Fatalf("Too many arguments given, expecting exactly 0 or 1")
-	}
-
 	host := flag.String("host", "127.0.0.1", "host IP to bind to")
 	port := flag.String("port", "8080", "port to bind to")
 	noColor := flag.Bool("no-color", false, "disables color output")
 	flag.Parse()
+
+	if len(flag.Args()) > 1 {
+		log.Fatalf("Too many arguments given, expecting exactly 0 or 1")
+	}
 
 	// Color package automatically disables colors when not a TTY. We
 	// don't need to check for an interactive terminal here again.
@@ -75,7 +75,7 @@ func main() {
 		}
 	}()
 
-	here, err := detectRoot()
+	here, err := detectRoot(os.Args[0], flag.Arg(1))
 	if err != nil {
 		log.Fatalf("Failed to detect root of design definitions tree: %s", red(err))
 	}

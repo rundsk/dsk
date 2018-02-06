@@ -9,7 +9,6 @@ import (
 	"errors"
 	"html/template"
 	"log"
-	"os"
 	"path/filepath"
 	"strings"
 )
@@ -47,17 +46,19 @@ func checkSafePath(path string, root string) error {
 }
 
 // Tries to find root directory either by looking at args or the
-// current working directory.
-func detectRoot() (string, error) {
+// current working directory. This function needs the full path to the
+// binary as a first argument and optionally an explicitly given path
+// as the second argument.
+func detectRoot(binary string, given string) (string, error) {
 	var here string
 
-	if len(os.Args) == 2 {
-		here = os.Args[1]
+	if given != "" {
+		here = given
 	} else {
 		// When no path is given as an argument, take the path to the
 		// process itself. This makes sure that when opening the binary from
 		// Finder the folder it is stored in is used.
-		here = filepath.Dir(os.Args[0])
+		here = filepath.Dir(binary)
 	}
 	here, err := filepath.Abs(here)
 	if err != nil {
