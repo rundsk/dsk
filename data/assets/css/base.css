@@ -539,3 +539,68 @@ h1 {
   background-color: #F2F2F2;
   border: none;
 }
+
+
+
+
+/* Printer */
+
+@media print {
+  body {
+    display: block;
+    font-size: 14px;
+    font-family: Helvetica, Arial, sans-serif;
+  }
+
+  aside {
+    display: none;
+  }
+
+  /* Title */
+
+  h1 {
+    font-size: 35px;
+  }
+
+  /* Description */
+
+  .description {
+    font-size: 20px;
+  }
+
+
+  .files {
+    display: none;
+  }
+
+  .keywords__keyword a  {
+    padding: 0;
+    margin-right: 1rem;
+    background-color: transparent;
+    color: var(--color-midgray);
+  }
+
+  .text img:first-child {
+    max-height: 450px;
+    width: auto;
+  }
+
+  .text pre {
+    border: 1px solid var(--color-semilightgray);
+  }
+
+  .text code {
+    border: none;
+  }
+
+
+  .text table tr {
+    border-bottom-style: solid;
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  .text table td {
+    page-break-inside: avoid;
+  }
+}
