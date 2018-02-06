@@ -14,9 +14,9 @@ class Tree {
 
   // One way sync: updates the data from backend source.
   sync() {
-    return fetch('/api/tree.json').then((res) => {
-      return res.json();
-    }).then((json) => {
+    return (new Promise(function(resolve, reject) {
+        jQuery.getJSON('/api/tree.json').done(resolve);
+    })).then((json) => {
       this.root = json.data.root;
     });
   }

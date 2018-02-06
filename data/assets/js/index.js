@@ -47,9 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
       path += "/";
     }
 
-    fetch("/api/tree" + path).then((res) => {
-      return res.text();
-    }).then((html) => {
+    jQuery.get("/api/tree" + path).done((html) => {
       markNodeInNavAsActiveWithPath(path);
 
       let state = { path: path, search: window.location.search.substring(1) };
