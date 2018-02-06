@@ -75,7 +75,7 @@ func main() {
 		}
 	}()
 
-	here, err := detectRoot(os.Args[0], flag.Arg(1))
+	here, err := detectRoot(os.Args[0], flag.Arg(0))
 	if err != nil {
 		log.Fatalf("Failed to detect root of design definitions tree: %s", red(err))
 	}
