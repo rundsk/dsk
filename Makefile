@@ -7,6 +7,8 @@ PREFIX ?= /usr/local
 VERSION ?= head-$(shell git rev-parse --short HEAD)
 GOFLAGS = -X main.Version=$(VERSION)
 
+ANY_DEPS = $(wildcard *.go)
+
 .PHONY: dev
 dev:
 	go-bindata -debug -o data.go data/...
@@ -33,13 +35,13 @@ dist: dist/dsk dist/dsk-darwin-amd64 dist/dsk-linux-amd64
 $(PREFIX)/bin/%: dist/%
 	install -m 555 $< $@
 
-dist/%-darwin-amd64: data.go
+dist/%-darwin-amd64: $(ANY_DEPS) | data.go
 	GOOS=darwin GOARCH=amd64 go build -ldflags "$(GOFLAGS)" -o $@
 
-dist/%-linux-amd64: data.go
+dist/%-linux-amd64: $(ANY_DEPS) | data.go
 	GOOS=linux GOARCH=amd64 go build -ldflags "$(GOFLAGS)" -o $@
 
-dist/%: data.go
+dist/%: $(ANY_DEPS) | data.go
 	go build -ldflags "$(GOFLAGS)" -o $@
 
 data.go: $(shell find data -type f) 
