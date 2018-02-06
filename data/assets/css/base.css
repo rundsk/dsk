@@ -145,11 +145,11 @@ aside header .title, aside header .title a {
 }
 
 .tree-nav ul li a:hover {
-  color: var(--color-blue);
+  color: var(--color-darkgray);
 }
 
 .tree-nav ul li.is-active > a {
-  color: var(--color-blue);
+  color: var(--color-darkgray);
 }
 
 aside .ghosted {
