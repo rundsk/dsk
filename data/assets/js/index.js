@@ -5,6 +5,12 @@
  * license that can be found in the LICENSE file.
  */
 
+/* globals Fuse: false */
+/* globals Tree: false */
+/* globals jQuery: false */
+
+"use strict";
+
 document.addEventListener('DOMContentLoaded', function() {
   let $ = document.querySelectorAll.bind(document);
   let $1 = document.querySelector.bind(document);
@@ -60,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // Set document title to the name of the node
       var title = path.split("/");
       title = decodeURIComponent(title[title.length - 2]);
-      titleArray = /^\d+[_,-]{1}(.*)/.exec(title)
+      let titleArray = /^\d+[_,-]{1}(.*)/.exec(title);
 
       if (title !== "") {
         if (titleArray) {
@@ -109,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let handleNav = function(ev) {
     // If CMD is pressed default behavior is triggered (open link in new tab)
     if (event.metaKey) {
-      return
+      return;
     }
 
     ev.preventDefault();
@@ -128,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // If CMD is pressed default behavior is triggered (open link in new tab)
     if (event.metaKey) {
-      return
+      return;
     }
 
     // Only handle local links

@@ -5,6 +5,10 @@
  * license that can be found in the LICENSE file.
  */
 
+/* globals jQuery: false */
+
+"use strict";
+
 // https://en.wikipedia.org/wiki/Tree_traversal
 class Tree {
 
