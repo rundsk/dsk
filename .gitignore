@@ -8,3 +8,4 @@ dist
 !empty
 _*
 data.go
+data/assets/*/*.dist.*
