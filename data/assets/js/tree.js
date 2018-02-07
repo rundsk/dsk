@@ -5,8 +5,6 @@
  * license that can be found in the LICENSE file.
  */
 
-/* globals jQuery: false */
-
 "use strict";
 
 // https://en.wikipedia.org/wiki/Tree_traversal
@@ -18,9 +16,9 @@ class Tree {
 
   // One way sync: updates the data from backend source.
   sync() {
-    return (new Promise(function(resolve, reject) {
-        jQuery.getJSON('/api/tree.json').done(resolve);
-    })).then((json) => {
+    return fetch('/api/tree.json').then((res) => {
+      return res.json();
+    }).then((json) => {
       this.root = json.data.root;
     });
   }

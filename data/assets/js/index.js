@@ -7,7 +7,6 @@
 
 /* globals Fuse: false */
 /* globals Tree: false */
-/* globals jQuery: false */
 
 "use strict";
 
@@ -53,7 +52,9 @@ document.addEventListener('DOMContentLoaded', function() {
       path += "/";
     }
 
-    jQuery.get("/api/tree" + path).done((html) => {
+    fetch("/api/tree" + path).then((res) => {
+      return res.text();
+    }).then((html) => {
       markNodeInNavAsActiveWithPath(path);
 
       let state = { path: path, search: window.location.search.substring(1) };
