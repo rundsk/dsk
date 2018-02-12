@@ -78,7 +78,7 @@ Possible configuration options are:
 
 # Architecture
 
-Architecture-wise DSK is split into backend and the frontend. The backend implemented 
+Architecture-wise DSK is split into backend and frontend. The backend implemented 
 in Go takes care of understanding the defintions tree and provides a REST API for
 the frontend, usually implemented in JavaScript.
 
@@ -103,20 +103,23 @@ Get the full design definitions tree as a nested tree of nodes.
 `GET /api/v1/tree/{path}`
 Get information about a single node specified by `path`.
 
-`GET /api/v1/search?q={query}
+`GET /api/v1/search?q={query}`
 Full text search over the design definitions tree.
 
 ### Building your URLs
 
-So relative media references work in the rendered HTML the frontend
-should use the path of the node, i.e. `/Button`, as the canonical URL
-to display node information. Assets for the `Button` node are served
-_by the backend_ under i.e. `/Button/example.png`.
-
 Your frontend and its subdirectories will be mounted directly at the
 root path `/`. You must ensure the frontend doesn't include directories which collide 
-with reserved paths (i.e. `api`) or existing components (i.e. `Button`).
-	
+with reserved backend paths (currently just `api` is reserved).
+
+So relative media references work in the rendered HTML the frontend should:
+
+1. use the path of the node, i.e. `/Button`, as the canonical URL,
+   to display node information. Assets for the `Button` node are served
+   _by the backend_ under i.e. `/Button/example.png`.
+
+2. redirect requests for i.e. `/Button` to `/Button/`
+
 A build created by create react app's `npm run build` is a valid frontend:
 ```
 .
