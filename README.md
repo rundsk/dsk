@@ -49,8 +49,6 @@ example
 │   │   │   └── readme.md
 │   │   ├── api.md
 │   │   ├── index.json
-│   │   ├── main.css
-│   │   ├── main.js
 │   │   ├── readme.md
 │   │   └── unmask.svg
 ```
@@ -61,21 +59,14 @@ Each component directory may hold an `index.json` file. The file and any of its
 configuration settings are entirely optional.
 
 Using the configuration file, we can add meta data to the component (i.e. keywords)
-to improve the search experience in the interface. We can also configure
-so called `demos` that describe variants of the component.
+to improve the search experience in the interface. 
 
 An example of a full component configuration looks like this:
 
 ```json
 {
     "description": "This is a very very very fancy component.",
-    "keywords": ["fancy", "very"],
-    "import": "InputPassword",
-    "demos": {
-        "23 is the magic number": {"bar": "baz", "23": true},
-        "Another Example": {"bla": "44"},
-        "What happens when qux equals sup": {"qux": "sup"}
-    }
+    "keywords": ["fancy", "very"]
 }
 ```
 
@@ -83,43 +74,6 @@ Possible configuration options are:
 
 - `description`: A single sentence that roughly describes the component.
 - `keywords`: An array of keywords to group related components together.
-- `import`: The name under which the component can be imported. By default the
-   import name is the same as the directory path, i.e. `DataEntry/TextField/Password`. When your
-   component is known under a different name, this option allows you to override
-   the default one.
-- `demos`: An object, which defines variations of the component. The object's
-  keys are the names of the variations, the corresponding values hold property sets.
-
-## Use it with [Create React App](https://github.com/facebookincubator/create-react-app) 
-
-After creating the react app, Modify the entry point in `src/index.js`. When
-loaded in DSK it must provide a `renderComponent()` function. This global
-function is the only little glue code required. 
-
-```javascript
-window.renderComponent = function(root, name, props) {
-  return import('./' + name).then(c => {
-    ReactDOM.render(React.createElement(c.default, props), root);
-  });
-};
-```
-
-Using the `INSIDE_DSK` constant, it's possible to conditionally activate certain
-default behavior while developing and deactivate it when embedded in DSK.
-
-```javascript
-if (typeof INSIDE_DSK === "undefined") {
-  ReactDOM.render(<App />, document.getElementById('root'));
-  registerServiceWorker();
-}
-```
-
-When ready, create the bundle and copy it into our definitions tree.
-
-```
-$ npm run build 
-$ cp build/static/*/main*.{css,js} example/DataEntry/TextField/Password/
-```
 
 ## Development
 

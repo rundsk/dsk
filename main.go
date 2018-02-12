@@ -6,17 +6,14 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
-	"html/template"
 	"log"
 	"mime"
 	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/fatih/color"
@@ -34,13 +31,9 @@ var (
 	// Instance of the design defintions tree.
 	tree *NodeTree
 
-	// Check for variant suffix i.e. :foo or :foo%20bar.
-	demoRouteRegex = regexp.MustCompile(`^(.+):(.+)$`)
-
 	// Handful of pre-parsed templates.
 	templateIndex = mustPrepareTemplate("index.html")
 	templateNode  = mustPrepareTemplate("node.html")
-	templateStage = mustPrepareTemplate("stage.html")
 )
 
 func main() {
@@ -98,7 +91,6 @@ func main() {
 	http.HandleFunc("/assets/", assetsHandler)
 	http.HandleFunc("/api/tree.json", treeHandler)
 	http.HandleFunc("/api/tree/", treeHandler)
-	http.HandleFunc("/api/embed/", embedHandler)
 
 	if err := http.ListenAndServe(addr, nil); err != nil {
 		log.Fatalf("Failed to start web interface: %s", red(err))
@@ -267,114 +259,6 @@ func treeNodeHandler(w http.ResponseWriter, r *http.Request) {
 		N: n,
 	}
 	if err := templateNode.Execute(w, tVars); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
-
-// Renders a HTML page that will be rendered into the components
-// stage. It will be embeded using an iframe.
-//
-// Handles these kinds of URLs:
-//   /api/embed/DisplayData/Table
-//   /api/embed/DisplayData/Table:foo%20bar
-//   /api/embed/DisplayData/Table:bar
-//   /api/embed/DisplayData/Table.js
-//   /api/embed/DisplayData/Table.css
-func embedHandler(w http.ResponseWriter, r *http.Request) {
-	if strings.HasSuffix(r.URL.Path, ".css") {
-		embedCSSHandler(w, r)
-	} else if strings.HasSuffix(r.URL.Path, ".js") {
-		embedJSHandler(w, r)
-	} else {
-		embedDemoHandler(w, r)
-	}
-}
-
-func embedCSSHandler(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path[len("/api/embed/"):]
-
-	if err := checkSafePath(path, root); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	path = strings.TrimSuffix(path, ".css")
-
-	n, err := tree.GetSynced(path)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	buf, err := n.CSS()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	w.Header().Add("Content-Type", "text/css")
-	w.Write(buf.Bytes())
-}
-
-func embedJSHandler(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path[len("/api/embed/"):]
-
-	if err := checkSafePath(path, root); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	path = strings.TrimSuffix(path, ".js")
-
-	n, err := tree.GetSynced(path)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	buf, err := n.JS()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	w.Header().Add("Content-Type", "application/javascript")
-	w.Write(buf.Bytes())
-}
-
-func embedDemoHandler(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path[len("/api/embed/"):]
-
-	var propSet PropSet
-	var demo string
-
-	if m := demoRouteRegex.FindStringSubmatch(path); m != nil {
-		path = m[1]
-		demo = m[2] // Is auto-unescaped.
-	}
-
-	if err := checkSafePath(path, root); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	n, err := tree.GetSynced(path)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	if demo != "" {
-		propSet, _ = n.Demo(demo)
-	}
-	mPropSet, _ := json.Marshal(propSet)
-
-	tVars := struct {
-		N       *Node
-		PropSet template.JS // marshalled PropSet
-	}{
-		N:       n,
-		PropSet: template.JS(mPropSet),
-	}
-	if err := templateStage.Execute(w, tVars); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }

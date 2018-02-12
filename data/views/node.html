@@ -22,12 +22,6 @@
 		</ul>
 	</section>
 
-	{{if .N.HasComponent}}
-	<section class="top-stage">
-		<iframe class="component-stage" src="/api/embed/{{.N.URL}}"></iframe>
-	</section>
-	{{end}}
-
 	<div class="info">
 		<div class="two-columns">
 			{{if not .N.HasGeneralDoc}} {{if .N.Children}}
@@ -69,17 +63,6 @@
 			</section>
 			{{end}}
 		</div>
-
-		{{if .N.HasDemos}}
-		<section class="demos text">
-			<h1>Demos</h1>
-
-			{{range $name := .N.DemoNames}}
-			<h2>{{$name}}</h2>
-			<iframe class="component-stage" src="/api/embed/{{$.N.URL}}:{{$name}}"></iframe>
-			{{end}}
-		</section>
-		{{end}}
 
 		{{if .N.HasAPIDoc}}
 		<section class="api-doc text">

@@ -38,10 +38,6 @@ type Node struct {
 type NodeMeta struct {
 	Description string   `json:"description"`
 	Keywords    []string `json:"keywords"`
-	// Optional, if missing will use the URL.
-	Import string
-	// Optionally defines a list of property sets, keyed by their names.
-	Demos map[string]PropSet `json:"demos"`
 }
 
 // A set of component properties, usually parsed from JSON.
@@ -173,8 +169,6 @@ func (n Node) filesForNode() ([]FileInfo, error) {
 			f.Name != "readme.md" &&
 			f.Name != "api.md" &&
 			f.Name != ".DS_Store" &&
-			f.Type != ".css" &&
-			f.Type != ".js" &&
 			f.Type != ".json" {
 			filteredFiles = append(filteredFiles, f)
 		}
@@ -195,60 +189,6 @@ func (n Node) Keywords() []string {
 // anymore.
 func (n Node) Description() string {
 	return n.Meta.Description
-}
-
-// Result is passed as component import name to renderComponent()
-// JavaScript glue function.
-func (n Node) Import() (string, error) {
-	if n.Meta.Import != "" {
-		return n.Meta.Import, nil
-	}
-	return n.URL, nil
-}
-
-func (n Node) HasComponent() bool {
-	return n.HasJS()
-}
-
-func (n Node) HasJS() bool {
-	files, _ := filepath.Glob(filepath.Join(n.path, "*.js"))
-	return len(files) > 0
-}
-
-func (n Node) JS() (bytes.Buffer, error) {
-	return n.bundledAssets("js")
-}
-
-func (n Node) HasCSS() bool {
-	files, _ := filepath.Glob(filepath.Join(n.path, "*.css"))
-	return len(files) > 0
-}
-
-func (n Node) CSS() (bytes.Buffer, error) {
-	return n.bundledAssets("css")
-}
-
-// Looks for i.e. CSS files in node directory and concatenates them.
-// This way we don't need a naming convention for these assets.
-func (n Node) bundledAssets(suffix string) (bytes.Buffer, error) {
-	var b bytes.Buffer
-
-	files, err := filepath.Glob(filepath.Join(n.path, "*."+suffix))
-	if err != nil {
-		return b, err
-	}
-	if len(files) == 0 {
-		return b, fmt.Errorf("no .%s assets in path %s", suffix, n.path)
-	}
-
-	for _, f := range files {
-		c, err := ioutil.ReadFile(f)
-		if err != nil {
-			return b, err
-		}
-		b.Write(c)
-	}
-	return b, nil
 }
 
 // Checks whether general documentation is available.
@@ -296,31 +236,6 @@ func (n Node) CrumbURLs() []string {
 // Returns the name for a given crumb URL.
 func (n Node) CrumbName(url string) string {
 	return n.titleForUrl(url)
-}
-
-func (n Node) HasDemos() bool {
-	return len(n.Meta.Demos) > 0
-}
-
-// Returns the names of all available demos in order. The prop set of
-// each demo can be retrieved via Demo(). This approach is needed as
-// Go's maps are not guaranteed to keep order.
-func (n Node) DemoNames() []string {
-	var names []string
-
-	for name := range n.Meta.Demos {
-		names = append(names, name)
-	}
-	sort.Strings(names)
-	return names
-}
-
-// Access a node's demo by its name.
-func (n Node) Demo(name string) (PropSet, error) {
-	if val, ok := n.Meta.Demos[name]; ok {
-		return val, nil
-	}
-	return nil, fmt.Errorf("no demo with name: %s", name)
 }
 
 func (n Node) titleForUrl(url string) string {
