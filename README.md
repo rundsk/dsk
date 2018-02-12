@@ -5,8 +5,9 @@
 Using Design System Kit (DSK) you quickly organize components into a
 browsable and live-searchable component library.
 
-Hierachies between components are established using plain simple directories. Creating
-documentation is as easy as adding a Markdown formatted file to a directory inside the _design definitions tree_.
+Hierachies between components are established using plain simple directories.
+Creating documentation is as easy as adding a Markdown formatted file to a
+directory inside the _design definitions tree_.
 
 ![screenshot](https://atelierdisko.de/assets/app/img/github_dsk.png)
 
@@ -53,7 +54,7 @@ example
 │   │   └── unmask.svg
 ```
 
-## Component Configuration File
+### Component Configuration File
 
 Each component directory may hold an `index.json` file. The file and any of its
 configuration settings are entirely optional.
@@ -74,6 +75,60 @@ Possible configuration options are:
 
 - `description`: A single sentence that roughly describes the component.
 - `keywords`: An array of keywords to group related components together.
+
+# Architecture
+
+Architecture-wise DSK is split into backend and the frontend. The backend implemented 
+in Go takes care of understanding the defintions tree and provides a REST API for
+the frontend, usually implemented in JavaScript.
+
+The decoupled design allows you to create indvidually branded frontends, which
+are entirely free in their implementation, they must adher to only a minimal set
+of rules.
+
+The frontend and backend and are compiled together into a single binary, making
+usuable as a publicly hosted web application or a locally running design tool.
+
+## Building your own Frontend 
+
+### Available API Endpoints
+
+The backend provides the following API endpoints. All endpoints return JSON
+using [JSend](https://labs.omniti.com/labs/jsend) as the general response
+format.
+
+`GET /api/v1/tree`
+Get the full design definitions tree as a nested tree of nodes.
+
+`GET /api/v1/tree/{path}`
+Get information about a single node specified by `path`.
+
+`GET /api/v1/search?q={query}
+Full text search over the design definitions tree.
+
+### Building your URLs
+
+So relative media references work in the rendered HTML the frontend
+should use the path of the node, i.e. `/Button`, as the canonical URL
+to display node information. Assets for the `Button` node are served
+_by the backend_ under i.e. `/Button/example.png`.
+
+Your frontend and its subdirectories will be mounted directly at the
+root path `/`. You must ensure the frontend doesn't include directories which collide 
+with reserved paths (i.e. `api`) or existing components (i.e. `Button`).
+	
+A build created by create react app's `npm run build` is a valid frontend:
+```
+.
+├── index.html
+└── static
+    ├── css
+    │   ├── main.41064805.css
+    ├── js
+    │   ├── main.5f57358c.js
+    └── media
+        └── exampleImage.3780b1a4.png
+```
 
 ## Development
 
