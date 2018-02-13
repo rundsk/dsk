@@ -48,9 +48,9 @@ func (t *NodeTree) Sync() error {
 			if err != nil {
 				return err
 			}
-			if(matched) {
+			if matched {
 				red := color.New(color.FgYellow).SprintFunc()
-				log.Printf("Ignoring node: %s", red(path));
+				log.Printf("Ignoring node: %s", red(prettyPath(path)))
 				return filepath.SkipDir
 			}
 

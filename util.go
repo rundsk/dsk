@@ -16,7 +16,7 @@ import (
 var DirectoryTraversalError = errors.New("directory traversal attempted")
 
 func prettyPath(path string) string {
-	rel, _ := filepath.Rel(root, path)
+	rel, _ := filepath.Rel(filepath.Dir(root), path)
 	return rel
 }
 

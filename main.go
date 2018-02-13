@@ -68,7 +68,7 @@ func main() {
 		log.Fatalf("Failed to detect root of design definitions tree: %s", red(err))
 	}
 	root = here // assign to global
-	log.Printf("Using %s as root directory", root)
+	log.Printf("Using design definitions tree in %s...", prettyPath(root))
 
 	tree = NewNodeTreeFromPath(here) // assign to global
 	if err := tree.Sync(); err != nil {
