@@ -111,7 +111,7 @@ Get information about a single node specified by `path`.
 `GET /api/v1/search?q={query}`
 Full text search over the design definitions tree.
 
-### Building your URLs
+### Designing the URL Schema
 
 Your frontend and its subdirectories will be mounted directly at the
 root path `/`. You must ensure the frontend doesn't include directories which collide 
@@ -136,6 +136,15 @@ A build created by create react app's `npm run build` is a valid frontend:
     │   ├── main.5f57358c.js
     └── media
         └── exampleImage.3780b1a4.png
+```
+
+### Building DSK with your Frontend
+
+Please install the development tools as described in the _Development_ section,
+than use the following command to compile a dsk binary with your frontend.
+
+```
+$ FRONTEND=/path/to/my/frontend make dist
 ```
 
 ## Development
