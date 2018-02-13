@@ -16,7 +16,7 @@ class Tree {
 
   // One way sync: updates the data from backend source.
   sync() {
-    return fetch('/api/tree.json').then((res) => {
+    return fetch('/api/v1/tree').then((res) => {
       return res.json();
     }).then((json) => {
       this.root = json.data.root;

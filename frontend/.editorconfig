@@ -11,13 +11,7 @@ root = true
 end_of_line = lf
 charset = utf-8
 
-[*.html]
-indent_style = tab
-tab_width = 4
-insert_final_newline = false
-trim_trailing_whitespace = true
-
-[*.{js,css}]
+[*.{js,css,html}]
 indent_style = space
 indent_size = 2
 insert_final_newline = false

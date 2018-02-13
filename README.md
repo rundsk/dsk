@@ -91,6 +91,11 @@ usuable as a publicly hosted web application or a locally running design tool.
 
 ## Building your own Frontend 
 
+The following sections describe everything you need to build your own frontend
+and bundle it with the dsk binary. By default dsk uses the _default frontend_,
+which - for inspirational purposes - can be found in the `frontend` directory of
+this project.
+
 ### Available API Endpoints
 
 The backend provides the following API endpoints. All endpoints return JSON
@@ -156,10 +161,6 @@ $ go get github.com/atelierdisko/dsk
 $ cd $(go env GOPATH)/src/github.com/atelierdisko/dsk
 $ make dev
 ```
-
-## Requirements
-
-A filesystem and a browser that supports ES6.
 
 ## Copyright & License
 

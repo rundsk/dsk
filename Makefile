@@ -8,6 +8,7 @@ VERSION ?= head-$(shell git rev-parse --short HEAD)
 GOFLAGS = -X main.Version=$(VERSION)
 
 ANY_DEPS = $(wildcard *.go)
+FRONTEND ?= $(shell pwd)/frontend
 
 .PHONY: dev
 dev:
@@ -44,5 +45,5 @@ dist/%-linux-amd64: $(ANY_DEPS) | data.go
 dist/%: $(ANY_DEPS) | data.go
 	go build -ldflags "$(GOFLAGS)" -o $@
 
-data.go: $(shell find data -type f) 
-	go-bindata -o data.go data/...
+data.go: $(shell find $(FRONTEND) -type f) 
+	go-bindata -ignore=node_modules -o data.go $(FRONTEND)/...

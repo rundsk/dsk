@@ -8,6 +8,5 @@ dist
 !empty
 _*
 data.go
-data/assets/*/*.dist.*
 node_modules
 package-lock.json
