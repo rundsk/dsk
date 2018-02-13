@@ -6,12 +6,10 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"html/template"
 	"io/ioutil"
-	"mime"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -112,19 +110,15 @@ func (n *Node) parseNodeConfig() (NodeMeta, error) {
 	return meta, nil
 }
 
-// Checks node's directory for given asset.
-func (n Node) Asset(name string) (bytes.Buffer, string, error) {
-	var b bytes.Buffer
+// Returns a node's asset full path, given its basename. Please note
+// that subdirectories are not supported.
+func (n Node) Asset(name string) (string, error) {
+	path := filepath.Join(n.path, name)
 
-	c, err := ioutil.ReadFile(filepath.Join(n.path, name))
-	if err != nil {
-		return b, "", err
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return path, err
 	}
-
-	typ := mime.TypeByExtension(filepath.Ext(name))
-
-	b.Write(c)
-	return b, typ, nil
+	return path, nil
 }
 
 type FileInfo struct {

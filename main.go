@@ -9,6 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"mime"
 	"net/http"
 	"os"
 	"os/signal"
@@ -24,7 +25,6 @@ var (
 	sigc chan os.Signal
 
 	// Absolute path to design definitions root directory.
-	// TODO: rename to treeRoot
 	root string
 
 	// Instance of the design defintions tree.
@@ -107,12 +107,17 @@ func main() {
 //   /
 //   /index.html
 //   /* <catch all>
-//
-// TODO: Implement
 func rootHandler(w http.ResponseWriter, r *http.Request) {
 	// Does not check on path, as we only ever serve a single
 	// file from here, and that path is hard-coded.
-	http.Error(w, "WIP", http.StatusNotImplemented)
+	w.Header().Set("Content-Type", "text/html")
+
+	data, err := Asset("frontend/index.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	w.Write(data[:])
 }
 
 // Serves the frontend and a node's assets. Will first look into the
@@ -123,8 +128,6 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 //   /static/css/main.41064805.css
 //   /DataEntry/Components/Button/test.png
 //   /Button/foo.mp4
-//
-// TODO: Finish up
 func assetHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path[len("/"):]
 
@@ -132,36 +135,31 @@ func assetHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	// TODO:
-	//  - first try frontend assets
-	//  - use http.ServeFile(w, r, assetPath), to fix video serving
-	//  - consider not retrieving node assets via tree, but directly via FS
 
-	// typ := mime.TypeByExtension(filepath.Ext(path))
-	// w.Header().Set("Content-Type", typ)
+	// First check if this is a frontend asset. There is no way to
+	// check if an asset is actually embeded without masking other
+	// errors. As these errors are deemed to be seldom enough,
+	// we don't care.
+	buf, err := Asset(filepath.Join("frontend", path))
+	if err == nil {
+		typ := mime.TypeByExtension(filepath.Ext(path))
+		w.Header().Set("Content-Type", typ)
+		w.Write(buf[:])
+		return
+	}
 
-	// data, err := Asset(path)
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusNotFound)
-	// 	return
-	// }
-	// w.Write(data[:])
+	n, err := tree.Get(filepath.Dir(path))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
 
-	// n, err := tree.Get(path)
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusNotFound)
-	// 	return
-	// }
-	// buf, typ, err := n.Asset(file)
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusNotFound)
-	// 	return
-	// }
-
-	// w.Header().Add("Content-Type", typ)
-	// w.Write(buf.Bytes())
-	// return
-	http.Error(w, "WIP", http.StatusNotImplemented)
+	assetPath, err := n.Asset(filepath.Base(path))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	http.ServeFile(w, r, assetPath)
 	return
 }
 
