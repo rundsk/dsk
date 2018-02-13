@@ -9,12 +9,10 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"mime"
 	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strings"
 
 	"github.com/fatih/color"
 	"github.com/gamegos/jsend"
@@ -26,14 +24,11 @@ var (
 	sigc chan os.Signal
 
 	// Absolute path to design definitions root directory.
+	// TODO: rename to treeRoot
 	root string
 
 	// Instance of the design defintions tree.
 	tree *NodeTree
-
-	// Handful of pre-parsed templates.
-	templateIndex = mustPrepareTemplate("index.html")
-	templateNode  = mustPrepareTemplate("node.html")
 )
 
 func main() {
@@ -87,134 +82,79 @@ func main() {
 	log.Printf("Please visit: %s", green("http://"+addr))
 	log.Print("Hit Ctrl+C to quit")
 
-	http.HandleFunc("/", indexHandler)
-	http.HandleFunc("/assets/", assetsHandler)
-	http.HandleFunc("/api/tree.json", treeHandler)
-	http.HandleFunc("/api/tree/", treeHandler)
+	http.HandleFunc("/api/v1/tree", treeHandler)
+	http.HandleFunc("/api/v1/tree/", nodeHandler)
+	http.HandleFunc("/api/v1/search", searchHandler)
+
+	// Anything that doesn't look like a node or frontend asset, will
+	// be routed into the root handler.
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if filepath.Ext(r.URL.Path) != "" {
+			return assetHandler(w, r)
+		}
+		return rootHandler(w, r)
+	})
 
 	if err := http.ListenAndServe(addr, nil); err != nil {
 		log.Fatalf("Failed to start web interface: %s", red(err))
 	}
 }
 
-// The root page.
+// Serves the frontend and a node's assets. Will first
+// look into the frontend's path then into the design
+// defintions tree path.
 //
 // Handles these kinds of URLs:
-//   /
-//   /DataEntry/Components/Button
-//   /DataEntry/Components/Button/
+//   /assets/css/base.css
+//   /static/css/main.41064805.css
 //   /DataEntry/Components/Button/test.png
-func indexHandler(w http.ResponseWriter, r *http.Request) {
+//   /Button/foo.mp4
+//
+func assetHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path[len("/"):]
 
 	if err := checkSafePath(path, root); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	// TODO:
+	//  - first try frontend assets
+	//  - use http.ServeFile(w, r, assetPath), to fix video serving
+	//  - consider not retrieving node assets via tree, but directly via FS
 
-	// Check if the path contains a file, if yes strip file
-	// from path, leaving just the node path.
-	var file string
-	if filepath.Ext(path) != "" {
-		file = filepath.Base(path)
-		path = filepath.Dir(path) + "/"
-	}
+	// typ := mime.TypeByExtension(filepath.Ext(path))
+	// w.Header().Set("Content-Type", typ)
 
-	// If the path contained a file, return the file
-	if file != "" {
-		n, err := tree.Get(path)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusNotFound)
-			return
-		}
+	// data, err := Asset(path)
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusNotFound)
+	// 	return
+	// }
+	// w.Write(data[:])
 
-		buf, typ, err := n.Asset(file)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusNotFound)
-			return
-		}
-
-		w.Header().Add("Content-Type", typ)
-		w.Write(buf.Bytes())
-		return
-	}
-
-	if !strings.HasSuffix(r.URL.Path, "/") {
-		http.Redirect(w, r, fmt.Sprintf("%s/?%s", r.URL.Path, r.URL.RawQuery), 302)
-		return
-	}
-
-	tVars := struct {
-		ProjectName string
-	}{
-		ProjectName: filepath.Base(root),
-	}
-	if err := templateIndex.Execute(w, tVars); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
-
-// Handles requests for non-node assets.
-//
-// Handles these kinds of URLs:
-//   /assets/css/base.css
-//   /assets/js/index.js
-func assetsHandler(w http.ResponseWriter, r *http.Request) {
-	path := filepath.Join("data/assets", r.URL.Path[len("/assets/"):])
-
-	if err := checkSafePath(path, root); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	typ := mime.TypeByExtension(filepath.Ext(path))
-	w.Header().Set("Content-Type", typ)
-
-	data, err := Asset(path)
+	n, err := tree.Get(path)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
-	w.Write(data[:])
-}
-
-// Handles these URLs:
-//   /api/tree.json
-//   /api/tree/Foo/Bar
-func treeHandler(w http.ResponseWriter, r *http.Request) {
-	if strings.HasSuffix(r.URL.Path, ".json") {
-		treeJSONHandler(w, r)
-	} else {
-		treeNodeHandler(w, r)
+	buf, typ, err := n.Asset(file)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
 	}
+
+	w.Header().Add("Content-Type", typ)
+	w.Write(buf.Bytes())
+	return
 }
 
-// Returns JSEND response. Currently only used for returning
-// information about the tree for the left hand side navigation:
+// Returns the entire tree. Will not get or check path, only tree
+// requests are routed here.
 //
 // Handles this URL:
-//   /api/tree.json
-func treeJSONHandler(w http.ResponseWriter, r *http.Request) {
+//   /api/v1/tree
+func treeHandler(w http.ResponseWriter, r *http.Request) {
 	wr := jsend.Wrap(w)
-	path := r.URL.Path[len("/api/"):]
-
-	// Security: Although path is not yet used for file access, we check it, to prevent
-	// programmer mistakenly opening a security hole when the code section below is expanded
-	// and the path then used.
-	if err := checkSafePath(path, root); err != nil {
-		wr.
-			Status(http.StatusBadRequest).
-			Message(err.Error()).
-			Send()
-		return
-	}
-
-	if path != "tree.json" {
-		wr.
-			Status(http.StatusNotFound).
-			Send()
-		return
-	}
 
 	if err := tree.Sync(); err != nil {
 		wr.
@@ -232,18 +172,14 @@ func treeJSONHandler(w http.ResponseWriter, r *http.Request) {
 // Renders a given HTML fragment for given node.
 //
 // Handles these kinds of URLs:
-//   /api/tree/DisplayData/Table
-//   /api/tree/DisplayData/Table/Row
-func treeNodeHandler(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path[len("/api/tree/"):]
+//   /api/v1/tree/DisplayData/Table
+//   /api/v1/tree/DisplayData/Table/Row
+func nodeHandler(w http.ResponseWriter, r *http.Request) {
+	wr := jsend.Wrap(w)
+	path := r.URL.Path[len("/api/v1/tree/"):]
 
 	if err := checkSafePath(path, root); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	if !strings.HasSuffix(r.URL.Path, "/") {
-		http.Redirect(w, r, r.URL.Path+"/", 302)
 		return
 	}
 
@@ -252,13 +188,8 @@ func treeNodeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
-
-	tVars := struct {
-		N *Node
-	}{
-		N: n,
-	}
-	if err := templateNode.Execute(w, tVars); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	wr.
+		Data(n).
+		Status(http.StatusOK).
+		Send()
 }
