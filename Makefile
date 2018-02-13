@@ -12,7 +12,7 @@ FRONTEND ?= $(shell pwd)/frontend
 
 .PHONY: dev
 dev:
-	go-bindata -debug -o data.go data/...
+	go-bindata -debug -prefix $(shell pwd) -ignore=node_modules -o data.go $(FRONTEND)/...
 	go build
 	@if [ ! -d _test ]; then mkdir _test; fi
 	./dsk _test
@@ -46,4 +46,4 @@ dist/%: $(ANY_DEPS) | data.go
 	go build -ldflags "$(GOFLAGS)" -o $@
 
 data.go: $(shell find $(FRONTEND) -type f) 
-	go-bindata -ignore=node_modules -o data.go $(FRONTEND)/...
+	go-bindata -prefix $(shell pwd) -ignore=node_modules -o data.go $(FRONTEND)/...
