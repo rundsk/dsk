@@ -215,13 +215,17 @@ func nodeHandler(w http.ResponseWriter, r *http.Request) {
 //
 // Handles these kinds of URLs:
 //   /api/v1/search?q={query}
-//
-// TODO: Implement :)
 func searchHandler(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query().Get("q")
 	wr := jsend.Wrap(w)
-	// path := r.URL.Path[len("/api/v1/search"):]
+
+	results, err := tree.Search(q)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	wr.
-		Status(http.StatusNotImplemented).
-		Message("WIP").
+		Data(results).
+		Status(http.StatusOK).
 		Send()
 }

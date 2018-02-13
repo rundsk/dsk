@@ -113,3 +113,12 @@ func (t NodeTree) GetSynced(path string) (*Node, error) {
 	}
 	return &Node{}, fmt.Errorf("no node with path %s in tree", path)
 }
+
+// Performs a full text search on the tree and returns a flat list
+// of nodes as results.
+//
+// TODO: Implement :)
+func (t NodeTree) Search(query string) ([]*Node, error) {
+	var results []*Node
+	return results, nil
+}
