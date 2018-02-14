@@ -112,7 +112,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	// file from here, and that path is hard-coded.
 	w.Header().Set("Content-Type", "text/html")
 
-	data, err := Asset("frontend/index.html")
+	data, err := Asset("index.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -140,7 +140,7 @@ func assetHandler(w http.ResponseWriter, r *http.Request) {
 	// check if an asset is actually embeded without masking other
 	// errors. As these errors are deemed to be seldom enough,
 	// we don't care.
-	buf, err := Asset(filepath.Join("frontend", path))
+	buf, err := Asset(path)
 	if err == nil {
 		typ := mime.TypeByExtension(filepath.Ext(path))
 		w.Header().Set("Content-Type", typ)
