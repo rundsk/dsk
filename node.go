@@ -95,16 +95,7 @@ func (n *Node) Sync() error {
 
 // The node's computed title with any ordering numbers stripped off, usually for display purposes.
 func (n *Node) Title() string {
-	title := filepath.Base(n.path)
-	s := NodeTitleRegexp.FindStringSubmatch(title)
-
-	if len(s) == 0 {
-		return title
-	}
-	if len(s) > 2 {
-		return s[2]
-	}
-	return s[1]
+	return cleanNodeTitle(n.path)
 }
 
 // An order number, as a hint for outside sorting mechanisms.
@@ -226,8 +217,7 @@ func (n Node) Crumbs() []*NodeCrumb {
 	parts := strings.Split(strings.TrimSuffix(n.URL(), "/"), "/")
 	for index, _ := range parts {
 		crumbs = append(crumbs, &NodeCrumb{
-			// TODO: prettify name as done in n.Title()
-			Title: filepath.Base(strings.Join(parts[:index+1], "/")),
+			Title: cleanNodeTitle(strings.Join(parts[:index+1], "/")),
 			URL:   strings.Join(parts[:index+1], "/"),
 		})
 	}
@@ -271,4 +261,17 @@ func (n Node) markdownToHTML(contents []byte) (template.HTML, error) {
 // lookup tables. Idempotent function.
 func normalizeNodeURL(url string) string {
 	return strings.Trim(strings.ToLower(url), "/")
+}
+
+func cleanNodeTitle(path string) string {
+	title := filepath.Base(path)
+	s := NodeTitleRegexp.FindStringSubmatch(title)
+
+	if len(s) == 0 {
+		return title
+	}
+	if len(s) > 2 {
+		return s[2]
+	}
+	return s[1]
 }
