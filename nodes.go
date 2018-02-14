@@ -15,6 +15,12 @@ import (
 	"github.com/fatih/color"
 )
 
+var (
+	// Directory basenames matching the pattern are not descending into
+	// and interpreted as a node.
+	IgnoreNodesRegexp = regexp.MustCompile(`^(x[-_].*|\..*|node_modules)$`)
+)
+
 type NodeTree struct {
 	// The absolute root path of the tree.
 	path string
@@ -32,6 +38,8 @@ func NewNodeTreeFromPath(path string) *NodeTree {
 // the given root directory, constructing a tree of nodes. Does not
 // support symlinks inside the tree.
 func (t *NodeTree) Sync() error {
+	yellow := color.New(color.FgYellow).SprintFunc()
+
 	var nodes []*Node
 
 	err := filepath.Walk(t.path, func(path string, f os.FileInfo, err error) error {
@@ -39,24 +47,17 @@ func (t *NodeTree) Sync() error {
 			return err
 		}
 		if f.IsDir() {
-			// Ignore directories
-			//	- that start with x_ or x- (^x[-_])
-			//	- that start with . (^\.)
-			//	- node_modules (node_modules)
-			matched, err := regexp.MatchString(`^x[-_]|^\.|node_modules`, f.Name())
-			if err != nil {
-				return err
-			}
-			if matched {
-				red := color.New(color.FgYellow).SprintFunc()
-				log.Printf("Ignoring node: %s", red(prettyPath(path)))
+			if IgnoreNodesRegexp.MatchString(f.Name()) {
+				log.Printf("Ignoring node: %s", yellow(prettyPath(path)))
 				return filepath.SkipDir
 			}
 
 			n, nErr := NewNodeFromPath(path, root)
 			if nErr != nil {
-				red := color.New(color.FgRed).SprintFunc()
-				log.Printf("Ghosting node: %s", red(nErr))
+				return nErr
+			}
+			if n.IsGhost {
+				log.Printf("Ghosted node: %s", yellow(nErr))
 			}
 			nodes = append(nodes, n)
 		}
@@ -72,11 +73,11 @@ func (t *NodeTree) Sync() error {
 	lookup := make(map[string]*Node)
 
 	for _, n := range nodes {
-		lookup[n.GetNormalizedURL()] = n
+		lookup[n.NormalizedURL()] = n
 
 		for _, sn := range nodes {
 			if filepath.Dir(sn.path) == n.path {
-				n.Children = append(n.Children, sn)
+				n.AddChild(sn)
 			}
 		}
 	}

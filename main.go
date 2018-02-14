@@ -218,12 +218,12 @@ func nodeAssetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	assetPath, err := n.Asset(filepath.Base(path))
+	asset, err := n.Asset(filepath.Base(path))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
-	http.ServeFile(w, r, assetPath)
+	http.ServeFile(w, r, asset.path)
 	return
 }
 
