@@ -21,8 +21,10 @@ import (
 
 // Node represents a directory inside the design definitions tree.
 type Node struct {
-	path     string
-	Title    string   `json:"title"`
+	path  string
+	Title string `json:"title"`
+	// The URL path fragment, that can be used to address this node i.e.
+	// Input/Password.
 	URL      string   `json:"url"`
 	Children []*Node  `json:"children"`
 	Meta     NodeMeta `json:"meta"`
@@ -48,17 +50,14 @@ const (
 )
 
 // Constructs a new node using its path in the filesystem. Returns a
-// node instance even if errors happened. In which case the node will
-// be flagged as "ghost" node.
-//
-// The URL of each node should end with a trailing slash as to allow
-// contained assets to references it as if it was a directory.
+// node instance even if errors happened. In that case the node will
+// be flagged as a "ghost" node.
 func NewNodeFromPath(path string, root string) (*Node, error) {
 	var url string
 	if path == root {
-		url = "/"
+		url = ""
 	} else {
-		url = strings.TrimPrefix(path, root+"/") + "/"
+		url = strings.TrimPrefix(path, root+"/")
 	}
 
 	n := &Node{
@@ -83,10 +82,9 @@ func (n *Node) Sync() error {
 	n.IsGhost = false
 	n.Files, err = n.filesForNode()
 
-	if n.URL != "/" {
+	if n.URL != "" {
 		n.Title = n.titleForUrl(n.URL)
 	}
-	//log.Printf(n.Files)
 	return err
 }
 
@@ -170,6 +168,12 @@ func (n Node) filesForNode() ([]FileInfo, error) {
 	return filteredFiles, nil
 }
 
+// Returns the normalized URL i.e. for bulding case-insentive lookup
+// tables. Idempotent function.
+func (n Node) GetNormalizedURL() string {
+	return normalizeNodeURL(n.URL)
+}
+
 // Returns an alphabetically sorted list of keywords.
 func (n Node) Keywords() []string {
 	keywords := n.Meta.Keywords
@@ -197,7 +201,7 @@ func (n Node) GeneralDoc() (template.HTML, error) {
 	if err != nil {
 		return template.HTML(""), err
 	}
-	return template.HTML(blackfriday.Run(contents)), nil
+	return n.markdownToHTML(contents)
 }
 
 // Checks whether API documentation is available.
@@ -212,7 +216,7 @@ func (n Node) APIDoc() (template.HTML, error) {
 	if err != nil {
 		return template.HTML(""), err
 	}
-	return template.HTML(blackfriday.Run(contents)), nil
+	return n.markdownToHTML(contents)
 }
 
 // Returns a list of crumb URLs (relative to root). The last element is
@@ -242,4 +246,23 @@ func (n Node) titleForUrl(url string) string {
 	}
 
 	return title
+}
+
+// Parses markdown and returns HTML. Absolute URLs are build using the node's URL.
+func (n Node) markdownToHTML(contents []byte) (template.HTML, error) {
+	renderer := blackfriday.NewHTMLRenderer(blackfriday.HTMLRendererParameters{
+		Flags:          blackfriday.CommonHTMLFlags &^ blackfriday.UseXHTML,
+		AbsolutePrefix: n.URL,
+	})
+	return template.HTML(blackfriday.Run(
+		contents,
+		blackfriday.WithRenderer(renderer),
+		blackfriday.WithExtensions(blackfriday.CommonExtensions&^blackfriday.HeadingIDs),
+	)), nil
+}
+
+// Normalizes give node URL path i.e. for bulding case-insentive
+// lookup tables. Idempotent function.
+func normalizeNodeURL(url string) string {
+	return strings.Trim(strings.ToLower(url), "/")
 }

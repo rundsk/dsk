@@ -83,11 +83,14 @@ func main() {
 	log.Print("Hit Ctrl+C to quit")
 
 	http.HandleFunc("/api/v1/tree", treeHandler)
-	http.HandleFunc("/api/v1/tree/", nodeHandler)
+	http.HandleFunc("/api/v1/tree/", func(w http.ResponseWriter, r *http.Request) {
+		if filepath.Ext(r.URL.Path) != "" {
+			nodeAssetHandler(w, r)
+		} else {
+			nodeHandler(w, r)
+		}
+	})
 	http.HandleFunc("/api/v1/search", searchHandler)
-
-	// Anything that doesn't look like a node or frontend asset, will
-	// be routed into the root handler.
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if filepath.Ext(r.URL.Path) != "" {
 			assetHandler(w, r)
@@ -120,14 +123,11 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(data[:])
 }
 
-// Serves the frontend and a node's assets. Will first look into the
-// frontend's path then into the design defintions tree path.
+// Serves the frontend's assets.
 //
 // Handles these kinds of URLs:
 //   /assets/css/base.css
 //   /static/css/main.41064805.css
-//   /DataEntry/Components/Button/test.png
-//   /Button/foo.mp4
 func assetHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path[len("/"):]
 
@@ -136,30 +136,14 @@ func assetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// First check if this is a frontend asset. There is no way to
-	// check if an asset is actually embeded without masking other
-	// errors. As these errors are deemed to be seldom enough,
-	// we don't care.
 	buf, err := Asset(path)
-	if err == nil {
-		typ := mime.TypeByExtension(filepath.Ext(path))
-		w.Header().Set("Content-Type", typ)
-		w.Write(buf[:])
-		return
-	}
-
-	n, err := tree.Get(filepath.Dir(path))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
-		return
 	}
 
-	assetPath, err := n.Asset(filepath.Base(path))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-	http.ServeFile(w, r, assetPath)
+	typ := mime.TypeByExtension(filepath.Ext(path))
+	w.Header().Set("Content-Type", typ)
+	w.Write(buf[:])
 	return
 }
 
@@ -201,13 +185,46 @@ func nodeHandler(w http.ResponseWriter, r *http.Request) {
 
 	n, err := tree.GetSynced(path)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		wr.
+			Status(http.StatusNotFound).
+			Message(err.Error()).
+			Send()
 		return
 	}
 	wr.
 		Data(n).
 		Status(http.StatusOK).
 		Send()
+}
+
+// Returns a node asset.
+//
+// Handles these kinds of URLs:
+//   /api/v1/tree/DisplayData/Table/foo.png
+//   /api/v1/tree/DisplayData/Table/Row/bar.mp4
+//   /api/v1/tree/DataEntry/Components/Button/test.png
+//   /api/v1/tree/Button/foo.mp4
+func nodeAssetHandler(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path[len("/api/v1/tree/"):]
+
+	if err := checkSafePath(path, root); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	n, err := tree.Get(filepath.Dir(path))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	assetPath, err := n.Asset(filepath.Base(path))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	http.ServeFile(w, r, assetPath)
+	return
 }
 
 // Performs a full text search over the design defintions tree and

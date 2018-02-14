@@ -18,7 +18,7 @@ import (
 type NodeTree struct {
 	// The absolute root path of the tree.
 	path string
-	// Maps node paths to nodes, for quick lookup.
+	// Maps node URL paths to nodes, for quick lookup.
 	lookup map[string]*Node
 	// The root node and entry point to the acutal tree.
 	Root *Node `json:"root"`
@@ -39,7 +39,6 @@ func (t *NodeTree) Sync() error {
 			return err
 		}
 		if f.IsDir() {
-
 			// Ignore directories
 			//	- that start with x_ or x- (^x[-_])
 			//	- that start with . (^\.)
@@ -73,7 +72,7 @@ func (t *NodeTree) Sync() error {
 	lookup := make(map[string]*Node)
 
 	for _, n := range nodes {
-		lookup[n.path] = n
+		lookup[n.GetNormalizedURL()] = n
 
 		for _, sn := range nodes {
 			if filepath.Dir(sn.path) == n.path {
@@ -84,7 +83,7 @@ func (t *NodeTree) Sync() error {
 
 	// Swap late, in event of error we keep the previous state.
 	t.lookup = lookup
-	t.Root = lookup[root]
+	t.Root = lookup[""]
 
 	return nil
 }
@@ -94,24 +93,23 @@ func (t NodeTree) TotalNodes() uint16 {
 	return uint16(len(t.lookup))
 }
 
-// Retrieves a node from the tree. The given path must be relative to
-// the root of the tree.
-func (t NodeTree) Get(path string) (*Node, error) {
-	if n, ok := t.lookup[filepath.Join(t.path, path)]; ok {
+// Retrieves a node from the tree.
+func (t NodeTree) Get(url string) (*Node, error) {
+	if n, ok := t.lookup[normalizeNodeURL(url)]; ok {
 		return n, nil
 	}
-	return &Node{}, fmt.Errorf("no node with path %s in tree", path)
+	return &Node{}, fmt.Errorf("no node with URL path '%s' in tree", url)
 }
 
-// Retrieves a node from tree and syncs it.
-func (t NodeTree) GetSynced(path string) (*Node, error) {
-	if n, ok := t.lookup[filepath.Join(t.path, path)]; ok {
+// Retrieves a node from tree and ensures it's synced before.
+func (t NodeTree) GetSynced(url string) (*Node, error) {
+	if n, ok := t.lookup[normalizeNodeURL(url)]; ok {
 		if err := n.Sync(); err != nil {
 			return n, err
 		}
 		return n, nil
 	}
-	return &Node{}, fmt.Errorf("no node with path %s in tree", path)
+	return &Node{}, fmt.Errorf("no node with URL path '%s' in tree", url)
 }
 
 // Performs a full text search on the tree and returns a flat list
