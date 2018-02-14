@@ -7,6 +7,9 @@
 
 "use strict";
 
+// Client to the "tree" part of the DSK API and data structure for holding
+// responses.
+//
 // https://en.wikipedia.org/wiki/Tree_traversal
 class Tree {
 
@@ -20,6 +23,21 @@ class Tree {
       return res.json();
     }).then((json) => {
       this.root = json.data.root;
+    });
+  }
+
+  // Returns node for given relative URL path.
+  get(url) {
+    if (url.charAt(0) === "/") {
+      url = url.substring(1);
+    }
+    if (url.charAt(url.length - 1) === "/") {
+      url = url.slice(0, -1);
+    }
+    return fetch('/api/v1/tree/' + url).then((res) => {
+      return res.json();
+    }).then((json) => {
+      return json.data;
     });
   }
 
