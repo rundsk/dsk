@@ -6,21 +6,39 @@
 package main
 
 import (
-	"reflect"
 	"testing"
 )
 
-func TestCrumbs(t *testing.T) {
-	n := &Node{URL: "foo/bar/baz/"}
+func TestTitleDerivation(t *testing.T) {
 
-	result := n.CrumbURLs()
-	expected := []string{
-		"foo/",
-		"foo/bar/",
-		"foo/bar/baz/",
+	expected := map[string]string{
+		"/tmp/xyz/foo":      "foo",
+		"/tmp/xyz/1_foo":    "foo",
+		"/tmp/xyz/1-foo":    "foo",
+		"/tmp/xyz/0001-foo": "foo",
 	}
-	if !reflect.DeepEqual(result, expected) {
-		t.Logf("%+v != %+v", result, expected)
-		t.Error("failed to parse crumbs")
+	for path, e := range expected {
+		n := &Node{path: path}
+		r := n.Title()
+		if e != r {
+			t.Errorf("\nexpected: %s, result: %s", e, r)
+		}
+	}
+}
+
+func TestCrumbURLs(t *testing.T) {
+	n := &Node{root: "/tmp/xyz", path: "/tmp/xyz/foo/bar/baz/"}
+
+	result := n.Crumbs()
+	expected := []*NodeCrumb{
+		&NodeCrumb{URL: "foo"},
+		&NodeCrumb{URL: "foo/bar"},
+		&NodeCrumb{URL: "foo/bar/baz"},
+	}
+	for k, v := range expected {
+		if result[k].URL != v.URL {
+			t.Errorf("failed to parse crumbs, expectation for key %d failed", k)
+			t.Logf("expected: %s, result: %s", v.URL, result[k].URL)
+		}
 	}
 }
