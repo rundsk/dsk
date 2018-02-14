@@ -78,16 +78,16 @@ Possible configuration options are:
 
 # Architecture
 
-Architecture-wise DSK is split into backend and frontend. The backend implemented 
+Architecture-wise DSK is split into a backend and frontend. The backend implemented 
 in Go takes care of understanding the defintions tree and provides a REST API for
-the frontend, usually implemented in JavaScript.
+frontends, usually implemented in JavaScript are pluggable.
 
 The decoupled design allows you to create indvidually branded frontends, which
 are entirely free in their implementation, they must adher to only a minimal set
 of rules.
 
 The frontend and backend and are compiled together into a single binary, making
-usuable as a publicly hosted web application or a locally running design tool.
+it usuable as a publicly hosted web application or a locally running design tool.
 
 ## Building your own Frontend 
 
@@ -98,22 +98,20 @@ this project.
 
 ### Available API Endpoints
 
-The backend provides the following API endpoints. All endpoints return JSON
-using [JSend](https://labs.omniti.com/labs/jsend) as the general response
-format.
+The backend provides the following API endpoints. JSON responses use the
+[JSend](https://labs.omniti.com/labs/jsend) format.
 
-`GET /api/v1/tree`
-Get the full design definitions tree as a nested tree of nodes.
+`GET /api/v1/tree`,
+get the full design definitions tree as a nested tree of nodes.
 
-`GET /api/v1/tree/{path}`
-Get information about a single node specified by `path`.
+`GET /api/v1/tree/{path}`,
+get information about a single node specified by `path`.
 
-`GET /api/v1/tree/{path}/{asset}`
-Requests a node's asset, `{asset}` is a single filename, node assets cannot
-contain subdirectories.
+`GET /api/v1/tree/{path}/{asset}`,
+requests a node's asset, `{asset}` is a single filename.
 
-`GET /api/v1/search?q={query}`
-Full text search over the design definitions tree.
+`GET /api/v1/search?q={query}`,
+full text search over the design definitions tree.
 
 ### Designing the URL Schema
 
