@@ -101,10 +101,10 @@ func (n *Node) Title() string {
 	if len(s) == 0 {
 		return title
 	}
-	if len(s) > 1 {
-		return s[1]
+	if len(s) > 2 {
+		return s[2]
 	}
-	return s[0]
+	return s[1]
 }
 
 // An order number, as a hint for outside sorting mechanisms.
