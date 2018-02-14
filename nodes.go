@@ -99,7 +99,7 @@ func (t NodeTree) Get(url string) (*Node, error) {
 	if n, ok := t.lookup[normalizeNodeURL(url)]; ok {
 		return n, nil
 	}
-	return &Node{}, fmt.Errorf("no node with URL path '%s' in tree", url)
+	return &Node{}, fmt.Errorf("No node with URL path '%s' in tree", url)
 }
 
 // Retrieves a node from tree and ensures it's synced before.
@@ -110,7 +110,7 @@ func (t NodeTree) GetSynced(url string) (*Node, error) {
 		}
 		return n, nil
 	}
-	return &Node{}, fmt.Errorf("no node with URL path '%s' in tree", url)
+	return &Node{}, fmt.Errorf("No node with URL path '%s' in tree", url)
 }
 
 // Performs a full text search on the tree and returns a flat list
