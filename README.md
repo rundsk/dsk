@@ -125,7 +125,8 @@ So relative media references work in the rendered HTML the frontend should:
 
 2. redirect requests for i.e. `/Button` to `/Button/`
 
-A build created by create react app's `npm run build` is a valid frontend:
+A build created under by [create react app's](https://github.com/facebook/create-react-a) 
+`npm run build` under `build` is a valid frontend:
 ```
 .
 ├── index.html
@@ -141,10 +142,13 @@ A build created by create react app's `npm run build` is a valid frontend:
 ### Building DSK with your Frontend
 
 Please install the development tools as described in the _Development_ section,
-than use the following command to compile a dsk binary with your frontend.
+than use the following command to compile a dsk binary with your frontend. When 
+using a frontend created by create react app. 
+
 
 ```
 $ FRONTEND=/path/to/my/frontend make dist
+$ FRONTEND=/path/to/my/cra/frontend/build make dist
 ```
 
 ## Development
