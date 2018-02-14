@@ -118,8 +118,19 @@ Full text search over the design definitions tree.
 ### Designing the URL Schema
 
 Your frontend and its subdirectories will be mounted directly at the root path
-`/`. You must ensure the frontend doesn't include directories which collide with
-reserved backend paths (currently just `api` is reserved).
+`/`. Requests to anything under `/api` is routed to the backend, anything else
+is routed into your application in `index.html`. 
+
+### Building DSK with your Frontend
+
+Please install the development tools as described in the _Development_ section,
+than use the following command to compile a dsk binary with your frontend. When 
+For frontends created with create react app, use the `build` directory. 
+
+```
+$ FRONTEND=/path/to/my/frontend make dist
+$ FRONTEND=/path/to/my/cra/frontend/build make dist
+```
 
 A build created under by [create react app's](https://github.com/facebook/create-react-a) 
 `npm run build` under `build` is a valid frontend:
@@ -135,17 +146,6 @@ A build created under by [create react app's](https://github.com/facebook/create
         └── exampleImage.3780b1a4.png
 ```
 
-### Building DSK with your Frontend
-
-Please install the development tools as described in the _Development_ section,
-than use the following command to compile a dsk binary with your frontend. When 
-using a frontend created by create react app. 
-
-
-```
-$ FRONTEND=/path/to/my/frontend make dist
-$ FRONTEND=/path/to/my/cra/frontend/build make dist
-```
 
 ## Development
 
