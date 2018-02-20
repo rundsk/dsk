@@ -11,7 +11,7 @@ ANY_DEPS = $(wildcard *.go)
 FRONTEND ?= $(shell pwd)/frontend
 
 .PHONY: test
-test: 
+test: data.go
 	go test
 
 .PHONY: dev
