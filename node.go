@@ -8,7 +8,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -21,15 +20,13 @@ import (
 )
 
 const (
-	ConfigBasename     = "index.json"
-	GeneralDocBasename = "readme.md"
-	APIDocBasename     = "api.md"
+	ConfigBasename = "index.json"
 )
 
 var (
 	// Basenames matching the pattern will be ignored when searching
 	// for downloadable files in the node's directory.
-	IgnoreDownloadsRegexp = regexp.MustCompile(`^(.*\.(js|css)|(readme|api)\.md|index\.json)$`)
+	IgnoreDownloadsRegexp = regexp.MustCompile(`^.*\.(js|css|md|json)$`)
 
 	// A pattern for extracting order number and title from a title in the form of 06_Foo.
 	NodeTitleRegexp = regexp.MustCompile(`^0?(\d+)[_,-]+(.*)$`)
@@ -191,22 +188,31 @@ func (n Node) Downloads() ([]*NodeAsset, error) {
 	return results, nil
 }
 
-// Returns general documentation parsed from markdown into HTML format.
-func (n Node) GeneralDoc() (template.HTML, error) {
-	contents, err := ioutil.ReadFile(filepath.Join(n.path, GeneralDocBasename))
-	if err != nil {
-		return template.HTML(""), err
-	}
-	return n.markdownToHTML(contents)
-}
+// Returns a map of markdown files and their parsed HTML. Keys are
+// normlized and use lower cased filenames without the suffix.
+// "readme.md" (in any casing) is considered the main document.
+func (n Node) Docs() (map[string][]byte, error) {
+	docs := make(map[string][]byte)
 
-// Returns API documentation parsed from markdown into HTML format.
-func (n Node) APIDoc() (template.HTML, error) {
-	contents, err := ioutil.ReadFile(filepath.Join(n.path, APIDocBasename))
-	if err != nil {
-		return template.HTML(""), err
+	matches, err := filepath.Glob(filepath.Join(n.path, "*.md"))
+	if err != nil || matches == nil {
+		return docs, err
 	}
-	return n.markdownToHTML(contents)
+	for _, m := range matches {
+		k := strings.TrimSuffix(filepath.Base(m), filepath.Ext(m))
+
+		contents, err := ioutil.ReadFile(m)
+		if err != nil {
+			return docs, err
+		}
+
+		html, err := n.markdownToHTML(contents)
+		if err != nil {
+			return docs, err
+		}
+		docs[k] = html
+	}
+	return docs, nil
 }
 
 // Returns a list of crumbs. The last element is the current active
@@ -245,16 +251,16 @@ func (n *Node) parseMeta() (NodeMeta, error) {
 }
 
 // Parses markdown and returns HTML. Absolute URLs are build using the node's URL.
-func (n Node) markdownToHTML(contents []byte) (template.HTML, error) {
+func (n Node) markdownToHTML(contents []byte) ([]byte, error) {
 	renderer := blackfriday.NewHTMLRenderer(blackfriday.HTMLRendererParameters{
 		Flags:          blackfriday.CommonHTMLFlags &^ blackfriday.UseXHTML,
 		AbsolutePrefix: n.URL(),
 	})
-	return template.HTML(blackfriday.Run(
+	return blackfriday.Run(
 		contents,
 		blackfriday.WithRenderer(renderer),
 		blackfriday.WithExtensions(blackfriday.CommonExtensions&^blackfriday.HeadingIDs),
-	)), nil
+	), nil
 }
 
 // Normalizes give node URL path i.e. for bulding case-insentive
