@@ -20,6 +20,7 @@ import (
 
 var (
 	Version string
+	Debug   string // "yes" to enable
 
 	sigc chan os.Signal
 
@@ -50,6 +51,12 @@ func main() {
 
 	log.Printf("Starting %s Version %s", whiteOnBlue(" DSK "), Version)
 
+	m := withNoop
+	if Debug == "yes" {
+		log.Printf("--- %s ---", red("UNSAFE DEBUG MODE ACTIVE"))
+		m = withDisabledCORS
+	}
+
 	sigc = make(chan os.Signal, 1)
 	signal.Notify(sigc, os.Interrupt)
 	go func() {
@@ -74,7 +81,7 @@ func main() {
 
 	log.Print("Mounting APIv1...")
 	apiv1 := &APIv1{tree}
-	apiv1.MountHTTPHandlers()
+	apiv1.MountHTTPHandlers(m)
 
 	// Handles frontend root document delivery and frontend assets.
 	log.Print("Mounting frontend...")

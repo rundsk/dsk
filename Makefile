@@ -13,7 +13,7 @@ FRONTEND ?= $(shell pwd)/frontend
 .PHONY: dev
 dev:
 	go-bindata -debug -prefix $(FRONTEND) -ignore=node_modules -o data.go $(FRONTEND)/...
-	go build
+	go build -ldflags "-X main.Debug=yes" 
 	@if [ ! -d _test ]; then mkdir _test; fi
 	./dsk _test
 
