@@ -198,13 +198,22 @@ func (n Node) Downloads() ([]*NodeAsset, error) {
 // Returns a map of markdown files and their parsed HTML. Keys are
 // normlized and use lower cased filenames without the suffix.
 // "readme.md" (in any casing) is considered the main document.
-func (n Node) Docs() (map[string][]byte, error) {
+//
+// The provided prefix will be used to make relative links inside the
+// documents absolute.
+func (n Node) Docs(prefix string) (map[string][]byte, error) {
 	docs := make(map[string][]byte)
+
+	renderer := blackfriday.NewHTMLRenderer(blackfriday.HTMLRendererParameters{
+		Flags:          blackfriday.CommonHTMLFlags &^ blackfriday.UseXHTML,
+		AbsolutePrefix: prefix,
+	})
 
 	matches, err := filepath.Glob(filepath.Join(n.path, "*.md"))
 	if err != nil || matches == nil {
 		return docs, err
 	}
+
 	for _, m := range matches {
 		k := strings.TrimSuffix(filepath.Base(m), filepath.Ext(m))
 
@@ -213,11 +222,11 @@ func (n Node) Docs() (map[string][]byte, error) {
 			return docs, err
 		}
 
-		html, err := n.markdownToHTML(contents)
-		if err != nil {
-			return docs, err
-		}
-		docs[k] = html
+		docs[k] = blackfriday.Run(
+			contents,
+			blackfriday.WithRenderer(renderer),
+			blackfriday.WithExtensions(blackfriday.CommonExtensions&^blackfriday.HeadingIDs),
+		)
 	}
 	return docs, nil
 }
@@ -255,19 +264,6 @@ func (n Node) parseMeta() (NodeMeta, error) {
 		return meta, fmt.Errorf("Failed parsing %s: %s", prettyPath(f), err)
 	}
 	return meta, nil
-}
-
-// Parses markdown and returns HTML. Absolute URLs are build using the node's URL.
-func (n Node) markdownToHTML(contents []byte) ([]byte, error) {
-	renderer := blackfriday.NewHTMLRenderer(blackfriday.HTMLRendererParameters{
-		Flags:          blackfriday.CommonHTMLFlags &^ blackfriday.UseXHTML,
-		AbsolutePrefix: n.URL(),
-	})
-	return blackfriday.Run(
-		contents,
-		blackfriday.WithRenderer(renderer),
-		blackfriday.WithExtensions(blackfriday.CommonExtensions&^blackfriday.HeadingIDs),
-	), nil
 }
 
 // Normalizes give node URL path i.e. for bulding case-insentive

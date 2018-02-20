@@ -121,6 +121,10 @@ Your frontend and its subdirectories will be mounted directly at the root path
 `/`. Requests to anything under `/api` is routed to the backend, anything else
 is routed into your application in `index.html`. 
 
+Relative asset source paths inside the markdown files will be made
+absolute to allow you displaying the document contents wherever you
+like to.
+
 ### Building DSK with your Frontend
 
 Please install the development tools as described in the _Development_ section,
