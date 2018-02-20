@@ -1,5 +1,7 @@
 # Design System Kit (DSK)
 
+[![Build Status](https://travis-ci.org/atelierdisko/dsk.svg?branch=1.0)](https://travis-ci.org/atelierdisko/dsk)
+
 ## Abstract
 
 Using Design System Kit (DSK) you quickly organize components into a
