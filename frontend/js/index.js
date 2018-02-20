@@ -5,109 +5,142 @@
  * license that can be found in the LICENSE file.
  */
 
-/* globals Fuse: false */
 /* globals Tree: false */
+/* globals URLSearchParams: false */
 
 "use strict";
 
 document.addEventListener('DOMContentLoaded', function() {
-  let $ = document.querySelectorAll.bind(document);
-  let $1 = document.querySelector.bind(document);
+  const $ = document.querySelectorAll.bind(document);
+  const $1 = document.querySelector.bind(document);
 
+  let header = $1('header');
+  let main = $1('main');
   let nav = $1('.tree-nav');
+  let searchField = $1('.search__field');
+  let searchClear = $1('.search__clear');
 
   let tree = new Tree();
+  let baseTitle = document.title;
 
-  let fuse = new Fuse([], {
-    tokenize: false,
-    matchAllTokens: true,
-    threshold: 0.1,
-    location: 0,
-    distance: 100,
-    maxPatternLength: 32,
-    minMatchCharLength: 1,
-    keys: [
-      "title",
-      "url",
-      "meta.keywords"
-    ]
-  });
-
-  let pageTitle = document.title;
-
-  // Gets the tree and creates the nav structure.
-  // Get the query from the current window path (handleSearchWithQuery will render the Nav).
+  // Initializes the tree, the left hand tree navigation and displays
+  // the currently route selected node - if any.
   tree.sync()
     .then(() => {
-      fuse.setCollection(tree.flatten());
-
-      // Initial check for route and load node
-      loadNodeWithPath(window.location.pathname, false);
-      handleSearchWithQuery(window.location.search.substring(1));
+      return tree.search();
+    })
+    .then((results) => {
+      // navigateToNode(window.location.pathname, true);
+      // handleSearchWithQuery(window.location.search.substring(1));
     });
 
-  // Load the node based on path
-  let loadNodeWithPath = function(path, pushToHistory) {
-    if (path.charAt(path.length - 1) !== "/") {
-      path += "/";
+
+  // main.querySelectorAll('.text a, .crumbs a, .keywords a, .children-table a').forEach((el) => {
+  main.addEvenListener('click', (ev) => {
+    if (ev.target && ev.target.nodeName == 'A') {
+      console.log('Clicked link in main!', ev.target);
+      /// el.addEventListener('click', handleTextLinkClick);
+    }
+  });
+  header.querySelector('a').addEventListener('click', handleTextLinkClick);
+
+  // Load the node based on node URL path.
+  function navigateToNode(url, initialNavigation) {
+    return tree.get(url).then((node) => {
+      let params = new URLSearchParams(window.location.search);
+
+      history[initialNavigation ? 'replaceState' : 'pushState'](
+          {node: node, search: params.get('q')},
+          '' ,
+          '/' + url + '?q=' + params.get('q')
+        );
+
+      document.title = baseTitle + ': ' + node.title;
+      main.innerHTML = renderNode(node);
+      activateNode(node);
+    });
+  }
+
+  //
+  // HTML Rendering
+  //
+
+  // TODO Implement.
+  function renderNode(node) {
+    return node.description;
+  }
+
+  // Renders the nav structure.
+  // FIXME: Append list withouth root node?
+  // if list nav.appendChild(list.childNodes[1]);
+  function renderNav(tree) {
+    return renderList(tree.root);
+  }
+
+  // Recursively turns the given tree data into a "ul li" structure.
+  function renderList(node) {
+    let ul = document.createElement('ul');
+    let li = document.createElement('li');
+    let a  = document.createElement('a');
+
+    a.href = "/" + node.url;
+    a.innerHTML = node.title;
+    a.addEventListener('click', handleNav);
+
+    if (node.isGhost) {
+      a.classList.add('ghosted');
+    }
+    li.appendChild(a);
+    li.appendChild(ul);
+
+    for (let child in node.children) {
+      let childList = renderList(node.children[child]);
+      if (childList) {
+        ul.appendChild(childList);
+      }
+    }
+    return li;
+  }
+
+  function activateNode(node) {
+    let bullets = nav.querySelectorAll('li');
+
+    for (let a of bullets) {
+      a.classList.remove('is-active');
     }
 
-    fetch("/api/v1/tree" + path).then((res) => {
-      return res.text();
-    }).then((html) => {
-      markNodeInNavAsActiveWithPath(path);
+    let activeNode = bullets.querySelector('a[href="' + decodeURIComponent(node.url) + '"]');
+    if (activeNode) {
+      activeNode.parentNode.classList.add('is-active');
+    }
+  }
 
-      let state = { path: path, search: window.location.search.substring(1) };
-      if (pushToHistory) {
-        history.pushState(state, '', path + window.location.search);
-      } else {
-        history.replaceState(state, '', path + window.location.search);
-      }
-
-      // Set document title to the name of the node
-      var title = path.split("/");
-      title = decodeURIComponent(title[title.length - 2]);
-      let titleArray = /^\d+[_,-]{1}(.*)/.exec(title);
-
-      if (title !== "") {
-        if (titleArray) {
-          document.title = pageTitle + ": " + titleArray[1];
-        } else {
-          document.title = pageTitle + ": " + title;
-        }
-      } else {
-        document.title = pageTitle;
-      }
-
-      $1('main').innerHTML = html;
-      handleTextLinks();
-    });
-  };
+  //
+  // State Management
+  //
 
   // Runs the search with a given query
-  let handleSearchWithQuery = function(q) {
-    if ($1('.search__field').value !== q) {
-      $1('.search__field').value = q;
-    }
+  function handleSearchWithQuery(q) {
+    searchField.value = q;
 
-    // Add query to the url
-    let state = { path: window.location.pathname, search: q };
-    let url = window.location.origin + window.location.pathname + "?" + q;
-    history.replaceState(state, '', url);
+    // Every search action can be navigated to, just the "q" part changes.
+    history.replaceState(
+      {node: history.current.node, search: q},
+      '',
+      window.location.pathname + '?q=' + q
+    );
 
-    if (q !== "") {
-      renderNav(tree, fuse.search(q));
-    } else {
-      renderNav(tree);
-    }
+    tree.search(q).then((results) => {
+      return tree.filteredBy(results).root;
+    }).then((root) => {
+      nav.innerHTML = renderNav(root, window.location.pathname);
+    });
+  }
 
-    markNodeInNavAsActiveWithPath(window.location.pathname);
-  };
-
-  $1('.search__field').addEventListener("input", function() {
+  searchField.addEventListener('input', function() {
     handleSearchWithQuery(this.value);
   });
-  $1('.search__clear').addEventListener("click", function() {
+  searchClear.addEventListener('click', function() {
     handleSearchWithQuery("");
   });
 
@@ -123,10 +156,27 @@ document.addEventListener('DOMContentLoaded', function() {
     loadNodeWithPath(this.pathname, true);
   };
 
-  // Calls the search when a link in text is clicked
-  let handleTextLinkClick = function(ev) {
+  // Restore previouse state.
+  window.onpopstate = function(ev) {
+    if (ev.state) {
+      loadNodeWithPath(event.state.path, false);
+      handleSearchWithQuery(event.state.search);
+    }
+  };
 
-    // When the link starts with "search:" it is not a link to be followed, but a query to be entered into the search bar
+  // Foucs the search field when pressing CMD + k.
+  window.addEventListener('keydown', function(ev) {
+    if (ev.key === 'k' && ev.metaKey) {
+      ev.preventDefault();
+      searchField.focus();
+    }
+  });
+
+
+  // Calls the search when a link in text is clicked
+  function handleTextLinkClick(ev) {
+    // When the link starts with "search:" it is not a link to be followed, but
+    // a query to be entered into the search bar.
     if (this.href.split(":")[0] === "search") {
       ev.preventDefault();
       handleSearchWithQuery(this.href.substring(7));
@@ -146,100 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
         loadNodeWithPath(this.pathname, true);
       }
     }
-  };
-
-  // Attaches a click-Event to every link in text
-  let handleTextLinks = function() {
-    for (let k of $('.text a')) {
-      k.addEventListener("click", handleTextLinkClick);
-    }
-
-    for (let k of $('.crumbs a')) {
-      k.addEventListener("click", handleTextLinkClick);
-    }
-
-    for (let k of $('.keywords a')) {
-      k.addEventListener("click", handleTextLinkClick);
-    }
-
-    for (let k of $('.children-table a')) {
-      k.addEventListener("click", handleTextLinkClick);
-    }
-  };
-
-  // Renders the nav structure
-  let renderNav = function(tree, searchResults) {
-    nav.innerHTML = '';
-    var list;
-
-    if (searchResults) {
-      list = createList(tree.filteredBy(searchResults).root);
-    } else {
-      // When none selected, all nodes should be kept, resets view.
-      list = createList(tree.root);
-    }
-    if (list) {
-      // Append list withouth root node.
-      nav.appendChild(list.childNodes[1]);
-    }
-  };
+  }
 
 
-  // Turns the given data into a "ul li" structure
-  let createList = function(node) {
-    if (node.keep === false) {
-      return;
-    }
-
-    let li = document.createElement('li');
-    let a  = document.createElement('a');
-    a.href = "/" + node.url;
-    a.innerHTML = node.title;
-    a.addEventListener('click', handleNav);
-
-    if (node.isGhost) {
-      a.classList.add('ghosted');
-    }
-
-    li.appendChild(a);
-
-    let ul = document.createElement('ul');
-    li.appendChild(ul);
-
-    for (var child in node.children) {
-      var childList = createList(node.children[child]);
-      if (childList) {
-        ul.appendChild(childList);
-      }
-    }
-
-    return li;
-  };
-
-  let markNodeInNavAsActiveWithPath = function(path) {
-    for (let a of $('.tree-nav li')) {
-      a.classList.remove("is-active");
-    }
-
-    let activeNode = $1(".tree-nav li a[href='" + decodeURIComponent(path) + "']");
-    if (activeNode) {
-      activeNode.parentNode.classList.add("is-active");
-    }
-  };
-
-  window.onpopstate = function(event) {
-    if (event.state) {
-      loadNodeWithPath(event.state.path, false);
-      handleSearchWithQuery(event.state.search);
-    }
-  };
-
-  window.addEventListener("keydown", function (event) {
-    if (event.key === "k" && event.metaKey) { // CMD + k
-      event.preventDefault();
-      $1('.search__field').focus();
-    }
-  });
-
-  $1("header a").addEventListener("click", handleTextLinkClick);
 });

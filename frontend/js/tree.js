@@ -26,24 +26,8 @@ class Tree {
     });
   }
 
-  // Returns node for given relative URL path.
-  get(url) {
-    if (url.charAt(0) === "/") {
-      url = url.substring(1);
-    }
-    if (url.charAt(url.length - 1) === "/") {
-      url = url.slice(0, -1);
-    }
-    return fetch('/api/v1/tree/' + url).then((res) => {
-      return res.json();
-    }).then((json) => {
-      return json.data;
-    });
-  }
-
-  // Returns a flat list of all nodes in the tree. Argument
-  // is rescursive invocation and should be null when called
-  // directly.
+  // Returns a flat list of all nodes in the tree. The "node" parameter is for
+  // rescursive invocation and should be null when called initally.
   flatten(node = null) {
     let list = [];
 
@@ -97,4 +81,29 @@ class Tree {
 
     return tree;
   }
+
+  // Returns node for given relative URL path.
+  get(url) {
+    if (url.charAt(0) === "/") {
+      url = url.substring(1);
+    }
+    if (url.charAt(url.length - 1) === "/") {
+      url = url.slice(0, -1);
+    }
+    return fetch('/api/v1/tree/' + url).then((res) => {
+      return res.json();
+    }).then((json) => {
+      return json.data;
+    });
+  }
+
+  search(q) {
+    return fetch('/api/v1/search?q=' + encodeURIComponent(q)).then((res) => {
+      return res.json();
+    }).then((json) => {
+      return json.data;
+    });
+  }
+
+
 }
