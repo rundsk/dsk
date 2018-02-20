@@ -9,4 +9,3 @@ dist
 _*
 data.go
 data/assets/*/*.dist.*
-/.DS_Store

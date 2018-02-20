@@ -203,8 +203,6 @@ func treeHandler(w http.ResponseWriter, r *http.Request) {
 // Handles this URL:
 //   /api/tree.json
 func treeJSONHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
 	wr := jsend.Wrap(w)
 	path := r.URL.Path[len("/api/"):]
 
