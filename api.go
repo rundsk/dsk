@@ -33,9 +33,17 @@ type APIv1Node struct {
 	IsGhost     bool              `json:"is_ghost"`
 }
 
+// Skips some node fields, to lighten transport weight.
+type APIv1LightNode struct {
+	URL      string            `json:"url"`
+	Children []*APIv1LightNode `json:"children"`
+	Title    string            `json:"title"`
+	IsGhost  bool              `json:"is_ghost"`
+}
+
 type APIv1NodeTree struct {
-	Root       *APIv1Node `json:"root"`
-	TotalNodes uint16     `json:"total_nodes"`
+	Root       *APIv1LightNode `json:"root"`
+	TotalNodes uint16          `json:"total_nodes"`
 }
 
 type APIv1NodeAsset struct {
@@ -109,8 +117,27 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 	}, nil
 }
 
+func (api APIv1) NewLightNode(n *Node) (*APIv1LightNode, error) {
+	nChildren := n.Children()
+	children := make([]*APIv1LightNode, len(nChildren))
+	for k, v := range nChildren {
+		n, err := api.NewLightNode(v)
+		if err != nil {
+			return nil, err
+		}
+		children[k] = n
+	}
+
+	return &APIv1LightNode{
+		URL:      n.URL(),
+		Children: children,
+		Title:    n.Title(),
+		IsGhost:  n.IsGhost,
+	}, nil
+}
+
 func (api APIv1) NewNodeTree(t *NodeTree) (*APIv1NodeTree, error) {
-	root, err := api.NewNode(t.Root)
+	root, err := api.NewLightNode(t.Root)
 
 	return &APIv1NodeTree{
 		Root:       root,
