@@ -93,6 +93,9 @@ func (n *Node) Sync() error {
 
 // The node's computed title with any ordering numbers stripped off, usually for display purposes.
 func (n Node) Title() string {
+	if n.root == n.path {
+		return ""
+	}
 	return cleanNodeTitle(n.path)
 }
 
