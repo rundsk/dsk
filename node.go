@@ -48,6 +48,7 @@ type Node struct {
 	IsGhost bool
 }
 
+// Metadata parsed from node configuration.
 type NodeMeta struct {
 	Description string
 	Keywords    []string
@@ -57,22 +58,22 @@ type NodeMeta struct {
 type NodeAsset struct {
 	// Absolute path to the file.
 	path string
-	// The basename of the file, usually for display purposes.
-	Name string
 	// The URL, relative to the design defintion tree root.
 	URL string
+	// The basename of the file, usually for display purposes.
+	Name string
 }
 
 type NodeCrumb struct {
-	Title string
 	URL   string
+	Title string
 }
 
 // Constructs a new synced node using its path in the filesystem.
 // Returns a node instance even if uncritical errors happened. In that
 // case the node will be flagged as a "ghost" node.
 func NewNodeFromPath(path string, root string) (*Node, error) {
-	n := &Node{root: root, path: path}
+	n := &Node{root: root, path: path, children: []*Node{}}
 
 	m, err := n.parseMeta()
 	n.IsGhost = err != nil
@@ -91,12 +92,12 @@ func (n *Node) Sync() error {
 }
 
 // The node's computed title with any ordering numbers stripped off, usually for display purposes.
-func (n *Node) Title() string {
+func (n Node) Title() string {
 	return cleanNodeTitle(n.path)
 }
 
 // An order number, as a hint for outside sorting mechanisms.
-func (n *Node) Order() uint64 {
+func (n Node) Order() uint64 {
 	title := filepath.Base(n.path)
 	s := NodeTitleRegexp.FindStringSubmatch(title)
 
@@ -110,6 +111,9 @@ func (n *Node) Order() uint64 {
 // Return the unnormalized/raw URL path fragment, that can be used to
 // address this node i.e Input/Password.
 func (n Node) URL() string {
+	if n.root == n.path {
+		return ""
+	}
 	return strings.TrimPrefix(n.path, n.root+"/")
 }
 
@@ -135,7 +139,7 @@ func (n Node) Description() string {
 // Returns the list of children nodes. May be left empty when node is
 // used in a flat list of results, where children information is not
 // needed.
-func (n *Node) Children() []*Node {
+func (n Node) Children() []*Node {
 	return n.children
 }
 
@@ -165,7 +169,7 @@ func (n Node) Asset(name string) (*NodeAsset, error) {
 // or other binary assets. JavaScript and Stylesheets and DSK control
 // files are excluded.
 func (n Node) Downloads() ([]*NodeAsset, error) {
-	var results []*NodeAsset
+	results := []*NodeAsset{}
 
 	files, err := ioutil.ReadDir(n.path)
 	if err != nil {
@@ -218,7 +222,7 @@ func (n Node) Docs() (map[string][]byte, error) {
 // Returns a list of crumbs. The last element is the current active
 // one. Does not include a root element.
 func (n Node) Crumbs() []*NodeCrumb {
-	var crumbs []*NodeCrumb
+	crumbs := []*NodeCrumb{}
 
 	parts := strings.Split(strings.TrimSuffix(n.URL(), "/"), "/")
 	for index, _ := range parts {
@@ -232,7 +236,7 @@ func (n Node) Crumbs() []*NodeCrumb {
 
 // Reads node configuration file when present and returns values. When file
 // is not present will simply return an empty Meta.
-func (n *Node) parseMeta() (NodeMeta, error) {
+func (n Node) parseMeta() (NodeMeta, error) {
 	var meta NodeMeta
 	f := filepath.Join(n.path, ConfigBasename)
 

@@ -16,16 +16,12 @@ import (
 	"path/filepath"
 
 	"github.com/fatih/color"
-	"github.com/gamegos/jsend"
 )
 
 var (
 	Version string
 
 	sigc chan os.Signal
-
-	// Absolute path to design definitions root directory.
-	root string
 
 	// Instance of the design defintions tree.
 	tree *NodeTree
@@ -67,8 +63,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to detect root of design definitions tree: %s", red(err))
 	}
-	root = here // assign to global
-	log.Printf("Using design definitions tree in %s...", prettyPath(root))
+	PrettyPathRoot = here
+	log.Printf("Reading design definitions tree from %s...", prettyPath(here))
 
 	tree = NewNodeTreeFromPath(here) // assign to global
 	if err := tree.Sync(); err != nil {
@@ -76,21 +72,12 @@ func main() {
 	}
 	log.Printf("Synced tree with %d total nodes", tree.TotalNodes())
 
-	addr := fmt.Sprintf("%s:%s", *host, *port)
-	log.Printf("Will listen on %s", addr)
+	log.Print("Mounting APIv1...")
+	apiv1 := &APIv1{tree}
+	apiv1.MountHTTPHandlers()
 
-	log.Printf("Please visit: %s", green("http://"+addr))
-	log.Print("Hit Ctrl+C to quit")
-
-	http.HandleFunc("/api/v1/tree", treeHandler)
-	http.HandleFunc("/api/v1/tree/", func(w http.ResponseWriter, r *http.Request) {
-		if filepath.Ext(r.URL.Path) != "" {
-			nodeAssetHandler(w, r)
-		} else {
-			nodeHandler(w, r)
-		}
-	})
-	http.HandleFunc("/api/v1/search", searchHandler)
+	// Handles frontend root document delivery and frontend assets.
+	log.Print("Mounting frontend...")
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if filepath.Ext(r.URL.Path) != "" {
 			assetHandler(w, r)
@@ -98,6 +85,12 @@ func main() {
 			rootHandler(w, r)
 		}
 	})
+
+	addr := fmt.Sprintf("%s:%s", *host, *port)
+	log.Printf("Will listen on %s", addr)
+
+	log.Printf("Please visit: %s", green("http://"+addr))
+	log.Print("Hit Ctrl+C to quit")
 
 	if err := http.ListenAndServe(addr, nil); err != nil {
 		log.Fatalf("Failed to start web interface: %s", red(err))
@@ -131,7 +124,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 func assetHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path[len("/"):]
 
-	if err := checkSafePath(path, root); err != nil {
+	if err := checkSafePath(path, tree.path); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -145,104 +138,4 @@ func assetHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", typ)
 	w.Write(buf[:])
 	return
-}
-
-// Returns all nodes in the design defintions tree, as nested nodes.
-//
-// Handles this URL:
-//   /api/v1/tree
-func treeHandler(w http.ResponseWriter, r *http.Request) {
-	wr := jsend.Wrap(w)
-	// Not getting or checking path here, as only tree requests are routed
-	// here.
-
-	if err := tree.Sync(); err != nil {
-		wr.
-			Status(http.StatusInternalServerError).
-			Message(err.Error()).
-			Send()
-		return
-	}
-	wr.
-		Data(tree).
-		Status(http.StatusOK).
-		Send()
-}
-
-// Returns information about a single node.
-//
-// Handles these kinds of URLs:
-//   /api/v1/tree/DisplayData/Table
-//   /api/v1/tree/DisplayData/Table/Row
-func nodeHandler(w http.ResponseWriter, r *http.Request) {
-	wr := jsend.Wrap(w)
-	path := r.URL.Path[len("/api/v1/tree/"):]
-
-	if err := checkSafePath(path, root); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	n, err := tree.GetSynced(path)
-	if err != nil {
-		wr.
-			Status(http.StatusNotFound).
-			Message(err.Error()).
-			Send()
-		return
-	}
-	wr.
-		Data(n).
-		Status(http.StatusOK).
-		Send()
-}
-
-// Returns a node asset.
-//
-// Handles these kinds of URLs:
-//   /api/v1/tree/DisplayData/Table/foo.png
-//   /api/v1/tree/DisplayData/Table/Row/bar.mp4
-//   /api/v1/tree/DataEntry/Components/Button/test.png
-//   /api/v1/tree/Button/foo.mp4
-func nodeAssetHandler(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path[len("/api/v1/tree/"):]
-
-	if err := checkSafePath(path, root); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	n, err := tree.Get(filepath.Dir(path))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	asset, err := n.Asset(filepath.Base(path))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-	http.ServeFile(w, r, asset.path)
-	return
-}
-
-// Performs a full text search over the design defintions tree and
-// returns results.
-//
-// Handles these kinds of URLs:
-//   /api/v1/search?q={query}
-func searchHandler(w http.ResponseWriter, r *http.Request) {
-	q := r.URL.Query().Get("q")
-	wr := jsend.Wrap(w)
-
-	results, err := tree.Search(q)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	wr.
-		Data(results).
-		Status(http.StatusOK).
-		Send()
 }

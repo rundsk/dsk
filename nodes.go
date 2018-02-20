@@ -51,8 +51,7 @@ func (t *NodeTree) Sync() error {
 				log.Printf("Ignoring node: %s", yellow(prettyPath(path)))
 				return filepath.SkipDir
 			}
-
-			n, nErr := NewNodeFromPath(path, root)
+			n, nErr := NewNodeFromPath(path, t.path)
 			if nErr != nil {
 				return nErr
 			}
@@ -64,7 +63,7 @@ func (t *NodeTree) Sync() error {
 		return nil
 	})
 	if err != nil {
-		return fmt.Errorf("Failed to walk directory tree %s: %s", root, err)
+		return fmt.Errorf("Failed to walk directory tree %s: %s", t.path, err)
 	}
 
 	// In the second pass we're doing two thing: add the children
@@ -85,6 +84,7 @@ func (t *NodeTree) Sync() error {
 	// Swap late, in event of error we keep the previous state.
 	t.lookup = lookup
 	t.Root = lookup[""]
+	log.Printf("Established tree lookup table with %d entries", len(lookup))
 
 	return nil
 }

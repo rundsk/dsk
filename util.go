@@ -13,10 +13,13 @@ import (
 	"strings"
 )
 
-var DirectoryTraversalError = errors.New("directory traversal attempted")
+var (
+	DirectoryTraversalError = errors.New("directory traversal attempted")
+	PrettyPathRoot          string
+)
 
 func prettyPath(path string) string {
-	rel, _ := filepath.Rel(filepath.Dir(root), path)
+	rel, _ := filepath.Rel(filepath.Dir(PrettyPathRoot), path)
 	return rel
 }
 
