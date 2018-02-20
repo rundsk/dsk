@@ -97,6 +97,14 @@ class Tree {
     });
   }
 
+  filter(q) {
+    return fetch('/api/v1/tree?q=' + encodeURIComponent(q)).then((res) => {
+      return res.json();
+    }).then((json) => {
+      return json.data;
+    });
+  }
+
   search(q) {
     return fetch('/api/v1/search?q=' + encodeURIComponent(q)).then((res) => {
       return res.json();
@@ -104,6 +112,4 @@ class Tree {
       return json.data;
     });
   }
-
-
 }

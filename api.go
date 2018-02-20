@@ -145,11 +145,14 @@ func (api APIv1) NewNodeTree(t *NodeTree) (*APIv1NodeTree, error) {
 	}, err
 }
 
-// Returns all nodes in the design defintions tree, as nested nodes.
+// Returns all nodes in the design defintions tree, as nested nodes. If given
+// will filter
 //
 // Handles this URL:
 //   /api/v1/tree
+//   /api/v1/tree?q={query}
 func (api APIv1) treeHandler(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query().Get("q")
 	wr := jsend.Wrap(w)
 	// Not getting or checking path here, as only tree requests are routed
 	// here.
@@ -162,7 +165,22 @@ func (api APIv1) treeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	atree, err := api.NewNodeTree(api.tree)
+	var tree *NodeTree
+	if q != "" {
+		filtered, err := api.tree.Filter(q)
+		if err != nil {
+			wr.
+				Status(http.StatusInternalServerError).
+				Message(err.Error()).
+				Send()
+			return
+		}
+		tree = filtered
+	} else {
+		tree = api.tree
+	}
+
+	atree, err := api.NewNodeTree(tree)
 	if err != nil {
 		wr.
 			Status(http.StatusInternalServerError).

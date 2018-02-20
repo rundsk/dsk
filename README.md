@@ -106,6 +106,9 @@ The backend provides the following API endpoints. JSON responses use the
 `GET /api/v1/tree`,
 get the full design definitions tree as a nested tree of nodes.
 
+`GET /api/v1/tree?q={query}`,
+get a filtered by `query` view onto the design defintions tree.
+
 `GET /api/v1/tree/{path}`,
 get information about a single node specified by `path`.
 

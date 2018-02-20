@@ -113,6 +113,33 @@ func (t NodeTree) GetSynced(url string) (*Node, error) {
 	return &Node{}, fmt.Errorf("No node with URL path '%s' in tree", url)
 }
 
+// First performs a narrow search on the node's visible attributes (=
+// title) plus keywords and returns a new non-sparse tree instance
+// selecting only given nodes, their parents and all their children.
+//
+// Filters out any not selected nodes. Descends into branches first,
+// then works its way back up the tree filtering out any nodes, that
+// are not selected. For selection conditions see check().
+//
+// Selecting a leaf node, selects all parents. But not the siblings.
+//
+//           a*
+//
+//           b*
+//
+//      c!   d   e
+//
+// Selecting a node, always selects all its children.
+//
+//           a*
+//
+//           b!
+//
+//      c*   d*   e*
+func (t NodeTree) Filter(query string) (*NodeTree, error) {
+	return &NodeTree{}, nil
+}
+
 // Performs a full text search on the tree and returns a flat list
 // of nodes as results.
 //
