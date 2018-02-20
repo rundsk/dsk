@@ -10,6 +10,10 @@ GOFLAGS = -X main.Version=$(VERSION)
 ANY_DEPS = $(wildcard *.go)
 FRONTEND ?= $(shell pwd)/frontend
 
+.PHONY: test
+test: 
+	go test
+
 .PHONY: dev
 dev:
 	go-bindata -debug -prefix $(FRONTEND) -ignore=node_modules -o data.go $(FRONTEND)/...

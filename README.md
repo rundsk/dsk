@@ -150,9 +150,9 @@ A build created under by [create react app's](https://github.com/facebook/create
 [Go](https://golang.org/) version 1.9 or later is needed for developing and
 testing the application. 
 
-If you're setting up a Go environment from scratch, add
-Go's `bin` directory to your `PATH`, so that go binaries like `go-bindata` can
-be found. In `.profile` add the following line.
+If you're setting up a Go environment from scratch, add Go's `bin` directory to
+your `PATH`, so that go binaries like `go-bindata` can be found. In `.profile`
+add the following line.
 ```
 export PATH=$PATH:$(go env GOPATH)/bin
 ```
@@ -168,6 +168,8 @@ $ go get github.com/atelierdisko/dsk
 $ cd $(go env GOPATH)/src/github.com/atelierdisko/dsk
 $ make dev
 ```
+
+To run the unit test simply use `make test`.
 
 ## Copyright & License
 
