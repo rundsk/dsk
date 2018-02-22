@@ -4,34 +4,23 @@
 
 ## Abstract
 
-Using Design System Kit (DSK) you quickly organize components into a
-browsable and live-searchable component library.
+Using the Design System Kit (DSK) you quickly define and organize design documentation into a
+browsable and live-searchable design system.
 
-Hierachies between components are established using plain simple directories.
-Creating documentation is as easy as adding a Markdown formatted file to a
-directory inside the _design definitions tree_.
+Hierachies are established using plain simple directories. Creating documentation is as easy as adding a Markdown formatted file to such a directory inside the _design definitions tree_.
 
 ![screenshot](https://atelierdisko.de/assets/app/img/github_dsk.png)
 
-## Status
-
-DSK is currently in development and **should not yet be considered for general production use**. 
-Please see the _Development_ section for how to build the tool from source. We encourage contributions in form of code, design ideas or testing.
-
 ## Quickstart
 
-Visit [the releases page](https://github.com/atelierdisko/dsk/releases) and download the binary 
-from GitHub, i.e. with cURL.
-```
-curl -L https://github.com/atelierdisko/dsk/releases/download/v0.6.0-alpha/dsk-darwin-amd64 -o dsk
-```
+Visit the [GitHub releases page](https://github.com/atelierdisko/dsk/releases) and download the binary for you architecture. For Mac OS use `dsk-darwin-amd64`, for Linux use `dsk-linux-amd64`.
 
-Before you can run the downloaded binary, you must make it executable.
+After downloading the binary and before you can run it, you must make it executable.
 ```
 chmod +x dsk
 ```
 
-Now run the `dsk` command pointing it to the directory that contains your design definitions tree.
+Now run the `dsk` command, giving it the path to the directory that holds your design definitions tree. You can also just double-click the command, in which case it considers its current directory as the definitions tree.
 ```
 ./dsk example
 ```
@@ -81,21 +70,21 @@ Possible configuration options are:
 # Architecture
 
 Architecture-wise DSK is split into a backend and frontend. The backend implemented 
-in Go takes care of understanding the defintions tree and provides a REST API for
-frontends, usually implemented in JavaScript are pluggable.
+in Go takes care of understanding the defintions tree and provides a REST API for the
+frontend, usually implemented in JavaScript. 
 
-The decoupled design allows you to create indvidually branded frontends, which
-are entirely free in their implementation, they must adher to only a minimal set
+Frontends are pluggable and the decoupled desing allows you to create indvidually branded frontends. 
+These are entirely free in their implementation, they must adher to only a minimal set
 of rules.
 
-The frontend and backend and are compiled together into a single binary, making
+The frontend and backend and are than later compiled together into a single binary, making
 it usuable as a publicly hosted web application or a locally running design tool.
 
 ## Building your own Frontend 
 
-The following sections describe everything you need to build your own frontend
-and bundle it with the dsk binary. By default dsk uses the _default frontend_,
-which - for inspirational purposes - can be found in the `frontend` directory of
+The following sections describe everything you need to know when building your own frontend
+and bundle it with the dsk binary. By default dsk uses a builtin minimal frontend. The default frontend
+is a good starting point when developing your own. It can be found in the `frontend` directory of
 this project.
 
 ### Available API Endpoints
@@ -121,38 +110,30 @@ full text search over the design definitions tree.
 ### Designing the URL Schema
 
 Your frontend and its subdirectories will be mounted directly at the root path
-`/`. Requests to anything under `/api` is routed to the backend, anything else
+`/`. Requests to anything under `/api` are routed to the backend, anything else
 is routed into your application in `index.html`. 
 
 Relative asset source paths inside the markdown files will be made
 absolute to allow you displaying the document contents wherever you
 like to.
 
-### Building DSK with your Frontend
+### Baking
 
-Please install the development tools as described in the _Development_ section,
-than use the following command to compile a dsk binary with your frontend. When 
-For frontends created with create react app, use the `build` directory. 
+To _bake_ your frontend into DSK, install the the development tools as described in the _Development_ section frist. 
+After doing so, you create your custom dsk build by running the following command.
 
 ```
-$ FRONTEND=/path/to/my/frontend make dist
-$ FRONTEND=/path/to/my/cra/frontend/build make dist
+$ FRONTEND=/my/frontend make dist
 ```
 
-A build created under by [create react app's](https://github.com/facebook/create-react-a) 
-`npm run build` under `build` is a valid frontend:
-```
-.
-├── index.html
-└── static
-    ├── css
-    │   ├── main.41064805.css
-    ├── js
-    │   ├── main.5f57358c.js
-    └── media
-        └── exampleImage.3780b1a4.png
-```
+Frontends created with [create react app](https://github.com/facebook/create-react-app) should instead follow these couple of simple steps. 
 
+```
+$ cd /my/frontend
+$ npm run build
+$ cd $(go env GOPATH)/github.com/atelierdisko/dsk
+$ FRONTEND=/my/frontend/build make dist
+```
 
 ## Development
 
@@ -178,11 +159,10 @@ $ cd $(go env GOPATH)/src/github.com/atelierdisko/dsk
 $ make dev
 ```
 
-To run the unit test simply use `make test`.
+To run the unit tests use `make test`.
 
 ## Copyright & License
 
 DSK is Copyright (c) 2017 Atelier Disko if not otherwise
 stated. Use of the source code is governed by a BSD-style
 license that can be found in the LICENSE file.
-
