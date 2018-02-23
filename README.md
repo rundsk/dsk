@@ -7,35 +7,37 @@
 Using the Design System Kit (DSK) you quickly define and organize design documentation into a
 browsable and live-searchable design system.
 
-Hierachies are established using plain simple directories. Creating documentation is as easy as adding a Markdown formatted file to such a directory inside the _design definitions tree_.
+Hierachies are established using plain simple directories. Easily create documentation by adding a [Markdown](https://guides.github.com/features/mastering-markdown/) formatted file.
 
 ![screenshot](https://atelierdisko.de/assets/app/img/github_dsk.png)
 
 ## Quickstart
 
-Visit the [GitHub releases page](https://github.com/atelierdisko/dsk/releases) and download the binary for you architecture. For Mac OS use `dsk-darwin-amd64`, for Linux use `dsk-linux-amd64`.
+Visit the [GitHub releases page](https://github.com/atelierdisko/dsk/releases) and download the binary for your architecture. For macOS use `dsk-darwin-amd64`, for Linux use `dsk-linux-amd64`.
 
-After downloading the binary and before you can run it, you must make it executable.
+After downloading the binary, you need to make the binary excutable.
 ```
 chmod +x dsk
 ```
 
-Now run the `dsk` command, giving it the path to the directory that holds your design definitions tree. You can also just double-click the command, in which case it considers its current directory as the definitions tree.
+Now run the `dsk` command, giving it the path to the design definitions tree. Double-clicking the command, works fine as well. In that case it'll use the current directory design definitions tree. 
 ```
 ./dsk example
 ```
 
-Finally [open the Web Application in your browser](http://localhost:8080).
+Finally [open the web application in your browser](http://localhost:8080), to browse through the design system.
 
 ## The Design Definitions Tree
+
+The _design definitions tree_ (DDT for short), is a directory containing other nested directories. Each one most often at least contains a `readme.md` file. This is simply a Markdown formatted text file that. Other Markdown files are supported too like `api.md` and `comments.md`. There is the configuration file `index.json` which we describe in the following section. Any other file will be considered an _Asset_ that is it can be embedded inside the Markdow files or downloaded throug the frontend.
 
 ```
 example
 ├── DataEntry
 │   ├── Button
-│   │   ├── exploration.sketch
-│   │   ├── index.json
-│   │   └── readme.md
+│   │   ├── exploration.sketch  <- Asset
+│   │   ├── index.json          <- Configuration
+│   │   └── readme.md           <- Main markdown file
 │   ├── TextField
 │   │   ├── Password
 │   │   │   └── readme.md
@@ -45,15 +47,15 @@ example
 │   │   └── unmask.svg
 ```
 
-### Component Configuration File
+### Design Configuration File
 
-Each component directory may hold an `index.json` file. The file and any of its
+Each tree directory may hold an `index.json` file. The file and any of its
 configuration settings are entirely optional.
 
-Using the configuration file, we can add meta data to the component (i.e. keywords)
+Using the configuration file, we can add meta data to the design (i.e. keywords)
 to improve the search experience in the interface. 
 
-An example of a full component configuration looks like this:
+An example of a full configuration looks like this:
 
 ```json
 {
@@ -64,8 +66,8 @@ An example of a full component configuration looks like this:
 
 Possible configuration options are:
 
-- `description`: A single sentence that roughly describes the component.
-- `keywords`: An array of keywords to group related components together.
+- `description`: A single sentence that roughly describes the design component.
+- `keywords`: An array of keywords to group related design components together.
 
 # Architecture
 
