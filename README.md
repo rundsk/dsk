@@ -1,10 +1,10 @@
-# Design System Kit (DSK)
+# Design System Kit
 
 [![Build Status](https://travis-ci.org/atelierdisko/dsk.svg?branch=1.0)](https://travis-ci.org/atelierdisko/dsk)
 
 ## Abstract
 
-Using the Design System Kit (DSK) you quickly define and organize design documentation into a
+Using the _Design System Kit_ you quickly define and organize design documentation into a
 browsable and live-searchable design system. Hierachies are established using plain simple directories. Documentation is created by just adding a [Markdown](https://guides.github.com/features/mastering-markdown/) formatted file.
 
 ![screenshot](https://atelierdisko.de/assets/app/img/github_dsk.png)
