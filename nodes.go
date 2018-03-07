@@ -24,14 +24,30 @@ var (
 type NodeTree struct {
 	// The absolute root path of the tree.
 	path string
+
 	// Maps node URL paths to nodes, for quick lookup.
 	lookup map[string]*Node
+
 	// The root node and entry point to the acutal tree.
 	Root *Node `json:"root"`
+
+	// Authors database, if AUTHORS.txt file exists.
+	authors *Authors
 }
 
 func NewNodeTreeFromPath(path string) *NodeTree {
-	return &NodeTree{path: path}
+	authorsFile := filepath.Join(path, "AUTHORS.txt")
+	var as *Authors
+
+	if _, err := os.Stat(authorsFile); err == nil {
+		as, err = NewAuthorsFromFile(authorsFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		as = &Authors{}
+	}
+	return &NodeTree{path: path, authors: as}
 }
 
 // One-way sync: updates tree from file system. Recursively crawls

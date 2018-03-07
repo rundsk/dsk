@@ -68,7 +68,8 @@ Possible configuration options are:
 
 - `description`: A single sentence that roughly describes the design component.
 - `keywords`: An array of keywords to group related design components together.
-- `owner`: Email address of the document owner; see below.
+- `owners`: An array of email addresses of the document owners; see below.
+- `version`: A freeform version string.
 
 ### Authors & Owners
 

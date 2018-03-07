@@ -26,6 +26,7 @@ type APIv1Node struct {
 	Children    []*APIv1Node      `json:"children"`
 	Title       string            `json:"title"`
 	Description string            `json:"description"`
+	Owners      []*APIv1NodeOwner `json:"owners"`
 	Keywords    []string          `json:"keywords"`
 	Docs        map[string]string `json:"docs"`
 	Downloads   []*APIv1NodeAsset `json:"downloads"`
@@ -44,6 +45,11 @@ type APIv1LightNode struct {
 type APIv1NodeTree struct {
 	Root       *APIv1LightNode `json:"root"`
 	TotalNodes uint16          `json:"total_nodes"`
+}
+
+type APIv1NodeOwner struct {
+	Email string `json:"email"`
+	Name  string `json:"name"`
 }
 
 type APIv1NodeAsset struct {
@@ -79,6 +85,11 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		children[k] = n
 	}
 
+	var owners []*APIv1NodeOwner
+	for _, owner := range n.Owners(api.tree.authors) {
+		owners = append(owners, &APIv1NodeOwner{owner.Email, owner.Name})
+	}
+
 	nDocs, err := n.Docs(filepath.Join("/api/v1/tree", n.URL()))
 	docs := make(map[string]string, len(nDocs))
 	if err != nil {
@@ -110,6 +121,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		Title:       n.Title(),
 		Keywords:    n.Keywords(),
 		Description: n.Description(),
+		Owners:      owners,
 		Docs:        docs,
 		Downloads:   downloads,
 		Crumbs:      crumbs,
