@@ -59,8 +59,9 @@ An example of a full configuration looks like this:
 ```json
 {
     "description": "This is a very very very fancy component.",
-    "keywords": ["fancy", "very"]
-    "owners": ["christoph@atelierdisko.de", "marius@atelierdisko.de"]
+    "keywords": ["fancy", "very"],
+    "owners": ["christoph@atelierdisko.de", "marius@atelierdisko.de"],
+    "version": "1.2.3"
 }
 ```
 
