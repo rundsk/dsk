@@ -50,6 +50,7 @@ type Node struct {
 
 // Metadata parsed from node configuration.
 type NodeMeta struct {
+	Owners      []string // Email addresses of node owners.
 	Description string
 	Keywords    []string
 }
@@ -137,6 +138,21 @@ func (n Node) Keywords() []string {
 // Returns the full description of the node.
 func (n Node) Description() string {
 	return n.meta.Description
+}
+
+// Returns a list of node owners; wil use the given authors
+// database to lookup information.
+func (n Node) Owners(as *Authors) []*Author {
+	var r []*Author
+
+	for _, email := range n.meta.Owners {
+		author := as.Get(email)
+		if author == nil {
+			author = &Author{email, ""}
+		}
+		r = append(r, author)
+	}
+	return r
 }
 
 // Returns the list of children nodes. May be left empty when node is

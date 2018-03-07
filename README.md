@@ -31,6 +31,7 @@ The _design definitions tree_ (DDT for short), is a directory containing other n
 
 ```
 example
+├── AUTHORS.txt                 <- optional, see "Owners & Authors" below
 ├── DataEntry
 │   ├── Button
 │   │   ├── exploration.sketch  <- Asset
@@ -59,6 +60,7 @@ An example of a full configuration looks like this:
 {
     "description": "This is a very very very fancy component.",
     "keywords": ["fancy", "very"]
+    "owners": ["christoph@atelierdisko.de", "marius@atelierdisko.de"]
 }
 ```
 
@@ -66,6 +68,23 @@ Possible configuration options are:
 
 - `description`: A single sentence that roughly describes the design component.
 - `keywords`: An array of keywords to group related design components together.
+- `owner`: Email address of the document owner; see below.
+
+### Authors & Owners
+
+Each directory inside the tree may be _owned_ by one or multiple
+authors. To assign youreself, use the `owners` option in `index.json`
+the design configuration file.
+
+To enable automatic full names for each owner, create an `AUTHORS.txt`
+file inside the root of the design definitions tree. Each line of the
+file lists an author's full name and her/his email address in angle
+brackets.
+
+```text
+Christoph Labacher <christoph@atelierdisko.de>
+Marius Wilms <marius@atelierdisko.de>
+```
 
 # Architecture
 
