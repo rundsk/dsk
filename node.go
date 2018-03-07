@@ -15,6 +15,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/russross/blackfriday"
 )
@@ -164,6 +165,27 @@ func (n Node) Owners(as *Authors) []*Author {
 		r = append(r, author)
 	}
 	return r
+}
+
+// Finds the most recently edited file in the node directory and
+// returns its modified timestamp.
+func (n Node) Modified() time.Time {
+	var modified time.Time
+
+	files, err := ioutil.ReadDir(n.path)
+	if err != nil {
+		return modified
+	}
+
+	for _, f := range files {
+		if f.IsDir() {
+			continue
+		}
+		if f.ModTime().After(modified) {
+			modified = f.ModTime()
+		}
+	}
+	return modified
 }
 
 // Returns a node asset, given its basename.

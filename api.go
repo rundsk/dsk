@@ -27,6 +27,7 @@ type APIv1Node struct {
 	Title       string            `json:"title"`
 	Description string            `json:"description"`
 	Owners      []*APIv1NodeOwner `json:"owners"`
+	Modified    int64             `json:"modified"`
 	Keywords    []string          `json:"keywords"`
 	Docs        map[string]string `json:"docs"`
 	Downloads   []*APIv1NodeAsset `json:"downloads"`
@@ -122,6 +123,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		Keywords:    n.Keywords(),
 		Description: n.Description(),
 		Owners:      owners,
+		Modified:    n.Modified().Unix(),
 		Docs:        docs,
 		Downloads:   downloads,
 		Crumbs:      crumbs,
