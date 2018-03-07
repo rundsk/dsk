@@ -52,6 +52,7 @@ type Node struct {
 // Metadata parsed from node configuration.
 type NodeMeta struct {
 	Owners      []string // Email addresses of node owners.
+	Version     string   // Freeform version string.
 	Description string
 	Keywords    []string
 }
@@ -186,6 +187,10 @@ func (n Node) Modified() time.Time {
 		}
 	}
 	return modified
+}
+
+func (n Node) Version() string {
+	return n.meta.Version
 }
 
 // Returns a node asset, given its basename.
