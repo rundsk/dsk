@@ -10,7 +10,6 @@ import (
 )
 
 func TestTitleDerivation(t *testing.T) {
-
 	expected := map[string]string{
 		"/tmp/xyz/foo":      "foo",
 		"/tmp/xyz/1_foo":    "foo",
