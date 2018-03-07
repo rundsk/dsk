@@ -92,12 +92,19 @@ func (n *Node) Sync() error {
 	return nil
 }
 
-// The node's computed title with any ordering numbers stripped off, usually for display purposes.
-func (n Node) Title() string {
+// Return the unnormalized/raw URL path fragment, that can be used to
+// address this node i.e Input/Password.
+func (n Node) URL() string {
 	if n.root == n.path {
 		return ""
 	}
-	return cleanNodeTitle(n.path)
+	return strings.TrimPrefix(n.path, n.root+"/")
+}
+
+// Returns the normalized URL i.e. for bulding case-insentive lookup
+// tables. Idempotent function.
+func (n Node) NormalizedURL() string {
+	return normalizeNodeURL(n.URL())
 }
 
 // An order number, as a hint for outside sorting mechanisms.
@@ -112,19 +119,23 @@ func (n Node) Order() uint64 {
 	return 0
 }
 
-// Return the unnormalized/raw URL path fragment, that can be used to
-// address this node i.e Input/Password.
-func (n Node) URL() string {
+// Returns the list of children nodes. May be left empty when node is
+// used in a flat list of results, where children information is not
+// needed.
+func (n Node) Children() []*Node {
+	return n.children
+}
+
+func (n *Node) AddChild(cn *Node) {
+	n.children = append(n.children, cn)
+}
+
+// The node's computed title with any ordering numbers stripped off, usually for display purposes.
+func (n Node) Title() string {
 	if n.root == n.path {
 		return ""
 	}
-	return strings.TrimPrefix(n.path, n.root+"/")
-}
-
-// Returns the normalized URL i.e. for bulding case-insentive lookup
-// tables. Idempotent function.
-func (n Node) NormalizedURL() string {
-	return normalizeNodeURL(n.URL())
+	return cleanNodeTitle(n.path)
 }
 
 // Returns an alphabetically sorted list of keywords.
@@ -153,17 +164,6 @@ func (n Node) Owners(as *Authors) []*Author {
 		r = append(r, author)
 	}
 	return r
-}
-
-// Returns the list of children nodes. May be left empty when node is
-// used in a flat list of results, where children information is not
-// needed.
-func (n Node) Children() []*Node {
-	return n.children
-}
-
-func (n *Node) AddChild(cn *Node) {
-	n.children = append(n.children, cn)
 }
 
 // Returns a node asset, given its basename.
