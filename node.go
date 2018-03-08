@@ -251,6 +251,9 @@ func (n Node) Docs(prefix string) (map[string][]byte, error) {
 		Flags:          blackfriday.CommonHTMLFlags &^ blackfriday.UseXHTML,
 		AbsolutePrefix: prefix,
 	})
+	extensions := blackfriday.CommonExtensions |
+		blackfriday.Strikethrough | blackfriday.NoEmptyLineBeforeBlock&^
+		blackfriday.HeadingIDs&^blackfriday.DefinitionLists
 
 	matches, err := filepath.Glob(filepath.Join(n.path, "*.md"))
 	if err != nil || matches == nil {
@@ -268,7 +271,7 @@ func (n Node) Docs(prefix string) (map[string][]byte, error) {
 		docs[k] = blackfriday.Run(
 			contents,
 			blackfriday.WithRenderer(renderer),
-			blackfriday.WithExtensions(blackfriday.CommonExtensions&^blackfriday.HeadingIDs),
+			blackfriday.WithExtensions(extensions),
 		)
 	}
 	return docs, nil
