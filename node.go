@@ -181,7 +181,7 @@ func (n Node) Title() string {
 	if n.root == n.path {
 		return ""
 	}
-	return cleanNodeTitle(n.path)
+	return removeOrderNumber(filepath.Base(n.path))
 }
 
 // Returns an alphabetically sorted list of keywords.
@@ -315,9 +315,9 @@ func (n Node) Crumbs() []*NodeCrumb {
 	crumbs := []*NodeCrumb{}
 
 	parts := strings.Split(strings.TrimSuffix(n.URL(), "/"), "/")
-	for index, _ := range parts {
+	for index, part := range parts {
 		crumbs = append(crumbs, &NodeCrumb{
-			Title: cleanNodeTitle(strings.Join(parts[:index+1], "/")),
+			Title: removeOrderNumber(part),
 			URL:   strings.Join(parts[:index+1], "/"),
 		})
 	}
@@ -344,18 +344,30 @@ func (n Node) parseMeta() (NodeMeta, error) {
 	return meta, nil
 }
 
-// Normalizes give node URL path i.e. for bulding case-insentive
-// lookup tables. Idempotent function.
+// Normalizes given relative node URL path i.e. for bulding
+// case-insensitive lookup tables. Idempotent function. Removes any
+// order numbers, as well as leading and trailing slashes.
+//
+//   /foo/bar/  -> foo/bar
+//   foo/02_bar -> foo/bar
 func normalizeNodeURL(url string) string {
-	return strings.Trim(strings.ToLower(url), "/")
+	var normalized []string
+
+	for _, p := range strings.Split(strings.ToLower(url), "/") {
+		if p == "/" {
+			continue
+		}
+		normalized = append(normalized, removeOrderNumber(p))
+	}
+	return strings.Join(normalized, "/")
 }
 
-func cleanNodeTitle(path string) string {
-	title := filepath.Base(path)
-	s := NodeTitleRegexp.FindStringSubmatch(title)
+// Removes order numbers from path/URL segment, if present.
+func removeOrderNumber(segment string) string {
+	s := NodeTitleRegexp.FindStringSubmatch(segment)
 
 	if len(s) == 0 {
-		return title
+		return segment
 	}
 	if len(s) > 2 {
 		return s[2]

@@ -26,6 +26,24 @@ func TestTitleDerivation(t *testing.T) {
 	}
 }
 
+func TestCleanURLs(t *testing.T) {
+	expected := map[string]string{
+		"/bar/xyz/foo":      "xyz/foo",
+		"/bar/xyz/1_foo":    "xyz/foo",
+		"/bar/xyz/1-foo":    "xyz/foo",
+		"/bar/xyz/0001-foo": "xyz/foo",
+		"/bar/xyz/Foo":      "xyz/foo",
+		"/bar/02_xyz/1_foo": "xyz/foo",
+	}
+	for path, e := range expected {
+		n := &Node{path: path, root: "/bar"}
+		r := n.NormalizedURL()
+		if e != r {
+			t.Errorf("\nexpected: %s, result: %s", e, r)
+		}
+	}
+}
+
 func TestCrumbURLs(t *testing.T) {
 	n := &Node{root: "/tmp/xyz", path: "/tmp/xyz/foo/bar/baz/"}
 
