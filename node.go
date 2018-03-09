@@ -27,7 +27,7 @@ const (
 var (
 	// Basenames matching the pattern will be ignored when searching
 	// for downloadable files in the node's directory.
-	IgnoreDownloadsRegexp = regexp.MustCompile(`^(.*\.(js|css|md|json)|\.DS_Store|\.git.*|dsk)$`)
+	IgnoreDownloadsRegexp = regexp.MustCompile(`(?i)^(.*\.(js|css|md|markdown|json)|\.DS_Store|\.git.*|dsk)$`)
 
 	// A pattern for extracting order number and title from a title in the form of 06_Foo.
 	NodeTitleRegexp = regexp.MustCompile(`^0?(\d+)[_,-]+(.*)$`)
