@@ -30,7 +30,7 @@ type APIv1Node struct {
 	Modified    int64             `json:"modified"`
 	Version     string            `json:"version"`
 	Keywords    []string          `json:"keywords"`
-	Docs        map[string]string `json:"docs"`
+	Docs        []*APIv1NodeDoc   `json:"docs"`
 	Downloads   []*APIv1NodeAsset `json:"downloads"`
 	Crumbs      []*APIv1NodeCrumb `json:"crumbs"`
 	IsGhost     bool              `json:"is_ghost"`
@@ -52,6 +52,11 @@ type APIv1NodeTree struct {
 type APIv1NodeOwner struct {
 	Email string `json:"email"`
 	Name  string `json:"name"`
+}
+
+type APIv1NodeDoc struct {
+	Name string `json:"name"`
+	HTML string `json:"html"`
 }
 
 type APIv1NodeAsset struct {
@@ -93,12 +98,19 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 	}
 
 	nDocs, err := n.Docs(filepath.Join("/api/v1/tree", n.URL()))
-	docs := make(map[string]string, len(nDocs))
+	var docs []*APIv1NodeDoc
 	if err != nil {
 		return nil, err
 	}
-	for k, v := range nDocs {
-		docs[k] = string(v[:])
+	for _, v := range nDocs {
+		html, err := v.HTML()
+		if err != nil {
+			return nil, err
+		}
+		docs = append(docs, &APIv1NodeDoc{
+			Name: v.Name,
+			HTML: string(html[:]),
+		})
 	}
 
 	nDownloads, err := n.Downloads()

@@ -31,6 +31,9 @@ var (
 
 	// A pattern for extracting order number and title from a title in the form of 06_Foo.
 	NodeTitleRegexp = regexp.MustCompile(`^0?(\d+)[_,-]+(.*)$`)
+
+	// Basenames matching this pattern are considered documents.
+	NodeDocsRegexp = regexp.MustCompile(`(?i)^.*\.(md|markdown)$`)
 )
 
 // Node represents a directory inside the design definitions tree.
@@ -55,6 +58,47 @@ type NodeMeta struct {
 	Version     string   // Freeform version string.
 	Description string
 	Keywords    []string
+}
+
+// A markdown document file.
+type NodeDoc struct {
+	// Absolute path to the file.
+	path string
+	// The basename of the file, usually for display purposes.
+	Name string
+	// The provided prefix will be used to make relative links inside the
+	// document absolute.
+	URLPrefix string
+}
+
+// HTML as parsed from the underlying file.
+//
+func (d NodeDoc) HTML() ([]byte, error) {
+	switch filepath.Ext(d.path) {
+	case "md", "markdown":
+		return d.parseMarkdown()
+	}
+	return nil, fmt.Errorf("document %s is not in a supported format", d.path)
+}
+
+func (d NodeDoc) parseMarkdown() ([]byte, error) {
+	renderer := blackfriday.NewHTMLRenderer(blackfriday.HTMLRendererParameters{
+		Flags:          blackfriday.CommonHTMLFlags &^ blackfriday.UseXHTML,
+		AbsolutePrefix: d.URLPrefix,
+	})
+	extensions := blackfriday.CommonExtensions |
+		blackfriday.Strikethrough | blackfriday.NoEmptyLineBeforeBlock&^
+		blackfriday.HeadingIDs&^blackfriday.DefinitionLists
+
+	contents, err := ioutil.ReadFile(d.path)
+	if err != nil {
+		return nil, err
+	}
+	return blackfriday.Run(
+		contents,
+		blackfriday.WithRenderer(renderer),
+		blackfriday.WithExtensions(extensions),
+	), nil
 }
 
 // A downloadable file.
@@ -238,41 +282,29 @@ func (n Node) Downloads() ([]*NodeAsset, error) {
 	return results, nil
 }
 
-// Returns a map of markdown files and their parsed HTML. Keys are
-// normlized and use lower cased filenames without the suffix.
-// "readme.md" (in any casing) is considered the main document.
+// Returns a slice of documents for this node.
 //
 // The provided prefix will be used to make relative links inside the
-// documents absolute.
-func (n Node) Docs(prefix string) (map[string][]byte, error) {
-	docs := make(map[string][]byte)
+// document absolute.
+func (n Node) Docs(prefix string) ([]*NodeDoc, error) {
+	var docs []*NodeDoc
 
-	renderer := blackfriday.NewHTMLRenderer(blackfriday.HTMLRendererParameters{
-		Flags:          blackfriday.CommonHTMLFlags &^ blackfriday.UseXHTML,
-		AbsolutePrefix: prefix,
-	})
-	extensions := blackfriday.CommonExtensions |
-		blackfriday.Strikethrough | blackfriday.NoEmptyLineBeforeBlock&^
-		blackfriday.HeadingIDs&^blackfriday.DefinitionLists
-
-	matches, err := filepath.Glob(filepath.Join(n.path, "*.md"))
-	if err != nil || matches == nil {
+	files, err := ioutil.ReadDir(n.path)
+	if err != nil {
 		return docs, err
 	}
 
-	for _, m := range matches {
-		k := strings.TrimSuffix(filepath.Base(m), filepath.Ext(m))
-
-		contents, err := ioutil.ReadFile(m)
-		if err != nil {
-			return docs, err
+	for _, f := range files {
+		if f.IsDir() {
+			continue
 		}
-
-		docs[k] = blackfriday.Run(
-			contents,
-			blackfriday.WithRenderer(renderer),
-			blackfriday.WithExtensions(extensions),
-		)
+		if NodeDocsRegexp.MatchString(f.Name()) {
+			docs = append(docs, &NodeDoc{
+				path:      filepath.Join(n.path, f.Name()),
+				Name:      f.Name(),
+				URLPrefix: prefix,
+			})
+		}
 	}
 	return docs, nil
 }

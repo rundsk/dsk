@@ -27,20 +27,32 @@ Finally [open the web application in your browser](http://localhost:8080), to br
 
 ## The Design Definitions Tree
 
-The _design definitions tree_ (DDT for short), is a directory containing other nested directories. Each one most often at least contains a `readme.md` file. This is simply a Markdown formatted text file that. Other Markdown files are supported too like `api.md` and `comments.md`. There is the configuration file `index.json` which we describe in the following section. Any other file will be considered an _Asset_ that is it can be embedded inside the Markdow files or downloaded throug the frontend.
+The _design definitions tree_ (DDT for short), is a directory again
+containing other nested directories. Each one often contains at least
+a markdown formatted `readme.md` file for describing the design.
+You can freely add more document and name them like i.e. `api.md`,
+`explain.md` or `comments.md`.
+
+_Note_: The `readme.md` is in no ways treated specially by DSK, but is
+usually displayed by GitHub as the primary document of a directory.
+
+There is the configuration file `index.json` which we
+describe in the following section. Any other file will be considered
+an _Asset_ that is it can be embedded inside the Markdow files or
+downloaded throug the frontend.
 
 ```
 example
 ├── AUTHORS.txt                 <- optional, see "Owners & Authors" below
 ├── DataEntry
 │   ├── Button
-│   │   ├── exploration.sketch  <- Asset
-│   │   ├── index.json          <- Configuration
-│   │   └── readme.md           <- Main markdown file
+│   │   ├── exploration.sketch  <- asset
+│   │   ├── index.json          <- configuration
+│   │   └── readme.md           <- document
 │   ├── TextField
 │   │   ├── Password
 │   │   │   └── readme.md
-│   │   ├── api.md
+│   │   ├── api.md              <- another document
 │   │   ├── index.json
 │   │   ├── readme.md
 │   │   └── unmask.svg
