@@ -73,7 +73,6 @@ type NodeDoc struct {
 }
 
 // HTML as parsed from the underlying file.
-//
 func (d NodeDoc) HTML() ([]byte, error) {
 	switch filepath.Ext(d.path) {
 	case "md", "markdown":
@@ -123,16 +122,37 @@ type NodeCrumb struct {
 func NewNodeFromPath(path string, root string) (*Node, error) {
 	n := &Node{root: root, path: path, children: []*Node{}}
 
-	m, err := n.parseMeta()
+	m, err := NewNodeMetaFromPath(n.path)
 	n.IsGhost = err != nil
 	n.meta = m
 
 	return n, nil
 }
 
+// Looks for a node configuration file in given directory, parses the
+// file and returns a filled NodeMeta struct. If not file is found
+// returns an empty NodeMeta.
+func NewNodeMetaFromPath(path string) (NodeMeta, error) {
+	var meta NodeMeta
+	f := filepath.Join(path, ConfigBasename)
+
+	if _, err := os.Stat(f); os.IsNotExist(err) {
+		return meta, nil
+	}
+
+	content, err := ioutil.ReadFile(f)
+	if err != nil {
+		return meta, err
+	}
+	if err := json.Unmarshal(content, &meta); err != nil {
+		return meta, fmt.Errorf("Failed parsing %s: %s", prettyPath(f), err)
+	}
+	return meta, nil
+}
+
 // One way sync: update node meta data from file system.
 func (n *Node) Sync() error {
-	m, err := n.parseMeta()
+	m, err := NewNodeMetaFromPath(n.path)
 	n.IsGhost = err != nil
 	n.meta = m
 
@@ -328,26 +348,6 @@ func (n Node) Crumbs() []*NodeCrumb {
 		})
 	}
 	return crumbs
-}
-
-// Reads node configuration file when present and returns values. When file
-// is not present will simply return an empty Meta.
-func (n Node) parseMeta() (NodeMeta, error) {
-	var meta NodeMeta
-	f := filepath.Join(n.path, ConfigBasename)
-
-	if _, err := os.Stat(f); os.IsNotExist(err) {
-		return meta, nil
-	}
-
-	content, err := ioutil.ReadFile(f)
-	if err != nil {
-		return meta, err
-	}
-	if err := json.Unmarshal(content, &meta); err != nil {
-		return meta, fmt.Errorf("Failed parsing %s: %s", prettyPath(f), err)
-	}
-	return meta, nil
 }
 
 // Normalizes given relative node URL path i.e. for bulding
