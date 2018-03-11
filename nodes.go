@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/fatih/color"
 )
@@ -129,38 +130,43 @@ func (t NodeTree) GetSynced(url string) (*Node, error) {
 	return &Node{}, fmt.Errorf("No node with URL path '%s' in tree", url)
 }
 
-// First performs a narrow search on the node's visible attributes (=
-// title) plus keywords and returns a new non-sparse tree instance
-// selecting only given nodes, their parents and all their children.
-//
-// Filters out any not selected nodes. Descends into branches first,
-// then works its way back up the tree filtering out any nodes, that
-// are not selected. For selection conditions see check().
-//
-// Selecting a leaf node, selects all parents. But not the siblings.
-//
-//           a*
-//
-//           b*
-//
-//      c!   d   e
-//
-// Selecting a node, always selects all its children.
-//
-//           a*
-//
-//           b!
-//
-//      c*   d*   e*
-func (t NodeTree) Filter(query string) (*NodeTree, error) {
-	return &NodeTree{}, nil
-}
-
-// Performs a full text search on the tree and returns a flat list
-// of nodes as results.
-//
-// TODO: Implement :)
-func (t NodeTree) Search(query string) ([]*Node, error) {
+// Performs a narrow fuzzy search on the node's visible attributes
+// (the title) plus keywords & glossary and returns the collected results
+// as a flat node list.
+func (t NodeTree) FuzzySearch(query string) []*Node {
 	var results []*Node
-	return results, nil
+
+	matches := func(source string, target string) bool {
+		if source == "" {
+			return false
+		}
+		return strings.Contains(strings.ToLower(target), strings.ToLower(source))
+	}
+
+Outer:
+	for _, n := range t.lookup {
+		if matches(query, n.Title()) {
+			results = append(results, n)
+			continue Outer
+		}
+		if matches(query, n.Description()) {
+			results = append(results, n)
+			continue Outer
+		}
+		for _, v := range n.Keywords() {
+			if matches(query, v) {
+				results = append(results, n)
+				continue Outer
+			}
+		}
+		for _, v := range n.Glossary() {
+			if matches(query, v) {
+				results = append(results, n)
+				continue Outer
+			}
+		}
+	}
+
+	log.Printf("Fuzzy searched tree for '%s' with %d results", query, len(results))
+	return results
 }

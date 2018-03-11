@@ -130,9 +130,6 @@ The backend provides the following API endpoints. JSON responses use the
 `GET /api/v1/tree`,
 get the full design definitions tree as a nested tree of nodes.
 
-`GET /api/v1/tree?q={query}`,
-get a filtered by `query` view onto the design defintions tree.
-
 `GET /api/v1/tree/{path}`,
 get information about a single node specified by `path`.
 
@@ -140,7 +137,8 @@ get information about a single node specified by `path`.
 requests a node's asset, `{asset}` is a single filename.
 
 `GET /api/v1/search?q={query}`,
-full text search over the design definitions tree.
+performs a search over the design definitions tree and returns
+a flat list of matched node URLs.
 
 ### Designing the URL Schema
 

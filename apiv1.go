@@ -173,14 +173,20 @@ func (api APIv1) NewNodeTree(t *NodeTree) (*APIv1NodeTree, error) {
 	}, err
 }
 
-// Returns all nodes in the design defintions tree, as nested nodes. If given
-// will filter
+func (api APIv1) NewNodeTreeSearchResults(nodes []*Node) []string {
+	var results []string
+
+	for _, n := range nodes {
+		results = append(results, n.URL())
+	}
+	return results
+}
+
+// Returns all nodes in the design defintions tree, as nested nodes.
 //
 // Handles this URL:
 //   /api/v1/tree
-//   /api/v1/tree?q={query}
 func (api APIv1) treeHandler(w http.ResponseWriter, r *http.Request) {
-	q := r.URL.Query().Get("q")
 	wr := jsend.Wrap(w)
 	// Not getting or checking path here, as only tree requests are routed
 	// here.
@@ -193,22 +199,7 @@ func (api APIv1) treeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var tree *NodeTree
-	if q != "" {
-		filtered, err := api.tree.Filter(q)
-		if err != nil {
-			wr.
-				Status(http.StatusInternalServerError).
-				Message(err.Error()).
-				Send()
-			return
-		}
-		tree = filtered
-	} else {
-		tree = api.tree
-	}
-
-	atree, err := api.NewNodeTree(tree)
+	atree, err := api.NewNodeTree(api.tree)
 	if err != nil {
 		wr.
 			Status(http.StatusInternalServerError).
@@ -291,20 +282,17 @@ func (api APIv1) nodeAssetHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-// Performs a full text search over the design defintions tree and
-// returns results.
+// Performs a search over the design defintions tree and returns
+// results in form of a flat list of URLs of matched nodes.
 //
-// Handles these kinds of URLs:
+// Handles this URL:
 //   /api/v1/search?q={query}
 func (api APIv1) searchHandler(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("q")
 	wr := jsend.Wrap(w)
 
-	results, err := api.tree.Search(q)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	nodes := api.tree.FuzzySearch(q)
+	results := api.NewNodeTreeSearchResults(nodes)
 	wr.
 		Data(results).
 		Status(http.StatusOK).
