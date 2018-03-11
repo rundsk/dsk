@@ -12,6 +12,10 @@ import (
 	"strings"
 )
 
+const (
+	AuthorsConfigBasename = "AUTHORS.txt"
+)
+
 func NewAuthorsFromFile(path string) (*Authors, error) {
 	as := &Authors{}
 

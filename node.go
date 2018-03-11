@@ -350,7 +350,7 @@ type NodeCrumb struct {
 	Title string
 }
 
-// Normalizes given relative node URL path i.e. for bulding
+// Normalizes given relative node URL path i.e. for building
 // case-insensitive lookup tables. Idempotent function. Removes any
 // order numbers, as well as leading and trailing slashes.
 //

@@ -37,7 +37,7 @@ type NodeTree struct {
 }
 
 func NewNodeTreeFromPath(path string) *NodeTree {
-	authorsFile := filepath.Join(path, "AUTHORS.txt")
+	authorsFile := filepath.Join(path, AuthorsConfigBasename)
 	var as *Authors
 
 	if _, err := os.Stat(authorsFile); err == nil {
