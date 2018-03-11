@@ -27,19 +27,13 @@ Finally [open the web application in your browser](http://localhost:8080), to br
 
 ## The Design Definitions Tree
 
-The _design definitions tree_ (DDT for short), is a directory again
-containing other nested directories. Each one often contains at least
-a markdown formatted `readme.md` file for describing the design.
-You can freely add more document and name them like i.e. `api.md`,
-`explain.md` or `comments.md`.
+The _design definitions tree_ (DDT for short), is a tree of directories and subdirectories. 
+Each of these directories stands for a point in the hierarchy of your design system, these
+might be actual components, when you are documenting the user interface, or chapters of your
+company's guide into its design culture or any other important design aspect.
 
-_Note_: The `readme.md` is in no ways treated specially by DSK, but is
-usually displayed by GitHub as the primary document of a directory.
-
-There is the configuration file `index.json` which we
-describe in the following section. Any other file will be considered
-an _Asset_ that is it can be embedded inside the Markdow files or
-downloaded throug the frontend.
+Each directory may hold files to document the aspects, a configuration file, to add
+meta data and supporting _assets_ that can be downloaded through the frontend.
 
 ```
 example
@@ -58,13 +52,19 @@ example
 │   │   └── unmask.svg
 ```
 
+### Documenting Design Aspects
+
+Directories in the DDT can hold [Markdown](https://guides.github.com/features/mastering-markdown/) formatted documentation files, like `readme.md`, that describe a design aspect or give glues how to use a certain component. Please note
+that `readme.md` is in no ways treated specially by DSK, but is usually displayed by GitHub as the primary document of a directory. You can split documentation over several files when you like to. i.e. We usually use `api.md`,
+`explain.md` or `comments.md`.
+
 ### Design Configuration File
 
-Each tree directory may hold an `index.json` file. The file and any of its
-configuration settings are entirely optional.
+Directories in the DDT may also hold an `index.json` file. This file and any of its
+configuration settings are entirely optional. 
 
-Using the configuration file, we can add meta data to the design (i.e. keywords)
-to improve the search experience in the interface. 
+Using the configuration file, we can add meta data to the design aspect (i.e. keywords)
+and improve the search experience in the interface. 
 
 An example of a full configuration looks like this:
 
