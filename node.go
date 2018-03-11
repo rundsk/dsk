@@ -36,6 +36,19 @@ var (
 	NodeDocsRegexp = regexp.MustCompile(`(?i)^.*\.(md|markdown)$`)
 )
 
+// Constructs a new synced node using its path in the filesystem.
+// Returns a node instance even if uncritical errors happened. In that
+// case the node will be flagged as a "ghost" node.
+func NewNodeFromPath(path string, root string) (*Node, error) {
+	n := &Node{root: root, path: path, children: []*Node{}}
+
+	m, err := NewNodeMetaFromPath(n.path)
+	n.IsGhost = err != nil
+	n.meta = m
+
+	return n, nil
+}
+
 // Node represents a directory inside the design definitions tree.
 type Node struct {
 	// Absolute path to the design defintions tree root.
@@ -50,104 +63,6 @@ type Node struct {
 	// Ghosted nodes are nodes that have incomplete information, for
 	// these nodes not all methods are guaranteed to succeed.
 	IsGhost bool
-}
-
-// Metadata parsed from node configuration.
-type NodeMeta struct {
-	Description string
-	Glossary    []string
-	Keywords    []string
-	Owners      []string // Email addresses of node owners.
-	Version     string   // Freeform version string.
-}
-
-// A markdown document file.
-type NodeDoc struct {
-	// Absolute path to the file.
-	path string
-	// The basename of the file, usually for display purposes.
-	Name string
-	// The provided prefix will be used to make relative links inside the
-	// document absolute.
-	URLPrefix string
-}
-
-// HTML as parsed from the underlying file.
-func (d NodeDoc) HTML() ([]byte, error) {
-	switch filepath.Ext(d.path) {
-	case "md", "markdown":
-		return d.parseMarkdown()
-	}
-	return nil, fmt.Errorf("document %s is not in a supported format", d.path)
-}
-
-func (d NodeDoc) parseMarkdown() ([]byte, error) {
-	renderer := blackfriday.NewHTMLRenderer(blackfriday.HTMLRendererParameters{
-		Flags:          blackfriday.CommonHTMLFlags &^ blackfriday.UseXHTML,
-		AbsolutePrefix: d.URLPrefix,
-	})
-	extensions := blackfriday.CommonExtensions |
-		blackfriday.Strikethrough | blackfriday.NoEmptyLineBeforeBlock&^
-		blackfriday.HeadingIDs&^blackfriday.DefinitionLists
-
-	contents, err := ioutil.ReadFile(d.path)
-	if err != nil {
-		return nil, err
-	}
-	return blackfriday.Run(
-		contents,
-		blackfriday.WithRenderer(renderer),
-		blackfriday.WithExtensions(extensions),
-	), nil
-}
-
-// A downloadable file.
-type NodeAsset struct {
-	// Absolute path to the file.
-	path string
-	// The URL, relative to the design defintion tree root.
-	URL string
-	// The basename of the file, usually for display purposes.
-	Name string
-}
-
-type NodeCrumb struct {
-	URL   string
-	Title string
-}
-
-// Constructs a new synced node using its path in the filesystem.
-// Returns a node instance even if uncritical errors happened. In that
-// case the node will be flagged as a "ghost" node.
-func NewNodeFromPath(path string, root string) (*Node, error) {
-	n := &Node{root: root, path: path, children: []*Node{}}
-
-	m, err := NewNodeMetaFromPath(n.path)
-	n.IsGhost = err != nil
-	n.meta = m
-
-	return n, nil
-}
-
-// Looks for a node configuration file in given directory, parses the
-// file and returns a filled NodeMeta struct. If not file is found
-// returns an empty NodeMeta.
-func NewNodeMetaFromPath(path string) (NodeMeta, error) {
-	var meta NodeMeta
-	f := filepath.Join(path, ConfigBasename)
-
-	if _, err := os.Stat(f); os.IsNotExist(err) {
-		return meta, nil
-	}
-
-	content, err := ioutil.ReadFile(f)
-	if err != nil {
-		return meta, err
-	}
-	if err := json.Unmarshal(content, &meta); err != nil {
-		return meta, fmt.Errorf("Failed parsing %s: %s", prettyPath(f), err)
-	}
-	return meta, nil
 }
 
 // One way sync: update node meta data from file system.
@@ -348,6 +263,91 @@ func (n Node) Crumbs() []*NodeCrumb {
 		})
 	}
 	return crumbs
+}
+
+// Looks for a node configuration file in given directory, parses the
+// file and returns a filled NodeMeta struct. If not file is found
+// returns an empty NodeMeta.
+func NewNodeMetaFromPath(path string) (NodeMeta, error) {
+	var meta NodeMeta
+	f := filepath.Join(path, ConfigBasename)
+
+	if _, err := os.Stat(f); os.IsNotExist(err) {
+		return meta, nil
+	}
+
+	content, err := ioutil.ReadFile(f)
+	if err != nil {
+		return meta, err
+	}
+	if err := json.Unmarshal(content, &meta); err != nil {
+		return meta, fmt.Errorf("Failed parsing %s: %s", prettyPath(f), err)
+	}
+	return meta, nil
+}
+
+// Metadata parsed from node configuration.
+type NodeMeta struct {
+	Description string
+	Glossary    []string
+	Keywords    []string
+	Owners      []string // Email addresses of node owners.
+	Version     string   // Freeform version string.
+}
+
+// A markdown document file.
+type NodeDoc struct {
+	// Absolute path to the file.
+	path string
+	// The basename of the file, usually for display purposes.
+	Name string
+	// The provided prefix will be used to make relative links inside the
+	// document absolute.
+	URLPrefix string
+}
+
+// HTML as parsed from the underlying file.
+func (d NodeDoc) HTML() ([]byte, error) {
+	switch filepath.Ext(d.path) {
+	case "md", "markdown":
+		return d.parseMarkdown()
+	}
+	return nil, fmt.Errorf("document %s is not in a supported format", d.path)
+}
+
+func (d NodeDoc) parseMarkdown() ([]byte, error) {
+	renderer := blackfriday.NewHTMLRenderer(blackfriday.HTMLRendererParameters{
+		Flags:          blackfriday.CommonHTMLFlags &^ blackfriday.UseXHTML,
+		AbsolutePrefix: d.URLPrefix,
+	})
+	extensions := blackfriday.CommonExtensions |
+		blackfriday.Strikethrough | blackfriday.NoEmptyLineBeforeBlock&^
+		blackfriday.HeadingIDs&^blackfriday.DefinitionLists
+
+	contents, err := ioutil.ReadFile(d.path)
+	if err != nil {
+		return nil, err
+	}
+	return blackfriday.Run(
+		contents,
+		blackfriday.WithRenderer(renderer),
+		blackfriday.WithExtensions(extensions),
+	), nil
+}
+
+// A downloadable file.
+type NodeAsset struct {
+	// Absolute path to the file.
+	path string
+	// The URL, relative to the design defintion tree root.
+	URL string
+	// The basename of the file, usually for display purposes.
+	Name string
+}
+
+type NodeCrumb struct {
+	URL   string
+	Title string
 }
 
 // Normalizes given relative node URL path i.e. for bulding
