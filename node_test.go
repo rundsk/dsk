@@ -32,12 +32,12 @@ func TestCleanURLs(t *testing.T) {
 		"/bar/xyz/1_foo":    "xyz/foo",
 		"/bar/xyz/1-foo":    "xyz/foo",
 		"/bar/xyz/0001-foo": "xyz/foo",
-		"/bar/xyz/Foo":      "xyz/foo",
+		"/bar/xyz/Foo":      "xyz/Foo",
 		"/bar/02_xyz/1_foo": "xyz/foo",
 	}
 	for path, e := range expected {
 		n := &Node{path: path, root: "/bar"}
-		r := n.NormalizedURL()
+		r := n.URL()
 		if e != r {
 			t.Errorf("\nexpected: %s, result: %s", e, r)
 		}
