@@ -71,6 +71,7 @@ An example of a full configuration looks like this:
 ```json
 {
     "description": "This is a very very very fancy component.",
+    "glossary": ["typography", "font", "type"],
     "keywords": ["fancy", "very"],
     "owners": ["christoph@atelierdisko.de", "marius@atelierdisko.de"],
     "version": "1.2.3"
@@ -80,6 +81,7 @@ An example of a full configuration looks like this:
 Possible configuration options are:
 
 - `description`: A single sentence that roughly describes the design component.
+- `glossary`: An array of terms that are searched in addition to `keywords`.
 - `keywords`: An array of keywords to group related design components together.
 - `owners`: An array of email addresses of the document owners; see below.
 - `version`: A freeform version string.

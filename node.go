@@ -54,10 +54,11 @@ type Node struct {
 
 // Metadata parsed from node configuration.
 type NodeMeta struct {
+	Description string
+	Glossary    []string
+	Keywords    []string
 	Owners      []string // Email addresses of node owners.
 	Version     string   // Freeform version string.
-	Description string
-	Keywords    []string
 }
 
 // A markdown document file.
@@ -184,6 +185,11 @@ func (n Node) Title() string {
 	return removeOrderNumber(filepath.Base(n.path))
 }
 
+// Returns the full description of the node.
+func (n Node) Description() string {
+	return n.meta.Description
+}
+
 // Returns an alphabetically sorted list of keywords.
 func (n Node) Keywords() []string {
 	keywords := n.meta.Keywords
@@ -192,9 +198,9 @@ func (n Node) Keywords() []string {
 	return keywords
 }
 
-// Returns the full description of the node.
-func (n Node) Description() string {
-	return n.meta.Description
+// Returns a list of glossary terms.
+func (n Node) Glossary() []string {
+	return n.meta.Glossary
 }
 
 // Returns a list of node owners; wil use the given authors
