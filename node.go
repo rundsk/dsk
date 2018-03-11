@@ -74,19 +74,13 @@ func (n *Node) Sync() error {
 	return nil
 }
 
-// Return the unnormalized/raw URL path fragment, that can be used to
+// Returns the normalized URL path fragment, that can be used to
 // address this node i.e Input/Password.
 func (n Node) URL() string {
 	if n.root == n.path {
 		return ""
 	}
-	return strings.TrimPrefix(n.path, n.root+"/")
-}
-
-// Returns the normalized URL i.e. for bulding case-insentive lookup
-// tables. Idempotent function.
-func (n Node) NormalizedURL() string {
-	return normalizeNodeURL(n.URL())
+	return normalizeNodeURL(strings.TrimPrefix(n.path, n.root+"/"))
 }
 
 // An order number, as a hint for outside sorting mechanisms.
@@ -359,7 +353,7 @@ type NodeCrumb struct {
 func normalizeNodeURL(url string) string {
 	var normalized []string
 
-	for _, p := range strings.Split(strings.ToLower(url), "/") {
+	for _, p := range strings.Split(url, "/") {
 		if p == "/" {
 			continue
 		}

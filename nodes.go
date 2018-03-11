@@ -89,7 +89,7 @@ func (t *NodeTree) Sync() error {
 	lookup := make(map[string]*Node)
 
 	for _, n := range nodes {
-		lookup[n.NormalizedURL()] = n
+		lookup[strings.ToLower(n.URL())] = n
 
 		for _, sn := range nodes {
 			if filepath.Dir(sn.path) == n.path {
@@ -111,9 +111,9 @@ func (t NodeTree) TotalNodes() uint16 {
 	return uint16(len(t.lookup))
 }
 
-// Retrieves a node from the tree.
+// Retrieves a node from the tree, performs a case-insensitive match.
 func (t NodeTree) Get(url string) (*Node, error) {
-	if n, ok := t.lookup[normalizeNodeURL(url)]; ok {
+	if n, ok := t.lookup[strings.ToLower(normalizeNodeURL(url))]; ok {
 		return n, nil
 	}
 	return &Node{}, fmt.Errorf("No node with URL path '%s' in tree", url)
