@@ -131,7 +131,7 @@ func (t NodeTree) GetSynced(url string) (*Node, error) {
 }
 
 // Performs a narrow fuzzy search on the node's visible attributes
-// (the title) plus keywords & glossary and returns the collected results
+// (the title) plus tags & keywords and returns the collected results
 // as a flat node list.
 func (t NodeTree) FuzzySearch(query string) []*Node {
 	var results []*Node
@@ -153,13 +153,13 @@ Outer:
 			results = append(results, n)
 			continue Outer
 		}
-		for _, v := range n.Keywords() {
+		for _, v := range n.Tags() {
 			if matches(query, v) {
 				results = append(results, n)
 				continue Outer
 			}
 		}
-		for _, v := range n.Glossary() {
+		for _, v := range n.Keywords() {
 			if matches(query, v) {
 				results = append(results, n)
 				continue Outer

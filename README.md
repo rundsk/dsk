@@ -63,7 +63,7 @@ that `readme.md` is in no ways treated specially by DSK, but is usually displaye
 Directories in the DDT may also hold an `index.json` file. This file and any of its
 configuration settings are entirely optional. 
 
-Using the configuration file, we can add meta data to the design aspect (i.e. keywords)
+Using the configuration file, we can add meta data to the design aspect (i.e. tags)
 and improve the search experience in the interface. 
 
 An example of a full configuration looks like this:
@@ -71,8 +71,8 @@ An example of a full configuration looks like this:
 ```json
 {
     "description": "This is a very very very fancy component.",
-    "glossary": ["typography", "font", "type"],
-    "keywords": ["fancy", "very"],
+    "keywords": ["typography", "font", "type"],
+    "tags": ["fancy", "very"],
     "owners": ["christoph@atelierdisko.de", "marius@atelierdisko.de"],
     "version": "1.2.3"
 }
@@ -81,8 +81,8 @@ An example of a full configuration looks like this:
 Possible configuration options are:
 
 - `description`: A single sentence that roughly describes the design component.
-- `glossary`: An array of terms that are searched in addition to `keywords`.
-- `keywords`: An array of keywords to group related design components together.
+- `keywords`: An array of terms that are searched in addition to `tags`.
+- `tags`: An array of tags to group related design components together.
 - `owners`: An array of email addresses of the document owners; see below.
 - `version`: A freeform version string.
 

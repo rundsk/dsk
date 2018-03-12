@@ -119,17 +119,17 @@ func (n Node) Description() string {
 	return n.meta.Description
 }
 
-// Returns an alphabetically sorted list of keywords.
-func (n Node) Keywords() []string {
-	keywords := n.meta.Keywords
+// Returns an alphabetically sorted list of tags.
+func (n Node) Tags() []string {
+	tags := n.meta.Tags
 
-	sort.Strings(keywords)
-	return keywords
+	sort.Strings(tags)
+	return tags
 }
 
-// Returns a list of glossary terms.
-func (n Node) Glossary() []string {
-	return n.meta.Glossary
+// Returns a list of keywords terms.
+func (n Node) Keywords() []string {
+	return n.meta.Keywords
 }
 
 // Returns a list of node owners; wil use the given authors
@@ -283,8 +283,8 @@ func NewNodeMetaFromPath(path string) (NodeMeta, error) {
 // Metadata parsed from node configuration.
 type NodeMeta struct {
 	Description string
-	Glossary    []string
 	Keywords    []string
+	Tags        []string
 	Owners      []string // Email addresses of node owners.
 	Version     string   // Freeform version string.
 }

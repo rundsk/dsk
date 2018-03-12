@@ -29,7 +29,7 @@ type APIv1Node struct {
 	Owners      []*APIv1NodeOwner `json:"owners"`
 	Modified    int64             `json:"modified"`
 	Version     string            `json:"version"`
-	Keywords    []string          `json:"keywords"`
+	Tags        []string          `json:"tags"`
 	Docs        []*APIv1NodeDoc   `json:"docs"`
 	Downloads   []*APIv1NodeAsset `json:"downloads"`
 	Crumbs      []*APIv1NodeCrumb `json:"crumbs"`
@@ -140,7 +140,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		Order:       n.Order(),
 		Children:    children,
 		Title:       n.Title(),
-		Keywords:    n.Keywords(),
+		Tags:        n.Tags(),
 		Description: n.Description(),
 		Owners:      owners,
 		Modified:    n.Modified().Unix(),
