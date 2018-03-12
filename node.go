@@ -121,6 +121,9 @@ func (n Node) Description() string {
 
 // Returns an alphabetically sorted list of tags.
 func (n Node) Tags() []string {
+	if n.meta.Tags == nil {
+		return make([]string, 0)
+	}
 	tags := n.meta.Tags
 
 	sort.Strings(tags)
@@ -129,14 +132,20 @@ func (n Node) Tags() []string {
 
 // Returns a list of keywords terms.
 func (n Node) Keywords() []string {
+	if n.meta.Keywords == nil {
+		return make([]string, 0)
+	}
 	return n.meta.Keywords
 }
 
 // Returns a list of node authors; wil use the given authors
 // database to lookup information.
 func (n Node) Authors(as *Authors) []*Author {
-	var r []*Author
+	r := make([]*Author, 0)
 
+	if n.meta.Authors == nil {
+		return r
+	}
 	for _, email := range n.meta.Authors {
 		author := as.Get(email)
 		if author == nil {
@@ -194,7 +203,7 @@ func (n Node) Asset(name string) (*NodeAsset, error) {
 // or other binary assets. JavaScript and Stylesheets and DSK control
 // files are excluded.
 func (n Node) Downloads() ([]*NodeAsset, error) {
-	results := []*NodeAsset{}
+	results := make([]*NodeAsset, 0)
 
 	files, err := ioutil.ReadDir(n.path)
 	if err != nil {
@@ -222,7 +231,7 @@ func (n Node) Downloads() ([]*NodeAsset, error) {
 // The provided prefix will be used to make relative links inside the
 // document absolute.
 func (n Node) Docs(prefix string) ([]*NodeDoc, error) {
-	var docs []*NodeDoc
+	docs := make([]*NodeDoc, 0)
 
 	files, err := ioutil.ReadDir(n.path)
 	if err != nil {
@@ -247,7 +256,7 @@ func (n Node) Docs(prefix string) ([]*NodeDoc, error) {
 // Returns a list of crumbs. The last element is the current active
 // one. Does not include a root element.
 func (n Node) Crumbs() []*NodeCrumb {
-	crumbs := []*NodeCrumb{}
+	crumbs := make([]*NodeCrumb, 0)
 
 	parts := strings.Split(strings.TrimSuffix(n.URL(), "/"), "/")
 	for index, part := range parts {
