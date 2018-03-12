@@ -303,7 +303,7 @@ type NodeDoc struct {
 // HTML as parsed from the underlying file.
 func (d NodeDoc) HTML() ([]byte, error) {
 	switch filepath.Ext(d.path) {
-	case "md", "markdown":
+	case ".md", ".markdown":
 		return d.parseMarkdown()
 	}
 	return nil, fmt.Errorf("document %s is not in a supported format", d.path)
