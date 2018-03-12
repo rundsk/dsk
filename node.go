@@ -300,6 +300,15 @@ type NodeDoc struct {
 	URLPrefix string
 }
 
+// Raw content of the underlying file.
+func (d NodeDoc) Raw() ([]byte, error) {
+	contents, err := ioutil.ReadFile(d.path)
+	if err != nil {
+		return nil, err
+	}
+	return contents, nil
+}
+
 // HTML as parsed from the underlying file.
 func (d NodeDoc) HTML() ([]byte, error) {
 	switch filepath.Ext(d.path) {
