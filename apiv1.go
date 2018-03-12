@@ -99,7 +99,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 	}
 
 	nDocs, err := n.Docs(filepath.Join("/api/v1/tree", n.URL()))
-	var docs []*APIv1NodeDoc
+	docs := make([]*APIv1NodeDoc, len(nDocs))
 	if err != nil {
 		return nil, err
 	}
