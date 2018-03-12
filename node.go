@@ -132,12 +132,12 @@ func (n Node) Keywords() []string {
 	return n.meta.Keywords
 }
 
-// Returns a list of node owners; wil use the given authors
+// Returns a list of node authors; wil use the given authors
 // database to lookup information.
-func (n Node) Owners(as *Authors) []*Author {
+func (n Node) Authors(as *Authors) []*Author {
 	var r []*Author
 
-	for _, email := range n.meta.Owners {
+	for _, email := range n.meta.Authors {
 		author := as.Get(email)
 		if author == nil {
 			author = &Author{email, ""}
@@ -285,7 +285,7 @@ type NodeMeta struct {
 	Description string
 	Keywords    []string
 	Tags        []string
-	Owners      []string // Email addresses of node owners.
+	Authors     []string // Email addresses of node authors.
 	Version     string   // Freeform version string.
 }
 

@@ -21,19 +21,19 @@ type APIv1 struct {
 }
 
 type APIv1Node struct {
-	URL         string            `json:"url"`
-	Order       uint64            `json:"order"`
-	Children    []*APIv1Node      `json:"children"`
-	Title       string            `json:"title"`
-	Description string            `json:"description"`
-	Owners      []*APIv1NodeOwner `json:"owners"`
-	Modified    int64             `json:"modified"`
-	Version     string            `json:"version"`
-	Tags        []string          `json:"tags"`
-	Docs        []*APIv1NodeDoc   `json:"docs"`
-	Downloads   []*APIv1NodeAsset `json:"downloads"`
-	Crumbs      []*APIv1NodeCrumb `json:"crumbs"`
-	IsGhost     bool              `json:"is_ghost"`
+	URL         string             `json:"url"`
+	Order       uint64             `json:"order"`
+	Children    []*APIv1Node       `json:"children"`
+	Title       string             `json:"title"`
+	Description string             `json:"description"`
+	Authors     []*APIv1NodeAuthor `json:"authors"`
+	Modified    int64              `json:"modified"`
+	Version     string             `json:"version"`
+	Tags        []string           `json:"tags"`
+	Docs        []*APIv1NodeDoc    `json:"docs"`
+	Downloads   []*APIv1NodeAsset  `json:"downloads"`
+	Crumbs      []*APIv1NodeCrumb  `json:"crumbs"`
+	IsGhost     bool               `json:"is_ghost"`
 }
 
 // Skips some node fields, to lighten transport weight.
@@ -49,7 +49,7 @@ type APIv1NodeTree struct {
 	TotalNodes uint16          `json:"total_nodes"`
 }
 
-type APIv1NodeOwner struct {
+type APIv1NodeAuthor struct {
 	Email string `json:"email"`
 	Name  string `json:"name"`
 }
@@ -93,9 +93,9 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		children[k] = n
 	}
 
-	var owners []*APIv1NodeOwner
-	for _, owner := range n.Owners(api.tree.authors) {
-		owners = append(owners, &APIv1NodeOwner{owner.Email, owner.Name})
+	var authors []*APIv1NodeAuthor
+	for _, author := range n.Authors(api.tree.authors) {
+		authors = append(authors, &APIv1NodeAuthor{author.Email, author.Name})
 	}
 
 	nDocs, err := n.Docs(filepath.Join("/api/v1/tree", n.URL()))
@@ -142,7 +142,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		Title:       n.Title(),
 		Tags:        n.Tags(),
 		Description: n.Description(),
-		Owners:      owners,
+		Authors:     authors,
 		Modified:    n.Modified().Unix(),
 		Version:     n.Version(),
 		Docs:        docs,

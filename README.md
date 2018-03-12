@@ -37,7 +37,7 @@ meta data and supporting _assets_ that can be downloaded through the frontend.
 
 ```
 example
-├── AUTHORS.txt                 <- optional, see "Owners & Authors" below
+├── AUTHORS.txt                 <- optional, see "Authors" below
 ├── DataEntry
 │   ├── Button
 │   │   ├── exploration.sketch  <- asset
@@ -73,7 +73,7 @@ An example of a full configuration looks like this:
     "description": "This is a very very very fancy component.",
     "keywords": ["typography", "font", "type"],
     "tags": ["fancy", "very"],
-    "owners": ["christoph@atelierdisko.de", "marius@atelierdisko.de"],
+    "authors": ["christoph@atelierdisko.de", "marius@atelierdisko.de"],
     "version": "1.2.3"
 }
 ```
@@ -83,17 +83,17 @@ Possible configuration options are:
 - `description`: A single sentence that roughly describes the design component.
 - `keywords`: An array of terms that are searched in addition to `tags`.
 - `tags`: An array of tags to group related design components together.
-- `owners`: An array of email addresses of the document owners; see below.
+- `authors`: An array of email addresses of the document authors; see below.
 - `version`: A freeform version string.
 
-### Authors & Owners
+### Authors
 
-Each directory inside the tree may be _owned_ by one or multiple
-authors. To assign youreself, use the `owners` option in `index.json`
+Each directory inside the tree may be _authored_ by one or multiple
+persons. To assign yourself, use the `authors` option in `index.json`
 the design configuration file.
 
-To enable automatic full names for each owner, create an `AUTHORS.txt`
-file inside the root of the design definitions tree. Each line of the
+To enable automatic full names for each author, create an
+`AUTHORS.txt` file inside the root of the DDT. Each line of the
 file lists an author's full name and her/his email address in angle
 brackets.
 
