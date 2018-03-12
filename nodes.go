@@ -121,13 +121,13 @@ func (t NodeTree) Get(url string) (*Node, error) {
 
 // Retrieves a node from tree and ensures it's synced before.
 func (t NodeTree) GetSynced(url string) (*Node, error) {
-	if n, ok := t.lookup[normalizeNodeURL(url)]; ok {
+	if n, ok := t.lookup[strings.ToLower(normalizeNodeURL(url))]; ok {
 		if err := n.Sync(); err != nil {
 			return n, err
 		}
 		return n, nil
 	}
-	return &Node{}, fmt.Errorf("No node with URL path '%s' in tree", url)
+	return &Node{}, fmt.Errorf("No synced node with URL path '%s' in tree", url)
 }
 
 // Performs a narrow fuzzy search on the node's visible attributes
