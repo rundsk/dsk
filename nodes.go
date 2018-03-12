@@ -36,19 +36,10 @@ type NodeTree struct {
 	authors *Authors
 }
 
+// Returns an unsynced tree from path; you must initialize the Tree
+// using Sync() before using it.
 func NewNodeTreeFromPath(path string) *NodeTree {
-	authorsFile := filepath.Join(path, AuthorsConfigBasename)
-	var as *Authors
-
-	if _, err := os.Stat(authorsFile); err == nil {
-		as, err = NewAuthorsFromFile(authorsFile)
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else {
-		as = &Authors{}
-	}
-	return &NodeTree{path: path, authors: as}
+	return &NodeTree{path: path}
 }
 
 // One-way sync: updates tree from file system. Recursively crawls
@@ -102,6 +93,21 @@ func (t *NodeTree) Sync() error {
 	t.lookup = lookup
 	t.Root = lookup[""]
 	log.Printf("Established tree lookup table with %d entries", len(lookup))
+
+	// Refresh the authors database; file may appear or disappear between
+	// syncs.
+	authorsFile := filepath.Join(t.path, AuthorsConfigBasename)
+	var as *Authors
+
+	if _, err := os.Stat(authorsFile); err == nil {
+		as, err = NewAuthorsFromFile(authorsFile)
+		if err != nil {
+			return err
+		}
+	} else {
+		as = &Authors{}
+	}
+	t.authors = as
 
 	return nil
 }
