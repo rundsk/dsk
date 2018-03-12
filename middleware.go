@@ -16,16 +16,6 @@ import (
 // next HTTP handler.
 type Middleware func(next http.HandlerFunc) http.HandlerFunc
 
-// Caution: Will disable access control and allow any host to connect
-// to us. This is useful when developing the frontend separately from
-// the backend.
-func withDisabledCORS(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		next.ServeHTTP(w, r)
-	}
-}
-
 func withNoop(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		next.ServeHTTP(w, r)
