@@ -29,8 +29,9 @@ var (
 	// for downloadable files in the node's directory.
 	IgnoreDownloadsRegexp = regexp.MustCompile(`(?i)^(.*\.(js|css|md|markdown|json)|\.DS_Store|\.git.*|dsk)$`)
 
-	// A pattern for extracting order number and title from a title in the form of 06_Foo.
-	NodeTitleRegexp = regexp.MustCompile(`^0?(\d+)[_,-]+(.*)$`)
+	// A pattern for extracting order number and title from a node's
+	// path/URL segment in the form of 06_Foo.
+	NodePathSegmentRegexp = regexp.MustCompile(`^0?(\d+)[_,-]+(.*)$`)
 
 	// Basenames matching this pattern are considered documents.
 	NodeDocsRegexp = regexp.MustCompile(`(?i)^.*\.(md|markdown)$`)
@@ -85,14 +86,7 @@ func (n Node) URL() string {
 
 // An order number, as a hint for outside sorting mechanisms.
 func (n Node) Order() uint64 {
-	title := filepath.Base(n.path)
-	s := NodeTitleRegexp.FindStringSubmatch(title)
-
-	if len(s) > 2 {
-		parsed, _ := strconv.ParseUint(s[0], 10, 64)
-		return parsed
-	}
-	return 0
+	return orderNumber(filepath.Base(n.path))
 }
 
 // Returns the list of children nodes. May be left empty when node is
@@ -247,7 +241,6 @@ func (n Node) Docs(prefix string) ([]*NodeDoc, error) {
 		}
 		docs = append(docs, &NodeDoc{
 			path:      filepath.Join(n.path, f.Name()),
-			Name:      f.Name(),
 			URLPrefix: prefix,
 		})
 	}
@@ -303,11 +296,21 @@ type NodeMeta struct {
 type NodeDoc struct {
 	// Absolute path to the file.
 	path string
-	// The basename of the file, usually for display purposes.
-	Name string
 	// The provided prefix will be used to make relative links inside the
 	// document absolute.
 	URLPrefix string
+}
+
+// An order number, as a hint for outside sorting mechanisms.
+func (d NodeDoc) Order() uint64 {
+	return orderNumber(filepath.Base(d.path))
+}
+
+// The document's computed title with any ordering numbers and the
+// extension stripped off, usually for display purposes.
+func (d NodeDoc) Title() string {
+	base := filepath.Base(d.path)
+	return removeOrderNumber(strings.TrimSuffix(base, filepath.Ext(base)))
 }
 
 // HTML as parsed from the underlying file.
@@ -381,9 +384,21 @@ func normalizeNodeURL(url string) string {
 	return strings.Join(normalized, "/")
 }
 
+// Finds an order number embedded into given path/URL segment and
+// returns it. If none is found, returns 0.
+func orderNumber(segment string) uint64 {
+	s := NodePathSegmentRegexp.FindStringSubmatch(segment)
+
+	if len(s) > 2 {
+		parsed, _ := strconv.ParseUint(s[0], 10, 64)
+		return parsed
+	}
+	return 0
+}
+
 // Removes order numbers from path/URL segment, if present.
 func removeOrderNumber(segment string) string {
-	s := NodeTitleRegexp.FindStringSubmatch(segment)
+	s := NodePathSegmentRegexp.FindStringSubmatch(segment)
 
 	if len(s) == 0 {
 		return segment

@@ -55,9 +55,10 @@ type APIv1NodeAuthor struct {
 }
 
 type APIv1NodeDoc struct {
-	Name string `json:"name"`
-	HTML string `json:"html"`
-	Raw  string `json:"raw"`
+	Order uint64 `json:"order"`
+	Title string `json:"title"`
+	HTML  string `json:"html"`
+	Raw   string `json:"raw"`
 }
 
 type APIv1NodeAsset struct {
@@ -113,9 +114,10 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 			return nil, err
 		}
 		docs = append(docs, &APIv1NodeDoc{
-			Name: v.Name,
-			HTML: string(html[:]),
-			Raw:  string(raw[:]),
+			Order: v.Order(),
+			Title: v.Title(),
+			HTML:  string(html[:]),
+			Raw:   string(raw[:]),
 		})
 	}
 
