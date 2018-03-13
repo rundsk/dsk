@@ -203,11 +203,11 @@ func (n Node) Asset(name string) (*NodeAsset, error) {
 // or other binary assets. JavaScript and Stylesheets and DSK control
 // files are excluded.
 func (n Node) Downloads() ([]*NodeAsset, error) {
-	results := make([]*NodeAsset, 0)
+	downloads := make([]*NodeAsset, 0)
 
 	files, err := ioutil.ReadDir(n.path)
 	if err != nil {
-		return results, err
+		return downloads, err
 	}
 
 	for _, f := range files {
@@ -217,13 +217,13 @@ func (n Node) Downloads() ([]*NodeAsset, error) {
 		if IgnoreDownloadsRegexp.MatchString(f.Name()) {
 			continue
 		}
-		results = append(results, &NodeAsset{
+		downloads = append(downloads, &NodeAsset{
 			path: filepath.Join(n.path, f.Name()),
 			Name: f.Name(),
 			URL:  filepath.Join(n.URL(), f.Name()),
 		})
 	}
-	return results, nil
+	return downloads, nil
 }
 
 // Returns a slice of documents for this node.
@@ -242,13 +242,14 @@ func (n Node) Docs(prefix string) ([]*NodeDoc, error) {
 		if f.IsDir() {
 			continue
 		}
-		if NodeDocsRegexp.MatchString(f.Name()) {
-			docs = append(docs, &NodeDoc{
-				path:      filepath.Join(n.path, f.Name()),
-				Name:      f.Name(),
-				URLPrefix: prefix,
-			})
+		if !NodeDocsRegexp.MatchString(f.Name()) {
+			continue
 		}
+		docs = append(docs, &NodeDoc{
+			path:      filepath.Join(n.path, f.Name()),
+			Name:      f.Name(),
+			URLPrefix: prefix,
+		})
 	}
 	return docs, nil
 }
@@ -295,7 +296,7 @@ type NodeMeta struct {
 	Description string
 	Keywords    []string
 	Tags        []string
-	Version     string   // Freeform version string.
+	Version     string // Freeform version string.
 }
 
 // A markdown document file.
@@ -309,15 +310,6 @@ type NodeDoc struct {
 	URLPrefix string
 }
 
-// Raw content of the underlying file.
-func (d NodeDoc) Raw() ([]byte, error) {
-	contents, err := ioutil.ReadFile(d.path)
-	if err != nil {
-		return nil, err
-	}
-	return contents, nil
-}
-
 // HTML as parsed from the underlying file.
 func (d NodeDoc) HTML() ([]byte, error) {
 	switch filepath.Ext(d.path) {
@@ -325,6 +317,15 @@ func (d NodeDoc) HTML() ([]byte, error) {
 		return d.parseMarkdown()
 	}
 	return nil, fmt.Errorf("document %s is not in a supported format", d.path)
+}
+
+// Raw content of the underlying file.
+func (d NodeDoc) Raw() ([]byte, error) {
+	contents, err := ioutil.ReadFile(d.path)
+	if err != nil {
+		return nil, err
+	}
+	return contents, nil
 }
 
 func (d NodeDoc) parseMarkdown() ([]byte, error) {

@@ -84,22 +84,22 @@ func (api APIv1) MountHTTPHandlers(m Middleware) {
 
 func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 	nChildren := n.Children()
-	children := make([]*APIv1Node, len(nChildren))
-	for k, v := range nChildren {
+	children := make([]*APIv1Node, 0, len(nChildren))
+	for _, v := range nChildren {
 		n, err := api.NewNode(v)
 		if err != nil {
 			return nil, err
 		}
-		children[k] = n
+		children = append(children, n)
 	}
 
-	var authors []*APIv1NodeAuthor
+	authors := make([]*APIv1NodeAuthor, 0)
 	for _, author := range n.Authors(api.tree.authors) {
 		authors = append(authors, &APIv1NodeAuthor{author.Email, author.Name})
 	}
 
 	nDocs, err := n.Docs(filepath.Join("/api/v1/tree", n.URL()))
-	docs := make([]*APIv1NodeDoc, 0)
+	docs := make([]*APIv1NodeDoc, 0, len(nDocs))
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +108,6 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		if err != nil {
 			return nil, err
 		}
-
 		raw, err := v.Raw()
 		if err != nil {
 			return nil, err
@@ -121,18 +120,18 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 	}
 
 	nDownloads, err := n.Downloads()
-	downloads := make([]*APIv1NodeAsset, len(nDownloads))
+	downloads := make([]*APIv1NodeAsset, 0, len(nDownloads))
 	if err != nil {
 		return nil, err
 	}
-	for k, v := range nDownloads {
-		downloads[k] = &APIv1NodeAsset{URL: v.URL, Name: v.Name}
+	for _, v := range nDownloads {
+		downloads = append(downloads, &APIv1NodeAsset{URL: v.URL, Name: v.Name})
 	}
 
 	nCrumbs := n.Crumbs()
-	crumbs := make([]*APIv1NodeCrumb, len(nCrumbs))
-	for k, v := range nCrumbs {
-		crumbs[k] = &APIv1NodeCrumb{URL: v.URL, Title: v.Title}
+	crumbs := make([]*APIv1NodeCrumb, 0, len(nCrumbs))
+	for _, v := range nCrumbs {
+		crumbs = append(crumbs, &APIv1NodeCrumb{URL: v.URL, Title: v.Title})
 	}
 
 	return &APIv1Node{
@@ -154,13 +153,13 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 
 func (api APIv1) NewLightNode(n *Node) (*APIv1LightNode, error) {
 	nChildren := n.Children()
-	children := make([]*APIv1LightNode, len(nChildren))
-	for k, v := range nChildren {
+	children := make([]*APIv1LightNode, 0, len(nChildren))
+	for _, v := range nChildren {
 		n, err := api.NewLightNode(v)
 		if err != nil {
 			return nil, err
 		}
-		children[k] = n
+		children = append(children, n)
 	}
 
 	return &APIv1LightNode{
@@ -181,8 +180,7 @@ func (api APIv1) NewNodeTree(t *NodeTree) (*APIv1NodeTree, error) {
 }
 
 func (api APIv1) NewNodeTreeSearchResults(nodes []*Node) []string {
-	var results []string
-
+	results := make([]string, 0, len(nodes))
 	for _, n := range nodes {
 		results = append(results, n.URL())
 	}
