@@ -291,10 +291,10 @@ func NewNodeMetaFromPath(path string) (NodeMeta, error) {
 
 // Metadata parsed from node configuration.
 type NodeMeta struct {
+	Authors     []string // Email addresses of node authors.
 	Description string
 	Keywords    []string
 	Tags        []string
-	Authors     []string // Email addresses of node authors.
 	Version     string   // Freeform version string.
 }
 

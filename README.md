@@ -70,20 +70,20 @@ An example of a full configuration looks like this:
 
 ```json
 {
+    "authors": ["christoph@atelierdisko.de", "marius@atelierdisko.de"],
     "description": "This is a very very very fancy component.",
     "keywords": ["typography", "font", "type"],
     "tags": ["fancy", "very"],
-    "authors": ["christoph@atelierdisko.de", "marius@atelierdisko.de"],
     "version": "1.2.3"
 }
 ```
 
 Possible configuration options are:
 
+- `authors`: An array of email addresses of the document authors; see below.
 - `description`: A single sentence that roughly describes the design component.
 - `keywords`: An array of terms that are searched in addition to `tags`.
 - `tags`: An array of tags to group related design components together.
-- `authors`: An array of email addresses of the document authors; see below.
 - `version`: A freeform version string.
 
 ### Authors
