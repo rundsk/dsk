@@ -113,6 +113,14 @@ func (n Node) Description() string {
 	return n.meta.Description
 }
 
+// Returns a list of related nodes.
+func (n Node) Related() []string {
+	if n.meta.Related == nil {
+		return make([]string, 0)
+	}
+	return n.meta.Related
+}
+
 // Returns an alphabetically sorted list of tags.
 func (n Node) Tags() []string {
 	if n.meta.Tags == nil {
@@ -288,6 +296,7 @@ type NodeMeta struct {
 	Authors     []string // Email addresses of node authors.
 	Description string
 	Keywords    []string
+	Related     []string
 	Tags        []string
 	Version     string // Freeform version string.
 }

@@ -75,6 +75,7 @@ An example of a full configuration looks like this:
     "authors": ["christoph@atelierdisko.de", "marius@atelierdisko.de"],
     "description": "This is a very very very fancy component.",
     "keywords": ["typography", "font", "type"],
+    "related": ["DataEntry/TextField"],
     "tags": ["fancy", "very"],
     "version": "1.2.3"
 }
@@ -85,6 +86,7 @@ Possible configuration options are:
 - `authors`: An array of email addresses of the document authors; see below.
 - `description`: A single sentence that roughly describes the design component.
 - `keywords`: An array of terms that are searched in addition to `tags`.
+- `related`: An array of relative URLs to related aspects within dsk.
 - `tags`: An array of tags to group related aspects together.
 - `version`: A freeform version string.
 

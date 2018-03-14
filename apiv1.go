@@ -33,6 +33,7 @@ type APIv1Node struct {
 	Docs        []*APIv1NodeDoc    `json:"docs"`
 	Downloads   []*APIv1NodeAsset  `json:"downloads"`
 	Crumbs      []*APIv1NodeCrumb  `json:"crumbs"`
+	Related     []string           `json:"related"`
 	IsGhost     bool               `json:"is_ghost"`
 }
 
@@ -149,6 +150,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		Docs:        docs,
 		Downloads:   downloads,
 		Crumbs:      crumbs,
+		Related:     n.Related(),
 		IsGhost:     n.IsGhost,
 	}, nil
 }
