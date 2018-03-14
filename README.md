@@ -27,13 +27,15 @@ Finally [open the web application in your browser](http://localhost:8080), to br
 
 ## The Design Definitions Tree
 
-The _design definitions tree_ (DDT for short), is a tree of directories and subdirectories. 
-Each of these directories stands for a point in the hierarchy of your design system, these
-might be actual components, when you are documenting the user interface, or chapters of your
-company's guide into its design culture or any other important design aspect.
+The _design definitions tree_ (DDT for short), is a tree of
+directories and subdirectories. Each of these directories stands for
+a design aspect in the hierarchy of your design system, these might
+be actual components, when you are documenting the user interface, or
+chapters of your company's guide into its design culture.
 
-Each directory may hold files to document the aspects, a configuration file, to add
-meta data and supporting _assets_ that can be downloaded through the frontend.
+Each directory may hold several files to document these design aspects: a
+configuration file, to add meta data or supporting _assets_ that can
+be downloaded through the frontend.
 
 ```
 example
@@ -55,7 +57,7 @@ example
 ### Documenting Design Aspects
 
 Directories in the DDT can hold [Markdown](https://guides.github.com/features/mastering-markdown/) formatted documentation files, like `readme.md`, that describe a design aspect or give glues how to use a certain component. Please note
-that `readme.md` is in no ways treated specially by DSK, but is usually displayed by GitHub as the primary document of a directory. You can split documentation over several files when you like to. i.e. We usually use `api.md`,
+that `readme.md` is in no ways treated specially by dsk, but is usually displayed by GitHub as the primary document of a directory. You can split documentation over several files when you like to. i.e. We usually use `api.md`,
 `explain.md` or `comments.md`.
 
 ### Design Configuration File
@@ -64,7 +66,7 @@ Directories in the DDT may also hold an `index.json` file. This file and any of 
 configuration settings are entirely optional. 
 
 Using the configuration file, we can add meta data to the design aspect (i.e. tags)
-and improve the search experience in the interface. 
+and improve the search experience in the interface.
 
 An example of a full configuration looks like this:
 
@@ -83,17 +85,17 @@ Possible configuration options are:
 - `authors`: An array of email addresses of the document authors; see below.
 - `description`: A single sentence that roughly describes the design component.
 - `keywords`: An array of terms that are searched in addition to `tags`.
-- `tags`: An array of tags to group related design components together.
+- `tags`: An array of tags to group related aspects together.
 - `version`: A freeform version string.
 
 ### Authors
 
-Each directory inside the tree may be _authored_ by one or multiple
-persons. To assign yourself, use the `authors` option in `index.json`
-the design configuration file.
+Each design aspect inside the tree may be _authored_ by one or multiple
+humans. To assign yourself, use the `authors` option in the 
+design configuration file.
 
 To enable automatic full names for each author, create an
-`AUTHORS.txt` file inside the root of the DDT. Each line of the
+`AUTHORS.txt` file inside the root of the DDT first. Each line of the
 file lists an author's full name and her/his email address in angle
 brackets.
 
@@ -104,11 +106,11 @@ Marius Wilms <marius@atelierdisko.de>
 
 # Architecture
 
-Architecture-wise DSK is split into a backend and frontend. The backend implemented 
+Architecture-wise dsk is split into a backend and frontend. The backend implemented 
 in Go takes care of understanding the defintions tree and provides a REST API for the
 frontend, usually implemented in JavaScript. 
 
-Frontends are pluggable and the decoupled desing allows you to create indvidually branded frontends. 
+Frontends are pluggable and the decoupled design allows you to create indvidually branded frontends. 
 These are entirely free in their implementation, they must adher to only a minimal set
 of rules.
 
@@ -152,7 +154,7 @@ like to.
 
 ### Baking
 
-To _bake_ your frontend into DSK, install the the development tools as described in the _Development_ section frist. 
+To _bake_ your frontend into dsk, install the the development tools as described in the _Development_ section frist. 
 After doing so, you create your custom dsk build by running the following command.
 
 ```
