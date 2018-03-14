@@ -34,6 +34,7 @@ type APIv1Node struct {
 	Downloads   []*APIv1NodeAsset  `json:"downloads"`
 	Crumbs      []*APIv1NodeCrumb  `json:"crumbs"`
 	Related     []string           `json:"related"`
+	Next        string             `json:"next"`
 	IsGhost     bool               `json:"is_ghost"`
 }
 
@@ -137,6 +138,11 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		crumbs = append(crumbs, &APIv1NodeCrumb{URL: v.URL, Title: v.Title})
 	}
 
+	next, err := api.tree.NextNode(n)
+	if err != nil {
+		return nil, err
+	}
+
 	return &APIv1Node{
 		URL:         n.URL(),
 		Order:       n.Order(),
@@ -151,6 +157,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		Downloads:   downloads,
 		Crumbs:      crumbs,
 		Related:     n.Related(),
+		Next:        next.URL(),
 		IsGhost:     n.IsGhost,
 	}, nil
 }

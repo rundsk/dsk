@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/fatih/color"
@@ -110,6 +111,30 @@ func (t *NodeTree) Sync() error {
 	t.authors = as
 
 	return nil
+}
+
+// Determines the node following the given current node. This may
+// either be the first child of the given node, if there are none
+// the sibling node and - walking up the tree - if there is none the
+// parents sibling node.
+func (t NodeTree) NextNode(current *Node) (*Node, error) {
+	urls := make([]string, 0, len(t.lookup))
+	for url, _ := range t.lookup {
+		urls = append(urls, url)
+	}
+	sort.Strings(urls)
+	key := sort.SearchStrings(urls, strings.ToLower(normalizeNodeURL(current.URL())))
+
+	// SearchString returns the next unused key, if the given string
+	// isn't found.
+	if key == len(urls) {
+		return nil, fmt.Errorf("No node with URL path '%s' in tree", url)
+	}
+	// We don't wrap, check if this is the last node.
+	if key == len(urls)-1 {
+		return nil, nil
+	}
+	return t.Get(urls[key+1])
 }
 
 // Returns the number of total nodes in the tree.
