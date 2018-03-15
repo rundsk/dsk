@@ -84,6 +84,19 @@ func (n Node) URL() string {
 	return normalizeNodeURL(strings.TrimPrefix(n.path, n.root+"/"))
 }
 
+// Returns the unnormalized URL path fragment.
+func (n Node) UnnormalizedURL() string {
+	if n.root == n.path {
+		return ""
+	}
+	return strings.TrimPrefix(n.path, n.root+"/")
+}
+
+// Returns the normalized and lower cased lookup URL for this node.
+func (n Node) LookupURL() string {
+	return strings.ToLower(n.URL())
+}
+
 // An order number, as a hint for outside sorting mechanisms.
 func (n Node) Order() uint64 {
 	return orderNumber(filepath.Base(n.path))
@@ -291,6 +304,10 @@ func normalizeNodeURL(url string) string {
 		normalized = append(normalized, p)
 	}
 	return strings.Join(normalized, "/")
+}
+
+func lookupNodeURL(url string) string {
+	return strings.ToLower(normalizeNodeURL(url))
 }
 
 // Finds an order number embedded into given path/URL segment and

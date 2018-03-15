@@ -138,9 +138,13 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		crumbs = append(crumbs, &APIv1NodeCrumb{URL: v.URL, Title: v.Title})
 	}
 
-	next, err := api.tree.NextNode(n)
+	var next string
+	nextNode, err := api.tree.NextNode(n)
 	if err != nil {
 		return nil, err
+	}
+	if nextNode != nil {
+		next = nextNode.URL()
 	}
 
 	return &APIv1Node{
@@ -157,7 +161,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		Downloads:   downloads,
 		Crumbs:      crumbs,
 		Related:     n.Related(),
-		Next:        next.URL(),
+		Next:        next,
 		IsGhost:     n.IsGhost,
 	}, nil
 }

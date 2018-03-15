@@ -30,6 +30,9 @@ type NodeTree struct {
 	// Maps node URL paths to nodes, for quick lookup.
 	lookup map[string]*Node
 
+	// Ordered slice of un-normalized node URLs.
+	ordered []string
+
 	// The root node and entry point to the acutal tree.
 	Root *Node `json:"root"`
 
@@ -76,12 +79,14 @@ func (t *NodeTree) Sync() error {
 	}
 
 	// In the second pass we're doing two thing: add the children
-	// to the nodes and build up a lookup table, as we're already
+	// to the nodes and build up the lookup tables, as we're already
 	// iterating the nodes.
 	lookup := make(map[string]*Node)
+	ordered := make([]string, 0, len(nodes))
 
 	for _, n := range nodes {
-		lookup[strings.ToLower(n.URL())] = n
+		lookup[n.LookupURL()] = n
+		ordered = append(ordered, n.UnnormalizedURL())
 
 		for _, sn := range nodes {
 			if filepath.Dir(sn.path) == n.path {
@@ -89,11 +94,13 @@ func (t *NodeTree) Sync() error {
 			}
 		}
 	}
+	sort.Strings(ordered)
 
 	// Swap late, in event of error we keep the previous state.
 	t.lookup = lookup
+	t.ordered = ordered
 	t.Root = lookup[""]
-	log.Printf("Established tree lookup table with %d entries", len(lookup))
+	log.Printf("Established tree lookup tables with %d entries", len(lookup))
 
 	// Refresh the authors database; file may appear or disappear between
 	// syncs.
@@ -118,25 +125,19 @@ func (t *NodeTree) Sync() error {
 // the sibling node and - walking up the tree - if there is none the
 // parents sibling node.
 func (t NodeTree) NextNode(current *Node) (*Node, error) {
-	urls := make([]string, 0, len(t.lookup))
-	for url, _ := range t.lookup {
-		urls = append(urls, url)
-	}
-	sort.Strings(urls)
-
-	url := strings.ToLower(normalizeNodeURL(current.URL()))
-	key := sort.SearchStrings(urls, url)
+	key := sort.SearchStrings(t.ordered, current.UnnormalizedURL())
 
 	// SearchString returns the next unused key, if the given string
 	// isn't found.
-	if key == len(urls) {
-		return nil, fmt.Errorf("No node with URL path '%s' in tree", url)
+	if key == len(t.ordered) {
+		return nil, fmt.Errorf("No node with URL path '%s' in tree", current.URL())
 	}
+
 	// We don't wrap, check if this is the last node.
-	if key == len(urls)-1 {
+	if key == len(t.ordered)-1 {
 		return nil, nil
 	}
-	return t.Get(urls[key+1])
+	return t.Get(normalizeNodeURL(t.ordered[key+1]))
 }
 
 // Returns the number of total nodes in the tree.
@@ -146,7 +147,7 @@ func (t NodeTree) TotalNodes() uint16 {
 
 // Retrieves a node from the tree, performs a case-insensitive match.
 func (t NodeTree) Get(url string) (*Node, error) {
-	if n, ok := t.lookup[strings.ToLower(normalizeNodeURL(url))]; ok {
+	if n, ok := t.lookup[lookupNodeURL(url)]; ok {
 		return n, nil
 	}
 	return &Node{}, fmt.Errorf("No node with URL path '%s' in tree", url)
@@ -154,7 +155,7 @@ func (t NodeTree) Get(url string) (*Node, error) {
 
 // Retrieves a node from tree and ensures it's synced before.
 func (t NodeTree) GetSynced(url string) (*Node, error) {
-	if n, ok := t.lookup[strings.ToLower(normalizeNodeURL(url))]; ok {
+	if n, ok := t.lookup[lookupNodeURL(url)]; ok {
 		if err := n.Sync(); err != nil {
 			return n, err
 		}
