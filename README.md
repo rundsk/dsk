@@ -4,8 +4,8 @@
 
 ## Abstract
 
-Using the _Design System Kit_ you quickly define and organize design documentation into a
-browsable and live-searchable design system. Hierachies are established using plain simple directories. Documentation is created by just adding a [Markdown](https://guides.github.com/features/mastering-markdown/) formatted file.
+Using the _Design System Kit_ you quickly define and organize design aspects into a
+browsable and live-searchable design system. Hierachies are established using plain simple directories. Documentation is created by adding [Markdown](https://guides.github.com/features/mastering-markdown/) formatted files.
 
 ![screenshot](https://atelierdisko.de/assets/app/img/github_dsk.png)
 
@@ -29,7 +29,7 @@ Finally [open the web application in your browser](http://localhost:8080), to br
 
 The _design definitions tree_ (DDT for short), is a tree of
 directories and subdirectories. Each of these directories stands for
-a design aspect in the hierarchy of your design system, these might
+a _design aspect_ in the hierarchy of your design system, these might
 be actual components, when you are documenting the user interface, or
 chapters of your company's guide into its design culture.
 
@@ -39,7 +39,7 @@ be downloaded through the frontend.
 
 ```
 example
-├── AUTHORS.txt                 <- optional, see "Authors" below
+├── AUTHORS.txt                 <- authors database, see "Authors" below
 ├── DataEntry
 │   ├── Button
 │   │   ├── exploration.sketch  <- asset
@@ -56,17 +56,11 @@ example
 
 ### Documenting Design Aspects
 
-Directories in the DDT can hold [Markdown](https://guides.github.com/features/mastering-markdown/) formatted documentation files, like `readme.md`, that describe a design aspect or give glues how to use a certain component. Please note
-that `readme.md` is in no ways treated specially by dsk, but is usually displayed by GitHub as the primary document of a directory. You can split documentation over several files when you like to. i.e. We usually use `api.md`,
-`explain.md` or `comments.md`.
+Aspects can be documented by adding [Markdown](https://guides.github.com/features/mastering-markdown/) formatted documentation files to their directory. A `readme.md` file, may describe an aspect or give clues how to use a certain component. Please note that `readme.md` is in no ways treated specially by dsk, but is usually displayed by GitHub as the primary document in the web interface. You can split documentation over several files when you like to. We usually use `api.md`, `explain.md` or `comments.md`.
 
-### Design Configuration File
+### Configuring Aspects
 
-Directories in the DDT may also hold an `index.json` file. This file and any of its
-configuration settings are entirely optional. 
-
-Using the configuration file, we can add meta data to the design aspect (i.e. tags)
-and improve the search experience in the interface.
+To allow adding meta data to an aspect, dsk uses JSON configuration files. These files are named `index.json` and entirely optional. The meta data can later be used to improve the search experience in the frontend. 
 
 An example of a full configuration looks like this:
 
@@ -86,7 +80,7 @@ Possible configuration options are:
 - `authors`: An array of email addresses of the document authors; see below.
 - `description`: A single sentence that roughly describes the design component.
 - `keywords`: An array of terms that are searched in addition to `tags`.
-- `related`: An array of relative URLs to related aspects within dsk.
+- `related`: An array of related aspect URLs within dsk.
 - `tags`: An array of tags to group related aspects together.
 - `version`: A freeform version string.
 
@@ -185,7 +179,7 @@ export PATH=$PATH:$(go env GOPATH)/bin
 ```
 
 The `make dev` command assumes your test design system definitions are below a
-directory called `_test`. The vendored dependencies are simple Git submodules 
+directory called `_test`. The vendored dependencies are simply Git submodules 
 and can be managed manually or with [Manul](https://github.com/kovetskiy/manul).
 
 ```
