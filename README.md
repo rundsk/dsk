@@ -192,6 +192,87 @@ $ make dev
 
 To run the unit tests use `make test`.
 
+## Deploying as a Webservice
+
+Once your design system is ready for the public, you surely want to share it
+with co-workers inside your company or proudly present it to the whole world.
+
+Design System Kit, works both in a local mode, as well in a hosted mode
+on a webserver. There are two options for the hosted mode.
+
+The following examples assume that you've installed the dsk binary
+to `/usr/local/bin/dsk`, are keeping the DDT in `/var/ds` and that
+your operating system uses systemd as its init system.
+
+### Simple
+
+As long as you don't want any SSL encryption (you probably do), this is the
+quickest way to get started. It keeps dsk running on your server and answers
+requests directly.
+
+Please replace `192.168.1.1` with the public IP address of
+your machine. After [installing and starting the service
+unit](https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units), the web interface should be available.
+
+
+```ini
+[Unit]
+Description=Design System Kit
+
+[Service]
+ExecStart=/usr/local/bin/dsk -host 192.168.1.1 -port 80 /var/ds
+WorkingDirectory=/var/ds
+Restart=on-abort
+RestartSec=120
+MemoryLimit=200M
+
+[Install]
+WantedBy=default.target
+```
+
+### With NGINX as a reverse-proxy and SSL
+
+For SSL support we'll put dsk behind NGINX. The webserver will do the
+termination for us, then forward all requests to dsk. Dsk will be listening on
+the loopback interface on port 8080.
+
+```ini
+[Unit]
+Description=Design System Kit
+After=nginx.service
+
+[Service]
+ExecStart=/usr/local/bin/dsk -port 8080 /var/ds
+User=www-data
+Group=www-data
+WorkingDirectory=/var/ds
+Restart=on-abort
+RestartSec=120
+MemoryLimit=200M
+
+[Install]
+WantedBy=default.target
+```
+
+```nginx
+server {
+	listen 443 ssl http2;
+
+	server_name example.com;
+	root /var/ds
+
+	ssl_certificate /etc/ssl/certs/example.com.crt;
+	ssl_certificate_key /etc/ssl/private/example.com.key;
+
+	location / {
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $remote_addr;
+		proxy_set_header Host $host;
+		proxy_pass http://127.0.0.1:8080;
+	}	
+}
+```
+
 ## Copyright & License
 
 DSK is Copyright (c) 2017 Atelier Disko if not otherwise
