@@ -123,7 +123,9 @@ func (t NodeTree) NextNode(current *Node) (*Node, error) {
 		urls = append(urls, url)
 	}
 	sort.Strings(urls)
-	key := sort.SearchStrings(urls, strings.ToLower(normalizeNodeURL(current.URL())))
+
+	url := strings.ToLower(normalizeNodeURL(current.URL()))
+	key := sort.SearchStrings(urls, url)
 
 	// SearchString returns the next unused key, if the given string
 	// isn't found.
