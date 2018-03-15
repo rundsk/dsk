@@ -120,24 +120,40 @@ func (t *NodeTree) Sync() error {
 	return nil
 }
 
-// Determines the node following the given current node. This may
-// either be the first child of the given node, if there are none
+// Returns the neighboring previous and next nodes for the given
+// current node. When current node is the last node, the behavior
+// is not to wrap around.
+//
+// Determines the next node following the given current node. This
+// may either be the first child of the given node, if there are none
 // the sibling node and - walking up the tree - if there is none the
 // parents sibling node.
-func (t NodeTree) NextNode(current *Node) (*Node, error) {
+func (t NodeTree) NeighborNodes(current *Node) (prev *Node, next *Node, err error) {
 	key := sort.SearchStrings(t.ordered, current.UnnormalizedURL())
 
 	// SearchString returns the next unused key, if the given string
 	// isn't found.
 	if key == len(t.ordered) {
-		return nil, fmt.Errorf("No node with URL path '%s' in tree", current.URL())
+		return nil, nil, fmt.Errorf("No node with URL path '%s' in tree", current.URL())
 	}
 
-	// We don't wrap, check if this is the last node.
-	if key == len(t.ordered)-1 {
-		return nil, nil
+	// Check if current node isn't the first node.
+	if key != 0 {
+		prev, err = t.Get(normalizeNodeURL(t.ordered[key-1]))
+		if err != nil {
+			return prev, next, err
+		}
 	}
-	return t.Get(normalizeNodeURL(t.ordered[key+1]))
+
+	// Check if current node isn't the last node.
+	if key != len(t.ordered)-1 {
+		next, err = t.Get(normalizeNodeURL(t.ordered[key+1]))
+		if err != nil {
+			return prev, next, err
+		}
+	}
+
+	return prev, next, err
 }
 
 // Returns the number of total nodes in the tree.
