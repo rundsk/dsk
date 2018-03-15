@@ -178,12 +178,12 @@ add the following line.
 export PATH=$PATH:$(go env GOPATH)/bin
 ```
 
-The `make dev` command assumes your test design system definitions are below a
-directory called `_test`. The vendored dependencies are simply Git submodules 
-and can be managed manually or with [Manul](https://github.com/kovetskiy/manul).
+The `make dev` command assumes your test design system definitions are below
+a directory called `_test`. The vendored dependencies are managed with
+[dep](https://github.com/golang/dep).
 
 ```
-$ go get github.com/kovetskiy/manul
+$ go get -u github.com/golang/dep/cmd/dep
 $ go get github.com/twitter/go-bindata/...
 $ go get github.com/atelierdisko/dsk
 $ cd $(go env GOPATH)/src/github.com/atelierdisko/dsk
