@@ -6,9 +6,12 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -18,6 +21,7 @@ import (
 	"time"
 
 	"github.com/russross/blackfriday"
+	"golang.org/x/net/html"
 )
 
 const (
@@ -340,10 +344,11 @@ func (d NodeDoc) Raw() ([]byte, error) {
 	return contents, nil
 }
 
+// Parses markdown into HTML and makes relative links absolute, so
+// they are more portable.
 func (d NodeDoc) parseMarkdown() ([]byte, error) {
 	renderer := blackfriday.NewHTMLRenderer(blackfriday.HTMLRendererParameters{
-		Flags:          blackfriday.CommonHTMLFlags &^ blackfriday.UseXHTML,
-		AbsolutePrefix: d.URLPrefix,
+		Flags: blackfriday.CommonHTMLFlags &^ blackfriday.UseXHTML,
 	})
 	extensions := blackfriday.CommonExtensions |
 		blackfriday.Strikethrough | blackfriday.NoEmptyLineBeforeBlock&^
@@ -353,11 +358,80 @@ func (d NodeDoc) parseMarkdown() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return blackfriday.Run(
+	parsed := blackfriday.Run(
 		contents,
 		blackfriday.WithRenderer(renderer),
 		blackfriday.WithExtensions(extensions),
-	), nil
+	)
+
+	// Works around buggy AbsolutePrefix feature in blackfriday. We
+	// need to have all URLs absolute as documents can be placed
+	// anywhere inside the frontend's URL structure. The workaround
+	// can possibly be removed once PR #231 or a change functionally
+	// equal to it has been implemented.
+	//
+	// https://github.com/russross/blackfriday/pull/231
+	// https://github.com/russross/blackfriday/commit/27ba4cebef7f37e0bb5685e23cb7213cd809f9e8
+	// https://github.com/russross/blackfriday/commit/5c12499aa1ddda74561fb899c394f01fd1e8e9e6
+	makeURLsAbsolute := func(parsed []byte, prefix string) ([]byte, error) {
+		var buf bytes.Buffer
+
+		// Ensure last path element isn't recognized as a file.
+		uBase, err := url.Parse(prefix + "/")
+		if err != nil {
+			return buf.Bytes(), err
+		}
+
+		z := html.NewTokenizer(bytes.NewReader(parsed))
+
+		// Helper to get an attribute value from a token.
+		attr := func(t html.Token, name string) (bool, int, string) {
+			for key, a := range t.Attr {
+				if a.Key == name {
+					return true, key, a.Val
+				}
+			}
+			return false, 0, ""
+		}
+
+		for {
+			tt := z.Next()
+			t := z.Token()
+
+			switch tt {
+			case html.ErrorToken:
+				err := z.Err()
+
+				if err == io.EOF {
+					return buf.Bytes(), nil
+				}
+				return buf.Bytes(), err
+			case html.StartTagToken, html.SelfClosingTagToken:
+				var ok bool
+				var key int
+				var v string
+
+				switch t.Data {
+				case "img", "video":
+					ok, key, v = attr(t, "src")
+				}
+				if !ok {
+					continue
+				}
+				u, err := url.Parse(v)
+				if err != nil {
+					return buf.Bytes(), err
+				}
+				if u.IsAbs() {
+					continue
+				}
+				t.Attr[key].Val = uBase.ResolveReference(u).String()
+			}
+			buf.WriteString(t.String())
+		}
+	}
+
+	return makeURLsAbsolute(parsed, d.URLPrefix)
 }
 
 // A downloadable file.
