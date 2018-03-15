@@ -26,12 +26,15 @@ var (
 	// for downloadable files in the node's directory.
 	IgnoreDownloadsRegexp = regexp.MustCompile(`(?i)^(.*\.(js|css|md|markdown|json)|\.DS_Store|\.git.*|dsk)$`)
 
-	// A pattern for extracting order number and title from a node's
-	// path/URL segment in the form of 06_Foo.
-	NodePathSegmentRegexp = regexp.MustCompile(`^0?(\d+)[_,-]+(.*)$`)
-
 	// Basenames matching this pattern are considered documents.
 	NodeDocsRegexp = regexp.MustCompile(`(?i)^.*\.(md|markdown)$`)
+
+	// Patterns for extracting order number and title from a node's
+	// path/URL segment in the form of 06_Foo. As well as for
+	// "slugging" the URL/path segment.
+	NodePathTitleRegexp        = regexp.MustCompile(`^0?(\d+)[_,-]+(.*)$`)
+	NodePathInvalidCharsRegexp = regexp.MustCompile("[^A-Za-z0-9-_]")
+	NodePathMultipleDashRegexp = regexp.MustCompile("-+")
 )
 
 // Constructs a new synced node using its path in the filesystem.
@@ -267,9 +270,9 @@ func (n Node) Crumbs() []*NodeCrumb {
 	return crumbs
 }
 
-// Normalizes given relative node URL path i.e. for building
-// case-insensitive lookup tables. Idempotent function. Removes any
-// order numbers, as well as leading and trailing slashes.
+// "Prettifies" (and normalizes) given relative node URL. Idempotent
+// function. Removes any order numbers, as well as leading and
+// trailing slashes.
 //
 //   /foo/bar/  -> foo/bar
 //   foo/02_bar -> foo/bar
@@ -280,7 +283,12 @@ func normalizeNodeURL(url string) string {
 		if p == "/" {
 			continue
 		}
-		normalized = append(normalized, removeOrderNumber(p))
+		p = removeOrderNumber(p)
+		p = NodePathInvalidCharsRegexp.ReplaceAllString(p, "-")
+		p = NodePathMultipleDashRegexp.ReplaceAllString(p, "-")
+		p = strings.Trim(p, "-")
+
+		normalized = append(normalized, p)
 	}
 	return strings.Join(normalized, "/")
 }
@@ -288,7 +296,7 @@ func normalizeNodeURL(url string) string {
 // Finds an order number embedded into given path/URL segment and
 // returns it. If none is found, returns 0.
 func orderNumber(segment string) uint64 {
-	s := NodePathSegmentRegexp.FindStringSubmatch(segment)
+	s := NodePathTitleRegexp.FindStringSubmatch(segment)
 
 	if len(s) > 2 {
 		parsed, _ := strconv.ParseUint(s[0], 10, 64)
@@ -299,7 +307,7 @@ func orderNumber(segment string) uint64 {
 
 // Removes order numbers from path/URL segment, if present.
 func removeOrderNumber(segment string) string {
-	s := NodePathSegmentRegexp.FindStringSubmatch(segment)
+	s := NodePathTitleRegexp.FindStringSubmatch(segment)
 
 	if len(s) == 0 {
 		return segment
