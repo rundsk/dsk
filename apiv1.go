@@ -32,10 +32,10 @@ type APIv1Node struct {
 	Tags        []string           `json:"tags"`
 	Docs        []*APIv1NodeDoc    `json:"docs"`
 	Downloads   []*APIv1NodeAsset  `json:"downloads"`
-	Crumbs      []*APIv1NodeCrumb  `json:"crumbs"`
-	Related     []string           `json:"related"`
-	Prev        string             `json:"prev"`
-	Next        string             `json:"next"`
+	Crumbs      []*APIv1RefNode    `json:"crumbs"`
+	Related     []*APIv1RefNode    `json:"related"`
+	Prev        *APIv1RefNode      `json:"prev"`
+	Next        *APIv1RefNode      `json:"next"`
 	IsGhost     bool               `json:"is_ghost"`
 }
 
@@ -45,6 +45,12 @@ type APIv1LightNode struct {
 	Children []*APIv1LightNode `json:"children"`
 	Title    string            `json:"title"`
 	IsGhost  bool              `json:"is_ghost"`
+}
+
+// A node reference.
+type APIv1RefNode struct {
+	URL   string `json:"url"`
+	Title string `json:"title"`
 }
 
 type APIv1NodeTree struct {
@@ -67,11 +73,6 @@ type APIv1NodeDoc struct {
 type APIv1NodeAsset struct {
 	URL  string `json:"url"`
 	Name string `json:"name"`
-}
-
-type APIv1NodeCrumb struct {
-	URL   string `json:"url"`
-	Title string `json:"title"`
 }
 
 func (api APIv1) MountHTTPHandlers(m Middleware) {
@@ -133,23 +134,29 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		downloads = append(downloads, &APIv1NodeAsset{URL: v.URL, Name: v.Name})
 	}
 
-	nCrumbs := n.Crumbs()
-	crumbs := make([]*APIv1NodeCrumb, 0, len(nCrumbs))
-	for _, v := range nCrumbs {
-		crumbs = append(crumbs, &APIv1NodeCrumb{URL: v.URL, Title: v.Title})
+	nCrumbs := n.Crumbs(api.tree.Get)
+	crumbs := make([]*APIv1RefNode, 0, len(nCrumbs))
+	for _, n := range nCrumbs {
+		crumbs = append(crumbs, &APIv1RefNode{n.URL(), n.Title()})
 	}
 
-	var prev string
-	var next string
+	nRelated := n.Related(api.tree.Get)
+	related := make([]*APIv1RefNode, 0, len(nRelated))
+	for _, n := range nRelated {
+		related = append(related, &APIv1RefNode{n.URL(), n.Title()})
+	}
+
+	var prev *APIv1RefNode
+	var next *APIv1RefNode
 	prevNode, nextNode, err := api.tree.NeighborNodes(n)
 	if err != nil {
 		return nil, err
 	}
 	if prevNode != nil {
-		prev = prevNode.URL()
+		prev = &APIv1RefNode{prevNode.URL(), prevNode.Title()}
 	}
 	if nextNode != nil {
-		next = nextNode.URL()
+		next = &APIv1RefNode{nextNode.URL(), nextNode.Title()}
 	}
 
 	return &APIv1Node{
@@ -165,7 +172,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		Docs:        docs,
 		Downloads:   downloads,
 		Crumbs:      crumbs,
-		Related:     n.Related(),
+		Related:     related,
 		Prev:        prev,
 		Next:        next,
 		IsGhost:     n.IsGhost,

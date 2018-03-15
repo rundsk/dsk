@@ -8,6 +8,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -127,11 +128,18 @@ func (n Node) Description() string {
 }
 
 // Returns a list of related nodes.
-func (n Node) Related() []string {
-	if n.meta.Related == nil {
-		return make([]string, 0)
+func (n Node) Related(get func(string) (*Node, error)) []*Node {
+	nodes := make([]*Node, 0, len(n.meta.Related))
+
+	for _, r := range n.meta.Related {
+		node, err := tree.Get(r)
+		if err != nil {
+			log.Printf("Skipping related in %s: %s", n.URL(), err)
+			continue
+		}
+		nodes = append(nodes, node)
 	}
-	return n.meta.Related
+	return nodes
 }
 
 // Returns an alphabetically sorted list of tags.
@@ -269,18 +277,22 @@ func (n Node) Docs(prefix string) ([]*NodeDoc, error) {
 }
 
 // Returns a list of crumbs. The last element is the current active
-// one. Does not include a root element.
-func (n Node) Crumbs() []*NodeCrumb {
-	crumbs := make([]*NodeCrumb, 0)
+// one. Does not include a root node.
+func (n Node) Crumbs(get func(string) (*Node, error)) []*Node {
+	nodes := make([]*Node, 0)
 
 	parts := strings.Split(strings.TrimSuffix(n.URL(), "/"), "/")
-	for index, part := range parts {
-		crumbs = append(crumbs, &NodeCrumb{
-			Title: removeOrderNumber(part),
-			URL:   strings.Join(parts[:index+1], "/"),
-		})
+	for index, _ := range parts {
+		url := strings.Join(parts[:index+1], "/")
+
+		node, err := get(url)
+		if err != nil {
+			log.Printf("Skipping crumb in %s: %s", n.URL(), err)
+			continue
+		}
+		nodes = append(nodes, node)
 	}
-	return crumbs
+	return nodes
 }
 
 // "Prettifies" (and normalizes) given relative node URL. Idempotent

@@ -6,6 +6,7 @@
 package main
 
 import (
+	"path/filepath"
 	"testing"
 )
 
@@ -42,4 +43,80 @@ func TestCleanURLs(t *testing.T) {
 			t.Errorf("\nexpected: %s, result: %s", e, r)
 		}
 	}
+}
+
+func TestCrumbURLs(t *testing.T) {
+	get := func(url string) (*Node, error) {
+		return &Node{root: "/tmp/xyz", path: filepath.Join("/tmp/xyz", url)}, nil
+	}
+
+	n := &Node{root: "/tmp/xyz", path: "/tmp/xyz/foo/bar/baz/"}
+	result := n.Crumbs(get)
+
+	expected := []string{
+		"foo",
+		"foo/bar",
+		"foo/bar/baz",
+	}
+
+	if len(result) != len(expected) {
+		t.Errorf("crumbs do not have the expected length: %d", len(expected))
+	}
+	for k, v := range expected {
+		if result[k].URL() != v {
+			t.Errorf("failed to parse crumbs, expectation for key %d failed", k)
+			t.Logf("expected: %s, result: %s", v, result[k].URL())
+		}
+	}
+}
+
+func TestCrumbSimpleTitles(t *testing.T) {
+	get := func(url string) (*Node, error) {
+		return &Node{root: "/tmp/xyz", path: filepath.Join("/tmp/xyz", url)}, nil
+	}
+
+	n := &Node{root: "/tmp/xyz", path: "/tmp/xyz/foo/bar/baz/"}
+	result := n.Crumbs(get)
+
+	expected := []string{
+		"foo",
+		"bar",
+		"baz",
+	}
+
+	if len(result) != len(expected) {
+		t.Errorf("crumbs do not have the expected length: %d", len(expected))
+	}
+	for k, v := range expected {
+		if result[k].Title() != v {
+			t.Errorf("failed to parse crumbs, expectation for key %d failed", k)
+			t.Logf("expected: %s, result: %s", v, result[k].URL())
+		}
+	}
+}
+
+func TestCrumbOrderedTitles(t *testing.T) {
+	get := func(url string) (*Node, error) {
+		return &Node{root: "/tmp/xyz", path: filepath.Join("/tmp/xyz", url)}, nil
+	}
+
+	n := &Node{root: "/tmp/xyz", path: "/tmp/xyz/01_foo/2-bar/baz/"}
+	result := n.Crumbs(get)
+
+	expected := []string{
+		"foo",
+		"bar",
+		"baz",
+	}
+
+	if len(result) != len(expected) {
+		t.Errorf("crumbs do not have the expected length: %d", len(expected))
+	}
+	for k, v := range expected {
+		if result[k].Title() != v {
+			t.Errorf("failed to parse crumbs, expectation for key %d failed", k)
+			t.Logf("expected: %s, result: %s", v, result[k].URL())
+		}
+	}
+
 }
