@@ -139,8 +139,12 @@ func (d NodeDoc) postprocessHTML(contents []byte) ([]byte, error) {
 			switch t.Data {
 			case "img", "video":
 				ok, key, v = attr(t, "src")
+			default:
+				buf.WriteString(t.String())
+				continue
 			}
 			if !ok {
+				buf.WriteString(t.String())
 				continue
 			}
 			u, err := url.Parse(v)
@@ -151,8 +155,10 @@ func (d NodeDoc) postprocessHTML(contents []byte) ([]byte, error) {
 				continue
 			}
 			t.Attr[key].Val = uBase.ResolveReference(u).String()
+			buf.WriteString(t.String())
+		default:
+			buf.WriteString(t.String())
 		}
-		buf.WriteString(t.String())
 	}
 	return buf.Bytes(), nil
 }
