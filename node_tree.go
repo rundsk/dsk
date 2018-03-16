@@ -138,6 +138,8 @@ func (t *NodeTree) Sync() error {
 // the sibling node and - walking up the tree - if there is none the
 // parents sibling node.
 func (t NodeTree) NeighborNodes(current *Node) (prev *Node, next *Node, err error) {
+	var ok bool
+
 	key := sort.SearchStrings(t.ordered, current.UnnormalizedURL())
 
 	// SearchString returns the next unused key, if the given string
@@ -148,7 +150,7 @@ func (t NodeTree) NeighborNodes(current *Node) (prev *Node, next *Node, err erro
 
 	// Be sure current node isn't the first node.
 	if key != 0 {
-		ok, prev, err := t.Get(normalizeNodeURL(t.ordered[key-1]))
+		ok, prev, err = t.Get(normalizeNodeURL(t.ordered[key-1]))
 		if !ok || err != nil {
 			return prev, next, err
 		}
@@ -156,7 +158,7 @@ func (t NodeTree) NeighborNodes(current *Node) (prev *Node, next *Node, err erro
 
 	// Check if current node isn't the last node.
 	if key != len(t.ordered)-1 {
-		ok, next, err := t.Get(normalizeNodeURL(t.ordered[key+1]))
+		ok, next, err = t.Get(normalizeNodeURL(t.ordered[key+1]))
 		if !ok || err != nil {
 			return prev, next, err
 		}
