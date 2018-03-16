@@ -57,6 +57,8 @@ type Node struct {
 	root string
 	// Absolute path to the node's directory.
 	path string
+	// The parent node.
+	parent *Node
 	// A list of children nodes. When Node is used in a flat list
 	// may be left empty.
 	children []*Node
@@ -103,6 +105,14 @@ func (n Node) Order() uint64 {
 	return orderNumber(filepath.Base(n.path))
 }
 
+func (n Node) Parent() *Node {
+	return n.parent
+}
+
+func (n *Node) SetParent(pn *Node) {
+	n.parent = pn
+}
+
 // Returns the list of children nodes. May be left empty when node is
 // used in a flat list of results, where children information is not
 // needed.
@@ -120,6 +130,12 @@ func (n Node) Title() string {
 		return ""
 	}
 	return removeOrderNumber(filepath.Base(n.path))
+}
+
+// Returns the page title for given content in the form
+// of "<Parent Title>: <Node Title>"
+func (n Node) PageTitle() string {
+	return fmt.Sprintf("%s: %s", n.parent.Title(), n.Title())
 }
 
 // Returns the full description of the node.

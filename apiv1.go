@@ -24,6 +24,7 @@ type APIv1Node struct {
 	URL         string             `json:"url"`
 	Children    []*APIv1Node       `json:"children"`
 	Title       string             `json:"title"`
+	PageTitle   string             `json:"page_title"`
 	Description string             `json:"description"`
 	Authors     []*APIv1NodeAuthor `json:"authors"`
 	Modified    int64              `json:"modified"`
@@ -160,6 +161,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		URL:         n.URL(),
 		Children:    children,
 		Title:       n.Title(),
+		PageTitle:   n.PageTitle(),
 		Tags:        n.Tags(),
 		Description: n.Description(),
 		Authors:     authors,

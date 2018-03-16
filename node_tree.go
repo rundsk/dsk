@@ -93,8 +93,13 @@ func (t *NodeTree) Sync() error {
 		ordered = append(ordered, n.UnnormalizedURL())
 
 		for _, sn := range nodes {
+			if filepath.Dir(n.path) == sn.path {
+				n.SetParent(sn)
+				continue
+			}
 			if filepath.Dir(sn.path) == n.path {
 				n.AddChild(sn)
+				continue
 			}
 		}
 	}
