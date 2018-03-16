@@ -11,6 +11,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/url"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -18,13 +19,10 @@ import (
 	"golang.org/x/net/html"
 )
 
-// A markdown document file.
+// A document file.
 type NodeDoc struct {
-	// Absolute path to the file.
+	// Absolute path to the document file.
 	path string
-	// The provided prefix will be used to make relative links inside the
-	// document absolute.
-	URLPrefix string
 }
 
 // An order number, as a hint for outside sorting mechanisms.
@@ -40,7 +38,11 @@ func (d NodeDoc) Title() string {
 }
 
 // HTML as parsed from the underlying file.
-func (d NodeDoc) HTML() ([]byte, error) {
+//
+// The provided set of prefix and node URL will be used to resolve
+// relative source URLs and node URLs inside the documents, to
+// i.e. make them absolute.
+func (d NodeDoc) HTML(treePrefix string, nodeURL string, nodeGet NodeGetter) ([]byte, error) {
 	contents, err := ioutil.ReadFile(d.path)
 	if err != nil {
 		return nil, err
@@ -52,9 +54,9 @@ func (d NodeDoc) HTML() ([]byte, error) {
 		if err != nil {
 			return parsed, err
 		}
-		return d.postprocessHTML(parsed)
+		return d.postprocessHTML(parsed, treePrefix, nodeURL, nodeGet)
 	case ".html", ".htm":
-		return d.postprocessHTML(contents)
+		return d.postprocessHTML(contents, treePrefix, nodeURL, nodeGet)
 	}
 	return nil, fmt.Errorf("document %s is not in a supported format", d.path)
 }
@@ -100,11 +102,17 @@ func (d NodeDoc) parseMarkdown(contents []byte) ([]byte, error) {
 //   https://github.com/russross/blackfriday/pull/231
 //   https://github.com/russross/blackfriday/commit/27ba4cebef7f37e0bb5685e23cb7213cd809f9e8
 //   https://github.com/russross/blackfriday/commit/5c12499aa1ddda74561fb899c394f01fd1e8e9e6
-func (d NodeDoc) postprocessHTML(contents []byte) ([]byte, error) {
+//
+// - Adds a title atttribute to node links
+func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL string, nodeGet NodeGetter) ([]byte, error) {
 	var buf bytes.Buffer
 
-	// Ensure last path element isn't recognized as a file.
-	uBase, err := url.Parse(d.URLPrefix + "/")
+	// Append slash to ensure last path element isn't recognized as a file.
+	treeBase, err := url.Parse(path.Join(treePrefix, nodeURL, "/"))
+	if err != nil {
+		return buf.Bytes(), err
+	}
+	nodeBase, err := url.Parse(path.Join(nodeURL, "/"))
 	if err != nil {
 		return buf.Bytes(), err
 	}
@@ -121,6 +129,60 @@ func (d NodeDoc) postprocessHTML(contents []byte) ([]byte, error) {
 		return false, 0, ""
 	}
 
+	maybeMakeAbsolute := func(t html.Token) (html.Token, error) {
+		ok, key, v := attr(t, "src")
+		if !ok {
+			// No source to change.
+			return t, nil
+		}
+		u, err := url.Parse(v)
+		if err != nil {
+			return t, err
+		}
+		if u.IsAbs() {
+			return t, nil
+		}
+		t.Attr[key].Val = treeBase.ResolveReference(u).String()
+		return t, nil
+	}
+
+	maybeAddTitle := func(t html.Token) (html.Token, error) {
+		ok, _, v := attr(t, "title")
+		if ok && v != "" {
+			// Do not overwrite existing title.
+			return t, nil
+		}
+
+		ok, _, v = attr(t, "href")
+		if !ok {
+			// No URL to check at all.
+			return t, nil
+		}
+
+		u, err := url.Parse(v)
+		if err != nil {
+			return t, err
+		}
+
+		if u.Scheme != "" || u.Host != "" {
+			// Doesn't look like a node URL, save the lookup.
+			return t, nil
+		}
+		u = nodeBase.ResolveReference(u)
+		v = strings.TrimLeft(u.Path, "/")
+
+		ok, n, err := nodeGet(v)
+		if err != nil {
+			return t, err
+		}
+		if !ok {
+			return t, nil
+		}
+		t.Attr = append(t.Attr, html.Attribute{Key: "title", Val: n.Title()})
+		t.Attr = append(t.Attr, html.Attribute{Key: "data-node", Val: n.URL()})
+		return t, nil
+	}
+
 	for {
 		tt := z.Next()
 		t := z.Token()
@@ -134,33 +196,20 @@ func (d NodeDoc) postprocessHTML(contents []byte) ([]byte, error) {
 			}
 			return buf.Bytes(), err
 		case html.StartTagToken, html.SelfClosingTagToken:
-			var ok bool
-			var key int
-			var v string
-
 			switch t.Data {
 			case "img", "video":
-				ok, key, v = attr(t, "src")
-			default:
-				buf.WriteString(t.String())
-				continue
+				t, err = maybeMakeAbsolute(t)
+				if err != nil {
+					return buf.Bytes(), err
+				}
+			case "a":
+				t, err = maybeAddTitle(t)
+				if err != nil {
+					return buf.Bytes(), err
+				}
 			}
-			if !ok {
-				buf.WriteString(t.String())
-				continue
-			}
-			u, err := url.Parse(v)
-			if err != nil {
-				return buf.Bytes(), err
-			}
-			if u.IsAbs() {
-				continue
-			}
-			t.Attr[key].Val = uBase.ResolveReference(u).String()
-			buf.WriteString(t.String())
-		default:
-			buf.WriteString(t.String())
 		}
+		buf.WriteString(t.String())
 	}
 	return buf.Bytes(), nil
 }

@@ -255,9 +255,10 @@ func (n Node) Downloads() ([]*NodeAsset, error) {
 
 // Returns a slice of documents for this node.
 //
-// The provided prefix will be used to make relative links inside the
-// document absolute.
-func (n Node) Docs(prefix string) ([]*NodeDoc, error) {
+// The provided tree URL prefix will be used to resolve and make
+// relative links inside the document absolute. This is usually
+// something like: /api/v1/tree
+func (n Node) Docs() ([]*NodeDoc, error) {
 	docs := make([]*NodeDoc, 0)
 
 	files, err := ioutil.ReadDir(n.path)
@@ -273,8 +274,7 @@ func (n Node) Docs(prefix string) ([]*NodeDoc, error) {
 			continue
 		}
 		docs = append(docs, &NodeDoc{
-			path:      filepath.Join(n.path, f.Name()),
-			URLPrefix: prefix,
+			path: filepath.Join(n.path, f.Name()),
 		})
 	}
 	return docs, nil

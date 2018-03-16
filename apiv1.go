@@ -101,13 +101,13 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		authors = append(authors, &APIv1NodeAuthor{author.Email, author.Name})
 	}
 
-	nDocs, err := n.Docs(filepath.Join("/api/v1/tree", n.URL()))
+	nDocs, err := n.Docs()
 	docs := make([]*APIv1NodeDoc, 0, len(nDocs))
 	if err != nil {
 		return nil, err
 	}
 	for _, v := range nDocs {
-		html, err := v.HTML()
+		html, err := v.HTML("/api/v1/tree", n.URL(), api.tree.Get)
 		if err != nil {
 			return nil, err
 		}
