@@ -50,8 +50,9 @@ type APIv1LightNode struct {
 
 // A node reference.
 type APIv1RefNode struct {
-	URL   string `json:"url"`
-	Title string `json:"title"`
+	URL       string `json:"url"`
+	Title     string `json:"title"`
+	PageTitle string `json:"page_title"`
 }
 
 type APIv1NodeTree struct {
@@ -136,13 +137,17 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 	nCrumbs := n.Crumbs(api.tree.Get)
 	crumbs := make([]*APIv1RefNode, 0, len(nCrumbs))
 	for _, n := range nCrumbs {
-		crumbs = append(crumbs, &APIv1RefNode{n.URL(), n.Title()})
+		crumbs = append(crumbs, &APIv1RefNode{
+			n.URL(), n.Title(), n.PageTitle(),
+		})
 	}
 
 	nRelated := n.Related(api.tree.Get)
 	related := make([]*APIv1RefNode, 0, len(nRelated))
 	for _, n := range nRelated {
-		related = append(related, &APIv1RefNode{n.URL(), n.Title()})
+		related = append(related, &APIv1RefNode{
+			n.URL(), n.Title(), n.PageTitle(),
+		})
 	}
 
 	var prev *APIv1RefNode
@@ -152,10 +157,14 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		return nil, err
 	}
 	if prevNode != nil {
-		prev = &APIv1RefNode{prevNode.URL(), prevNode.Title()}
+		prev = &APIv1RefNode{
+			prevNode.URL(), prevNode.Title(), prevNode.PageTitle(),
+		}
 	}
 	if nextNode != nil {
-		next = &APIv1RefNode{nextNode.URL(), nextNode.Title()}
+		next = &APIv1RefNode{
+			nextNode.URL(), nextNode.Title(), nextNode.PageTitle(),
+		}
 	}
 
 	return &APIv1Node{
