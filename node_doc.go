@@ -108,11 +108,11 @@ func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL str
 	var buf bytes.Buffer
 
 	// Append slash to ensure last path element isn't recognized as a file.
-	treeBase, err := url.Parse(path.Join(treePrefix, nodeURL, "/"))
+	treeBase, err := url.Parse(path.Join(treePrefix, nodeURL) + "/")
 	if err != nil {
 		return buf.Bytes(), err
 	}
-	nodeBase, err := url.Parse(path.Join(nodeURL, "/"))
+	nodeBase, err := url.Parse(nodeURL + "/")
 	if err != nil {
 		return buf.Bytes(), err
 	}
