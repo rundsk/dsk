@@ -53,6 +53,8 @@ func (d NodeDoc) HTML() ([]byte, error) {
 			return parsed, err
 		}
 		return d.postprocessHTML(parsed)
+	case ".html", ".htm":
+		return d.postprocessHTML(contents)
 	}
 	return nil, fmt.Errorf("document %s is not in a supported format", d.path)
 }

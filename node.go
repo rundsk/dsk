@@ -25,10 +25,10 @@ const (
 var (
 	// Basenames matching the pattern will be ignored when searching
 	// for downloadable files in the node's directory.
-	IgnoreDownloadsRegexp = regexp.MustCompile(`(?i)^(.*\.(js|css|md|markdown|json)|\.DS_Store|\.git.*|dsk)$`)
+	IgnoreDownloadsRegexp = regexp.MustCompile(`(?i)^(.*\.(js|css|md|markdown|html?|json)|\.DS_Store|\.git.*|dsk)$`)
 
 	// Basenames matching this pattern are considered documents.
-	NodeDocsRegexp = regexp.MustCompile(`(?i)^.*\.(md|markdown)$`)
+	NodeDocsRegexp = regexp.MustCompile(`(?i)^.*\.(md|markdown|html?)$`)
 
 	// Patterns for extracting order number and title from a node's
 	// path/URL segment in the form of 06_Foo. As well as for

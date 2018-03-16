@@ -4,8 +4,11 @@
 
 ## Abstract
 
-Using the _Design System Kit_ you quickly define and organize design aspects into a
-browsable and live-searchable design system. Hierachies are established using plain simple directories. Documentation is created by adding [Markdown](https://guides.github.com/features/mastering-markdown/) formatted files.
+Using the _Design System Kit_ you quickly define and organize design
+aspects into a browsable and live-searchable design system. Hierachies
+are established using plain simple directories and aspects by adding
+[Markdown](https://guides.github.com/features/mastering-markdown/) or
+HTML formatted files.
 
 ![screenshot](https://atelierdisko.de/assets/app/img/github_dsk.png)
 
@@ -41,22 +44,28 @@ be downloaded through the frontend.
 example
 ├── AUTHORS.txt                 <- authors database, see "Authors" below
 ├── DataEntry
-│   ├── Button
+│   ├── Button                  <- "Button" design aspect
+│   │   └── ...
+│   ├── TextField               <- "Text Field" design aspect
+│   │   ├── Password            <- nested "Password" design aspect
+│   │   │   └── readme.md
+│   │   ├── api.md              <- document
 │   │   ├── exploration.sketch  <- asset
 │   │   ├── index.json          <- configuration
 │   │   └── readme.md           <- document
-│   ├── TextField
-│   │   ├── Password
-│   │   │   └── readme.md
-│   │   ├── api.md              <- another document
-│   │   ├── index.json
-│   │   ├── readme.md
-│   │   └── unmask.svg
+│   │   └── unmask.svg          <- asset
 ```
 
 ### Documenting Design Aspects
 
-Aspects can be documented by adding [Markdown](https://guides.github.com/features/mastering-markdown/) formatted documentation files to their directory. A `readme.md` file, may describe an aspect or give clues how to use a certain component. Please note that `readme.md` is in no ways treated specially by dsk, but is usually displayed by GitHub as the primary document in the web interface. You can split documentation over several files when you like to. We usually use `api.md`, `explain.md` or `comments.md`.
+Aspects can be documented by adding
+[Markdown](https://guides.github.com/features/mastering-markdown/) or HTML formatted
+documentation files to their directory. A `readme.md` file, may describe
+an aspect or give clues how to use a certain component. Please note that
+`readme.md` is in no ways treated specially by dsk, but is usually displayed by
+GitHub as the primary document in the web interface. You can split documentation
+over several files when you like to. We usually use `api.md`, `explain.md` or
+`comments.md`.
 
 ### Configuring Aspects
 
@@ -78,7 +87,7 @@ An example of a full configuration looks like this:
 Possible configuration options are:
 
 - `authors`: An array of email addresses of the document authors; see below.
-- `description`: A single sentence that roughly describes the design component.
+- `description`: A single sentence that roughly describes the design aspect.
 - `keywords`: An array of terms that are searched in addition to `tags`.
 - `related`: An array of related aspect URLs within dsk.
 - `tags`: An array of tags to group related aspects together.
@@ -86,14 +95,12 @@ Possible configuration options are:
 
 ### Authors
 
-Each design aspect inside the tree may be _authored_ by one or multiple
-humans. To assign yourself, use the `authors` option in the 
-design configuration file.
+Each design aspect may be _authored_ by one or multiple humans. To assign
+yourself, use the `authors` option in the `index.json` configuration file.
 
-To enable automatic full names for each author, create an
-`AUTHORS.txt` file inside the root of the DDT first. Each line of the
-file lists an author's full name and her/his email address in angle
-brackets.
+To enable automatic full names for each author, create an `AUTHORS.txt` file
+inside the root of the DDT first. Each line of the file lists an author's full
+name and her/his email address in angle brackets.
 
 ```text
 Christoph Labacher <christoph@atelierdisko.de>
@@ -144,9 +151,8 @@ Your frontend and its subdirectories will be mounted directly at the root path
 `/`. Requests to anything under `/api` are routed to the backend, anything else
 is routed into your application in `index.html`. 
 
-Relative asset source paths inside the markdown files will be made
-absolute to allow you displaying the document contents wherever you
-like to.
+Relative asset source paths inside documents will be made absolute to allow you
+displaying a document's content wherever you like to.
 
 ### Baking
 
