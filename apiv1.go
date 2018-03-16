@@ -22,7 +22,6 @@ type APIv1 struct {
 
 type APIv1Node struct {
 	URL         string             `json:"url"`
-	Order       uint64             `json:"order"`
 	Children    []*APIv1Node       `json:"children"`
 	Title       string             `json:"title"`
 	Description string             `json:"description"`
@@ -64,7 +63,6 @@ type APIv1NodeAuthor struct {
 }
 
 type APIv1NodeDoc struct {
-	Order uint64 `json:"order"`
 	Title string `json:"title"`
 	HTML  string `json:"html"`
 	Raw   string `json:"raw"`
@@ -118,7 +116,6 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 			return nil, err
 		}
 		docs = append(docs, &APIv1NodeDoc{
-			Order: v.Order(),
 			Title: v.Title(),
 			HTML:  string(html[:]),
 			Raw:   string(raw[:]),
@@ -161,7 +158,6 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 
 	return &APIv1Node{
 		URL:         n.URL(),
-		Order:       n.Order(),
 		Children:    children,
 		Title:       n.Title(),
 		Tags:        n.Tags(),
