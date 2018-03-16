@@ -104,6 +104,12 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		authors = append(authors, &APIv1NodeAuthor{author.Email, author.Name})
 	}
 
+	nModified := n.Modified()
+	modified := int64(0)
+	if !nModified.IsZero() {
+		modified = nModified.Unix()
+	}
+
 	nDocs, err := n.Docs()
 	docs := make([]*APIv1NodeDoc, 0, len(nDocs))
 	if err != nil {
@@ -175,7 +181,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		Tags:        n.Tags(),
 		Description: n.Description(),
 		Authors:     authors,
-		Modified:    n.Modified().Unix(),
+		Modified:    modified,
 		Version:     n.Version(),
 		Docs:        docs,
 		Downloads:   downloads,
