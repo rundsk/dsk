@@ -35,7 +35,7 @@ Marius Wilms <marius@atelierdisko.de>
 	as := &Authors{}
 	as.AddFrom(r)
 
-	if as.Get("marius@atelierdisko.de") == nil {
+	if ok, _, _ := as.Get("marius@atelierdisko.de"); !ok {
 		t.Error("failed to lookup by mail")
 	}
 }

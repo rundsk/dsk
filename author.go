@@ -73,11 +73,11 @@ func (as Authors) parse(r io.Reader) ([]*Author, error) {
 	return parsed, nil
 }
 
-func (as Authors) Get(email string) *Author {
+func (as Authors) Get(email string) (ok bool, a *Author, err error) {
 	for _, a := range as.data {
 		if a.Email == email {
-			return a
+			return true, a, nil
 		}
 	}
-	return nil
+	return false, nil, nil
 }

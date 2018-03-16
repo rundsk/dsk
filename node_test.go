@@ -46,8 +46,8 @@ func TestCleanURLs(t *testing.T) {
 }
 
 func TestCrumbURLs(t *testing.T) {
-	get := func(url string) (*Node, error) {
-		return &Node{root: "/tmp/xyz", path: filepath.Join("/tmp/xyz", url)}, nil
+	get := func(url string) (bool, *Node, error) {
+		return true, &Node{root: "/tmp/xyz", path: filepath.Join("/tmp/xyz", url)}, nil
 	}
 
 	n := &Node{root: "/tmp/xyz", path: "/tmp/xyz/foo/bar/baz/"}
@@ -71,8 +71,8 @@ func TestCrumbURLs(t *testing.T) {
 }
 
 func TestCrumbSimpleTitles(t *testing.T) {
-	get := func(url string) (*Node, error) {
-		return &Node{root: "/tmp/xyz", path: filepath.Join("/tmp/xyz", url)}, nil
+	get := func(url string) (bool, *Node, error) {
+		return true, &Node{root: "/tmp/xyz", path: filepath.Join("/tmp/xyz", url)}, nil
 	}
 
 	n := &Node{root: "/tmp/xyz", path: "/tmp/xyz/foo/bar/baz/"}
@@ -96,8 +96,8 @@ func TestCrumbSimpleTitles(t *testing.T) {
 }
 
 func TestCrumbOrderedTitles(t *testing.T) {
-	get := func(url string) (*Node, error) {
-		return &Node{root: "/tmp/xyz", path: filepath.Join("/tmp/xyz", url)}, nil
+	get := func(url string) (bool, *Node, error) {
+		return true, &Node{root: "/tmp/xyz", path: filepath.Join("/tmp/xyz", url)}, nil
 	}
 
 	n := &Node{root: "/tmp/xyz", path: "/tmp/xyz/01_foo/2-bar/baz/"}

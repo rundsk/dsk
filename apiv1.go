@@ -257,8 +257,15 @@ func (api APIv1) nodeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	n, err := api.tree.GetSynced(path)
+	ok, n, err := api.tree.GetSynced(path)
 	if err != nil {
+		wr.
+			Status(http.StatusInternalServerError).
+			Message(err.Error()).
+			Send()
+		return
+	}
+	if !ok {
 		wr.
 			Status(http.StatusNotFound).
 			Message(err.Error()).
@@ -296,8 +303,12 @@ func (api APIv1) nodeAssetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	n, err := api.tree.Get(filepath.Dir(path))
+	ok, n, err := api.tree.Get(filepath.Dir(path))
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if !ok {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}

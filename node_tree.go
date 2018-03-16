@@ -40,6 +40,10 @@ type NodeTree struct {
 	authors *Authors
 }
 
+// A func to retrieve nodes from the tree, using the node's relative
+// URL. When the node cannot be found ok will be false.
+type NodeGetter func(url string) (ok bool, n *Node, err error)
+
 // Returns an unsynced tree from path; you must initialize the Tree
 // using Sync() before using it.
 func NewNodeTreeFromPath(path string) *NodeTree {
@@ -137,22 +141,21 @@ func (t NodeTree) NeighborNodes(current *Node) (prev *Node, next *Node, err erro
 		return nil, nil, fmt.Errorf("No node with URL path '%s' in tree", current.URL())
 	}
 
-	// Check if current node isn't the first node.
+	// Be sure current node isn't the first node.
 	if key != 0 {
-		prev, err = t.Get(normalizeNodeURL(t.ordered[key-1]))
-		if err != nil {
+		ok, prev, err := t.Get(normalizeNodeURL(t.ordered[key-1]))
+		if !ok || err != nil {
 			return prev, next, err
 		}
 	}
 
 	// Check if current node isn't the last node.
 	if key != len(t.ordered)-1 {
-		next, err = t.Get(normalizeNodeURL(t.ordered[key+1]))
-		if err != nil {
+		ok, next, err := t.Get(normalizeNodeURL(t.ordered[key+1]))
+		if !ok || err != nil {
 			return prev, next, err
 		}
 	}
-
 	return prev, next, err
 }
 
@@ -162,22 +165,22 @@ func (t NodeTree) TotalNodes() uint16 {
 }
 
 // Retrieves a node from the tree, performs a case-insensitive match.
-func (t NodeTree) Get(url string) (*Node, error) {
+func (t NodeTree) Get(url string) (ok bool, n *Node, err error) {
 	if n, ok := t.lookup[lookupNodeURL(url)]; ok {
-		return n, nil
+		return ok, n, nil
 	}
-	return &Node{}, fmt.Errorf("No node with URL path '%s' in tree", url)
+	return false, &Node{}, nil
 }
 
 // Retrieves a node from tree and ensures it's synced before.
-func (t NodeTree) GetSynced(url string) (*Node, error) {
+func (t NodeTree) GetSynced(url string) (ok bool, n *Node, err error) {
 	if n, ok := t.lookup[lookupNodeURL(url)]; ok {
 		if err := n.Sync(); err != nil {
-			return n, err
+			return false, n, err
 		}
-		return n, nil
+		return true, n, nil
 	}
-	return &Node{}, fmt.Errorf("No synced node with URL path '%s' in tree", url)
+	return false, &Node{}, nil
 }
 
 // Performs a narrow fuzzy search on the node's visible attributes

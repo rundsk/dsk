@@ -128,13 +128,17 @@ func (n Node) Description() string {
 }
 
 // Returns a list of related nodes.
-func (n Node) Related(get func(string) (*Node, error)) []*Node {
+func (n Node) Related(get NodeGetter) []*Node {
 	nodes := make([]*Node, 0, len(n.meta.Related))
 
 	for _, r := range n.meta.Related {
-		node, err := tree.Get(r)
+		ok, node, err := get(r)
 		if err != nil {
 			log.Printf("Skipping related in %s: %s", n.URL(), err)
+			continue
+		}
+		if !ok {
+			log.Printf("Skipping related in %s: %s not found in tree", n.URL(), r)
 			continue
 		}
 		nodes = append(nodes, node)
@@ -170,8 +174,8 @@ func (n Node) Authors(as *Authors) []*Author {
 		return r
 	}
 	for _, email := range n.meta.Authors {
-		author := as.Get(email)
-		if author == nil {
+		ok, author, _ := as.Get(email)
+		if !ok {
 			author = &Author{email, ""}
 		}
 		r = append(r, author)
@@ -278,16 +282,20 @@ func (n Node) Docs(prefix string) ([]*NodeDoc, error) {
 
 // Returns a list of crumbs. The last element is the current active
 // one. Does not include a root node.
-func (n Node) Crumbs(get func(string) (*Node, error)) []*Node {
+func (n Node) Crumbs(get NodeGetter) []*Node {
 	nodes := make([]*Node, 0)
 
 	parts := strings.Split(strings.TrimSuffix(n.URL(), "/"), "/")
 	for index, _ := range parts {
 		url := strings.Join(parts[:index+1], "/")
 
-		node, err := get(url)
+		ok, node, err := get(url)
 		if err != nil {
 			log.Printf("Skipping crumb in %s: %s", n.URL(), err)
+			continue
+		}
+		if !ok {
+			log.Printf("Skipping crumb in %s: %s not found in tree", n.URL(), url)
 			continue
 		}
 		nodes = append(nodes, node)
