@@ -9,6 +9,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"path/filepath"
 
@@ -270,7 +271,7 @@ func (api APIv1) nodeHandler(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		wr.
 			Status(http.StatusNotFound).
-			Message(err.Error()).
+			Message(fmt.Sprintf("No node %s in tree", path)).
 			Send()
 		return
 	}
@@ -311,7 +312,7 @@ func (api APIv1) nodeAssetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !ok {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, fmt.Sprintf("No node %s in tree", path), http.StatusNotFound)
 		return
 	}
 
