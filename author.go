@@ -79,5 +79,5 @@ func (as Authors) Get(email string) (ok bool, a *Author, err error) {
 			return true, a, nil
 		}
 	}
-	return false, nil, nil
+	return false, &Author{}, nil
 }
