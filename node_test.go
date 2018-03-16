@@ -118,5 +118,4 @@ func TestCrumbOrderedTitles(t *testing.T) {
 			t.Logf("expected: %s, result: %s", v, result[k].URL())
 		}
 	}
-
 }
