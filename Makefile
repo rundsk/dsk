@@ -35,7 +35,7 @@ clean:
 	if [ -f ./data.go ]; then rm ./data.go; fi
 
 .PHONY: dist
-dist: dist/dsk dist/dsk-darwin-amd64 dist/dsk-linux-amd64
+dist: dist/dsk dist/dsk-darwin-amd64 dist/dsk-linux-amd64 dist/dsk-windows-386.exe
 
 $(PREFIX)/bin/%: dist/%
 	install -m 555 $< $@
@@ -45,6 +45,9 @@ dist/%-darwin-amd64: $(ANY_DEPS) | data.go
 
 dist/%-linux-amd64: $(ANY_DEPS) | data.go
 	GOOS=linux GOARCH=amd64 go build -ldflags "$(GOFLAGS)" -o $@
+
+dist/%-windows-386.exe: $(ANY_DEPS) | data.go
+	GOOS=windows GOARCH=386 go build -ldflags "$(GOFLAGS)" -o $@
 
 dist/%: $(ANY_DEPS) | data.go
 	go build -ldflags "$(GOFLAGS)" -o $@
