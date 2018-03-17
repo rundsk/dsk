@@ -55,14 +55,19 @@ func NewNodeFromPath(path string, root string) (*Node, error) {
 type Node struct {
 	// Absolute path to the design defintions tree root.
 	root string
+
 	// Absolute path to the node's directory.
 	path string
+
 	// The parent node. If this is the root node, left unset.
 	Parent *Node
+
 	// A list of children nodes.
 	Children []*Node
+
 	// Meta data as parsed from the node configuration file.
 	meta NodeMeta
+
 	// Ghosted nodes are nodes that have incomplete information, for
 	// these nodes not all methods are guaranteed to succeed.
 	IsGhost bool

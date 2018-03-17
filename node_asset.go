@@ -9,8 +9,10 @@ package main
 type NodeAsset struct {
 	// Absolute path to the file.
 	path string
+
 	// The URL, relative to the design defintion tree root.
 	URL string
+
 	// The basename of the file, usually for display purposes.
 	Name string
 }

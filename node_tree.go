@@ -51,8 +51,7 @@ func NewNodeTreeFromPath(path string) *NodeTree {
 }
 
 // One-way sync: updates tree from file system. Recursively crawls
-// the given root directory, constructing a tree of nodes. Does not
-// support symlinks inside the tree.
+// the given root directory, constructing a tree of nodes.
 func (t *NodeTree) Sync() error {
 	yellow := color.New(color.FgYellow).SprintFunc()
 
@@ -130,13 +129,14 @@ func (t *NodeTree) Sync() error {
 }
 
 // Returns the neighboring previous and next nodes for the given
-// current node. When current node is the last node, the behavior
-// is not to wrap around.
+// current node. When current node is the last or first node, the
+// behavior is not to wrap around.
 //
 // Determines the next node following the given current node. This
 // may either be the first child of the given node, if there are none
 // the sibling node and - walking up the tree - if there is none the
-// parents sibling node.
+// parents sibling node. The algorithm for determing the previous
+// node is analogous.
 func (t NodeTree) NeighborNodes(current *Node) (prev *Node, next *Node, err error) {
 	var ok bool
 
