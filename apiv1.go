@@ -23,7 +23,8 @@ type APIv1 struct {
 
 type APIv1Node struct {
 	URL         string             `json:"url"`
-	Children    []*APIv1Node       `json:"children"`
+	Parent      *APIv1RefNode      `json:"parent"`
+	Children    []*APIv1RefNode    `json:"children"`
 	Title       string             `json:"title"`
 	Description string             `json:"description"`
 	Authors     []*APIv1NodeAuthor `json:"authors"`
@@ -39,23 +40,25 @@ type APIv1Node struct {
 	IsGhost     bool               `json:"is_ghost"`
 }
 
-// Skips some node fields, to lighten transport weight.
-type APIv1LightNode struct {
-	URL      string            `json:"url"`
-	Children []*APIv1LightNode `json:"children"`
-	Title    string            `json:"title"`
-	IsGhost  bool              `json:"is_ghost"`
+// Used when building trees, omits most fields to lighten
+// transport weight.
+type APIv1TreeNode struct {
+	URL      string           `json:"url"`
+	Children []*APIv1TreeNode `json:"children"`
+	Title    string           `json:"title"`
+	IsGhost  bool             `json:"is_ghost"`
 }
 
-// A node reference.
+// A node reference has no parent and children. It must be looked
+// up to get more information.
 type APIv1RefNode struct {
 	URL   string `json:"url"`
 	Title string `json:"title"`
 }
 
 type APIv1NodeTree struct {
-	Root       *APIv1LightNode `json:"root"`
-	TotalNodes uint16          `json:"total_nodes"`
+	Root       *APIv1TreeNode `json:"root"`
+	TotalNodes uint16         `json:"total_nodes"`
 }
 
 type APIv1NodeAuthor struct {
@@ -87,13 +90,14 @@ func (api APIv1) MountHTTPHandlers(m Middleware) {
 }
 
 func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
-	children := make([]*APIv1Node, 0, len(n.Children))
+	var parent *APIv1RefNode
+	if n.Parent != nil {
+		parent = &APIv1RefNode{n.Parent.URL(), n.Parent.Title()}
+	}
+
+	children := make([]*APIv1RefNode, 0, len(n.Children))
 	for _, v := range n.Children {
-		n, err := api.NewNode(v)
-		if err != nil {
-			return nil, err
-		}
-		children = append(children, n)
+		children = append(children, &APIv1RefNode{v.URL(), v.Title()})
 	}
 
 	authors := make([]*APIv1NodeAuthor, 0)
@@ -172,6 +176,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 
 	return &APIv1Node{
 		URL:         n.URL(),
+		Parent:      parent,
 		Children:    children,
 		Title:       n.Title(),
 		Tags:        n.Tags(),
@@ -189,17 +194,17 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 	}, nil
 }
 
-func (api APIv1) NewLightNode(n *Node) (*APIv1LightNode, error) {
-	children := make([]*APIv1LightNode, 0, len(n.Children))
+func (api APIv1) NewTreeNode(n *Node) (*APIv1TreeNode, error) {
+	children := make([]*APIv1TreeNode, 0, len(n.Children))
 	for _, v := range n.Children {
-		n, err := api.NewLightNode(v)
+		n, err := api.NewTreeNode(v)
 		if err != nil {
 			return nil, err
 		}
 		children = append(children, n)
 	}
 
-	return &APIv1LightNode{
+	return &APIv1TreeNode{
 		URL:      n.URL(),
 		Children: children,
 		Title:    n.Title(),
@@ -208,7 +213,7 @@ func (api APIv1) NewLightNode(n *Node) (*APIv1LightNode, error) {
 }
 
 func (api APIv1) NewNodeTree(t *NodeTree) (*APIv1NodeTree, error) {
-	root, err := api.NewLightNode(t.Root)
+	root, err := api.NewTreeNode(t.Root)
 
 	return &APIv1NodeTree{
 		Root:       root,
