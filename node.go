@@ -135,7 +135,10 @@ func (n Node) Title() string {
 // Returns the page title for given content in the form
 // of "<Parent Title>: <Node Title>"
 func (n Node) PageTitle() string {
-	return fmt.Sprintf("%s: %s", n.parent.Title(), n.Title())
+	if n.parent != nil {
+		return fmt.Sprintf("%s: %s", n.parent.Title(), n.Title())
+	}
+	return n.Title()
 }
 
 // Returns the full description of the node.
