@@ -112,15 +112,6 @@ func (n Node) Title() string {
 	return removeOrderNumber(filepath.Base(n.path))
 }
 
-// Returns the page title for given content in the form
-// of "<Parent Title>: <Node Title>"
-func (n Node) PageTitle() string {
-	if n.Parent != nil {
-		return fmt.Sprintf("%s: %s", n.Parent.Title(), n.Title())
-	}
-	return n.Title()
-}
-
 // Returns the full description of the node.
 func (n Node) Description() string {
 	return n.meta.Description
