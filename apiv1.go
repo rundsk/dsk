@@ -41,7 +41,8 @@ type APIv1Node struct {
 }
 
 // Used when building trees, omits most fields to lighten
-// transport weight.
+// transport weight. Parent ommited to prevent recursive
+// data structure.
 type APIv1TreeNode struct {
 	URL      string           `json:"url"`
 	Children []*APIv1TreeNode `json:"children"`
