@@ -42,7 +42,7 @@ var (
 // Returns a node instance even if uncritical errors happened. In that
 // case the node will be flagged as a "ghost" node.
 func NewNodeFromPath(path string, root string) (*Node, error) {
-	n := &Node{root: root, path: path, children: []*Node{}}
+	n := &Node{root: root, path: path, Children: []*Node{}}
 
 	m, err := NewNodeMetaFromPath(n.path)
 	n.IsGhost = err != nil
@@ -57,11 +57,10 @@ type Node struct {
 	root string
 	// Absolute path to the node's directory.
 	path string
-	// The parent node.
-	parent *Node
-	// A list of children nodes. When Node is used in a flat list
-	// may be left empty.
-	children []*Node
+	// The parent node. If this is the root node, left unset.
+	Parent *Node
+	// A list of children nodes.
+	Children []*Node
 	// Meta data as parsed from the node configuration file.
 	meta NodeMeta
 	// Ghosted nodes are nodes that have incomplete information, for
@@ -105,25 +104,6 @@ func (n Node) Order() uint64 {
 	return orderNumber(filepath.Base(n.path))
 }
 
-func (n Node) Parent() *Node {
-	return n.parent
-}
-
-func (n *Node) SetParent(pn *Node) {
-	n.parent = pn
-}
-
-// Returns the list of children nodes. May be left empty when node is
-// used in a flat list of results, where children information is not
-// needed.
-func (n Node) Children() []*Node {
-	return n.children
-}
-
-func (n *Node) AddChild(cn *Node) {
-	n.children = append(n.children, cn)
-}
-
 // The node's computed title with any ordering numbers stripped off, usually for display purposes.
 func (n Node) Title() string {
 	if n.root == n.path {
@@ -135,8 +115,8 @@ func (n Node) Title() string {
 // Returns the page title for given content in the form
 // of "<Parent Title>: <Node Title>"
 func (n Node) PageTitle() string {
-	if n.parent != nil {
-		return fmt.Sprintf("%s: %s", n.parent.Title(), n.Title())
+	if n.Parent != nil {
+		return fmt.Sprintf("%s: %s", n.Parent.Title(), n.Title())
 	}
 	return n.Title()
 }

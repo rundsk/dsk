@@ -94,11 +94,11 @@ func (t *NodeTree) Sync() error {
 
 		for _, sn := range nodes {
 			if filepath.Dir(n.path) == sn.path {
-				n.SetParent(sn)
+				n.Parent = sn
 				continue
 			}
 			if filepath.Dir(sn.path) == n.path {
-				n.AddChild(sn)
+				n.Children = append(n.Children, sn)
 				continue
 			}
 		}

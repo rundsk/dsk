@@ -89,9 +89,8 @@ func (api APIv1) MountHTTPHandlers(m Middleware) {
 }
 
 func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
-	nChildren := n.Children()
-	children := make([]*APIv1Node, 0, len(nChildren))
-	for _, v := range nChildren {
+	children := make([]*APIv1Node, 0, len(n.Children))
+	for _, v := range n.Children {
 		n, err := api.NewNode(v)
 		if err != nil {
 			return nil, err
@@ -194,9 +193,8 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 }
 
 func (api APIv1) NewLightNode(n *Node) (*APIv1LightNode, error) {
-	nChildren := n.Children()
-	children := make([]*APIv1LightNode, 0, len(nChildren))
-	for _, v := range nChildren {
+	children := make([]*APIv1LightNode, 0, len(n.Children))
+	for _, v := range n.Children {
 		n, err := api.NewLightNode(v)
 		if err != nil {
 			return nil, err
