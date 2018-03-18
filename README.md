@@ -279,6 +279,11 @@ server {
 }
 ```
 
+## Known Limitations
+
+- Symlinks inside the DDT are not supported
+- Did not thoroughly test on Windows
+
 ## Copyright & License
 
 DSK is Copyright (c) 2017 Atelier Disko if not otherwise

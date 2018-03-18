@@ -14,7 +14,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/fatih/color"
+	"github.com/rjeczalik/notify"
 )
 
 var (
@@ -38,6 +38,12 @@ type NodeTree struct {
 
 	// Authors database, if AUTHORS.txt file exists.
 	authors *Authors
+
+	// Changes to the directory tree a send here.
+	changes chan notify.EventInfo
+
+	// Quit channel, receiving true, when the tree is de-initialized.
+	done chan bool
 }
 
 // A func to retrieve nodes from the tree, using the node's relative
@@ -45,7 +51,7 @@ type NodeTree struct {
 type NodeGetter func(url string) (ok bool, n *Node, err error)
 
 // Returns an unsynced tree from path; you must initialize the Tree
-// using Sync() before using it.
+// using Sync() and install auto-syncer before using it.
 func NewNodeTreeFromPath(path string) *NodeTree {
 	return &NodeTree{path: path}
 }
@@ -53,8 +59,6 @@ func NewNodeTreeFromPath(path string) *NodeTree {
 // One-way sync: updates tree from file system. Recursively crawls
 // the given root directory, constructing a tree of nodes.
 func (t *NodeTree) Sync() error {
-	yellow := color.New(color.FgYellow).SprintFunc()
-
 	var nodes []*Node
 
 	err := filepath.Walk(t.path, func(path string, f os.FileInfo, err error) error {
@@ -63,7 +67,7 @@ func (t *NodeTree) Sync() error {
 		}
 		if f.IsDir() {
 			if IgnoreNodesRegexp.MatchString(f.Name()) {
-				log.Printf("Ignoring node: %s", yellow(prettyPath(path)))
+				log.Printf("Ignoring node: %s", prettyPath(path))
 				return filepath.SkipDir
 			}
 			n, nErr := NewNodeFromPath(path, t.path)
@@ -71,7 +75,7 @@ func (t *NodeTree) Sync() error {
 				return nErr
 			}
 			if n.IsGhost {
-				log.Printf("Ghosted node: %s", yellow(nErr))
+				log.Printf("Ghosting node: %s: %s", prettyPath(path), nErr)
 			}
 			nodes = append(nodes, n)
 		}
@@ -108,7 +112,7 @@ func (t *NodeTree) Sync() error {
 	t.lookup = lookup
 	t.ordered = ordered
 	t.Root = lookup[""]
-	log.Printf("Established tree lookup tables with %d entries", len(lookup))
+	log.Print("Established tree lookup tables")
 
 	// Refresh the authors database; file may appear or disappear between
 	// syncs.
@@ -125,7 +129,57 @@ func (t *NodeTree) Sync() error {
 	}
 	t.authors = as
 
+	log.Printf("Synced tree with %d total nodes", len(lookup))
 	return nil
+}
+
+func (t *NodeTree) StartAutoSync() error {
+	// Make the channel buffered to ensure no event is dropped. Notify will drop
+	// an event if the receiver is not able to keep up the sending pace.
+	t.changes = make(chan notify.EventInfo, 1)
+	t.done = make(chan bool, 1)
+
+	if err := notify.Watch(t.path+"/...", t.changes, notify.All); err != nil {
+		return err
+	}
+
+	go func() {
+	Outer:
+		for {
+			select {
+			case ei := <-t.changes:
+				p := ei.Path()
+
+				// Do not match directories below tree root. If we are placed
+				// inside an ignored dir, anything would always be ignored.
+				pp := strings.TrimPrefix(p, t.path+"/")
+
+				for pp != "" {
+					b := filepath.Base(pp)
+					pp = filepath.Dir(pp)
+
+					if IgnoreNodesRegexp.MatchString(b) {
+						log.Printf("Ignoring change: %s", prettyPath(p))
+						continue Outer
+					}
+				}
+				log.Printf("Change detected, re-syncing tree: %s", prettyPath(p))
+
+				if err := t.Sync(); err != nil {
+					log.Printf("Auto-sync failed: %s", err)
+				}
+			case <-t.done:
+				log.Print("Auto-sync process is stopping...")
+				return
+			}
+		}
+	}()
+	return nil
+}
+
+func (t *NodeTree) StopAutoSync() {
+	t.done <- true
+	notify.Stop(t.changes)
 }
 
 // Returns the neighboring previous and next nodes for the given
@@ -175,17 +229,6 @@ func (t NodeTree) TotalNodes() uint16 {
 func (t NodeTree) Get(url string) (ok bool, n *Node, err error) {
 	if n, ok := t.lookup[lookupNodeURL(url)]; ok {
 		return ok, n, nil
-	}
-	return false, &Node{}, nil
-}
-
-// Retrieves a node from tree and ensures it's synced before.
-func (t NodeTree) GetSynced(url string) (ok bool, n *Node, err error) {
-	if n, ok := t.lookup[lookupNodeURL(url)]; ok {
-		if err := n.Sync(); err != nil {
-			return false, n, err
-		}
-		return true, n, nil
 	}
 	return false, &Node{}, nil
 }

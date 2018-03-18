@@ -26,6 +26,12 @@
   version = "v0.0.3"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/rjeczalik/notify"
+  packages = ["."]
+  revision = "d152f3ce359a5464dc41e84a8919fc67e55bbbf0"
+
+[[projects]]
   name = "github.com/russross/blackfriday"
   packages = ["."]
   revision = "cadec560ec52d93835bf2f15bd794700d3a2473b"
@@ -55,6 +61,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8f991eb859205cd74df9be52f0345da83d78606b3352f859d28370925f53a620"
+  inputs-digest = "dd738cf68264ca8c531393a641a74082c4753496dc21c3f7691f2f1ce69b9973"
   solver-name = "gps-cdcl"
   solver-version = 1

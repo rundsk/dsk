@@ -236,16 +236,7 @@ func (api APIv1) NewNodeTreeSearchResults(nodes []*Node) []string {
 //   /api/v1/tree
 func (api APIv1) treeHandler(w http.ResponseWriter, r *http.Request) {
 	wr := jsend.Wrap(w)
-	// Not getting or checking path here, as only tree requests are routed
-	// here.
-
-	if err := api.tree.Sync(); err != nil {
-		wr.
-			Status(http.StatusInternalServerError).
-			Message(err.Error()).
-			Send()
-		return
-	}
+	// Not getting or checking path, as only tree requests are routed here.
 
 	atree, err := api.NewNodeTree(api.tree)
 	if err != nil {
@@ -276,7 +267,7 @@ func (api APIv1) nodeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok, n, err := api.tree.GetSynced(path)
+	ok, n, err := api.tree.Get(path)
 	if err != nil {
 		wr.
 			Status(http.StatusInternalServerError).

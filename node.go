@@ -73,15 +73,6 @@ type Node struct {
 	IsGhost bool
 }
 
-// One way sync: update node meta data from file system.
-func (n *Node) Sync() error {
-	m, err := NewNodeMetaFromPath(n.path)
-	n.IsGhost = err != nil
-	n.meta = m
-
-	return nil
-}
-
 // Returns the normalized URL path fragment, that can be used to
 // address this node i.e Input/Password.
 func (n Node) URL() string {

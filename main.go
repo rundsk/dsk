@@ -50,15 +50,6 @@ func main() {
 
 	log.Printf("Starting %s Version %s", whiteOnBlue(" DSK "), Version)
 
-	sigc = make(chan os.Signal, 1)
-	signal.Notify(sigc, os.Interrupt)
-	go func() {
-		for sig := range sigc {
-			log.Printf("Caught %v signal, bye!", sig)
-			os.Exit(1)
-		}
-	}()
-
 	here, err := detectRoot(os.Args[0], flag.Arg(0))
 	if err != nil {
 		log.Fatalf("Failed to detect root of design definitions tree: %s", red(err))
@@ -70,7 +61,9 @@ func main() {
 	if err := tree.Sync(); err != nil {
 		log.Fatalf("Failed to do initial tree sync: %s", red(err))
 	}
-	log.Printf("Synced tree with %d total nodes", tree.TotalNodes())
+	if err := tree.StartAutoSync(); err != nil {
+		log.Fatalf("Failed to start tree auto-sync: %s", red(err))
+	}
 
 	log.Print("Mounting APIv1...")
 	apiv1 := &APIv1{tree}
@@ -91,6 +84,17 @@ func main() {
 
 	log.Printf("Please visit: %s", green("http://"+addr))
 	log.Print("Hit Ctrl+C to quit")
+
+	sigc = make(chan os.Signal, 1)
+	signal.Notify(sigc, os.Interrupt)
+	go func() {
+		for sig := range sigc {
+			log.Printf("Caught %v signal, bye!", sig)
+			log.Print("Cleaning up...")
+			tree.StopAutoSync()
+			os.Exit(1)
+		}
+	}()
 
 	if err := http.ListenAndServe(addr, nil); err != nil {
 		log.Fatalf("Failed to start web interface: %s", red(err))
