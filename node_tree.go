@@ -117,7 +117,6 @@ func (t *NodeTree) Sync() error {
 	t.lookup = lookup
 	t.ordered = ordered
 	t.Root = lookup[""]
-	log.Print("Established tree lookup tables")
 
 	// Refresh the authors database; file may appear or disappear between
 	// syncs.
