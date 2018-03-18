@@ -13,6 +13,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/rjeczalik/notify"
 )
@@ -24,6 +25,10 @@ var (
 )
 
 type NodeTree struct {
+	// Ensures the tree is locked, when it is being synced, to
+	// prevent reads in the middle of syncs.
+	sync.RWMutex
+
 	// The absolute root path of the tree.
 	path string
 
@@ -59,6 +64,9 @@ func NewNodeTreeFromPath(path string) *NodeTree {
 // One-way sync: updates tree from file system. Recursively crawls
 // the given root directory, constructing a tree of nodes.
 func (t *NodeTree) Sync() error {
+	t.Lock()
+	defer t.Unlock()
+
 	var nodes []*Node
 
 	err := filepath.Walk(t.path, func(path string, f os.FileInfo, err error) error {
@@ -192,6 +200,9 @@ func (t *NodeTree) StopAutoSync() {
 // parents sibling node. The algorithm for determing the previous
 // node is analogous.
 func (t NodeTree) NeighborNodes(current *Node) (prev *Node, next *Node, err error) {
+	t.RLock()
+	defer t.RUnlock()
+
 	var ok bool
 
 	key := sort.SearchStrings(t.ordered, current.UnnormalizedURL())
@@ -222,11 +233,17 @@ func (t NodeTree) NeighborNodes(current *Node) (prev *Node, next *Node, err erro
 
 // Returns the number of total nodes in the tree.
 func (t NodeTree) TotalNodes() uint16 {
+	t.RLock()
+	defer t.RUnlock()
+
 	return uint16(len(t.lookup))
 }
 
 // Retrieves a node from the tree, performs a case-insensitive match.
 func (t NodeTree) Get(url string) (ok bool, n *Node, err error) {
+	t.RLock()
+	defer t.RUnlock()
+
 	if n, ok := t.lookup[lookupNodeURL(url)]; ok {
 		return ok, n, nil
 	}
@@ -237,6 +254,9 @@ func (t NodeTree) Get(url string) (ok bool, n *Node, err error) {
 // (the title) plus tags & keywords and returns the collected results
 // as a flat node list.
 func (t NodeTree) FuzzySearch(query string) []*Node {
+	t.RLock()
+	defer t.RUnlock()
+
 	var results []*Node
 
 	matches := func(source string, target string) bool {
