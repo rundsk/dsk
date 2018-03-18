@@ -47,7 +47,10 @@ func NewNodeFromPath(path string, root string) (*Node, error) {
 	n := &Node{root: root, path: path, Children: []*Node{}}
 
 	m, err := NewNodeMetaFromPath(n.path)
-	n.IsGhost = err != nil
+	if err != nil {
+		log.Printf("Ghosting node: %s: %s", prettyPath(n.path), err)
+		n.IsGhost = true
+	}
 	n.meta = m
 
 	return n, nil

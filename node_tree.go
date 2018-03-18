@@ -82,9 +82,6 @@ func (t *NodeTree) Sync() error {
 			if nErr != nil {
 				return nErr
 			}
-			if n.IsGhost {
-				log.Printf("Ghosting node: %s: %s", prettyPath(path), nErr)
-			}
 			nodes = append(nodes, n)
 		}
 		return nil
