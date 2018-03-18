@@ -38,9 +38,11 @@ var (
 	NodePathMultipleDashRegexp = regexp.MustCompile("-+")
 )
 
-// Constructs a new synced node using its path in the filesystem.
-// Returns a node instance even if uncritical errors happened. In that
-// case the node will be flagged as a "ghost" node.
+// Constructs a new node using its path in the filesystem. Returns
+// a node instance even if uncritical errors happened. In that case
+// the node will be flagged as a "ghost" node. This is to allow tree
+// creation in more cases. Tree creation must fail once a bridging
+// node cannot be constructed.
 func NewNodeFromPath(path string, root string) (*Node, error) {
 	n := &Node{root: root, path: path, Children: []*Node{}}
 
