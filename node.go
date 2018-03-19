@@ -18,11 +18,10 @@ import (
 	"time"
 )
 
-const (
-	ConfigBasename = "index.json"
-)
-
 var (
+	// Basenames matching this pattern are considered configuration files.
+	NodeConfigRegexp = regexp.MustCompile(`(?i)^.*\.(json)$`)
+
 	// Basenames matching the pattern will be ignored when searching
 	// for downloadable files in the node's directory.
 	IgnoreDownloadsRegexp = regexp.MustCompile(`(?i)^(.*\.(js|css|md|markdown|html?|json)|\.DS_Store|\.git.*|dsk)$`)
@@ -42,16 +41,17 @@ var (
 // node instance even if uncritical errors happened. This is to not
 // interrupt tree creation in many cases. Tree creation must fail once
 // a bridging node cannot be constructed.
-func NewNodeFromPath(path string, root string) (*Node, error) {
-	n := &Node{root: root, path: path, Children: make([]*Node, 0)}
+func NewNode(path string, root string) *Node {
+	n := &Node{
+		root:     root,
+		path:     path,
+		Children: make([]*Node, 0),
+	}
 
-	m, err := NewNodeMetaFromPath(n.path)
-	if err != nil {
+	if err := n.loadMeta(); err != nil {
 		log.Print(err)
 	}
-	n.meta = m
-
-	return n, nil
+	return n
 }
 
 // Node represents a directory inside the design definitions tree.
@@ -70,6 +70,32 @@ type Node struct {
 
 	// Meta data as parsed from the node configuration file.
 	meta NodeMeta
+}
+
+// Loads node meta data from the first config file found. Config files
+// are optional.
+func (n *Node) loadMeta() error {
+	files, err := ioutil.ReadDir(n.path)
+	if err != nil {
+		return err
+	}
+
+	for _, f := range files {
+		if f.IsDir() {
+			continue
+		}
+		if !NodeConfigRegexp.MatchString(f.Name()) {
+			continue
+		}
+		m, err := NewNodeMeta(filepath.Join(n.path, f.Name()))
+		if err != nil {
+			return err
+		}
+		n.meta = m
+		return nil
+	}
+	// No node configuration found.
+	return nil
 }
 
 // Returns the normalized URL path fragment, that can be used to

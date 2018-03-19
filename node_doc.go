@@ -58,7 +58,7 @@ func (d NodeDoc) HTML(treePrefix string, nodeURL string, nodeGet NodeGetter) ([]
 	case ".html", ".htm":
 		return d.postprocessHTML(contents, treePrefix, nodeURL, nodeGet)
 	}
-	return nil, fmt.Errorf("document %s is not in a supported format", d.path)
+	return nil, fmt.Errorf("Document not in a supported format: %s", d.path)
 }
 
 // Raw content of the underlying file.

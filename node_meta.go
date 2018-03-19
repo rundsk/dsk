@@ -9,29 +9,26 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 )
 
-// Looks for a node configuration file in given directory, parses the
-// file and returns a filled NodeMeta struct. If not file is found
-// returns an empty NodeMeta.
-func NewNodeMetaFromPath(path string) (NodeMeta, error) {
-	var meta NodeMeta
-	f := filepath.Join(path, ConfigBasename)
+// Parses given node configuration file into a NodeMeta.
+func NewNodeMeta(file string) (NodeMeta, error) {
+	var m NodeMeta
 
-	if _, err := os.Stat(f); os.IsNotExist(err) {
-		return meta, nil
-	}
-
-	content, err := ioutil.ReadFile(f)
+	contents, err := ioutil.ReadFile(d.path)
 	if err != nil {
-		return meta, err
+		return nil, err
 	}
-	if err := json.Unmarshal(content, &meta); err != nil {
-		return meta, fmt.Errorf("Failed parsing %s: %s", prettyPath(f), err)
+
+	switch filepath.Ext(d.path) {
+	case ".json":
+		if err := json.Unmarshal(content, &m); err != nil {
+			return m, fmt.Errorf("Failed parsing %s: %s", prettyPath(file), err)
+		}
+		return m, nil
 	}
-	return meta, nil
+	return nil, fmt.Errorf("Config not in a supported format: %s", d.path)
 }
 
 // Metadata parsed from node configuration.

@@ -57,7 +57,7 @@ func main() {
 	PrettyPathRoot = here
 	log.Printf("Reading design definitions tree from %s...", prettyPath(here))
 
-	tree = NewNodeTreeFromPath(here) // assign to global
+	tree = NewNodeTree(here) // assign to global
 	if err := tree.Sync(); err != nil {
 		log.Fatalf("Failed to do initial tree sync: %s", red(err))
 	}

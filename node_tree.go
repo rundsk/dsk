@@ -57,7 +57,7 @@ type NodeGetter func(url string) (ok bool, n *Node, err error)
 
 // Returns an unsynced tree from path; you must initialize the Tree
 // using Sync() and install auto-syncer before using it.
-func NewNodeTreeFromPath(path string) *NodeTree {
+func NewNodeTree(path string) *NodeTree {
 	return &NodeTree{path: path}
 }
 
@@ -78,11 +78,7 @@ func (t *NodeTree) Sync() error {
 				log.Printf("Ignoring node: %s", prettyPath(path))
 				return filepath.SkipDir
 			}
-			n, nErr := NewNodeFromPath(path, t.path)
-			if nErr != nil {
-				return nErr
-			}
-			nodes = append(nodes, n)
+			nodes = append(nodes, NewNode(path, t.path))
 		}
 		return nil
 	})
