@@ -164,7 +164,7 @@ func (t *NodeTree) StartAutoSync() error {
 					isRoot := b == pp
 					pp = filepath.Dir(pp)
 
-					if IgnoreNodesRegexp.MatchString(b) {
+					if IgnoreNodesRegexp.MatchString(b) && !isRoot {
 						log.Printf("Ignoring change: %s", prettyPath(p))
 						continue Outer
 					}
