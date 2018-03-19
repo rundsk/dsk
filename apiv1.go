@@ -37,7 +37,6 @@ type APIv1Node struct {
 	Related     []*APIv1RefNode    `json:"related"`
 	Prev        *APIv1RefNode      `json:"prev"`
 	Next        *APIv1RefNode      `json:"next"`
-	IsGhost     bool               `json:"is_ghost"`
 }
 
 // Used when building trees, omits most fields to lighten
@@ -47,7 +46,6 @@ type APIv1TreeNode struct {
 	URL      string           `json:"url"`
 	Children []*APIv1TreeNode `json:"children"`
 	Title    string           `json:"title"`
-	IsGhost  bool             `json:"is_ghost"`
 }
 
 // A node reference has no parent and children. It must be looked
@@ -191,7 +189,6 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		Related:     related,
 		Prev:        prev,
 		Next:        next,
-		IsGhost:     n.IsGhost,
 	}, nil
 }
 
@@ -209,7 +206,6 @@ func (api APIv1) NewTreeNode(n *Node) (*APIv1TreeNode, error) {
 		URL:      n.URL(),
 		Children: children,
 		Title:    n.Title(),
-		IsGhost:  n.IsGhost,
 	}, nil
 }
 
