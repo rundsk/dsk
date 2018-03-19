@@ -282,6 +282,6 @@ Outer:
 		}
 	}
 
-	log.Printf("Fuzzy searched tree for '%s' with %d results", query, len(results))
+	log.Printf("Fuzzy searched tree: %s (%d results)", query, len(results))
 	return results
 }
