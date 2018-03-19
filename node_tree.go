@@ -21,7 +21,7 @@ import (
 var (
 	// Directory basenames matching the pattern are not descending into
 	// and interpreted as a node.
-	IgnoreNodesRegexp = regexp.MustCompile(`^(x[-_].*|\..*|node_modules)$`)
+	IgnoreNodesRegexp = regexp.MustCompile(`^(x[-_].*|_.*|\..*|node_modules)$`)
 )
 
 type NodeTree struct {
@@ -74,7 +74,9 @@ func (t *NodeTree) Sync() error {
 			return err
 		}
 		if f.IsDir() {
-			if IgnoreNodesRegexp.MatchString(f.Name()) {
+			isRoot := filepath.Base(t.path) == f.Name()
+
+			if IgnoreNodesRegexp.MatchString(f.Name()) && !isRoot {
 				log.Printf("Ignoring node: %s", prettyPath(path))
 				return filepath.SkipDir
 			}
@@ -150,12 +152,16 @@ func (t *NodeTree) StartAutoSync() error {
 			case ei := <-t.changes:
 				p := ei.Path()
 
-				// Do not match directories below tree root. If we are placed
-				// inside an ignored dir, anything would always be ignored.
+				// Do not match directories below tree root. If we
+				// are placed inside an ignored dir, anything would
+				// always be ignored. Even if the tree root directory
+				// is set to be ignored, do not, as the tree has been
+				// intentionally loaded from that directory.
 				pp := strings.TrimPrefix(p, t.path+"/")
 
-				for pp != "" {
+				for pp != "." {
 					b := filepath.Base(pp)
+					isRoot := b == pp
 					pp = filepath.Dir(pp)
 
 					if IgnoreNodesRegexp.MatchString(b) {
