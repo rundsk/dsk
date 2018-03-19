@@ -48,3 +48,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/rjeczalik/notify"
+
+[[constraint]]
+  name = "github.com/go-yaml/yaml"
+  version = "2.1.1"

@@ -20,11 +20,11 @@ import (
 
 var (
 	// Basenames matching this pattern are considered configuration files.
-	NodeConfigRegexp = regexp.MustCompile(`(?i)^.*\.(json)$`)
+	NodeMetaRegexp = regexp.MustCompile(`(?i)^(index|meta)\.(json|ya?ml)$`)
 
 	// Basenames matching the pattern will be ignored when searching
 	// for downloadable files in the node's directory.
-	IgnoreDownloadsRegexp = regexp.MustCompile(`(?i)^(.*\.(js|css|md|markdown|html?|json)|\.DS_Store|\.git.*|dsk)$`)
+	IgnoreDownloadsRegexp = regexp.MustCompile(`(?i)^(.*\.(js|css|md|markdown|html?|json|ya?ml)|\..*|dsk)$`)
 
 	// Basenames matching this pattern are considered documents.
 	NodeDocsRegexp = regexp.MustCompile(`(?i)^.*\.(md|markdown|html?)$`)
@@ -84,7 +84,7 @@ func (n *Node) loadMeta() error {
 		if f.IsDir() {
 			continue
 		}
-		if !NodeConfigRegexp.MatchString(f.Name()) {
+		if !NodeMetaRegexp.MatchString(f.Name()) {
 			continue
 		}
 		m, err := NewNodeMeta(filepath.Join(n.path, f.Name()))

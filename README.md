@@ -68,24 +68,50 @@ GitHub as the primary document in the web interface. You can split documentation
 over several files when you like to. We usually use `api.md`, `explain.md` or
 `comments.md`.
 
-### Configuring Aspects
+_Note_: If you prefer plain HTML documents over Markdown, these are
+supported too. For this use `.html` instead of `.md` as the file
+extension.
 
-To allow adding meta data to an aspect, dsk uses JSON configuration files. These files are named `index.json` and entirely optional. The meta data can later be used to improve the search experience in the frontend. 
+### Adding Aspect Meta Data (Description, Tags, ...)
 
-An example of a full configuration looks like this:
+To add more information to an aspect, we use a file called `meta.yml`. This 
+file holds meta data, like a short description, tags and authors, about an aspect. 
+The file uses the easy to write [YAML](https://www.youtube.com/watch?v=W3tQPk8DNbk) 
+format.
 
-```json
-{
-    "authors": ["christoph@atelierdisko.de", "marius@atelierdisko.de"],
-    "description": "This is a very very very fancy component.",
-    "keywords": ["typography", "font", "type"],
-    "related": ["DataEntry/TextField"],
-    "tags": ["fancy", "very"],
-    "version": "1.2.3"
-}
+_Note_: If you prefer to use [JSON](https://www.json.org) as a format,
+that is supported too. Just exchange `.yml` for `.json` as the
+extension.
+
+An example of a full meta data file looks like this:
+
+```yaml
+authors: 
+  - christoph@atelierdisko.de
+  - marius@atelierdisko.de
+
+description: > 
+  This is a very very very fancy component. Lorem ipsum dolor sit amet,
+  sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+  magna aliquyam erat, sed diam voluptua.
+
+keywords: 
+  - typography
+  - font
+  - type
+
+related:
+  - DataEntry/TextField
+
+tags:  
+  - priority/1
+  - release/0.1
+  - progress/empty
+
+version: 1.2.3
 ```
 
-Possible configuration options are:
+Possible meta data keys are:
 
 - `authors`: An array of email addresses of the document authors; see below.
 - `description`: A single sentence that roughly describes the design aspect.
@@ -97,7 +123,7 @@ Possible configuration options are:
 ### Authors
 
 Each design aspect may be _authored_ by one or multiple humans. To assign
-yourself, use the `authors` option in the `index.json` configuration file.
+yourself, use the `authors` option in the `meta.yml` configuration file.
 
 To enable automatic full names for each author, create an `AUTHORS.txt` file
 inside the root of the DDT first. Each line of the file lists an author's full
