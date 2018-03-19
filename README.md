@@ -4,11 +4,12 @@
 
 ## Abstract
 
-Using the _Design System Kit_ you quickly define and organize design
-aspects into a browsable and live-searchable design system. Hierachies
-are established using plain simple directories and aspects by adding
-[Markdown](https://guides.github.com/features/mastering-markdown/) or
-HTML formatted files.
+Using the _Design System Kit_ you quickly define and organize
+design aspects into a browsable and live-searchable design system.
+Hierachies between design aspects are established using plain
+simple directories. Creating documentation is as easy as adding a
+[Markdown](https://guides.github.com/features/mastering-markdown/) formatted
+file to a directory inside the design definitions tree.
 
 ![screenshot](https://atelierdisko.de/assets/app/img/github_dsk.png)
 
@@ -51,15 +52,15 @@ example
 │   │   │   └── readme.md
 │   │   ├── api.md              <- document
 │   │   ├── exploration.sketch  <- asset
-│   │   ├── index.json          <- configuration
+│   │   ├── meta.yml            <- meta data file
 │   │   └── readme.md           <- document
 │   │   └── unmask.svg          <- asset
 ```
 
 ### Documenting Design Aspects
 
-Aspects can be documented by adding
-[Markdown](https://guides.github.com/features/mastering-markdown/) or HTML formatted
+Aspects are documented by adding
+[Markdown](https://guides.github.com/features/mastering-markdown/) formatted
 documentation files to their directory. A `readme.md` file, may describe
 an aspect or give clues how to use a certain component. Please note that
 `readme.md` is in no ways treated specially by dsk, but is usually displayed by
