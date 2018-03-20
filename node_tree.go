@@ -14,6 +14,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/rjeczalik/notify"
 )
@@ -252,6 +253,8 @@ func (t NodeTree) Get(url string) (ok bool, n *Node, err error) {
 // (the title) plus tags & keywords and returns the collected results
 // as a flat node list.
 func (t NodeTree) FuzzySearch(query string) []*Node {
+	start := time.Now()
+
 	t.RLock()
 	defer t.RUnlock()
 
@@ -288,6 +291,9 @@ Outer:
 		}
 	}
 
-	log.Printf("Fuzzy searched tree: %s (%d results)", query, len(results))
+	log.Printf(
+		"Fuzzy searched tree: %s (%d results in %s)",
+		query, len(results), time.Since(start),
+	)
 	return results
 }
