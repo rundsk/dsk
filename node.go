@@ -37,8 +37,8 @@ var (
 	// path/URL segment in the form of 06_Foo. As well as for
 	// "slugging" the URL/path segment.
 	NodePathTitleRegexp        = regexp.MustCompile(`^0?(\d+)[_,-]+(.*)$`)
-	NodePathInvalidCharsRegexp = regexp.MustCompile("[^A-Za-z0-9-_]")
-	NodePathMultipleDashRegexp = regexp.MustCompile("-+")
+	NodePathInvalidCharsRegexp = regexp.MustCompile(`[^A-Za-z0-9-_]`)
+	NodePathMultipleDashRegexp = regexp.MustCompile(`-+`)
 )
 
 // Constructs a new node using its path in the filesystem. Returns a
