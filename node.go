@@ -24,7 +24,7 @@ var (
 
 	// Basenames matching the pattern will be ignored when searching
 	// for downloadable files in the node's directory.
-	IgnoreDownloadsRegexp = regexp.MustCompile(`(?i)^(.*\.(js|css|md|markdown|html?|json|ya?ml)|\..*|dsk)$`)
+	IgnoreDownloadsRegexp = regexp.MustCompile(`(?i)^(.*\.(js|css|md|markdown|html?|json|ya?ml)|\..*|dsk.*)$`)
 
 	// Basenames matching this pattern are considered documents.
 	NodeDocsRegexp = regexp.MustCompile(`(?i)^.*\.(md|markdown|html?)$`)
