@@ -211,5 +211,4 @@ func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL str
 		}
 		buf.WriteString(t.String())
 	}
-	return buf.Bytes(), nil
 }
