@@ -12,7 +12,7 @@ FRONTEND ?= $(shell pwd)/frontend
 
 .PHONY: test
 test: data.go
-	go test
+	go test -race
 
 .PHONY: dev
 dev:
