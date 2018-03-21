@@ -29,6 +29,10 @@ var (
 	// Basenames matching this pattern are considered documents.
 	NodeDocsRegexp = regexp.MustCompile(`(?i)^.*\.(md|markdown|html?)$`)
 
+	// Characters that are ignored when looking up an URL,
+	// i.e. "foo/bar baz" and "foo/barbaz" are than equal.
+	NodeLookupURLIgnoreChars = regexp.MustCompile(`[\s\-_]+`)
+
 	// Patterns for extracting order number and title from a node's
 	// path/URL segment in the form of 06_Foo. As well as for
 	// "slugging" the URL/path segment.
@@ -117,7 +121,10 @@ func (n Node) UnnormalizedURL() string {
 
 // Returns the normalized and lower cased lookup URL for this node.
 func (n Node) LookupURL() string {
-	return strings.ToLower(n.URL())
+	return NodeLookupURLIgnoreChars.ReplaceAllString(
+		strings.ToLower(n.URL()),
+		"",
+	)
 }
 
 // An order number, as a hint for outside sorting mechanisms.
@@ -338,7 +345,10 @@ func normalizeNodeURL(url string) string {
 }
 
 func lookupNodeURL(url string) string {
-	return strings.ToLower(normalizeNodeURL(url))
+	return NodeLookupURLIgnoreChars.ReplaceAllString(
+		strings.ToLower(normalizeNodeURL(url)),
+		"",
+	)
 }
 
 // Finds an order number embedded into given path/URL segment and
