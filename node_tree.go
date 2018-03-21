@@ -198,7 +198,7 @@ func (t *NodeTree) StopAutoSync() {
 // the sibling node and - walking up the tree - if there is none the
 // parents sibling node. The algorithm for determing the previous
 // node is analogous.
-func (t NodeTree) NeighborNodes(current *Node) (prev *Node, next *Node, err error) {
+func (t *NodeTree) NeighborNodes(current *Node) (prev *Node, next *Node, err error) {
 	t.RLock()
 	defer t.RUnlock()
 
@@ -231,7 +231,7 @@ func (t NodeTree) NeighborNodes(current *Node) (prev *Node, next *Node, err erro
 }
 
 // Returns the number of total nodes in the tree.
-func (t NodeTree) TotalNodes() uint16 {
+func (t *NodeTree) TotalNodes() uint16 {
 	t.RLock()
 	defer t.RUnlock()
 
@@ -239,7 +239,7 @@ func (t NodeTree) TotalNodes() uint16 {
 }
 
 // Retrieves a node from the tree, performs a case-insensitive match.
-func (t NodeTree) Get(url string) (ok bool, n *Node, err error) {
+func (t *NodeTree) Get(url string) (ok bool, n *Node, err error) {
 	t.RLock()
 	defer t.RUnlock()
 
@@ -252,7 +252,7 @@ func (t NodeTree) Get(url string) (ok bool, n *Node, err error) {
 // Performs a narrow fuzzy search on the node's visible attributes
 // (the title) plus tags & keywords and returns the collected results
 // as a flat node list.
-func (t NodeTree) FuzzySearch(query string) []*Node {
+func (t *NodeTree) FuzzySearch(query string) []*Node {
 	start := time.Now()
 
 	t.RLock()
