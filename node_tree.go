@@ -65,6 +65,8 @@ func NewNodeTree(path string) *NodeTree {
 // One-way sync: updates tree from file system. Recursively crawls
 // the given root directory, constructing a tree of nodes.
 func (t *NodeTree) Sync() error {
+	start := time.Now()
+
 	t.Lock()
 	defer t.Unlock()
 
@@ -132,7 +134,11 @@ func (t *NodeTree) Sync() error {
 	}
 	t.authors = as
 
-	log.Printf("Synced tree with %d total nodes", len(lookup))
+	log.Printf(
+		"Synced tree with %d total nodes (in %s)",
+		len(lookup),
+		time.Since(start),
+	)
 	return nil
 }
 
