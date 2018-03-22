@@ -67,7 +67,7 @@ func main() {
 
 	log.Print("Mounting APIv1...")
 	apiv1 := &APIv1{tree}
-	apiv1.MountHTTPHandlers(withNoop)
+	apiv1.MountHTTPHandlers()
 
 	// Handles frontend root document delivery and frontend assets.
 	log.Print("Mounting frontend...")

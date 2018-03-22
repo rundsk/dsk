@@ -79,16 +79,16 @@ type APIv1NodeAsset struct {
 	Name string `json:"name"`
 }
 
-func (api APIv1) MountHTTPHandlers(m Middleware) {
-	http.HandleFunc("/api/v1/tree", m(api.treeHandler))
-	http.HandleFunc("/api/v1/tree/", m(func(w http.ResponseWriter, r *http.Request) {
+func (api APIv1) MountHTTPHandlers() {
+	http.HandleFunc("/api/v1/tree", api.treeHandler)
+	http.HandleFunc("/api/v1/tree/", func(w http.ResponseWriter, r *http.Request) {
 		if filepath.Ext(r.URL.Path) != "" {
 			api.nodeAssetHandler(w, r)
 		} else {
 			api.nodeHandler(w, r)
 		}
-	}))
-	http.HandleFunc("/api/v1/search", m(api.searchHandler))
+	})
+	http.HandleFunc("/api/v1/search", api.searchHandler)
 }
 
 func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
