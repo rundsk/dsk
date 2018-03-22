@@ -78,11 +78,7 @@ func (d NodeDoc) HTML(treePrefix string, nodeURL string, nodeGet NodeGetter) ([]
 
 // Raw content of the underlying file.
 func (d NodeDoc) Raw() ([]byte, error) {
-	contents, err := ioutil.ReadFile(d.path)
-	if err != nil {
-		return nil, err
-	}
-	return contents, nil
+	return ioutil.ReadFile(d.path)
 }
 
 // Parses markdown into HTML and makes relative links absolute, so
