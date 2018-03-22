@@ -128,8 +128,6 @@ func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL str
 		return buf.Bytes(), err
 	}
 
-	z := html.NewTokenizer(bytes.NewReader(contents))
-
 	// Helper to get an attribute value from a token.
 	attr := func(t html.Token, name string) (bool, int, string) {
 		for key, a := range t.Attr {
@@ -157,6 +155,7 @@ func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL str
 		return t, nil
 	}
 
+	// Works only for relative node URLs.
 	maybeAddTitle := func(t html.Token) (html.Token, error) {
 		ok, _, v := attr(t, "title")
 		if ok && v != "" {
@@ -194,11 +193,9 @@ func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL str
 		return t, nil
 	}
 
+	z := html.NewTokenizer(bytes.NewReader(contents))
 	for {
-		tt := z.Next()
-		t := z.Token()
-
-		switch tt {
+		switch z.Next() {
 		case html.ErrorToken:
 			err := z.Err()
 
@@ -207,19 +204,35 @@ func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL str
 			}
 			return buf.Bytes(), err
 		case html.StartTagToken, html.SelfClosingTagToken:
+			// By default html parser's methods normalize tag names
+			// to lower case. As we use custom component tag names in
+			// pre-formatted text, we'll need to be sure to keep the
+			// casing intact instead.
+			//
+			// Calling TagName() et all will modify the underlying
+			// slice as returned by Raw(). To prevent this we'll clone
+			// the slice.
+			raw := append([]byte(nil), z.Raw()...)
+			t := z.Token()
+
 			switch t.Data {
 			case "img", "video":
-				t, err = maybeMakeAbsolute(t)
+				t, err := maybeMakeAbsolute(t)
 				if err != nil {
 					return buf.Bytes(), err
 				}
+				buf.WriteString(t.String())
 			case "a":
-				t, err = maybeAddTitle(t)
+				t, err := maybeAddTitle(t)
 				if err != nil {
 					return buf.Bytes(), err
 				}
+				buf.WriteString(t.String())
+			default:
+				buf.Write(raw)
 			}
+		default:
+			buf.Write(z.Raw())
 		}
-		buf.WriteString(t.String())
 	}
 }
