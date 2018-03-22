@@ -22,6 +22,7 @@ type APIv1 struct {
 }
 
 type APIv1Node struct {
+	Hash        string             `json:"hash"`
 	URL         string             `json:"url"`
 	Parent      *APIv1RefNode      `json:"parent"`
 	Children    []*APIv1RefNode    `json:"children"`
@@ -43,6 +44,7 @@ type APIv1Node struct {
 // transport weight. Parent ommited to prevent recursive
 // data structure.
 type APIv1TreeNode struct {
+	Hash     string           `json:"hash"`
 	URL      string           `json:"url"`
 	Children []*APIv1TreeNode `json:"children"`
 	Title    string           `json:"title"`
@@ -56,6 +58,7 @@ type APIv1RefNode struct {
 }
 
 type APIv1NodeTree struct {
+	Hash       string         `json:"hash"`
 	Root       *APIv1TreeNode `json:"root"`
 	TotalNodes uint16         `json:"total_nodes"`
 }
@@ -89,6 +92,11 @@ func (api APIv1) MountHTTPHandlers(m Middleware) {
 }
 
 func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
+	hash, err := n.Hash()
+	if err != nil {
+		return nil, err
+	}
+
 	var parent *APIv1RefNode
 	if n.Parent != nil {
 		parent = &APIv1RefNode{n.Parent.URL(), n.Parent.Title()}
@@ -174,6 +182,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 	}
 
 	return &APIv1Node{
+		Hash:        fmt.Sprintf("%x", hash),
 		URL:         n.URL(),
 		Parent:      parent,
 		Children:    children,
@@ -193,6 +202,11 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 }
 
 func (api APIv1) NewTreeNode(n *Node) (*APIv1TreeNode, error) {
+	hash, err := n.Hash()
+	if err != nil {
+		return nil, err
+	}
+
 	children := make([]*APIv1TreeNode, 0, len(n.Children))
 	for _, v := range n.Children {
 		n, err := api.NewTreeNode(v)
@@ -203,6 +217,7 @@ func (api APIv1) NewTreeNode(n *Node) (*APIv1TreeNode, error) {
 	}
 
 	return &APIv1TreeNode{
+		Hash:     fmt.Sprintf("%x", hash),
 		URL:      n.URL(),
 		Children: children,
 		Title:    n.Title(),
@@ -212,7 +227,14 @@ func (api APIv1) NewTreeNode(n *Node) (*APIv1TreeNode, error) {
 func (api APIv1) NewNodeTree(t *NodeTree) (*APIv1NodeTree, error) {
 	root, err := api.NewTreeNode(t.Root)
 
+	// Tree hash is the same as the root nodes'.
+	hash, err := api.tree.Root.Hash()
+	if err != nil {
+		return nil, err
+	}
+
 	return &APIv1NodeTree{
+		Hash:       fmt.Sprintf("%x", hash),
 		Root:       root,
 		TotalNodes: t.TotalNodes(),
 	}, err
@@ -234,6 +256,21 @@ func (api APIv1) treeHandler(w http.ResponseWriter, r *http.Request) {
 	wr := jsend.Wrap(w)
 	// Not getting or checking path, as only tree requests are routed here.
 
+	hash, err := api.tree.Root.Hash()
+	if err != nil {
+		wr.
+			Status(http.StatusInternalServerError).
+			Message(err.Error()).
+			Send()
+		return
+	}
+	etag := fmt.Sprintf("%x", hash)
+
+	if etag == r.Header.Get("If-None-Match") {
+		wr.WriteHeader(http.StatusNotModified)
+		return
+	}
+
 	atree, err := api.NewNodeTree(api.tree)
 	if err != nil {
 		wr.
@@ -242,6 +279,7 @@ func (api APIv1) treeHandler(w http.ResponseWriter, r *http.Request) {
 			Send()
 		return
 	}
+	wr.Header().Set("Etag", etag)
 
 	wr.
 		Data(atree).
@@ -279,6 +317,21 @@ func (api APIv1) nodeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	hash, err := n.Hash()
+	if err != nil {
+		wr.
+			Status(http.StatusInternalServerError).
+			Message(err.Error()).
+			Send()
+		return
+	}
+	etag := fmt.Sprintf("%x", hash)
+
+	if etag == r.Header.Get("If-None-Match") {
+		wr.WriteHeader(http.StatusNotModified)
+		return
+	}
+
 	an, err := api.NewNode(n)
 	if err != nil {
 		wr.
@@ -287,6 +340,7 @@ func (api APIv1) nodeHandler(w http.ResponseWriter, r *http.Request) {
 			Send()
 		return
 	}
+	wr.Header().Set("Etag", etag)
 
 	wr.
 		Data(an).

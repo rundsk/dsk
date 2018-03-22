@@ -6,6 +6,7 @@
 package main
 
 import (
+	"crypto/sha1"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -74,6 +75,9 @@ type Node struct {
 
 	// Meta data as parsed from the node configuration file.
 	meta NodeMeta
+
+	// Cached hash of the node.
+	hash []byte
 }
 
 // Loads node meta data from the first config file found. Config files
@@ -100,6 +104,45 @@ func (n *Node) loadMeta() error {
 	}
 	// No node configuration found.
 	return nil
+}
+
+func (n *Node) Hash() ([]byte, error) {
+	if n.hash != nil {
+		return n.hash, nil
+	}
+	h := sha1.New()
+	hcom := sha1.New()
+
+	h.Write([]byte(n.path))
+
+	docs, _ := n.Docs()
+	for _, v := range docs {
+		hv, err := v.Hash()
+		if err != nil {
+			return nil, err
+		}
+		h.Write(hv)
+	}
+
+	downloads, _ := n.Downloads()
+	for _, v := range downloads {
+		hv, err := v.Hash()
+		if err != nil {
+			return nil, err
+		}
+		h.Write(hv)
+	}
+
+	hcom.Write(h.Sum(nil))
+	for _, v := range n.Children {
+		hv, err := v.Hash()
+		if err != nil {
+			return nil, err
+		}
+		hcom.Write(hv)
+	}
+	n.hash = hcom.Sum(nil)
+	return n.hash, nil
 }
 
 // Returns the normalized URL path fragment, that can be used to

@@ -6,9 +6,12 @@
 package main
 
 import (
+	"crypto/sha1"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/go-yaml/yaml"
@@ -16,7 +19,7 @@ import (
 
 // Parses given node configuration file into a NodeMeta.
 func NewNodeMeta(file string) (NodeMeta, error) {
-	var m NodeMeta
+	m := NodeMeta{path: file}
 
 	contents, err := ioutil.ReadFile(file)
 	if err != nil {
@@ -40,10 +43,24 @@ func NewNodeMeta(file string) (NodeMeta, error) {
 
 // Metadata parsed from node configuration.
 type NodeMeta struct {
+	path        string
 	Authors     []string // Email addresses of node authors.
 	Description string
 	Keywords    []string
 	Related     []string
 	Tags        []string
 	Version     string // Freeform version string.
+}
+
+func (m NodeMeta) Hash() ([]byte, error) {
+	h := sha1.New()
+
+	f, err := os.Open(m.path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	_, err = io.Copy(h, f)
+	return h.Sum(nil), err
 }
