@@ -80,7 +80,6 @@ func (t *NodeTree) Sync() error {
 			isRoot := filepath.Base(t.path) == f.Name()
 
 			if IgnoreNodesRegexp.MatchString(f.Name()) && !isRoot {
-				log.Printf("Ignoring node: %s", prettyPath(path))
 				return filepath.SkipDir
 			}
 			nodes = append(nodes, NewNode(path, t.path))
@@ -172,7 +171,6 @@ func (t *NodeTree) StartAutoSync() error {
 					pp = filepath.Dir(pp)
 
 					if IgnoreNodesRegexp.MatchString(b) && !isRoot {
-						log.Printf("Ignoring change: %s", prettyPath(p))
 						continue Outer
 					}
 				}
