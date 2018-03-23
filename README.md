@@ -53,7 +53,7 @@ example
 │   │   ├── api.md              <- document
 │   │   ├── exploration.sketch  <- asset
 │   │   ├── meta.yml            <- meta data file
-│   │   └── readme.md           <- document
+│   │   ├── readme.md           <- document
 │   │   └── unmask.svg          <- asset
 ```
 
@@ -256,8 +256,6 @@ Description=Design System Kit
 ExecStart=/usr/local/bin/dsk -host 192.168.1.1 -port 80 /var/ds
 WorkingDirectory=/var/ds
 Restart=on-abort
-RestartSec=120
-MemoryLimit=200M
 
 [Install]
 WantedBy=default.target
@@ -272,7 +270,6 @@ the loopback interface on port 8080.
 ```ini
 [Unit]
 Description=Design System Kit
-After=nginx.service
 
 [Service]
 ExecStart=/usr/local/bin/dsk -port 8080 /var/ds
@@ -280,8 +277,6 @@ User=www-data
 Group=www-data
 WorkingDirectory=/var/ds
 Restart=on-abort
-RestartSec=120
-MemoryLimit=200M
 
 [Install]
 WantedBy=default.target
@@ -292,7 +287,7 @@ server {
 	listen 443 ssl http2;
 
 	server_name example.com;
-	root /var/ds
+	root /var/ds;
 
 	ssl_certificate /etc/ssl/certs/example.com.crt;
 	ssl_certificate_key /etc/ssl/private/example.com.key;
