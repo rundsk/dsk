@@ -17,7 +17,7 @@ test: data.go
 .PHONY: dev
 dev:
 	go-bindata -debug -prefix $(FRONTEND) -ignore=node_modules -o data.go $(FRONTEND)/...
-	go build 
+	go build -ldflags "$(GOFLAGS)"
 	@if [ ! -d _test ]; then mkdir _test; fi
 	./dsk _test
 
