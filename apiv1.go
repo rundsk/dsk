@@ -21,6 +21,11 @@ type APIv1 struct {
 	tree *NodeTree
 }
 
+type APIv1Hello struct {
+	Health  string `json:"health"`
+	Version string `json:"version"`
+}
+
 type APIv1Node struct {
 	Hash        string             `json:"hash"`
 	URL         string             `json:"url"`
@@ -80,6 +85,7 @@ type APIv1NodeAsset struct {
 }
 
 func (api APIv1) MountHTTPHandlers() {
+	http.HandleFunc("/api/v1", api.helloHandler)
 	http.HandleFunc("/api/v1/tree", api.treeHandler)
 	http.HandleFunc("/api/v1/tree/", func(w http.ResponseWriter, r *http.Request) {
 		if filepath.Ext(r.URL.Path) != "" {
@@ -89,6 +95,10 @@ func (api APIv1) MountHTTPHandlers() {
 		}
 	})
 	http.HandleFunc("/api/v1/search", api.searchHandler)
+}
+
+func (api APIv1) NewHello() *APIv1Hello {
+	return &APIv1Hello{"ok", Version}
 }
 
 func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
@@ -246,6 +256,14 @@ func (api APIv1) NewNodeTreeSearchResults(nodes []*Node) []string {
 		results = append(results, n.URL())
 	}
 	return results
+}
+
+// Says hello :)
+func (api APIv1) helloHandler(w http.ResponseWriter, r *http.Request) {
+	jsend.Wrap(w).
+		Data(api.NewHello()).
+		Status(http.StatusOK).
+		Send()
 }
 
 // Returns all nodes in the design defintions tree, as nested nodes.
