@@ -67,7 +67,7 @@ aside header {
   flex-grow: 0;
   flex-shrink: 0;
 
-  background-color: var(--color-black);
+  background-color: var(--color-blue);
   padding: 2rem;
   padding-top: 8rem;
 }
@@ -145,11 +145,11 @@ aside header .title, aside header .title a {
 }
 
 .tree-nav ul li a:hover {
-  color: var(--color-darkgray);
+  color: var(--color-blue);
 }
 
 .tree-nav ul li.is-active > a {
-  color: var(--color-darkgray);
+  color: var(--color-blue);
 }
 
 aside .ghosted {
@@ -257,22 +257,23 @@ h1 {
   margin-bottom: 2rem;
 }
 
-/* Keywords */
+/* Tags */
 
-.keywords {
+.tags {
   user-select: none;
 }
 
-.keywords ul {
+.tags ul {
   list-style: none;
 }
 
-.keywords__keyword {
+.tags__tag {
   display: inline-block;
   user-select: none;
+  margin-right: 10px;
 }
 
-.keywords__keyword a {
+.tags__tag a {
   cursor: pointer;
   background-color: var(--color-cyan);
   color: var(--color-white);
@@ -286,12 +287,6 @@ h1 {
   border-radius: .25rem;
 }
 
-/* Top-Stage */
-.top-stage {
-  margin: 8rem 0;
-  width: 100%;
-}
-
 /* Info */
 
 .info {
@@ -299,6 +294,12 @@ h1 {
   flex-wrap: wrap;
   width: 100%;
   margin-bottom: -8rem;
+}
+
+.two-columns {
+  display: flex;
+  flex-direction: row;
+  margin: 8rem 0;
 }
 
 /* Children Table */
@@ -339,31 +340,6 @@ h1 {
   font-weight: bold;
 }
 
-
-.two-columns {
-  display: flex;
-  flex-direction: row;
-  margin: 8rem 0;
-}
-
-/* General-Doc */
-
-.general-doc {
-  max-width: 650px;
-  flex-grow: 1;
-}
-
-.no-content-placeholder {
-  border-radius: .5rem;
-  background-color: var(--color-lightgray);
-  padding: 2rem;
-  padding-top: 2.6rem;
-  width: 100%;
-
-  line-height: 1em;
-  color: var(--color-darkgray)
-}
-
 /* Files */
 
 .files {
@@ -376,14 +352,6 @@ h1 {
 
 .demos {
   width: 100%;
-  margin: 8rem 0;
-}
-
-/* API-Doc */
-
-.api-doc {
-  width: 100%;
-  line-height: 1.5em;
   margin: 8rem 0;
 }
 
@@ -424,7 +392,7 @@ h1 {
   color: inherit;
 }
 
-.text a[href^='search'] {
+.text a[data-node] {
   cursor: pointer;
   background-color: var(--color-semilightgray);
   text-decoration: none;
@@ -532,17 +500,6 @@ h1 {
   margin-bottom: 1.7rem;
 }
 
-.component-stage {
-  display: block;
-  width: 100%;
-  min-height: 300px;
-  background-color: #F2F2F2;
-  border: none;
-}
-
-
-
-
 /* Printer */
 
 @media print {
@@ -573,7 +530,7 @@ h1 {
     display: none;
   }
 
-  .keywords__keyword a  {
+  .tags__tag a  {
     padding: 0;
     margin-right: 1rem;
     background-color: transparent;
