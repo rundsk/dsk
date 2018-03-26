@@ -22,7 +22,7 @@ type APIv1 struct {
 }
 
 type APIv1Hello struct {
-	Health  string `json:"health"`
+	Hello   string `json:"hello"`
 	Version string `json:"version"`
 }
 
@@ -98,7 +98,7 @@ func (api APIv1) MountHTTPHandlers() {
 }
 
 func (api APIv1) NewHello() *APIv1Hello {
-	return &APIv1Hello{"ok", Version}
+	return &APIv1Hello{"dsk", Version}
 }
 
 func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
