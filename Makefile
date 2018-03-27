@@ -6,7 +6,8 @@
 PREFIX ?= /usr/local
 VERSION ?= head-$(shell git rev-parse --short HEAD)
 GOFLAGS = -X main.Version=$(VERSION)
-GOBINDATA = $(go env GOPATH)/bin/go-bindata
+GOPATH ?= $(go env GOPATH)
+GOBINDATA = $(GOPATH)/bin/go-bindata
 ANY_DEPS = $(wildcard *.go)
 FRONTEND ?= $(shell pwd)/frontend
 
