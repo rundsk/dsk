@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>DSK / Project</title>
+    <title>DSK /</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="/css/base.css">
     <script defer src="/js/dsk/Client.js"></script>
     <script defer src="/js/dsk/Tree.js"></script>
+    <script defer src="/js/nav.js"></script>
+    <script defer src="/js/search.js"></script>
+    <script defer src="/js/page.js"></script>
     <script defer src="/js/index.js"></script>
     <link rel="icon" href="/ico/app.png">
   </head>
   <body>
-    <aside>
-      <header>
-        <div class="title">DSK / <b><a href="/">Project</a></b></div>
+    <aside class="sidebar">
+      <header class="sidebar__header">
+        <div class="sidebar__title">
+          DSK / <b><a class="project-name" href="/"></a></b>
+        </div>
         <div class="search">
           <input class="search__field" autofocus>
           <div class="search__clear">×</div>
@@ -20,6 +25,6 @@
       </header>
       <nav class="tree-nav"></nav>
     </aside>
-    <main></main>
+    <main class="main"></main>
   </body>
 </html>
