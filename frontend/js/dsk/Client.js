@@ -31,24 +31,35 @@ class Client {
     return this.fetch(`/api/v1/search?q=${encodeURIComponent(q)}`);
   }
 
-  // Wraps fetch API, to fail promise when there is a network issue (catch)
-  // as well as when we a HTTP response status indicating an error. Unwrapped
-  // promises to make it clear, what happens when.
-  //
-  // TODO: Support Basic Auth
-  //       https://github.com/facebook/react-native/issues/3321
-  //       https://stackoverflow.com/questions/30203044/using-an-authorization-header-with-fetch-in-react-native
+  // Performs API requests. Fail promise when there is a network issue (catch)
+  // as well as when we a HTTP response status indicating an error. Using plain
+  // XHR for better browser support and easier basic auth handling.
   static fetch(url) {
     return new Promise((resolve, reject) => {
-      fetch(url)
-        .then((res) => {
-          if (res.ok) {
-            res.json().then(json => resolve(json.data));
-          } else {
-            reject(new Error(`API request for '${url}' failed :-S: ${res.statusText}`));
+      let xhr = new XMLHttpRequest();
+
+      xhr.addEventListener('readystatechange', () => {
+        if (xhr.readyState === 4) {
+          let first = xhr.status.toString().charAt(0);
+          if (first !== '2' && first !== '3') {
+            reject(new Error(`API request for '${url}' failed :-S: ${xhr.statusText}`));
+            return;
           }
-        })
-        .catch(err => reject(err));
+
+          try {
+            let res = JSON.parse(xhr.responseText);
+            resolve(res.data);
+          } catch (e) {
+            reject(new Error(`API request for '${url}' failed :-S: ${e}`));
+          }
+        }
+      });
+      xhr.addEventListener('error', (ev) => {
+        reject(new Error(`API request for '${url}' failed :-S: ${ev}`));
+      });
+      xhr.open('GET', url);
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.send();
     });
   }
 }
