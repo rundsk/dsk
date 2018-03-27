@@ -7,7 +7,6 @@
 
 /* globals Tree: false */
 /* globals Client: false */
-/* globals Changes: false */
 /* globals URLSearchParams: false */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -17,7 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const baseTitle = document.title;
 
   let tree = new Tree();
-  let changes = Client.changes();
 
   let activeNode = null;
   let activeTree = null;
@@ -27,29 +25,6 @@ document.addEventListener('DOMContentLoaded', function() {
   let nav = $1('.tree-nav');
   let searchField = $1('.search__field');
   let searchClear = $1('.search__clear');
-
-  //
-  // Changes
-  //
-
-  changes.onmessage = (ev) => {
-    // TODO: Is the current node displayed still present?
-
-    tree.sync().then(() => {
-      renderNav(tree.root, activeNode);
-    });
-
-    console.log(ev);
-  };
-
-  changes.onclose = (ev) => {
-    console.log('Disconnected');
-  };
-
-  changes.onerror = (err) => {
-    console.log('Error:', err);
-  };
-
 
   //
   // Global State
