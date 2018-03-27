@@ -72,6 +72,9 @@ func (d NodeDoc) HTML(treePrefix string, nodeURL string, nodeGet NodeGetter) ([]
 		return d.postprocessHTML(parsed, treePrefix, nodeURL, nodeGet)
 	case ".html", ".htm":
 		return d.postprocessHTML(contents, treePrefix, nodeURL, nodeGet)
+	case ".txt":
+		html := fmt.Sprintf("<pre>%s</pre>", html.EscapeString(string(contents)))
+		return []byte(html), nil
 	}
 	return nil, fmt.Errorf("Document not in a supported format: %s", prettyPath(d.path))
 }

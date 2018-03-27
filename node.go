@@ -28,7 +28,7 @@ var (
 	IgnoreDownloadsRegexp = regexp.MustCompile(`(?i)^(.*\.(js|css|md|markdown|html?|json|ya?ml)|\..*|dsk.*|AUTHORS\.txt)$`)
 
 	// Basenames matching this pattern are considered documents.
-	NodeDocsRegexp = regexp.MustCompile(`(?i)^.*\.(md|markdown|html?)$`)
+	NodeDocsRegexp = regexp.MustCompile(`(?i)^.*\.(md|markdown|html?|txt)$`)
 
 	// Characters that are ignored when looking up an URL,
 	// i.e. "foo/bar baz" and "foo/barbaz" are than equal.
