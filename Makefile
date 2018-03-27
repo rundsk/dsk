@@ -6,7 +6,7 @@
 PREFIX ?= /usr/local
 VERSION ?= head-$(shell git rev-parse --short HEAD)
 GOFLAGS = -X main.Version=$(VERSION)
-
+GOBINDATA = $(go env GOPATH)/bin/go-bindata
 ANY_DEPS = $(wildcard *.go)
 FRONTEND ?= $(shell pwd)/frontend
 
@@ -16,7 +16,7 @@ test: data.go
 
 .PHONY: dev
 dev:
-	go-bindata -debug -prefix $(FRONTEND) -ignore=node_modules -o data.go $(FRONTEND)/...
+	$(GOBINDATA) -debug -prefix $(FRONTEND) -ignore=node_modules -o data.go $(FRONTEND)/...
 	go build -ldflags "$(GOFLAGS)"
 	@if [ ! -d _test ]; then mkdir _test; fi
 	./dsk _test
@@ -53,4 +53,4 @@ dist/%: $(ANY_DEPS) | data.go
 	go build -ldflags "$(GOFLAGS)" -o $@
 
 data.go: $(shell find $(FRONTEND) -type f) 
-	go-bindata -prefix $(FRONTEND) -ignore=node_modules -o data.go $(FRONTEND)/...
+	$(GOBINDATA) -prefix $(FRONTEND) -ignore=node_modules -o data.go $(FRONTEND)/...
