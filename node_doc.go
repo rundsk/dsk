@@ -64,7 +64,7 @@ func (d NodeDoc) HTML(treePrefix string, nodeURL string, nodeGet NodeGetter) ([]
 		return nil, err
 	}
 
-	switch filepath.Ext(d.path) {
+	switch strings.ToLower(filepath.Ext(d.path)) {
 	case ".md", ".markdown":
 		parsed, err := d.parseMarkdown(contents)
 		if err != nil {
