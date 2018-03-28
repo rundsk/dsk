@@ -9,6 +9,7 @@ import (
 	"errors"
 	"log"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -17,6 +18,7 @@ var (
 	PrettyPathRoot          string
 )
 
+// Does not include the tree root directort.
 func prettyPath(path string) string {
 	rel, _ := filepath.Rel(filepath.Dir(PrettyPathRoot), path)
 	return rel
@@ -67,4 +69,17 @@ func detectRoot(binary string, given string) (string, error) {
 		return here, err
 	}
 	return filepath.EvalSymlinks(here)
+}
+
+// Checks if any of the path segments in the given path, matches regexp.
+func anyPathSegmentMatches(path string, r *regexp.Regexp) bool {
+	for path != "." {
+		b := filepath.Base(path)
+
+		if IgnoreNodesRegexp.MatchString(b) {
+			return true
+		}
+		path = filepath.Dir(path)
+	}
+	return false
 }

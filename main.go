@@ -19,12 +19,17 @@ import (
 )
 
 var (
+	// Version string, compiled in.
 	Version string
 
+	// OS Signal channel.
 	sigc chan os.Signal
 
 	// Instance of the design defintions tree.
 	tree *NodeTree
+
+	// Watcher instance overseeing the tree forg changes.
+	watcher *Watcher
 )
 
 func main() {
@@ -43,6 +48,9 @@ func main() {
 			// not yet have been started, if we've been invoked early.
 			if tree != nil {
 				tree.Close()
+			}
+			if watcher != nil {
+				watcher.Close()
 			}
 			os.Exit(1)
 		}
@@ -68,19 +76,25 @@ func main() {
 
 	log.Printf("Starting %s Version %s", whiteOnBlue(" DSK "), Version)
 
+	log.Printf("Detecting tree root...")
 	here, err := detectRoot(os.Args[0], flag.Arg(0))
 	if err != nil {
 		log.Fatalf("Failed to detect root of design definitions tree: %s", red(err))
 	}
+	log.Printf("Tree root found: %s", here)
 	PrettyPathRoot = here
-	log.Printf("Reading design definitions tree from %s...", prettyPath(here))
 
-	tree = NewNodeTree(here) // assign to global
-	if err := tree.Sync(); err != nil {
-		log.Fatalf("Failed to do initial tree sync: %s", red(err))
+	log.Print("Begin watching tree for changes...")
+	w := NewWatcher(here)
+	if err := w.Open(IgnoreNodesRegexp); err != nil {
+		log.Fatalf("Failed to install watcher: %s", red(err))
 	}
-	if err := tree.StartAutoSync(); err != nil {
-		log.Fatalf("Failed to start tree auto-sync: %s", red(err))
+	watcher = w // assign to global
+
+	log.Print("Opening tree...")
+	tree = NewNodeTree(here, watcher) // assign to global
+	if err := tree.Open(); err != nil {
+		log.Fatalf("Failed to open tree: %s", red(err))
 	}
 
 	log.Print("Mounting APIv1...")
@@ -98,7 +112,7 @@ func main() {
 	})
 
 	addr := fmt.Sprintf("%s:%s", *host, *port)
-	log.Printf("Will listen on %s", addr)
+	log.Printf("Starting web interface on %s....", addr)
 
 	log.Printf("Please visit: %s", green("http://"+addr))
 	log.Print("Hit Ctrl+C to quit")

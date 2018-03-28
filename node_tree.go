@@ -15,8 +15,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/rjeczalik/notify"
 )
 
 var (
@@ -45,8 +43,8 @@ type NodeTree struct {
 	// Authors database, if AUTHORS.txt file exists.
 	authors *Authors
 
-	// Changes to the directory tree a send here.
-	changes chan notify.EventInfo
+	// Changes to the directory tree are watched here.
+	watcher *Watcher
 
 	// Quit channel, receiving true, when the tree is de-initialized.
 	done chan bool
@@ -57,9 +55,13 @@ type NodeTree struct {
 type NodeGetter func(url string) (ok bool, n *Node, err error)
 
 // Returns an unsynced tree from path; you must initialize the Tree
-// using Sync() and install auto-syncer before using it.
-func NewNodeTree(path string) *NodeTree {
-	return &NodeTree{path: path}
+// using Sync() or by calling Start().
+func NewNodeTree(path string, w *Watcher) *NodeTree {
+	return &NodeTree{
+		path:    path,
+		watcher: w,
+		done:    make(chan bool, 1),
+	}
 }
 
 // One-way sync: updates tree from file system. Recursively crawls
@@ -141,46 +143,26 @@ func (t *NodeTree) Sync() error {
 	return nil
 }
 
-func (t *NodeTree) StartAutoSync() error {
-	// Make the channel buffered to ensure no event is dropped. Notify will drop
-	// an event if the receiver is not able to keep up the sending pace.
-	t.changes = make(chan notify.EventInfo, 1)
-	t.done = make(chan bool, 1)
-
-	if err := notify.Watch(t.path+"/...", t.changes, notify.All); err != nil {
+// Open the tree and perform an initial tree sync, so the tree is
+// usable. Installs an auto-syncing process.
+func (t *NodeTree) Open() error {
+	if err := t.Sync(); err != nil {
 		return err
 	}
+	id, watch := t.watcher.Subscribe()
 
 	go func() {
-	Outer:
 		for {
 			select {
-			case ei := <-t.changes:
-				p := ei.Path()
-
-				// Do not match directories below tree root. If we
-				// are placed inside an ignored dir, anything would
-				// always be ignored. Even if the tree root directory
-				// is set to be ignored, do not, as the tree has been
-				// intentionally loaded from that directory.
-				pp := strings.TrimPrefix(p, t.path+"/")
-
-				for pp != "." {
-					b := filepath.Base(pp)
-					isRoot := b == pp
-					pp = filepath.Dir(pp)
-
-					if IgnoreNodesRegexp.MatchString(b) && !isRoot {
-						continue Outer
-					}
-				}
-				log.Printf("Change detected, re-syncing tree: %s", prettyPath(p))
+			case p := <-watch:
+				log.Printf("Change detected (%s), re-syncing tree...", prettyPath(p))
 
 				if err := t.Sync(); err != nil {
-					log.Printf("Auto-sync failed: %s", err)
+					log.Printf("Re-sync failed: %s", err)
 				}
 			case <-t.done:
-				log.Print("Auto-sync process is stopping...")
+				log.Print("Stopping auto-syncing...")
+				t.watcher.Unsubscribe(id)
 				return
 			}
 		}
@@ -188,10 +170,9 @@ func (t *NodeTree) StartAutoSync() error {
 	return nil
 }
 
-// Close the tree from further modification.
+// Close the tree.
 func (t *NodeTree) Close() {
 	t.done <- true
-	notify.Stop(t.changes)
 }
 
 // Returns the neighboring previous and next nodes for the given
