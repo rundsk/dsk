@@ -6,6 +6,7 @@
  */
 
 /* globals Client: false */
+/* globals Prism: false */
 
 class Page {
   constructor(main, props) {
@@ -253,8 +254,13 @@ class Page {
     wrap.appendChild(pre);
 
     let code = document.createElement('code');
-    code.innerText = `GET /api/v1/tree/${this.node.url}\n\n`;
-    code.innerText += JSON.stringify(this.node, null, 2);
+    code.classList.add('language-json');
+
+    code.innerHTML = Prism.highlight(
+      JSON.stringify(this.node, null, 2),
+      Prism.languages.javascript,
+      'javascript',
+    );
     pre.appendChild(code);
 
     let more = document.createElement('a');
