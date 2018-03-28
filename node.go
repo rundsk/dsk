@@ -16,6 +16,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -61,6 +62,10 @@ func NewNode(path string, root string) *Node {
 
 // Node represents a directory inside the design definitions tree.
 type Node struct {
+	// Ensure node is locked for writes, when updating the node's hash
+	// value cache.
+	sync.RWMutex
+
 	// Absolute path to the design defintions tree root.
 	root string
 
@@ -107,6 +112,9 @@ func (n *Node) loadMeta() error {
 }
 
 func (n *Node) Hash() ([]byte, error) {
+	n.Lock()
+	defer n.Unlock()
+
 	if n.hash != nil {
 		return n.hash, nil
 	}
