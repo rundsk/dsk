@@ -237,8 +237,13 @@ body {
 }
 
 .doc-switch {
+  color: var(--color-darkgray);
   display: inline-block;
   margin-right: 1rem;
+}
+
+.doc-switch.active {
+  color: var(--color-blue);
 }
 
 /* --- Crumbs --- */

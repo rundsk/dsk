@@ -145,11 +145,18 @@ class Page {
       this.node.docs.forEach((doc, index) => {
         let a = document.createElement('a');
         a.classList.add('doc-switch');
+
+        if (index === 0) {
+          a.classList.add('active');
+        }
         a.href = `#doc-${index}`;
         a.innerText = doc.title;
 
         a.addEventListener('click', (ev) => {
           ev.preventDefault();
+
+          this.main.querySelector('.doc-switch.active').classList.remove('active');
+          a.classList.add('active');
 
           this.main.querySelectorAll('.doc').forEach((el) => {
             el.classList.toggle('hide', el.id !== `doc-${index}`);
