@@ -188,7 +188,8 @@ func (t *NodeTree) StartAutoSync() error {
 	return nil
 }
 
-func (t *NodeTree) StopAutoSync() {
+// Close the tree from further modification.
+func (t *NodeTree) Close() {
 	t.done <- true
 	notify.Stop(t.changes)
 }

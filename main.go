@@ -28,7 +28,25 @@ var (
 )
 
 func main() {
-	log.SetFlags(0) // disable prefix, we are invoked directly.
+	// Disable prefix, we are invoked directly.
+	log.SetFlags(0)
+
+	// Listen for interrupt and allow to cancel program early.
+	sigc = make(chan os.Signal, 1)
+	signal.Notify(sigc, os.Interrupt)
+	go func() {
+		for sig := range sigc {
+			log.Printf("Caught %v signal, bye!", sig)
+			log.Print("Cleaning up...")
+
+			// Close services in reverse order of starting them. They might
+			// not yet have been started, if we've been invoked early.
+			if tree != nil {
+				tree.Close()
+			}
+			os.Exit(1)
+		}
+	}()
 
 	host := flag.String("host", "127.0.0.1", "host IP to bind to")
 	port := flag.String("port", "8080", "port to bind to")
@@ -84,17 +102,6 @@ func main() {
 
 	log.Printf("Please visit: %s", green("http://"+addr))
 	log.Print("Hit Ctrl+C to quit")
-
-	sigc = make(chan os.Signal, 1)
-	signal.Notify(sigc, os.Interrupt)
-	go func() {
-		for sig := range sigc {
-			log.Printf("Caught %v signal, bye!", sig)
-			log.Print("Cleaning up...")
-			tree.StopAutoSync()
-			os.Exit(1)
-		}
-	}()
 
 	if err := http.ListenAndServe(addr, nil); err != nil {
 		log.Fatalf("Failed to start web interface: %s", red(err))
