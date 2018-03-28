@@ -85,8 +85,7 @@ func (d NodeDoc) Raw() ([]byte, error) {
 	return ioutil.ReadFile(d.path)
 }
 
-// Parses markdown into HTML and makes relative links absolute, so
-// they are more portable.
+// Parses markdown into HTML.
 func (d NodeDoc) parseMarkdown(contents []byte) ([]byte, error) {
 	renderer := blackfriday.NewHTMLRenderer(blackfriday.HTMLRendererParameters{
 		Flags: blackfriday.CommonHTMLFlags &^ blackfriday.UseXHTML,
@@ -118,7 +117,7 @@ func (d NodeDoc) parseMarkdown(contents []byte) ([]byte, error) {
 //   https://github.com/russross/blackfriday/commit/27ba4cebef7f37e0bb5685e23cb7213cd809f9e8
 //   https://github.com/russross/blackfriday/commit/5c12499aa1ddda74561fb899c394f01fd1e8e9e6
 //
-// - Adds a title atttribute to node links
+// - Adds a data-node atttribute to node links
 //
 // - Adds a data-node attribute to node links containing the node's URL
 //
@@ -149,31 +148,22 @@ func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL str
 	maybeMakeAbsolute := func(t html.Token) (html.Token, error) {
 		ok, key, v := attr(t, "src")
 		if !ok {
-			// No source to change.
 			return t, nil
 		}
+
 		u, err := url.Parse(v)
-		if err != nil {
+		if err != nil || u.IsAbs() {
 			return t, err
 		}
-		if u.IsAbs() {
-			return t, nil
-		}
+
 		t.Attr[key].Val = treeBase.ResolveReference(u).String()
 		return t, nil
 	}
 
-	// Works only for relative node URLs.
-	maybeAddTitle := func(t html.Token) (html.Token, error) {
-		ok, _, v := attr(t, "title")
-		if ok && v != "" {
-			// Do not overwrite existing title.
-			return t, nil
-		}
-
-		ok, _, v = attr(t, "href")
+	// Works for both for both relative and absolute node URLs.
+	maybeAddDataNode := func(t html.Token) (html.Token, error) {
+		ok, _, v := attr(t, "href")
 		if !ok {
-			// No URL to check at all.
 			return t, nil
 		}
 
@@ -186,6 +176,7 @@ func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL str
 			// Doesn't look like a node URL at all, save the lookup.
 			return t, nil
 		}
+
 		// We look for both "/foo/bar" as well as "foo/bar", whereas
 		// the latter will not be considered a relative link when it
 		// can be successfully node-looked-up. This is to allow minor
@@ -197,13 +188,9 @@ func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL str
 		v = strings.TrimLeft(u.Path, "/")
 
 		ok, n, err := nodeGet(v)
-		if err != nil {
+		if err != nil || !ok {
 			return t, err
 		}
-		if !ok {
-			return t, nil
-		}
-		t.Attr = append(t.Attr, html.Attribute{Key: "title", Val: n.Title()})
 		t.Attr = append(t.Attr, html.Attribute{Key: "data-node", Val: n.URL()})
 		return t, nil
 	}
@@ -290,7 +277,7 @@ func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL str
 				}
 				buf.WriteString(t.String())
 			case "a":
-				t, err := maybeAddTitle(t)
+				t, err := maybeAddDataNode(t)
 				if err != nil {
 					return buf.Bytes(), err
 				}
