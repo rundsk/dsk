@@ -7,7 +7,6 @@ package main
 
 import (
 	"errors"
-	"html/template"
 	"log"
 	"path/filepath"
 	"strings"
@@ -68,20 +67,4 @@ func detectRoot(binary string, given string) (string, error) {
 		return here, err
 	}
 	return filepath.EvalSymlinks(here)
-}
-
-// The name of the template to parse is , i.e. "index.html". The template
-// must be located inside the data/views/ directory.
-func mustPrepareTemplate(name string) *template.Template {
-	t := template.New(name)
-
-	html, err := Asset("data/views/" + name)
-	if err != nil {
-		log.Fatal(err)
-	}
-	t, err = t.Parse(string(html[:]))
-	if err != nil {
-		log.Fatal(err)
-	}
-	return t
 }
