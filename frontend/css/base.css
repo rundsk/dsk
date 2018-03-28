@@ -44,7 +44,7 @@ body {
     "sidebar main";
   height: 100vh;
 
-  font-family: "Neuzeit S LT Std", sans-serif;
+  font-family: "Neuzeit S LT Std", Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 1em;
   color: var(--color-black);
