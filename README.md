@@ -1,6 +1,6 @@
 # Design System Kit
 
-[![Build Status](https://travis-ci.org/atelierdisko/dsk.svg?branch=1.0)](https://travis-ci.org/atelierdisko/dsk)
+[![Build Status](https://travis-ci.org/atelierdisko/dsk.svg?branch=master)](https://travis-ci.org/atelierdisko/dsk)
 
 ## Abstract
 
