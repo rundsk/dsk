@@ -159,8 +159,8 @@ this project.
 The backend provides the following API endpoints. JSON responses use the
 [JSend](https://labs.omniti.com/labs/jsend) format.
 
-`GET /api/v1`,
-returns the version and backend health status.
+`GET /api/v1/hello`,
+returns the version and a friendly greeting.
 
 `GET /api/v1/tree`,
 get the full design definitions tree as a nested tree of nodes.

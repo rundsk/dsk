@@ -23,6 +23,7 @@ type APIv1 struct {
 
 type APIv1Hello struct {
 	Hello   string `json:"hello"`
+	Project string `json:"project"`
 	Version string `json:"version"`
 }
 
@@ -85,7 +86,7 @@ type APIv1NodeAsset struct {
 }
 
 func (api APIv1) MountHTTPHandlers() {
-	http.HandleFunc("/api/v1", api.helloHandler)
+	http.HandleFunc("/api/v1/hello", api.helloHandler)
 	http.HandleFunc("/api/v1/tree", api.treeHandler)
 	http.HandleFunc("/api/v1/tree/", func(w http.ResponseWriter, r *http.Request) {
 		if filepath.Ext(r.URL.Path) != "" {
@@ -98,7 +99,7 @@ func (api APIv1) MountHTTPHandlers() {
 }
 
 func (api APIv1) NewHello() *APIv1Hello {
-	return &APIv1Hello{"dsk", Version}
+	return &APIv1Hello{"dsk", filepath.Base(api.tree.path), Version}
 }
 
 func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
