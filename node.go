@@ -178,7 +178,7 @@ func (n Node) Order() uint64 {
 // The node's computed title with any ordering numbers stripped off, usually for display purposes.
 func (n Node) Title() string {
 	if n.root == n.path {
-		return ""
+		return filepath.Base(n.root)
 	}
 	return removeOrderNumber(filepath.Base(n.path))
 }
