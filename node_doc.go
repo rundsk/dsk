@@ -15,6 +15,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/russross/blackfriday"
@@ -120,6 +121,8 @@ func (d NodeDoc) parseMarkdown(contents []byte) ([]byte, error) {
 // - Adds a title atttribute to node links
 //
 // - Adds a data-node attribute to node links containing the node's URL
+//
+// - Adds dimension attributes to images of nodes.
 func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL string, nodeGet NodeGetter) ([]byte, error) {
 	var buf bytes.Buffer
 
@@ -205,6 +208,48 @@ func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL str
 		return t, nil
 	}
 
+	maybeSize := func(t html.Token) (html.Token, error) {
+		ok, _, v := attr(t, "src")
+		if !ok {
+			// No source to change.
+			return t, nil
+		}
+
+		u, err := url.Parse(v)
+		if err != nil {
+			return t, err
+		}
+
+		if u.Scheme != "" || u.Host != "" || !strings.HasPrefix(u.Path, "/") {
+			// Doesn't look like a node URL at all, save the lookup.
+			// The URLs should have already been made absolute in
+			// maybeMakeAbsolute().
+			return t, nil
+		}
+		// Let's strip of the routing prefix and split the asset file, so
+		// we can look up the asset after node-getting.
+		r := strings.TrimPrefix(u.Path, treePrefix)
+		nurl := strings.Trim(filepath.Dir(r), "/")
+
+		ok, n, err := nodeGet(nurl)
+		if !ok || err != nil {
+			return t, err
+		}
+
+		a, err := n.Asset(filepath.Base(r))
+		if err != nil {
+			return t, nil
+		}
+		ok, w, h, err := a.Dimensions()
+		if !ok || err != nil {
+			return t, err
+		}
+
+		t.Attr = append(t.Attr, html.Attribute{Key: "width", Val: strconv.Itoa(w)})
+		t.Attr = append(t.Attr, html.Attribute{Key: "height", Val: strconv.Itoa(h)})
+		return t, nil
+	}
+
 	z := html.NewTokenizer(bytes.NewReader(contents))
 	for {
 		switch z.Next() {
@@ -228,7 +273,17 @@ func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL str
 			t := z.Token()
 
 			switch t.Data {
-			case "img", "video":
+			case "img":
+				t, err := maybeMakeAbsolute(t)
+				if err != nil {
+					return buf.Bytes(), err
+				}
+				t, err = maybeSize(t)
+				if err != nil {
+					return buf.Bytes(), err
+				}
+				buf.WriteString(t.String())
+			case "video", "audio":
 				t, err := maybeMakeAbsolute(t)
 				if err != nil {
 					return buf.Bytes(), err
