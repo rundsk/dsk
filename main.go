@@ -31,6 +31,9 @@ var (
 
 	// Watcher instance overseeing the tree for changes.
 	watcher *Watcher
+
+	// Global instance of a message broker.
+	broker *MessageBroker
 )
 
 func main() {
@@ -53,6 +56,9 @@ func main() {
 			}
 			if watcher != nil {
 				watcher.Close()
+			}
+			if broker != nil {
+				broker.Close()
 			}
 			os.Exit(1)
 		}
@@ -82,6 +88,10 @@ func main() {
 		log.Print()
 	}
 
+	log.Print("Starting message broker...")
+	broker = NewMessageBroker() // assign to global
+	broker.Start()
+
 	log.Printf("Detecting tree root...")
 	here, err := detectRoot(os.Args[0], flag.Arg(0))
 	if err != nil {
@@ -98,13 +108,13 @@ func main() {
 	watcher = w // assign to global
 
 	log.Print("Opening tree...")
-	tree = NewNodeTree(here, watcher) // assign to global
+	tree = NewNodeTree(here, watcher, broker) // assign to global
 	if err := tree.Open(); err != nil {
 		log.Fatalf("Failed to open tree: %s", red(err))
 	}
 
 	log.Print("Mounting APIv1...")
-	apiv1 := &APIv1{tree}
+	apiv1 := NewAPIv1(tree, broker)
 	apiv1.MountHTTPHandlers()
 
 	// Handles frontend root document delivery and frontend assets.

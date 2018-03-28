@@ -27,10 +27,11 @@ var (
 
 // Returns an unsynced tree from path; you must initialize the Tree
 // using Sync() or by calling Start().
-func NewNodeTree(path string, w *Watcher) *NodeTree {
+func NewNodeTree(path string, w *Watcher, b *MessageBroker) *NodeTree {
 	return &NodeTree{
 		path:    path,
 		watcher: w,
+		broker:  broker,
 		done:    make(chan bool),
 	}
 }
@@ -58,6 +59,9 @@ type NodeTree struct {
 	// Changes to the directory tree are watched here.
 	watcher *Watcher
 
+	// A place where we can send filtered messages to.
+	broker *MessageBroker
+
 	// Quit channel, receiving true, when the tree is de-initialized.
 	done chan bool
 }
@@ -65,6 +69,15 @@ type NodeTree struct {
 // NodeGetter retrieves nodes from the tree, using the node's relative
 // URL. When the node cannot be found ok will be false.
 type NodeGetter func(url string) (ok bool, n *Node, err error)
+
+// HashGetter returns a calculated (or cached) hash.
+type HashGetter func() ([]byte, error)
+
+func (t *NodeTree) Hash() ([]byte, error) {
+	t.RLock()
+	defer t.RUnlock()
+	return t.Root.Hash()
+}
 
 // One-way sync: updates tree from file system. Recursively crawls
 // the given root directory, constructing a tree of nodes.
@@ -138,6 +151,7 @@ func (t *NodeTree) Sync() error {
 	}
 	t.authors = as
 
+	t.broker.Accept(NewMessage(MessageTypeTreeSynced, ""))
 	log.Printf(
 		"Synced tree with %d total nodes (in %s)",
 		len(lookup),
@@ -157,7 +171,8 @@ func (t *NodeTree) Open() error {
 	go func() {
 		for {
 			select {
-			case <-watch:
+			case p := <-watch:
+				t.broker.Accept(NewMessage(MessageTypeTreeChanged, prettyPath(p.(string))))
 				log.Printf("Re-syncing tree...")
 
 				if err := t.Sync(); err != nil {

@@ -9,14 +9,34 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"path/filepath"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
+
+func NewAPIv1(tree *NodeTree, hub *MessageBroker) *APIv1 {
+	return &APIv1{
+		tree:     tree,
+		messages: hub,
+		upgrader: websocket.Upgrader{
+			ReadBufferSize:  1024,
+			WriteBufferSize: 1024,
+		},
+	}
+}
 
 type APIv1 struct {
 	tree *NodeTree
+
+	// We subscribe to the broker in our messages endpoint.
+	messages *MessageBroker
+
+	// Upgrades HTTP requests to WebSocket-.
+	upgrader websocket.Upgrader
 }
 
 type APIv1Hello struct {
@@ -87,6 +107,11 @@ type APIv1SearchResults struct {
 	Took  int64    `json:"took"` // nanoseconds
 }
 
+type APIv1Message struct {
+	Typ  string `json:"type"`
+	Text string `json:"text"`
+}
+
 func (api APIv1) MountHTTPHandlers() {
 	http.HandleFunc("/api/v1/hello", api.helloHandler)
 	http.HandleFunc("/api/v1/tree", api.treeHandler)
@@ -98,6 +123,7 @@ func (api APIv1) MountHTTPHandlers() {
 		}
 	})
 	http.HandleFunc("/api/v1/search", api.searchHandler)
+	http.HandleFunc("/api/v1/messages", api.messagesHandler)
 }
 
 func (api APIv1) NewHello() *APIv1Hello {
@@ -267,6 +293,36 @@ func (api APIv1) helloHandler(w http.ResponseWriter, r *http.Request) {
 	(&HTTPResponder{w, r, "application/json"}).OK(api.NewHello())
 }
 
+// WebSocket endpoint for receiving notifications.
+// https://jacobmartins.com/2016/03/07/practical-golang-using-websockets/
+func (api *APIv1) messagesHandler(w http.ResponseWriter, r *http.Request) {
+	wr := &HTTPResponder{w, r, ""}
+
+	conn, err := api.upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		wr.Error(HTTPErr, err)
+		return
+	}
+	id, messages := api.messages.Subscribe()
+
+	for {
+		m, ok := <-messages // Blocks until we have a message.
+		if !ok {
+			// Channel is now closed.
+			break
+		}
+		am, _ := json.Marshal(&APIv1Message{m.(*Message).typ, m.(*Message).text})
+
+		err = conn.WriteMessage(websocket.TextMessage, am)
+		if err != nil {
+			// Silently unsubscribe, the client has gone away.
+			break
+		}
+	}
+	api.messages.Unsubscribe(id)
+	conn.Close()
+}
+
 // Returns all nodes in the design defintions tree, as nested nodes.
 //
 // Handles this URL:
@@ -275,7 +331,7 @@ func (api APIv1) treeHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, "application/json"}
 	// Not getting or checking path, as only tree requests are routed here.
 
-	if wr.Cached(api.tree.Root.Hash) {
+	if wr.Cached(api.tree.Hash) {
 		return
 	}
 
@@ -284,7 +340,7 @@ func (api APIv1) treeHandler(w http.ResponseWriter, r *http.Request) {
 		wr.Error(HTTPErr, err)
 		return
 	}
-	wr.Cache(api.tree.Root.Hash)
+	wr.Cache(api.tree.Hash)
 	wr.OK(atree)
 }
 

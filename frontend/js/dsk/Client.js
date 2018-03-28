@@ -9,6 +9,16 @@ class Client {
     return this.fetch('/api/v1/hello');
   }
 
+  // Returns a web socket connection to the messages endpoint. Asummes it
+  // is reachable over a TLS encrypted connected, when we are loaded via one.
+  static messages() {
+    let protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    let host = window.location.hostname;
+    let port = (window.location.port ? `:${window.location.port}` : '');
+
+    return new WebSocket(`${protocol}://${host}${port}/api/v1/messages`);
+  }
+
   static tree() {
     return this.fetch('/api/v1/tree');
   }
