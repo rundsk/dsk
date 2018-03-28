@@ -118,6 +118,8 @@ func (d NodeDoc) parseMarkdown(contents []byte) ([]byte, error) {
 //   https://github.com/russross/blackfriday/commit/5c12499aa1ddda74561fb899c394f01fd1e8e9e6
 //
 // - Adds a title atttribute to node links
+//
+// - Adds a data-node attribute to node links containing the node's URL
 func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL string, nodeGet NodeGetter) ([]byte, error) {
 	var buf bytes.Buffer
 
@@ -178,8 +180,15 @@ func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL str
 		}
 
 		if u.Scheme != "" || u.Host != "" {
-			// Doesn't look like a node URL, save the lookup.
+			// Doesn't look like a node URL at all, save the lookup.
 			return t, nil
+		}
+		// We look for both "/foo/bar" as well as "foo/bar", whereas
+		// the latter will not be considered a relative link when it
+		// can be successfully node-looked-up. This is to allow minor
+		// human errors, that happen.
+		if !strings.HasPrefix(u.Path, "/") {
+			u.Path = fmt.Sprintf("/%s", u.Path)
 		}
 		u = nodeBase.ResolveReference(u)
 		v = strings.TrimLeft(u.Path, "/")
