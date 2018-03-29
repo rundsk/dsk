@@ -4,12 +4,12 @@
 
 ## Abstract
 
-Using the _Design System Kit_ you quickly define and organize
-design aspects into a browsable and live-searchable design system.
+Using the Design System Kit you quickly define and organize
+_design aspects_ into a browsable and live-searchable design system.
 Hierachies between design aspects are established using plain
 simple directories. Creating documentation is as easy as adding a
 [Markdown](https://guides.github.com/features/mastering-markdown/) formatted
-file to a directory inside the design definitions tree.
+file to a directory inside the _design definitions tree_.
 
 ![screenshot](https://atelierdisko.de/assets/app/img/github_dsk.png)
 
@@ -53,22 +53,25 @@ example
 │   │   ├── api.md              <- document
 │   │   ├── exploration.sketch  <- asset
 │   │   ├── meta.yml            <- meta data file
-│   │   ├── readme.md           <- document
+│   │   ├── explain.md          <- document
 │   │   └── unmask.svg          <- asset
 ```
+
+_Note_: Directories beginning with an underscore (`-`), `x-` and `x_` or a dot (`.`) are ignored.
 
 ### Documenting Design Aspects
 
 Aspects are documented by adding
 [Markdown](https://guides.github.com/features/mastering-markdown/) formatted
 documentation files to their directory. A `readme.md` file, may describe
-an aspect or give clues how to use a certain component. Please note that
-`readme.md` is in no ways treated specially by dsk, but is usually displayed by
-GitHub as the primary document in the web interface. You can split documentation
+an aspect or give clues how to use a certain component. You can split documentation
 over several files when you like to. We usually use `api.md`, `explain.md` or
 `comments.md`.
 
-_Note_: If you prefer plain HTML documents over Markdown, these are
+_Note_: `readme.md` is in no ways treated specially by dsk, but is usually displayed by
+GitHub as the primary document in the web interface. 
+
+_Another note_: If you prefer plain HTML documents over Markdown, these are
 supported too. For this use `.html` instead of `.md` as the file
 extension.
 
@@ -133,6 +136,24 @@ name and her/his email address in angle brackets.
 Christoph Labacher <christoph@atelierdisko.de>
 Marius Wilms <marius@atelierdisko.de>
 ```
+
+### Manually Ordering
+
+Aspects and documents by default appear in the same order as they are stored on your disk. But sometimes
+order matters. To manually set the order you prefix aspects or documents with an _order number_ like so: 
+
+```
+example
+├── DataEntry
+│   ├── 01_TextField       <-- now comes before Button
+│   │   ├── ...
+│   │   ├── 01_explain.md  <-- now comes before api.md
+│   │   └── 02_api.md
+│   ├── 02_Button
+│   │   └── ...
+```
+
+Valid order number prefixes look like `01_`, `1_`, `1_` or `1-`.
 
 # Architecture
 
