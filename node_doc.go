@@ -238,55 +238,77 @@ func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL str
 	}
 
 	z := html.NewTokenizer(bytes.NewReader(contents))
+	var isEscaping bool
 	for {
-		switch z.Next() {
-		case html.ErrorToken:
+		tt := z.Next()
+
+		if tt == html.ErrorToken {
 			err := z.Err()
 
 			if err == io.EOF {
 				return buf.Bytes(), nil
 			}
 			return buf.Bytes(), err
-		case html.StartTagToken, html.SelfClosingTagToken:
-			// By default html parser's methods normalize tag names
-			// to lower case. As we use custom component tag names in
-			// pre-formatted text, we'll need to be sure to keep the
-			// casing intact instead.
-			//
-			// Calling TagName() et al. will modify the underlying
-			// slice as returned by Raw(). To prevent this we'll clone
-			// the slice.
-			raw := append([]byte(nil), z.Raw()...)
-			t := z.Token()
+		}
 
-			switch t.Data {
-			case "img":
-				t, err := maybeMakeAbsolute(t)
-				if err != nil {
-					return buf.Bytes(), err
-				}
-				t, err = maybeSize(t)
-				if err != nil {
-					return buf.Bytes(), err
-				}
-				buf.WriteString(t.String())
-			case "video", "audio":
-				t, err := maybeMakeAbsolute(t)
-				if err != nil {
-					return buf.Bytes(), err
-				}
-				buf.WriteString(t.String())
-			case "a":
-				t, err := maybeAddDataNode(t)
-				if err != nil {
-					return buf.Bytes(), err
-				}
-				buf.WriteString(t.String())
-			default:
-				buf.Write(raw)
-			}
-		default:
+		if tt == html.CommentToken || tt == html.DoctypeToken {
+			// We don't care about these... ever.
 			buf.Write(z.Raw())
+			continue
+		}
+
+		// By default html parser's methods normalize tag names
+		// to lower case. As we use custom component tag names in
+		// pre-formatted text, we'll need to be sure to keep the
+		// casing intact instead.
+		//
+		// Calling TagName() et al. will modify the underlying
+		// slice as returned by Raw(). To prevent this we'll clone
+		// the slice.
+		raw := append([]byte(nil), z.Raw()...)
+		t := z.Token()
+
+		if isEscaping {
+			if t.Data == "code" && tt == html.EndTagToken {
+				isEscaping = false
+			} else {
+				// Markdown already escapes HTML entities when they are inside
+				// a code block, but doesn't if code was in plain HTML tags.
+				buf.WriteString(html.EscapeString(html.UnescapeString(string(raw))))
+				continue
+			}
+		}
+
+		switch {
+		case t.Data == "img":
+			t, err := maybeMakeAbsolute(t)
+			if err != nil {
+				return buf.Bytes(), err
+			}
+			t, err = maybeSize(t)
+			if err != nil {
+				return buf.Bytes(), err
+			}
+			buf.WriteString(t.String())
+		case t.Data == "video" || t.Data == "audio":
+			t, err := maybeMakeAbsolute(t)
+			if err != nil {
+				return buf.Bytes(), err
+			}
+			buf.WriteString(t.String())
+		case t.Data == "a":
+			t, err := maybeAddDataNode(t)
+			if err != nil {
+				return buf.Bytes(), err
+			}
+			buf.WriteString(t.String())
+		case t.Data == "code" && tt == html.StartTagToken:
+			isEscaping = true
+			buf.WriteString(t.String())
+		case tt == html.TextToken:
+			buf.Write(raw)
+		default:
+			buf.Write(raw)
 		}
 	}
 }
