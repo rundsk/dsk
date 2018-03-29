@@ -22,7 +22,7 @@ func NewWatcher(path string) *Watcher {
 		// an event if the receiver is not able to keep up the sending pace.
 		changes:    make(chan notify.EventInfo, 1),
 		subscribed: make(map[int]chan<- string, 0),
-		done:       make(chan bool, 1),
+		done:       make(chan bool),
 	}
 }
 
@@ -33,7 +33,7 @@ type Watcher struct {
 	// Path to watch for changes.
 	path string
 
-	// Changes to the directory tree a send here.
+	// Changes to the directory tree are send here.
 	changes chan notify.EventInfo
 
 	// A map of channels currently subscribed to changes. Once
@@ -41,7 +41,7 @@ type Watcher struct {
 	// channel is detected to be closed, we remove it from here.
 	subscribed map[int]chan<- string
 
-	// Quit channel, receiving true, when the tree is de-initialized.
+	// Quit channel, receiving true, when we are closed.
 	done chan bool
 }
 

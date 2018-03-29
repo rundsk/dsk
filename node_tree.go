@@ -23,6 +23,16 @@ var (
 	IgnoreNodesRegexp = regexp.MustCompile(`^(x[-_].*|_.*|\..*|node_modules)$`)
 )
 
+// Returns an unsynced tree from path; you must initialize the Tree
+// using Sync() or by calling Start().
+func NewNodeTree(path string, w *Watcher) *NodeTree {
+	return &NodeTree{
+		path:    path,
+		watcher: w,
+		done:    make(chan bool),
+	}
+}
+
 type NodeTree struct {
 	// Ensures the tree is locked, when it is being synced, to
 	// prevent reads in the middle of syncs.
@@ -53,16 +63,6 @@ type NodeTree struct {
 // A func to retrieve nodes from the tree, using the node's relative
 // URL. When the node cannot be found ok will be false.
 type NodeGetter func(url string) (ok bool, n *Node, err error)
-
-// Returns an unsynced tree from path; you must initialize the Tree
-// using Sync() or by calling Start().
-func NewNodeTree(path string, w *Watcher) *NodeTree {
-	return &NodeTree{
-		path:    path,
-		watcher: w,
-		done:    make(chan bool, 1),
-	}
-}
 
 // One-way sync: updates tree from file system. Recursively crawls
 // the given root directory, constructing a tree of nodes.

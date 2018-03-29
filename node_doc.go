@@ -253,7 +253,7 @@ func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL str
 			// pre-formatted text, we'll need to be sure to keep the
 			// casing intact instead.
 			//
-			// Calling TagName() et all will modify the underlying
+			// Calling TagName() et al. will modify the underlying
 			// slice as returned by Raw(). To prevent this we'll clone
 			// the slice.
 			raw := append([]byte(nil), z.Raw()...)
