@@ -517,6 +517,7 @@ body {
 
 .doc img, .doc video {
   max-width: 100%;
+  height: auto;
   margin: 2rem 0;
 }
 
