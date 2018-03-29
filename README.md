@@ -47,7 +47,7 @@ example
 ├── DataEntry
 │   ├── Button                  <- "Button" design aspect
 │   │   └── ...
-│   ├── TextField               <- "Text Field" design aspect
+│   ├── TextField               <- "TextField" design aspect
 │   │   ├── Password            <- nested "Password" design aspect
 │   │   │   └── readme.md
 │   │   ├── api.md              <- document
@@ -57,7 +57,7 @@ example
 │   │   └── unmask.svg          <- asset
 ```
 
-_Note_: Directories beginning with an underscore (`-`), `x-` and `x_` or a dot (`.`) are ignored.
+_Note_: Directories beginning with an underscore (`_`), `x-` and `x_` or a dot (`.`) are ignored.
 
 ### Documenting Design Aspects
 
@@ -145,15 +145,15 @@ order matters. To manually set the order you prefix aspects or documents with an
 ```
 example
 ├── DataEntry
-│   ├── 01_TextField       <-- now comes before Button
+│   ├── 01_TextField       <-- now comes before "Button"
 │   │   ├── ...
-│   │   ├── 01_explain.md  <-- now comes before api.md
+│   │   ├── 01_explain.md  <-- now comes before "api.md"
 │   │   └── 02_api.md
 │   ├── 02_Button
 │   │   └── ...
 ```
 
-Valid order number prefixes look like `01_`, `1_`, `1_` or `1-`.
+Valid order number prefixes look like `01_`, `01_`, `1_` or `1-`.
 
 # Architecture
 
@@ -327,8 +327,8 @@ server {
 
 ## Known Limitations
 
-- Symlinks inside the DDT are not supported
-- Did not thoroughly test on Windows
+- Symlinks inside the design defintions tree are not supported
+- Not tested thoroughly on Windows
 
 ## Copyright & License
 
