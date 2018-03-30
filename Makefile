@@ -17,8 +17,7 @@ test: data.go
 dev:
 	$(GOBINDATA) -debug -prefix $(FRONTEND) -ignore=node_modules -o data.go $(FRONTEND)/...
 	go build -race -ldflags "$(GOFLAGS)"
-	@if [ ! -d _test ]; then mkdir _test; fi
-	./dsk _test
+	./dsk example
 
 .PHONY: clean
 clean:

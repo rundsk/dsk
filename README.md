@@ -236,7 +236,7 @@ export PATH=$PATH:$(go env GOPATH)/bin
 ```
 
 The `make dev` command assumes your test design system definitions are below
-a directory called `_test`. The vendored dependencies are managed with
+the `example` directory. The vendored dependencies are managed with
 [dep](https://github.com/golang/dep).
 
 ```
