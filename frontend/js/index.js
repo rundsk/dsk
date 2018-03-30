@@ -60,8 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     hello.then((data) => {
       // Representing.
-      console.log(`%cDSK Version ${data.version}`, 'background-color: #0E26FC; color: white;');
-      console.log('https://github.com/atelierdisko/dsk');
+      console.log('%c DSK ', 'background-color: #0E26FC; color: white;');
+      console.log(`Version ${data.version}`);
 
       $1('.project-name').innerText = data.project;
       page.setBaseTitle(`${document.title} ${data.project}`);

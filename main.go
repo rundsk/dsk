@@ -16,6 +16,7 @@ import (
 	"path/filepath"
 
 	"github.com/fatih/color"
+	isatty "github.com/mattn/go-isatty"
 )
 
 var (
@@ -35,6 +36,7 @@ var (
 func main() {
 	// Disable prefix, we are invoked directly.
 	log.SetFlags(0)
+	isTerminal := isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd())
 
 	// Listen for interrupt and allow to cancel program early.
 	sigc = make(chan os.Signal, 1)
@@ -74,7 +76,11 @@ func main() {
 	green := color.New(color.FgGreen).SprintFunc()
 	red := color.New(color.FgRed).SprintFunc()
 
-	log.Printf("Starting %s Version %s", whiteOnBlue(" DSK "), Version)
+	if isTerminal {
+		log.Print(whiteOnBlue(" DSK "))
+		log.Printf("Version %s", Version)
+		log.Print()
+	}
 
 	log.Printf("Detecting tree root...")
 	here, err := detectRoot(os.Args[0], flag.Arg(0))
@@ -114,8 +120,12 @@ func main() {
 	addr := fmt.Sprintf("%s:%s", *host, *port)
 	log.Printf("Starting web interface on %s....", addr)
 
-	log.Printf("Please visit: %s", green("http://"+addr))
-	log.Print("Hit Ctrl+C to quit")
+	if isTerminal {
+		log.Print()
+		log.Printf("Please visit: %s", green("http://"+addr))
+		log.Print("Hit Ctrl+C to quit")
+		log.Print()
+	}
 
 	if err := http.ListenAndServe(addr, nil); err != nil {
 		log.Fatalf("Failed to start web interface: %s", red(err))
