@@ -28,7 +28,7 @@ var (
 	// Instance of the design defintions tree.
 	tree *NodeTree
 
-	// Watcher instance overseeing the tree forg changes.
+	// Watcher instance overseeing the tree for changes.
 	watcher *Watcher
 )
 
