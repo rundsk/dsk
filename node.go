@@ -154,7 +154,7 @@ func (n *Node) Hash() ([]byte, error) {
 
 // Returns the normalized URL path fragment, that can be used to
 // address this node i.e Input/Password.
-func (n Node) URL() string {
+func (n *Node) URL() string {
 	if n.root == n.path {
 		return ""
 	}
@@ -162,7 +162,7 @@ func (n Node) URL() string {
 }
 
 // Returns the unnormalized URL path fragment.
-func (n Node) UnnormalizedURL() string {
+func (n *Node) UnnormalizedURL() string {
 	if n.root == n.path {
 		return ""
 	}
@@ -170,7 +170,7 @@ func (n Node) UnnormalizedURL() string {
 }
 
 // Returns the normalized and lower cased lookup URL for this node.
-func (n Node) LookupURL() string {
+func (n *Node) LookupURL() string {
 	return NodeLookupURLIgnoreChars.ReplaceAllString(
 		strings.ToLower(n.URL()),
 		"",
@@ -178,12 +178,12 @@ func (n Node) LookupURL() string {
 }
 
 // An order number, as a hint for outside sorting mechanisms.
-func (n Node) Order() uint64 {
+func (n *Node) Order() uint64 {
 	return orderNumber(filepath.Base(n.path))
 }
 
 // The node's computed title with any ordering numbers stripped off, usually for display purposes.
-func (n Node) Title() string {
+func (n *Node) Title() string {
 	if n.root == n.path {
 		return filepath.Base(n.root)
 	}
@@ -191,12 +191,12 @@ func (n Node) Title() string {
 }
 
 // Returns the full description of the node.
-func (n Node) Description() string {
+func (n *Node) Description() string {
 	return n.meta.Description
 }
 
 // Returns a list of related nodes.
-func (n Node) Related(get NodeGetter) []*Node {
+func (n *Node) Related(get NodeGetter) []*Node {
 	nodes := make([]*Node, 0, len(n.meta.Related))
 
 	for _, r := range n.meta.Related {
@@ -215,7 +215,7 @@ func (n Node) Related(get NodeGetter) []*Node {
 }
 
 // Returns an alphabetically sorted list of tags.
-func (n Node) Tags() []string {
+func (n *Node) Tags() []string {
 	if n.meta.Tags == nil {
 		return make([]string, 0)
 	}
@@ -226,7 +226,7 @@ func (n Node) Tags() []string {
 }
 
 // Returns a list of keywords terms.
-func (n Node) Keywords() []string {
+func (n *Node) Keywords() []string {
 	if n.meta.Keywords == nil {
 		return make([]string, 0)
 	}
@@ -235,7 +235,7 @@ func (n Node) Keywords() []string {
 
 // Returns a list of node authors; wil use the given authors
 // database to lookup information.
-func (n Node) Authors(as *Authors) []*Author {
+func (n *Node) Authors(as *Authors) []*Author {
 	r := make([]*Author, 0)
 
 	if n.meta.Authors == nil {
@@ -253,7 +253,7 @@ func (n Node) Authors(as *Authors) []*Author {
 
 // Finds the most recently edited file in the node directory and
 // returns its modified timestamp.
-func (n Node) Modified() time.Time {
+func (n *Node) Modified() time.Time {
 	var modified time.Time
 
 	files, err := ioutil.ReadDir(n.path)
@@ -272,12 +272,12 @@ func (n Node) Modified() time.Time {
 	return modified
 }
 
-func (n Node) Version() string {
+func (n *Node) Version() string {
 	return n.meta.Version
 }
 
 // Returns a node asset, given its basename.
-func (n Node) Asset(name string) (*NodeAsset, error) {
+func (n *Node) Asset(name string) (*NodeAsset, error) {
 	path := filepath.Join(n.path, name)
 
 	f, err := os.Stat(path)
@@ -297,7 +297,7 @@ func (n Node) Asset(name string) (*NodeAsset, error) {
 // Returns a list of downloadable files, this may include Sketch files
 // or other binary assets. JavaScript and Stylesheets and DSK control
 // files are excluded.
-func (n Node) Downloads() ([]*NodeAsset, error) {
+func (n *Node) Downloads() ([]*NodeAsset, error) {
 	downloads := make([]*NodeAsset, 0)
 
 	files, err := ioutil.ReadDir(n.path)
@@ -326,7 +326,7 @@ func (n Node) Downloads() ([]*NodeAsset, error) {
 // The provided tree URL prefix will be used to resolve and make
 // relative links inside the document absolute. This is usually
 // something like: /api/v1/tree
-func (n Node) Docs() ([]*NodeDoc, error) {
+func (n *Node) Docs() ([]*NodeDoc, error) {
 	docs := make([]*NodeDoc, 0)
 
 	files, err := ioutil.ReadDir(n.path)
@@ -350,7 +350,7 @@ func (n Node) Docs() ([]*NodeDoc, error) {
 
 // Returns a list of crumbs. The last element is the current active
 // one. Does not include a root node.
-func (n Node) Crumbs(get NodeGetter) []*Node {
+func (n *Node) Crumbs(get NodeGetter) []*Node {
 	nodes := make([]*Node, 0)
 
 	parts := strings.Split(strings.TrimSuffix(n.URL(), "/"), "/")
