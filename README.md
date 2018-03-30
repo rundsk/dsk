@@ -247,7 +247,8 @@ $ cd $(go env GOPATH)/src/github.com/atelierdisko/dsk
 $ make dev
 ```
 
-To run the unit tests use `make test`.
+To run the unit tests use `make test`, to run the benchmarks use `make bench`,
+for performance profiling run `make profile`.
 
 ## Deploying as a Webservice
 

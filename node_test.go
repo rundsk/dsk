@@ -119,3 +119,15 @@ func TestCrumbOrderedTitles(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkHashCalculation(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		// Do not use constructor, so we don't also measure meta parsing.
+		n := &Node{
+			root:     "example",
+			path:     "example",
+			Children: make([]*Node, 0),
+		}
+		n.Hash()
+	}
+}
