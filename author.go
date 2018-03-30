@@ -7,6 +7,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -65,6 +66,9 @@ func (as Authors) parse(r io.Reader) ([]*Author, error) {
 			continue
 		}
 		beginMail := strings.Index(line, "<")
+		if beginMail == -1 {
+			return parsed, fmt.Errorf("expected angle bracket in line '%s'", line)
+		}
 
 		name := strings.TrimSpace(line[0 : beginMail-1])
 		email := strings.TrimSpace(line[beginMail+1 : len(line)-1])

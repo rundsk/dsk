@@ -15,6 +15,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/fatih/color"
 )
 
 var (
@@ -128,7 +130,8 @@ func (t *NodeTree) Sync() error {
 	if _, err := os.Stat(authorsFile); err == nil {
 		as, err = NewAuthorsFromFile(authorsFile)
 		if err != nil {
-			return err
+			log.Print(color.New(color.FgYellow).Sprintf("Failed parsing %s: %s", prettyPath(authorsFile), err))
+			as = &Authors{}
 		}
 	} else {
 		as = &Authors{}

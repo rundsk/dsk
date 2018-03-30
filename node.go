@@ -18,6 +18,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/fatih/color"
 )
 
 var (
@@ -55,7 +57,7 @@ func NewNode(path string, root string) *Node {
 	}
 
 	if err := n.loadMeta(); err != nil {
-		log.Print(err)
+		log.Print(color.New(color.FgYellow).Sprint(err))
 	}
 	return n
 }
