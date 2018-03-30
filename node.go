@@ -251,14 +251,16 @@ func (n *Node) Authors(as *Authors) []*Author {
 	return r
 }
 
-// Finds the most recently edited file in the node directory and
-// returns its modified timestamp.
-func (n *Node) Modified() time.Time {
+// Modified finds the most recently edited file in the node directory
+// and returns its modified time. In case the directory doesn't
+// contain any files, the func will still succeed but return a zero
+// time.
+func (n *Node) Modified() (time.Time, error) {
 	var modified time.Time
 
 	files, err := ioutil.ReadDir(n.path)
 	if err != nil {
-		return modified
+		return modified, err
 	}
 
 	for _, f := range files {
@@ -269,7 +271,7 @@ func (n *Node) Modified() time.Time {
 			modified = f.ModTime()
 		}
 	}
-	return modified
+	return modified, nil
 }
 
 func (n *Node) Version() string {

@@ -123,7 +123,10 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		authors = append(authors, &APIv1NodeAuthor{author.Email, author.Name})
 	}
 
-	nModified := n.Modified()
+	nModified, err := n.Modified()
+	if err != nil {
+		return nil, err
+	}
 	modified := int64(0)
 	if !nModified.IsZero() {
 		modified = nModified.Unix()
