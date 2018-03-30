@@ -240,15 +240,13 @@ func (api APIv1) NewTreeNode(n *Node) (*APIv1TreeNode, error) {
 
 func (api APIv1) NewNodeTree(t *NodeTree) (*APIv1NodeTree, error) {
 	root, err := api.NewTreeNode(t.Root)
-
-	// Tree hash is the same as the root nodes'.
-	hash, err := api.tree.Root.Hash()
 	if err != nil {
 		return nil, err
 	}
 
 	return &APIv1NodeTree{
-		Hash:       fmt.Sprintf("%x", hash),
+		// Tree hash is the same as the root nodes'.
+		Hash:       fmt.Sprintf("%x", root.Hash),
 		Root:       root,
 		TotalNodes: t.TotalNodes(),
 	}, err
