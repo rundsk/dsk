@@ -7,12 +7,10 @@ package main
 
 import (
 	"bytes"
-	"crypto/sha1"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/url"
-	"os"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -26,19 +24,6 @@ import (
 type NodeDoc struct {
 	// Absolute path to the document file.
 	path string
-}
-
-func (d NodeDoc) Hash() ([]byte, error) {
-	h := sha1.New()
-
-	f, err := os.Open(d.path)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	_, err = io.Copy(h, f)
-	return h.Sum(nil), err
 }
 
 // An order number, as a hint for outside sorting mechanisms.

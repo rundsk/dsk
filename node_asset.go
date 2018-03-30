@@ -6,13 +6,11 @@
 package main
 
 import (
-	"crypto/sha1"
 	"image"
 	_ "image/jpeg"
 	_ "image/png"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 )
 
@@ -28,18 +26,13 @@ type NodeAsset struct {
 	Name string
 }
 
-// As naivily calculating the checksum over the whole file will
-// be slow due to the potential large sizes of i.e. video assets,
-// we simply take the modified data and time.
-func (a NodeAsset) Hash() ([]byte, error) {
-	h := sha1.New()
-	i, err := os.Stat(a.path)
-	u := i.ModTime().Unix()
-	return h.Sum([]byte(strconv.FormatInt(u, 10))), err
+// IsDownloadable is true when the asset should be available for download.
+func (a NodeAsset) IsDownloadable() bool {
+	return true
 }
 
-// Returns dimensions for media where this is possible. "ok" indicates
-// if the format was supported.
+// Dimensions for asset media when these are possible to detect. "ok"
+// indicates if the format was supported.
 func (a NodeAsset) Dimensions() (ok bool, w int, h int, err error) {
 	switch strings.ToLower(filepath.Ext(a.path)) {
 	case ".jpg", ".jpeg", ".png":
@@ -55,9 +48,4 @@ func (a NodeAsset) Dimensions() (ok bool, w int, h int, err error) {
 	default:
 		return false, 0, 0, nil
 	}
-}
-
-// IsDownloadable is true when the asset should be available for download.
-func (a NodeAsset) IsDownloadable() bool {
-	return true
 }

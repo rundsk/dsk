@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -110,35 +111,33 @@ func (n *Node) loadMeta() error {
 	return nil
 }
 
+// Hash calculates a good enough hash over all aspects of the node,
+// including its children. Excludes parent in calculation, as it would
+// cause an infinite loop.
 func (n *Node) Hash() ([]byte, error) {
-	n.Lock()
-	defer n.Unlock()
+	n.RLock()
 
 	if n.hash != nil {
+		defer n.RUnlock()
 		return n.hash, nil
 	}
+	n.RUnlock()
+
 	h := sha1.New()
 	hcom := sha1.New()
 
+	// Covers parent name changes, too.
 	h.Write([]byte(n.path))
 
-	docs, _ := n.Docs()
-	for _, v := range docs {
-		hv, err := v.Hash()
-		if err != nil {
-			return nil, err
-		}
-		h.Write(hv)
+	// To avoid expensive calculation of asset (may be large videos)
+	// and doc hashes over the whole underlying files, we instead use
+	// the last modified file time. This also includes any meta data
+	// files.
+	m, err := n.Modified()
+	if err != nil {
+		return nil, err
 	}
-
-	downloads, _ := n.Downloads()
-	for _, v := range downloads {
-		hv, err := v.Hash()
-		if err != nil {
-			return nil, err
-		}
-		h.Write(hv)
-	}
+	h.Write([]byte(strconv.FormatInt(m.Unix(), 10)))
 
 	hcom.Write(h.Sum(nil))
 	for _, v := range n.Children {
@@ -148,6 +147,8 @@ func (n *Node) Hash() ([]byte, error) {
 		}
 		hcom.Write(hv)
 	}
+	n.Lock()
+	defer n.Unlock()
 	n.hash = hcom.Sum(nil)
 	return n.hash, nil
 }
