@@ -17,12 +17,12 @@ file to a directory inside the _design definitions tree_.
 
 Visit the [GitHub releases page](https://github.com/atelierdisko/dsk/releases) and download the binary for your architecture. For macOS use `dsk-darwin-amd64`, for Linux use `dsk-linux-amd64`.
 
-After downloading the binary, you need to make the binary excutable.
+After downloading, you need to make the binary excutable.
 ```
 chmod +x dsk
 ```
 
-Now run the `dsk` command, giving it the path to the design definitions tree. Double-clicking the command, works fine as well. In that case it'll use the current directory design definitions tree. 
+Now run the `dsk` command, providing it with the path of the design definitions tree. Double-clicking the command, works fine as well. In that case it'll use the current directory as the design definitions tree. 
 ```
 ./dsk example
 ```
@@ -137,7 +137,7 @@ Christoph Labacher <christoph@atelierdisko.de>
 Marius Wilms <marius@atelierdisko.de>
 ```
 
-### Manually Ordering
+### Manually Ordering Aspects and Documents
 
 Aspects and documents by default appear in the same order as they are stored on your disk. But sometimes
 order matters. To manually set the order you prefix aspects or documents with an _order number_ like so: 
@@ -153,7 +153,7 @@ example
 │   │   └── ...
 ```
 
-Valid order number prefixes look like `01_`, `01_`, `1_` or `1-`.
+Valid order number prefixes look like `01_`, `01-`, `1_` or `1-`.
 
 # Architecture
 
