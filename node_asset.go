@@ -56,3 +56,8 @@ func (a NodeAsset) Dimensions() (ok bool, w int, h int, err error) {
 		return false, 0, 0, nil
 	}
 }
+
+// IsDownloadable is true when the asset should be available for download.
+func (a NodeAsset) IsDownloadable() bool {
+	return true
+}

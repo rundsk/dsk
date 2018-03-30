@@ -24,8 +24,8 @@ var (
 	NodeMetaRegexp = regexp.MustCompile(`(?i)^(index|meta)\.(json|ya?ml)$`)
 
 	// Basenames matching the pattern will be ignored when searching
-	// for downloadable files in the node's directory.
-	IgnoreDownloadsRegexp = regexp.MustCompile(`(?i)^(.*\.(js|css|md|markdown|html?|json|ya?ml)|\..*|dsk.*|AUTHORS\.txt)$`)
+	// for assets in the node's directory.
+	IgnoreAssetsRegexp = regexp.MustCompile(`(?i)^(.*\.(js|css|md|markdown|html?|json|ya?ml)|\..*|dsk.*|AUTHORS\.txt)$`)
 
 	// Basenames matching this pattern are considered documents.
 	NodeDocsRegexp = regexp.MustCompile(`(?i)^.*\.(md|markdown|html?|txt)$`)
@@ -278,7 +278,7 @@ func (n *Node) Version() string {
 	return n.meta.Version
 }
 
-// Returns a node asset, given its basename.
+// Asset given its basename.
 func (n *Node) Asset(name string) (*NodeAsset, error) {
 	path := filepath.Join(n.path, name)
 
@@ -296,31 +296,46 @@ func (n *Node) Asset(name string) (*NodeAsset, error) {
 	}, nil
 }
 
-// Returns a list of downloadable files, this may include Sketch files
-// or other binary assets. JavaScript and Stylesheets and DSK control
-// files are excluded.
-func (n *Node) Downloads() ([]*NodeAsset, error) {
-	downloads := make([]*NodeAsset, 0)
+// Assets are all files that can be either downloaded or used inside
+// documents. This may include Sketch files or other binary assets.
+// JavaScript and Stylesheets and dsk control files are excluded.
+func (n *Node) Assets() ([]*NodeAsset, error) {
+	as := make([]*NodeAsset, 0)
 
 	files, err := ioutil.ReadDir(n.path)
 	if err != nil {
-		return downloads, err
+		return as, err
 	}
 
 	for _, f := range files {
 		if f.IsDir() {
 			continue
 		}
-		if IgnoreDownloadsRegexp.MatchString(f.Name()) {
+		if IgnoreAssetsRegexp.MatchString(f.Name()) {
 			continue
 		}
-		downloads = append(downloads, &NodeAsset{
+		as = append(as, &NodeAsset{
 			path: filepath.Join(n.path, f.Name()),
 			Name: f.Name(),
 			URL:  filepath.Join(n.URL(), f.Name()),
 		})
 	}
-	return downloads, nil
+	return as, nil
+}
+
+// Downloads are all assets that are marked as being downloadable.
+func (n *Node) Downloads() ([]*NodeAsset, error) {
+	as, err := n.Assets()
+	if err != nil {
+		return as, err
+	}
+	ds := make([]*NodeAsset, 0)
+	for _, a := range as {
+		if a.IsDownloadable() {
+			ds = append(ds, a)
+		}
+	}
+	return ds, nil
 }
 
 // Returns a slice of documents for this node.
