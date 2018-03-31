@@ -42,15 +42,17 @@ class Client {
         if (xhr.readyState === 4) {
           let first = xhr.status.toString().charAt(0);
           if (first !== '2' && first !== '3') {
-            reject(new Error(`API request for '${url}' failed :-S: ${xhr.statusText}`));
+            try {
+              reject(new Error(`API request for '${url}' failed :-S: ${JSON.parse(xhr.responseText).message}`));
+            } catch (e) {
+              reject(new Error(`API request for '${url}' failed :-S: ${xhr.statusText}`));
+            }
             return;
           }
-
           try {
-            let res = JSON.parse(xhr.responseText);
-            resolve(res.data);
+            resolve(JSON.parse(xhr.responseText));
           } catch (e) {
-            reject(new Error(`API request for '${url}' failed :-S: ${e}`));
+            reject(new Error(`API request for '${url}' succeeded, but failed to parse response :-S: ${e}`));
           }
         }
       });

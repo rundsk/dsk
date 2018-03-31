@@ -6,8 +6,7 @@
 package main
 
 import (
-	"errors"
-	"log"
+	"fmt"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -15,8 +14,7 @@ import (
 )
 
 var (
-	DirectoryTraversalError = errors.New("directory traversal attempted")
-	PrettyPathRoot          string
+	PrettyPathRoot string
 )
 
 // Does not include the tree root directort.
@@ -46,8 +44,7 @@ func checkSafePath(path string, root string) error {
 	if strings.HasPrefix(path, root) {
 		return nil
 	}
-	log.Printf("directory traversal detected, failed check: path %s, root %s", path, root)
-	return DirectoryTraversalError
+	return fmt.Errorf("directory traversal detected, failed check: path %s, root %s", path, root)
 }
 
 // Tries to find root directory either by looking at args or the

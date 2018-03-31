@@ -12,12 +12,9 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
-
-	"github.com/gamegos/jsend"
 )
 
 type APIv1 struct {
-	// Instance of the design defintions tree.
 	tree *NodeTree
 }
 
@@ -262,10 +259,7 @@ func (api APIv1) NewNodeTreeSearchResults(nodes []*Node) []string {
 
 // Says hello :)
 func (api APIv1) helloHandler(w http.ResponseWriter, r *http.Request) {
-	jsend.Wrap(w).
-		Data(api.NewHello()).
-		Status(http.StatusOK).
-		Send()
+	(&HTTPResponder{w, r, "application/json"}).OK(api.NewHello())
 }
 
 // Returns all nodes in the design defintions tree, as nested nodes.
@@ -273,38 +267,20 @@ func (api APIv1) helloHandler(w http.ResponseWriter, r *http.Request) {
 // Handles this URL:
 //   /api/v1/tree
 func (api APIv1) treeHandler(w http.ResponseWriter, r *http.Request) {
-	wr := jsend.Wrap(w)
+	wr := &HTTPResponder{w, r, "application/json"}
 	// Not getting or checking path, as only tree requests are routed here.
 
-	hash, err := api.tree.Root.Hash()
-	if err != nil {
-		wr.
-			Status(http.StatusInternalServerError).
-			Message(err.Error()).
-			Send()
-		return
-	}
-	etag := fmt.Sprintf("%x", hash)
-
-	if etag == r.Header.Get("If-None-Match") {
-		wr.WriteHeader(http.StatusNotModified)
+	if wr.Cached(api.tree.Root.Hash) {
 		return
 	}
 
 	atree, err := api.NewNodeTree(api.tree)
 	if err != nil {
-		wr.
-			Status(http.StatusInternalServerError).
-			Message(err.Error()).
-			Send()
+		wr.Error(HTTPErr, err)
 		return
 	}
-	wr.Header().Set("Etag", etag)
-
-	wr.
-		Data(atree).
-		Status(http.StatusOK).
-		Send()
+	wr.Cache(api.tree.Root.Hash)
+	wr.OK(atree)
 }
 
 // Returns information about a single node.
@@ -313,59 +289,35 @@ func (api APIv1) treeHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/v1/tree/DisplayData/Table
 //   /api/v1/tree/DisplayData/Table/Row
 func (api APIv1) nodeHandler(w http.ResponseWriter, r *http.Request) {
-	wr := jsend.Wrap(w)
+	wr := &HTTPResponder{w, r, "application/json"}
 	path := r.URL.Path[len("/api/v1/tree/"):]
 
 	if err := checkSafePath(path, api.tree.path); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		wr.Error(HTTPErrUnsafePath, err)
 		return
 	}
 
 	ok, n, err := api.tree.Get(path)
 	if err != nil {
-		wr.
-			Status(http.StatusInternalServerError).
-			Message(err.Error()).
-			Send()
+		wr.Error(HTTPErr, err)
 		return
 	}
 	if !ok {
-		wr.
-			Status(http.StatusNotFound).
-			Message(fmt.Sprintf("No node %s in tree", path)).
-			Send()
+		wr.Error(HTTPErrNoSuchNode, nil)
 		return
 	}
 
-	hash, err := n.Hash()
-	if err != nil {
-		wr.
-			Status(http.StatusInternalServerError).
-			Message(err.Error()).
-			Send()
-		return
-	}
-	etag := fmt.Sprintf("%x", hash)
-
-	if etag == r.Header.Get("If-None-Match") {
-		wr.WriteHeader(http.StatusNotModified)
+	if wr.Cached(n.Hash) {
 		return
 	}
 
 	an, err := api.NewNode(n)
 	if err != nil {
-		wr.
-			Status(http.StatusInternalServerError).
-			Message(err.Error()).
-			Send()
+		wr.Error(HTTPErr, err)
 		return
 	}
-	wr.Header().Set("Etag", etag)
-
-	wr.
-		Data(an).
-		Status(http.StatusOK).
-		Send()
+	wr.Cache(n.Hash)
+	wr.OK(an)
 }
 
 // Returns a node asset.
@@ -376,30 +328,30 @@ func (api APIv1) nodeHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/v1/tree/DataEntry/Components/Button/test.png
 //   /api/v1/tree/Button/foo.mp4
 func (api APIv1) nodeAssetHandler(w http.ResponseWriter, r *http.Request) {
+	wr := &HTTPResponder{w, r, "application/json"}
 	path := r.URL.Path[len("/api/v1/tree/"):]
 
 	if err := checkSafePath(path, api.tree.path); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		wr.Error(HTTPErrUnsafePath, err)
 		return
 	}
 
 	ok, n, err := api.tree.Get(filepath.Dir(path))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		wr.Error(HTTPErr, err)
 		return
 	}
 	if !ok {
-		http.Error(w, fmt.Sprintf("No node %s in tree", path), http.StatusNotFound)
+		wr.Error(HTTPErrNoSuchNode, nil)
 		return
 	}
 
-	asset, err := n.Asset(filepath.Base(path))
+	a, err := n.Asset(filepath.Base(path))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		wr.Error(HTTPErrNoSuchAsset, err)
 		return
 	}
-	http.ServeFile(w, r, asset.path)
-	return
+	http.ServeFile(w, r, a.path)
 }
 
 // Performs a search over the design defintions tree and returns
@@ -409,12 +361,10 @@ func (api APIv1) nodeAssetHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/v1/search?q={query}
 func (api APIv1) searchHandler(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("q")
-	wr := jsend.Wrap(w)
 
-	nodes := api.tree.FuzzySearch(q)
-	results := api.NewNodeTreeSearchResults(nodes)
-	wr.
-		Data(results).
-		Status(http.StatusOK).
-		Send()
+	(&HTTPResponder{w, r, "application/json"}).OK(
+		api.NewNodeTreeSearchResults(
+			api.tree.FuzzySearch(q),
+		),
+	)
 }

@@ -6,10 +6,10 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"log"
-	"mime"
 	"net/http"
 	"os"
 	"os/signal"
@@ -139,16 +139,23 @@ func main() {
 //   /index.html
 //   /* <catch all>
 func rootHandler(w http.ResponseWriter, r *http.Request) {
+	wr := &HTTPResponder{w, r, ""}
+	path := "index.html"
+
 	// Does not check on path, as we only ever serve a single
 	// file from here, and that path is hard-coded.
-	w.Header().Set("Content-Type", "text/html")
 
-	data, err := Asset("index.html")
+	buf, err := Asset(path)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		wr.Error(HTTPErrNoSuchAsset, err)
 		return
 	}
-	w.Write(data[:])
+	info, err := AssetInfo(path)
+	if err != nil {
+		wr.Error(HTTPErr, err)
+		return
+	}
+	http.ServeContent(w, r, info.Name(), info.ModTime(), bytes.NewReader(buf))
 }
 
 // Serves the frontend's assets.
@@ -157,20 +164,23 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 //   /assets/css/base.css
 //   /static/css/main.41064805.css
 func assetHandler(w http.ResponseWriter, r *http.Request) {
+	wr := &HTTPResponder{w, r, ""}
 	path := r.URL.Path[len("/"):]
 
 	if err := checkSafePath(path, tree.path); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		wr.Error(HTTPErrUnsafePath, err)
 		return
 	}
 
 	buf, err := Asset(path)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		wr.Error(HTTPErrNoSuchAsset, err)
+		return
 	}
-
-	typ := mime.TypeByExtension(filepath.Ext(path))
-	w.Header().Set("Content-Type", typ)
-	w.Write(buf[:])
-	return
+	info, err := AssetInfo(path)
+	if err != nil {
+		wr.Error(HTTPErr, err)
+		return
+	}
+	http.ServeContent(w, r, info.Name(), info.ModTime(), bytes.NewReader(buf))
 }

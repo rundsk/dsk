@@ -87,6 +87,9 @@ type Node struct {
 	hash []byte
 }
 
+// HashGetter returns a calculated (or cached) hash.
+type HashGetter func() ([]byte, error)
+
 // Loads node meta data from the first config file found. Config files
 // are optional.
 func (n *Node) loadMeta() error {

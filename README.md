@@ -177,8 +177,8 @@ this project.
 
 ### Available API Endpoints
 
-The backend provides the following API endpoints. JSON responses use the
-[JSend](https://labs.omniti.com/labs/jsend) format.
+The backend provides the following API endpoints, that respond (with the
+exception of assets) with JSON.
 
 `GET /api/v1/hello`,
 returns the version and a friendly greeting.

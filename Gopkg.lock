@@ -8,12 +8,6 @@
   version = "v1.6.0"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/gamegos/jsend"
-  packages = ["."]
-  revision = "f47e169f3d768aeab828e47649413b719372981f"
-
-[[projects]]
   name = "github.com/go-yaml/yaml"
   packages = ["."]
   revision = "7f97868eec74b32b0982dd158a51a446d1da7eb5"
@@ -67,6 +61,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0b3c207fe5fccbe1fed76125f732fc8efe1fbf99a5b3a72db06af87beee57b7b"
+  inputs-digest = "fdde9fd7c13d8110ff69f32f5bb1af30b42e6e47f4932563c61dfd9b49258f6e"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -62,7 +62,7 @@ type NodeTree struct {
 	done chan bool
 }
 
-// A func to retrieve nodes from the tree, using the node's relative
+// NodeGetter retrieves nodes from the tree, using the node's relative
 // URL. When the node cannot be found ok will be false.
 type NodeGetter func(url string) (ok bool, n *Node, err error)
 
