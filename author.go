@@ -54,20 +54,33 @@ func (as *Authors) AddFrom(r io.Reader) error {
 	return nil
 }
 
+// Parse lines looking like this:
+//   Proper Name <commit@email.xx>
+//   # this is a comment
+//   Proper Name <commit@email.xx> # inline comment
 func (as Authors) parse(r io.Reader) ([]*Author, error) {
 	var parsed []*Author
 
 	lineScanner := bufio.NewScanner(r)
 
 	for lineScanner.Scan() {
-		line := lineScanner.Text()
+		line := strings.TrimSpace(lineScanner.Text())
 
-		if strings.TrimSpace(line) == "" {
+		if line == "" {
 			continue
 		}
+		if strings.HasPrefix(line, "#") {
+			continue
+		}
+		inlineComment := strings.Index(line, "#")
+
 		beginMail := strings.Index(line, "<")
-		if beginMail == -1 {
-			return parsed, fmt.Errorf("expected angle bracket in line '%s'", line)
+		if beginMail == -1 || (inlineComment != -1 && inlineComment < beginMail) {
+			return parsed, fmt.Errorf("expected opening angle bracket in line '%s'", line)
+		}
+		endMail := strings.LastIndex(line, ">")
+		if endMail == -1 || (inlineComment != -1 && inlineComment < endMail) {
+			return parsed, fmt.Errorf("expected closing angle bracket in line '%s'", line)
 		}
 
 		name := strings.TrimSpace(line[0 : beginMail-1])
