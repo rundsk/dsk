@@ -8,9 +8,10 @@
 /* globals Client: false */
 
 class Search {
-  constructor(field, clear, tree, props) {
+  constructor(field, clear, stats, tree, props) {
     this.field = field;
     this.clear = clear;
+    this.stats = stats;
     this.tree = tree;
 
     this.query = field.value || '';
@@ -48,16 +49,33 @@ class Search {
     this.query = q;
   }
 
+  setStats(total, took) {
+    this.total = total;
+    this.took = took;
+  }
+
   render() {
     this.field.value = this.query;
+
+    if (!this.query) {
+      this.stats.innerHTML = '&nbsp;';
+      this.clear.classList.add('hide');
+    } else {
+      this.stats.innerHTML = `${this.total} result${this.total !== 1 ? 's' : ''} in ${this.took / 1000}µs`;
+      this.clear.classList.remove('hide');
+    }
   }
 
   perform() {
     if (!this.query) {
       this.onFilter(this.tree.root, this.query);
+      this.render();
     } else {
       Client.search(this.query).then((results) => {
-        this.onFilter(this.tree.filteredBy(results).root, this.query);
+        this.onFilter(this.tree.filteredBy(results.urls).root, this.query);
+        this.total = results.total;
+        this.took = results.took;
+        this.render();
       });
     }
   }

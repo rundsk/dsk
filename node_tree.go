@@ -241,7 +241,7 @@ func (t *NodeTree) Get(url string) (ok bool, n *Node, err error) {
 // Performs a narrow fuzzy search on the node's visible attributes
 // (the title) plus tags & keywords and returns the collected results
 // as a flat node list.
-func (t *NodeTree) FuzzySearch(query string) []*Node {
+func (t *NodeTree) FuzzySearch(query string) ([]*Node, int, time.Duration) {
 	start := time.Now()
 
 	t.RLock()
@@ -279,10 +279,5 @@ Outer:
 			}
 		}
 	}
-
-	log.Printf(
-		"Fuzzy searched tree: %s (%d results in %s)",
-		query, len(results), time.Since(start),
-	)
-	return results
+	return results, len(results), time.Since(start)
 }

@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let nav = new Nav($1('.tree-nav'), {
     onNavigate: navigateToNode,
   });
-  let search = new Search($1('.search__field'), $1('.search__clear'), tree, {
+  let search = new Search($1('.search__field'), $1('.search__clear'), $1('.search__stats'), tree, {
     // onFilter set later below.
   });
   let page = new Page($1('main'), {
@@ -94,8 +94,10 @@ document.addEventListener('DOMContentLoaded', () => {
       nav.render();
     } else {
       Client.search(q).then((results) => {
-        nav.setRoot(tree.filteredBy(results).root);
+        nav.setRoot(tree.filteredBy(results.urls).root);
         nav.render();
+        search.setStats(results.total, results.took);
+        search.render();
       });
     }
   }

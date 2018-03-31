@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"time"
 )
 
 type APIv1 struct {
@@ -61,9 +62,9 @@ type APIv1RefNode struct {
 }
 
 type APIv1NodeTree struct {
-	Hash       string         `json:"hash"`
-	Root       *APIv1TreeNode `json:"root"`
-	TotalNodes uint16         `json:"total_nodes"`
+	Hash  string         `json:"hash"`
+	Root  *APIv1TreeNode `json:"root"`
+	Total uint16         `json:"total"`
 }
 
 type APIv1NodeAuthor struct {
@@ -80,6 +81,12 @@ type APIv1NodeDoc struct {
 type APIv1NodeAsset struct {
 	URL  string `json:"url"`
 	Name string `json:"name"`
+}
+
+type APIv1SearchResults struct {
+	URLs  []string `json:"urls"`
+	Total int      `json:"total"`
+	Took  int64    `json:"took"` // nanoseconds
 }
 
 func (api APIv1) MountHTTPHandlers() {
@@ -243,18 +250,18 @@ func (api APIv1) NewNodeTree(t *NodeTree) (*APIv1NodeTree, error) {
 
 	return &APIv1NodeTree{
 		// Tree hash is the same as the root nodes'.
-		Hash:       root.Hash,
-		Root:       root,
-		TotalNodes: t.TotalNodes(),
+		Hash:  root.Hash,
+		Root:  root,
+		Total: t.TotalNodes(),
 	}, err
 }
 
-func (api APIv1) NewNodeTreeSearchResults(nodes []*Node) []string {
-	results := make([]string, 0, len(nodes))
+func (api APIv1) NewNodeTreeSearchResults(nodes []*Node, total int, took time.Duration) *APIv1SearchResults {
+	urls := make([]string, 0, len(nodes))
 	for _, n := range nodes {
-		results = append(results, n.URL())
+		urls = append(urls, n.URL())
 	}
-	return results
+	return &APIv1SearchResults{urls, total, took.Nanoseconds()}
 }
 
 // Says hello :)

@@ -99,7 +99,7 @@ body {
 
 /* --- Search --- */
 
-.search {
+.search__field-wrapper {
   display: relative;
 }
 
@@ -132,6 +132,17 @@ body {
   line-height: 2.5rem;
   text-align: center;
   cursor: pointer;
+}
+.search__clear:hover {
+  background-color: var(--color-blue);
+}
+
+.search__stats {
+  margin-top: 1rem;
+  margin-bottom: -1rem;
+  margin-left: .5rem;
+  font-size: 10px;
+  color: white;
 }
 
 /* --- Tree Navigation --- */
