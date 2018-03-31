@@ -243,7 +243,7 @@ func (api APIv1) NewNodeTree(t *NodeTree) (*APIv1NodeTree, error) {
 
 	return &APIv1NodeTree{
 		// Tree hash is the same as the root nodes'.
-		Hash:       fmt.Sprintf("%x", root.Hash),
+		Hash:       root.Hash,
 		Root:       root,
 		TotalNodes: t.TotalNodes(),
 	}, err
