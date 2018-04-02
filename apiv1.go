@@ -44,9 +44,7 @@ type APIv1Node struct {
 	Next        *APIv1RefNode      `json:"next"`
 }
 
-// Used when building trees, omits most fields to lighten
-// transport weight. Parent ommited to prevent recursive
-// data structure.
+// APIv1TreeMode is a light top down representation of a part of the DDT.
 type APIv1TreeNode struct {
 	Hash     string           `json:"hash"`
 	URL      string           `json:"url"`
@@ -54,8 +52,8 @@ type APIv1TreeNode struct {
 	Title    string           `json:"title"`
 }
 
-// A node reference has no parent and children. It must be looked
-// up to get more information.
+// APIv1NodeRef have no parent and children. References must be looked
+// up using the URL to get more information about them.
 type APIv1RefNode struct {
 	URL   string `json:"url"`
 	Title string `json:"title"`

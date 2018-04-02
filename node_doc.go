@@ -26,7 +26,7 @@ type NodeDoc struct {
 	path string
 }
 
-// An order number, as a hint for outside sorting mechanisms.
+// Order is a hint for outside sorting mechanisms.
 func (d NodeDoc) Order() uint64 {
 	return orderNumber(filepath.Base(d.path))
 }
@@ -38,11 +38,9 @@ func (d NodeDoc) Title() string {
 	return removeOrderNumber(strings.TrimSuffix(base, filepath.Ext(base)))
 }
 
-// HTML as parsed from the underlying file.
-//
-// The provided set of prefix and node URL will be used to resolve
-// relative source URLs and node URLs inside the documents, to
-// i.e. make them absolute.
+// HTML as parsed from the underlying file. The provided tree prefix
+// and node URL will be used to resolve relative source and node URLs
+// inside the documents, to i.e. make them absolute.
 func (d NodeDoc) HTML(treePrefix string, nodeURL string, nodeGet NodeGetter) ([]byte, error) {
 	contents, err := ioutil.ReadFile(d.path)
 	if err != nil {
@@ -86,8 +84,8 @@ func (d NodeDoc) parseMarkdown(contents []byte) ([]byte, error) {
 	), nil
 }
 
-// Post-processes given HTML after it has been processed by i.e. the
-// file-type specific parser.
+// Post-processes given HTML after it has been processed file-type
+// specific parsers. See HTML().
 //
 // - Makes the HTML more portable, by turning relative source links
 //   into absolute ones.
@@ -242,7 +240,7 @@ func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL str
 			continue
 		}
 
-		// By default html parser's methods normalize tag names
+		// By default html.Tokenizer's methods normalize tag names
 		// to lower case. As we use custom component tag names in
 		// pre-formatted text, we'll need to be sure to keep the
 		// casing intact instead.
@@ -257,8 +255,12 @@ func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL str
 			if t.Data == "code" && tt == html.EndTagToken {
 				isEscaping = false
 			} else {
-				// Markdown already escapes HTML entities when they are inside
-				// a code block, but doesn't if code was in plain HTML tags.
+				// Markdown already escapes HTML entities when they
+				// are inside a code block, but doesn't if code was
+				// in plain HTML tags. Once we get here we don't know
+				// if the code tag was originally generated from
+				// Markdown. Ensure we don't double escape in any
+				// case.
 				buf.WriteString(html.EscapeString(html.UnescapeString(string(raw))))
 				continue
 			}
@@ -281,7 +283,7 @@ func (d NodeDoc) postprocessHTML(contents []byte, treePrefix string, nodeURL str
 				return buf.Bytes(), err
 			}
 			buf.WriteString(t.String())
-		case t.Data == "a":
+		case t.Data == "a" && tt == html.StartTagToken:
 			t, err := maybeAddDataNode(t)
 			if err != nil {
 				return buf.Bytes(), err

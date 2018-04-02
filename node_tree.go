@@ -157,8 +157,8 @@ func (t *NodeTree) Open() error {
 	go func() {
 		for {
 			select {
-			case p := <-watch:
-				log.Printf("Change detected (%s), re-syncing tree...", prettyPath(p))
+			case <-watch:
+				log.Printf("Re-syncing tree...")
 
 				if err := t.Sync(); err != nil {
 					log.Printf("Re-sync failed: %s", err)
