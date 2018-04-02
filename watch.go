@@ -7,39 +7,31 @@ package main
 
 import (
 	"log"
-	"math/rand"
 	"regexp"
 	"strings"
-	"sync"
 
 	"github.com/rjeczalik/notify"
 )
 
 func NewWatcher(path string) *Watcher {
 	return &Watcher{
-		path: path,
+		Subscribable: &Subscribable{},
+		path:         path,
 		// Make the channel buffered to ensure we do not block. Notify will drop
 		// an event if the receiver is not able to keep up the sending pace.
-		changes:    make(chan notify.EventInfo, 1),
-		subscribed: make(map[int]chan<- string, 0),
-		done:       make(chan bool),
+		changes: make(chan notify.EventInfo, 1),
+		done:    make(chan bool),
 	}
 }
 
 type Watcher struct {
-	// Protects the subscriber map.
-	sync.RWMutex
+	*Subscribable
 
 	// Path to watch for changes.
 	path string
 
 	// Changes to the directory tree are send here.
 	changes chan notify.EventInfo
-
-	// A map of channels currently subscribed to changes. Once
-	// we receive a message from the tree we fan it out to all. Once a
-	// channel is detected to be closed, we remove it from here.
-	subscribed map[int]chan<- string
 
 	// Quit channel, receiving true, when we are closed.
 	done chan bool
@@ -70,20 +62,7 @@ func (w *Watcher) Open(ignore *regexp.Regexp) error {
 					continue Outer
 				}
 				log.Printf("Watcher detected change on: %s", prettyPath(p))
-
-				w.RLock()
-				if len(w.subscribed) != 0 {
-					log.Printf("Notifying %d watch subscriber/s...", len(w.subscribed))
-				}
-				for id, sub := range w.subscribed {
-					select {
-					case sub <- p:
-						// Subscriber received.
-					default:
-						log.Printf("Watch subscriber %d cannot receive, buffer full", id)
-					}
-				}
-				w.RUnlock()
+				w.NotifyAll(p)
 			case <-w.done:
 				log.Print("Watcher is closing...")
 				return
@@ -94,35 +73,7 @@ func (w *Watcher) Open(ignore *regexp.Regexp) error {
 }
 
 func (w *Watcher) Close() {
-	w.Lock()
-
-	for id := range w.subscribed {
-		close(w.subscribed[id])
-		delete(w.subscribed, id)
-	}
-	w.Unlock()
-
+	w.UnsubscribeAll()
 	w.done <- true
 	notify.Stop(w.changes)
-}
-
-func (w *Watcher) Subscribe() (int, <-chan string) {
-	w.Lock()
-	defer w.Unlock()
-
-	id := rand.Int()
-	ch := make(chan string, 10)
-
-	w.subscribed[id] = ch
-	return id, ch
-}
-
-func (w *Watcher) Unsubscribe(id int) {
-	w.Lock()
-	defer w.Unlock()
-
-	if _, ok := w.subscribed[id]; ok {
-		close(w.subscribed[id])
-		delete(w.subscribed, id)
-	}
 }
