@@ -49,6 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
     nav.render();
   });
 
+  $1('a.project-name').addEventListener('click', (ev) => {
+    ev.preventDefault();
+    navigateToNode('');
+  });
+
   // Initializes the tree, the left hand tree navigation and displays
   // the currently route selected node - if any.
   (function initialState() {
