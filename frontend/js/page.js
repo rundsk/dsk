@@ -280,6 +280,7 @@ class Page {
     a.addEventListener('click', (ev) => {
       ev.preventDefault();
       wrap.classList.toggle('hide');
+      wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
 }
