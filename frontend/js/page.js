@@ -71,7 +71,11 @@ class Page {
   }
 
   render() {
-    document.title = `${this.baseTitle}: ${this.node.title}`;
+    if (!this.node.url) {
+      document.title = this.baseTitle;
+    } else {
+      document.title = `${this.baseTitle}: ${this.node.title}`;
+    }
 
     this.main.innerHTML = '';
 
