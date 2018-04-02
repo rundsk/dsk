@@ -35,7 +35,7 @@ type APIv1 struct {
 	// We subscribe to the broker in our messages endpoint.
 	messages *MessageBroker
 
-	// Upgrades HTTP requests to WebSocket-.
+	// Upgrades HTTP requests to WebSocket-requests.
 	upgrader websocket.Upgrader
 }
 
@@ -294,7 +294,6 @@ func (api APIv1) helloHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // WebSocket endpoint for receiving notifications.
-// https://jacobmartins.com/2016/03/07/practical-golang-using-websockets/
 func (api *APIv1) messagesHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, ""}
 
