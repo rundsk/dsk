@@ -38,19 +38,32 @@ clean:
 	if [ -f ./mem.prof ]; then rm -r ./mem.prof; fi
 
 .PHONY: dist
-dist: dist/dsk dist/dsk-darwin-amd64 dist/dsk-linux-amd64 dist/dsk-windows-386.exe
+dist: dist/dsk-darwin-amd64 dist/dsk-linux-amd64 dist/dsk-windows-386.exe 
+dist: dist/dsk-darwin-amd64.zip dist/dsk-linux-amd64.tar.gz dist/dsk-windows-386.zip
 
 dist/%-darwin-amd64: $(ANY_DEPS) | data.go
 	GOOS=darwin GOARCH=amd64 go build -ldflags "$(GOFLAGS)" -o $@
+
+dist/%.zip: dist/%
+	cd dist && zip $(notdir $@) $(notdir $<)
+	cd example && zip -r ../$@ .
+
+dist/dsk-windows-386.zip: dist/dsk-windows-386.exe
+	cd dist && zip $(notdir $@) $(notdir $<)
+	cd example && zip -r ../$@ .
+
+dist/%.tar: dist/%
+	cd dist && tar -cpvf $(notdir $@) $(notdir $<)
+	cd example && tar -rvf ../$@ .
+
+dist/%.tar.gz: | dist/%.tar
+	gzip $(basename $@)
 
 dist/%-linux-amd64: $(ANY_DEPS) | data.go
 	GOOS=linux GOARCH=amd64 go build -ldflags "$(GOFLAGS)" -o $@
 
 dist/%-windows-386.exe: $(ANY_DEPS) | data.go
 	GOOS=windows GOARCH=386 go build -ldflags "$(GOFLAGS)" -o $@
-
-dist/%: $(ANY_DEPS) | data.go
-	go build -ldflags "$(GOFLAGS)" -o $@
 
 data.go: $(shell find $(FRONTEND) -type f) 
 	$(GOBINDATA) -prefix $(FRONTEND) -ignore=node_modules -o data.go $(FRONTEND)/...
