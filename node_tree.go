@@ -262,10 +262,6 @@ Outer:
 			results = append(results, n)
 			continue Outer
 		}
-		if matches(query, n.Description()) {
-			results = append(results, n)
-			continue Outer
-		}
 		for _, v := range n.Tags() {
 			if matches(query, v) {
 				results = append(results, n)
