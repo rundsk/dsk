@@ -151,12 +151,13 @@ func (t *NodeTree) Sync() error {
 	}
 	t.authors = as
 
-	t.broker.Accept(NewMessage(MessageTypeTreeSynced, ""))
-	log.Printf(
-		"Synced tree with %d total nodes (in %s)",
-		len(lookup),
-		time.Since(start),
-	)
+	total := len(lookup)
+	took := time.Since(start)
+
+	t.broker.Accept(NewMessage(
+		MessageTypeTreeSynced, fmt.Sprintf("%d node/s in %s", total, took),
+	))
+	log.Printf("Synced tree with %d total node/s in %s", total, took)
 	return nil
 }
 
@@ -172,7 +173,9 @@ func (t *NodeTree) Open() error {
 		for {
 			select {
 			case p := <-watch:
-				t.broker.Accept(NewMessage(MessageTypeTreeChanged, prettyPath(p.(string))))
+				t.broker.Accept(NewMessage(
+					MessageTypeTreeChanged, prettyPath(p.(string)),
+				))
 				log.Printf("Re-syncing tree...")
 
 				if err := t.Sync(); err != nil {

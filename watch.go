@@ -62,7 +62,7 @@ func (w *Watcher) Open(ignore *regexp.Regexp) error {
 					continue Outer
 				}
 				log.Printf("Watcher detected change on: %s", prettyPath(p))
-				w.NotifyAll(p)
+				w.NotifyAll(prettyPath(p))
 			case <-w.done:
 				log.Print("Watcher is closing...")
 				return

@@ -24,7 +24,6 @@ func (s *Subscribable) NotifyAll(msg interface{}) {
 	s.RLock()
 	defer s.RUnlock()
 
-	log.Printf("Notifying %d subscriber/s about %s...", len(s.subscribed), msg)
 	for id, sub := range s.subscribed {
 		select {
 		case sub <- msg:

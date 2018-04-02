@@ -69,25 +69,29 @@ document.addEventListener('DOMContentLoaded', () => {
       let m = JSON.parse(ev.data);
 
       if (m.type === 'tree-synced') {
-        let check = Client.get(page.node.url);
+        let repage = Client.get(page.node.url);
         let resync = tree.sync();
 
         resync.then(() => {
-          notify('Tree re-synchronized');
+          notify('Re-synchronized', m.text);
 
           // Will re-render nav through onFilter.
           search.perform();
 
           // Change this once we can check for node
           // presence through API.
-          check.catch((e) => {
-            if (e.message.endsWith('No such node')) {
-              navigateToNode('');
-            }
-          });
+          repage
+            .then((n) => {
+              page.setNode(n);
+              page.render();
+            })
+            .catch((e) => {
+              // Node has gone away, show root.
+              if (e.message.endsWith('No such node')) {
+                navigateToNode('');
+              }
+            });
         });
-      } else if (m.type === 'tree-changed') {
-        notify('Tree changed', m.text);
       }
     });
 
@@ -160,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (Notification.permission === 'granted') {
       let n = new Notification(title, { body, icon });
 
-      setTimeout(n.close.bind(n), 5000);
+      setTimeout(n.close.bind(n), 2500);
       return;
     }
     if (Notification.permission === 'default') {
