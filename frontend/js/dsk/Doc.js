@@ -15,12 +15,17 @@ class DocTransformer {
     let body = document.createElement('body');
     body.innerHTML = this.html;
 
-    this.orphans(body);
-    // this.customElements(body);
+    body.innerHTML = this.orphans(body);
     this.clean(body);
-    this.tranform(body);
 
-    return body.childNodes;
+    let children = [];
+    body.childNodes.forEach((c) => {
+      let t = this.transform(c);
+      if (t) {
+        children.push(t);
+      }
+    });
+    return children;
   }
 
   // Sometimes children are unnecessarily wrapped into another element.
@@ -39,8 +44,9 @@ class DocTransformer {
       //   position (there is no requirement to remove the node from its parent
       //   node before appending it to some other node).
       //   - https://developer.mozilla.org/en-US/docs/Web/API/Node/insertBefore
-      c.parentNode.insertBefore(c, c.parentNode);
+      c.parentNode.parentNode.insertBefore(c, c.parentNode);
     });
+    return root.innerHTML;
   }
 
   // If node is a <div>, we infer its type from its first attribute. This
@@ -48,71 +54,82 @@ class DocTransformer {
   // the transform will treat it as <FullColorPlane>.
   //
   // Please note, that the resulting element will have a lowercased tag name.
-  //  customElements(root) {
-  //    let isCustomElement = (
-  //      node.tagName === 'DIV'
-  //      && node.attributes[0]
-  //      && this.transforms[node.atttributes[0].name.toLowerCase()]
-  //    );
-  //    if (!isCustomElement) {
-  //      return node;
-  //    }
-  //    // > When called on an HTML document, createElement() converts
-  //    //   tagName to lower case before creating the element.
-  //    let custom = document.createElement(node.attributes[0]);
-  //
-  //    // Copy over all children.
-  //    node.childNodes.forEach((c) => {
-  //      custom.appendChild(c);
-  //    });
-  //
-  //    // Skip the first attribute, we used it for the element name above.
-  //    for (let i = 1; i < node.attributes.length; i++) {
-  //      custom.setAttribute(node.attributes[i].name, node.attributes[i].value);
-  //    }
-  //    node.parentNode.replaceChild(custom, node);
-  //  }
+  isCustomElementCompat(node) {
+    if (node.tagName !== 'DIV') {
+      return false;
+    }
+    if (!node.attributes[0]) {
+      return false;
+    }
+    if (!this.transforms[node.attributes[0].name.toLowerCase()]) {
+      console.log(`Unknown custom element ${node.attributes[0].name}`);
+      return false;
+    }
+    return true;
+  }
 
   // Removes any elements, that may have become empty due to other
   // processing steps.
   clean(root) {
-    root.querySelectorAll('*:empty').remove();
+    root.querySelectorAll('p:empty').forEach((el) => {
+      el.remove();
+    });
   }
 
   // Replaces a given DOM node by applying a "transform".
   transform(node) {
-    if (node.nodeType === Node.TEXT_NODE) {
-      return;
+    // Ignore nodes that only contain whitespace.
+    if (node.nodeType === Node.TEXT_NODE && !node.nodeValue.trim()) {
+      // Allow single spaces, for example between inline-elements
+      if (node.nodeValue !== ' ') {
+        return null;
+      }
     }
-    let apply = this.transforms[node.tagName.toLowerCase()];
+    if (!node.tagName) {
+      return node.textContent;
+    }
+    let type = node.tagName.toLowerCase();
+    let props = { key: Math.random() };
+    let children = [];
+
+    // Where at the attributes should we begin parsing into props.
+    let startProps = 0;
+
+    if (this.isCustomElementCompat(node)) {
+      type = node.attributes[0].name;
+      startProps = 1;
+    }
+
+    let apply = this.transforms[type];
 
     // If there is no transform for the node, ignore it but still do
     // include the node in the final result.
     if (!apply) {
-      console.log(`No transform to apply to ${node}`);
-      // Children may be transformable; don't stop here.
-
-      node.childNodes.forEach((c) => {
-        node.replaceChild(this.transform(c), c);
-      });
-      return;
+      console.log(`No transform to apply to ${type}`);
+      // FIXME: Children may be transformable; don't stop here.
+      return null;
     }
-    let props = {};
 
     // Turn node attributes into props object.
-    for (let i = 0; i < node.attributes.length; i++) {
+    for (let i = startProps; i < node.attributes.length; i++) {
       props[node.attributes[i].name] = node.attributes[i].value;
     }
 
-    // Descend first.
     node.childNodes.forEach((c) => {
-      node.replaceChild(this.transform(c), c);
+      let t = this.transform(c);
+      if (t) {
+        children.push(t);
+      }
     });
-    node.parentNode.replaceChild(apply(node, props), node);
+
+    // If the node has no children, insert the text content as children
+    if (!children.length) {
+      children = node.textContent;
+    }
+    return apply(node, children, props);
   }
 }
 
 export default function transform(html, transforms) {
   return (new DocTransformer(html, transforms)).compile();
 }
-
