@@ -201,15 +201,16 @@ func (n *Node) Description() string {
 // Returns a list of related nodes.
 func (n *Node) Related(get NodeGetter) []*Node {
 	nodes := make([]*Node, 0, len(n.meta.Related))
+	yellow := color.New(color.FgYellow).SprintfFunc()
 
 	for _, r := range n.meta.Related {
 		ok, node, err := get(r)
 		if err != nil {
-			log.Printf("Skipping related in %s: %s", n.URL(), err)
+			log.Printf(yellow("Skipping related in %s: %s", n.URL(), err))
 			continue
 		}
 		if !ok {
-			log.Printf("Skipping related in %s: %s not found in tree", n.URL(), r)
+			log.Printf(yellow("Skipping related in %s: '%s' not found in tree", n.URL(), r))
 			continue
 		}
 		nodes = append(nodes, node)
@@ -374,16 +375,18 @@ func (n *Node) Crumbs(get NodeGetter) []*Node {
 	nodes := make([]*Node, 0)
 
 	parts := strings.Split(strings.TrimSuffix(n.URL(), "/"), "/")
+	yellow := color.New(color.FgYellow).SprintfFunc()
+
 	for index, _ := range parts {
 		url := strings.Join(parts[:index+1], "/")
 
 		ok, node, err := get(url)
 		if err != nil {
-			log.Printf("Skipping crumb in %s: %s", n.URL(), err)
+			log.Printf(yellow("Skipping crumb in %s: %s", n.URL(), err))
 			continue
 		}
 		if !ok {
-			log.Printf("Skipping crumb in %s: %s not found in tree", n.URL(), url)
+			log.Printf(yellow("Skipping crumb in %s: '%s' not found in tree", n.URL(), url))
 			continue
 		}
 		nodes = append(nodes, node)
