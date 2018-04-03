@@ -196,6 +196,10 @@ requests a node's asset, `{asset}` is a single filename.
 performs a search over the design definitions tree and returns
 a flat list of matched node URLs.
 
+`GET /api/v1/messages`,
+WebSocket for receiving messages from dsk, i.e. whenever the tree 
+changes.
+
 ### Designing the URL Schema
 
 Your frontend and its subdirectories will be mounted directly at the root path
