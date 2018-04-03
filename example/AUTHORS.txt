@@ -1,2 +1,2 @@
-christoph@atelierdisko.de
-mairus@atelierdisko.de
+Christoph Labacher <christoph@atelierdisko.de>
+Marius Wilms <marius@atelierdisko.de>
