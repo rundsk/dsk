@@ -28,7 +28,7 @@ var (
 
 	// Basenames matching the pattern will be ignored when searching
 	// for assets in the node's directory.
-	IgnoreAssetsRegexp = regexp.MustCompile(`(?i)^(.*\.(js|css|md|markdown|html?|json|ya?ml)|\..*|dsk.*|AUTHORS\.txt)$`)
+	IgnoreAssetsRegexp = regexp.MustCompile(`(?i)^(.*\.(js|css|md|markdown|html?|json|ya?ml)|\..*|dsk.*|AUTHORS\.txt|empty)$`)
 
 	// Basenames matching this pattern are considered documents.
 	NodeDocsRegexp = regexp.MustCompile(`(?i)^.*\.(md|markdown|html?|txt)$`)
