@@ -219,7 +219,7 @@ class Page {
         cell1.appendChild(ad);
 
         Client.get(c.url).then((item) => {
-          ad.innerText = c.description || '';
+          ad.innerText = item.description || '';
         });
       });
     }
