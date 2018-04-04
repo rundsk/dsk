@@ -1,0 +1,3 @@
+Word | Translation
+---|---
+Good | Bad
