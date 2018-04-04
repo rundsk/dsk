@@ -129,12 +129,22 @@ class Page {
       this.main.appendChild(tags);
     }
 
-    // Docs
+    // Info Area
+    let info = document.createElement('section');
+    info.classList.add('info');
+    this.main.appendChild(info);
+
+    // Docs Area
+    let docs = document.createElement('section');
+    docs.classList.add('docs');
+    info.appendChild(docs);
+
+    // Doc Switcher
     if (this.node.docs.length > 1) {
       // Zwitch between documents
       let switches = document.createElement('section');
       switches.classList.add('doc-switches');
-      this.main.appendChild(switches);
+      docs.appendChild(switches);
 
       this.node.docs.sort((a, b) => {
         if (a.title.toLowerCase() === 'readme') {
@@ -170,11 +180,6 @@ class Page {
       });
     }
 
-    // Info Area
-    let info = document.createElement('section');
-    info.classList.add('info');
-    this.main.appendChild(info);
-
     // Docs
     if (this.node.docs.length) {
       this.node.docs.forEach((doc, index) => {
@@ -186,7 +191,7 @@ class Page {
           text.classList.add('hide');
         }
         text.id = `doc-${index}`;
-        info.appendChild(text);
+        docs.appendChild(text);
       });
     } else {
       let dir = document.createElement('table');
@@ -288,4 +293,3 @@ class Page {
     });
   }
 }
-

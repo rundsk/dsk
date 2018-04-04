@@ -241,22 +241,6 @@ body {
   }
 }
 
-/* --- Doc Switcher --- */
-
-.doc-switches {
-  margin-top: 4rem;
-}
-
-.doc-switch {
-  color: var(--color-darkgray);
-  display: inline-block;
-  margin-right: 1rem;
-}
-
-.doc-switch.active {
-  color: var(--color-blue);
-}
-
 /* --- Crumbs --- */
 
 .crumbs {
@@ -322,6 +306,7 @@ body {
   }
 }
 
+
 /* --- Info --- */
 
 .info {
@@ -335,6 +320,34 @@ body {
 .info .downloads {
   padding-left: 8rem;
 }
+
+
+/* --- Doc Switcher --- */
+
+.doc-switches {
+  margin-bottom: 8rem;
+  border-bottom: 1px solid var(--color-semilightgray);
+}
+
+.doc-switch {
+  color: var(--color-midgray);
+  display: inline-block;
+  padding: 1rem 1.5rem;
+  text-decoration: none;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  transition: all .1s;
+}
+
+.doc-switch:hover {
+  border-bottom-color: var(--color-midgray);
+}
+
+.doc-switch.active {
+  color: var(--color-black);
+  border-bottom-color: var(--color-blue);
+}
+
 
 /* --- Downloads --- */
 
