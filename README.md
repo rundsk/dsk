@@ -23,13 +23,6 @@ file to a directory inside the _design definitions tree_.
 
 4. You should now see dsk starting in a small terminal window, [open the web application in your browser](http://localhost:8080), to browse through the design system.
 
-_Alternatively_ the executable can be downloaded as a standalone binary. After downloading you must make the binary exectubale first, then execute it pointing to the directory containing the design definitions tree.
-
-```
-chmod +x dsk
-./dsk example
-```
-
 ## The Design Definitions Tree
 
 One of the fundamental ideas in dsk was to use the filesystem as the interface for content creation. This enables _direct manipulation_ of the content and frees us from tedious adminstration interfaces.
