@@ -15,21 +15,26 @@ file to a directory inside the _design definitions tree_.
 
 ## Quickstart
 
-Visit the [GitHub releases page](https://github.com/atelierdisko/dsk/releases) and download the binary for your architecture. For macOS use `dsk-darwin-amd64`, for Linux use `dsk-linux-amd64`.
+Visit the [GitHub releases page](https://github.com/atelierdisko/dsk/releases) and download one of the quickstart packages for your operating system. For macOS use `dsk-darwin-amd64.zip`, for Linux use `dsk-linux-amd64.tar.gz`. 
 
-After downloading, you need to make the binary excutable.
+The package is an archive that contains the `dsk` executable and an example design system. Double click on the downloaded file to unarchive both. 
+
+On macOS you can start dsk by double clicking on the excutable. On first use please follow [these instructions](https://support.apple.com/kb/PH25088) to skip the developer warning.
+
+You should now see dsk starting in a small terminal window, [open the web application in your browser](http://localhost:8080), to browse through the design system.
+
+_Alternatively_ the executable can be downloaded as a standalone binary. After downloading you must make the binary exectubale first, then execute it pointing to the directory containing the design definitions tree.
+
 ```
 chmod +x dsk
-```
-
-Now run the `dsk` command, providing it with the path of the design definitions tree. Double-clicking the command, works fine as well. In that case it'll use the current directory as the design definitions tree. 
-```
 ./dsk example
 ```
 
-Finally [open the web application in your browser](http://localhost:8080), to browse through the design system.
-
 ## The Design Definitions Tree
+
+One of the fundamental ideas in dsk was to use the filesystem as the interface for content creation. This enables _direct manipulation_ of the content and frees us from tedious adminstration interfaces.
+
+![screenshot](https://atelierdisko.de/assets/app/img/github_dsk_fs.png)
 
 The _design definitions tree_ (DDT for short), is a tree of
 directories and subdirectories. Each of these directories stands for
