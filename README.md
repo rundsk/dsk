@@ -15,13 +15,13 @@ file to a directory inside the _design definitions tree_.
 
 ## Quickstart
 
-Visit the [GitHub releases page](https://github.com/atelierdisko/dsk/releases) and download one of the quickstart packages for your operating system. For macOS use `dsk-darwin-amd64.zip`, for Linux use `dsk-linux-amd64.tar.gz`. 
+1. Visit the [GitHub releases page](https://github.com/atelierdisko/dsk/releases) and download one of the quickstart packages for your operating system. For macOS use `dsk-darwin-amd64.zip`, for Linux use `dsk-linux-amd64.tar.gz`. 
 
-The package is an archive that contains the `dsk` executable and an example design system. Double click on the downloaded file to unarchive both. 
+2. The package is an archive that contains the `dsk` executable and an example design system. Double click on the downloaded file to unarchive both. 
 
-On macOS you can start dsk by double clicking on the excutable. On first use please follow [these instructions](https://support.apple.com/kb/PH25088) to skip the developer warning.
+3. On you can start dsk by double clicking on the excutable. On first use please follow [these instructions](https://support.apple.com/kb/PH25088) for macOS to skip the developer warning.
 
-You should now see dsk starting in a small terminal window, [open the web application in your browser](http://localhost:8080), to browse through the design system.
+4. You should now see dsk starting in a small terminal window, [open the web application in your browser](http://localhost:8080), to browse through the design system.
 
 _Alternatively_ the executable can be downloaded as a standalone binary. After downloading you must make the binary exectubale first, then execute it pointing to the directory containing the design definitions tree.
 
@@ -268,7 +268,7 @@ Design System Kit, works both in a local mode, as well in a hosted mode
 on a webserver. There are two options for the hosted mode.
 
 The following examples assume that you've installed the dsk binary
-to `/usr/local/bin/dsk`, are keeping the DDT in `/var/ds` and that
+to `/bin/dsk`, are keeping the DDT in `/var/ds` and that
 your operating system uses systemd as its init system.
 
 ### Simple
@@ -287,9 +287,8 @@ unit](https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-m
 Description=Design System Kit
 
 [Service]
-ExecStart=/usr/local/bin/dsk -host 192.168.1.1 -port 80 /var/ds
+ExecStart=/bin/dsk -host 192.168.1.1 -port 80 /var/ds
 WorkingDirectory=/var/ds
-Restart=on-abort
 
 [Install]
 WantedBy=default.target
@@ -302,18 +301,15 @@ termination for us, then forward all requests to dsk. Dsk will be listening on
 the loopback interface on port 8080.
 
 ```ini
-[Unit]
-Description=Design System Kit
+# ...
 
 [Service]
-ExecStart=/usr/local/bin/dsk -port 8080 /var/ds
+ExecStart=/bin/dsk -port 8080 /var/ds
 User=www-data
 Group=www-data
 WorkingDirectory=/var/ds
-Restart=on-abort
 
-[Install]
-WantedBy=default.target
+# ...
 ```
 
 ```nginx
