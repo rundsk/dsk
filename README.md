@@ -6,7 +6,7 @@
 
 Using the Design System Kit you quickly define and organize
 _design aspects_ into a browsable and live-searchable design system.
-Hierachies between design aspects are established using plain
+Hierarchies between design aspects are established using plain
 simple directories. Creating documentation is as easy as adding a
 [Markdown](https://guides.github.com/features/mastering-markdown/) formatted
 file to a directory inside the _design definitions tree_.
@@ -19,13 +19,13 @@ file to a directory inside the _design definitions tree_.
 
 2. The package is an archive that contains the `dsk` executable and an example design system. Double click on the downloaded file to unarchive both. 
 
-3. On you can start dsk by double clicking on the excutable. On first use please follow [these instructions](https://support.apple.com/kb/PH25088) for macOS to skip the developer warning.
+3. On you can start dsk by double clicking on the executable. On first use please follow [these instructions](https://support.apple.com/kb/PH25088) for macOS to skip the developer warning.
 
 4. You should now see dsk starting in a small terminal window, [open the web application in your browser](http://localhost:8080), to browse through the design system.
 
 ## The Design Definitions Tree
 
-One of the fundamental ideas in dsk was to use the filesystem as the interface for content creation. This enables _direct manipulation_ of the content and frees us from tedious adminstration interfaces.
+One of the fundamental ideas in dsk was to use the filesystem as the interface for content creation. This enables _direct manipulation_ of the content and frees us from tedious administration interfaces.
 
 ![screenshot](https://atelierdisko.de/assets/app/img/github_dsk_fs.png)
 
@@ -36,7 +36,7 @@ be actual components, when you are documenting the user interface, or
 chapters of your company's guide into its design culture.
 
 Each directory may hold several files to document these design aspects: a
-configuration file, to add meta data or supporting _assets_ that can
+configuration file to add meta data or supporting _assets_ that can
 be downloaded through the frontend.
 
 ```
@@ -61,7 +61,7 @@ _Note_: Directories beginning with an underscore (`_`), `x-` and `x_` or a dot (
 
 Aspects are documented by adding
 [Markdown](https://guides.github.com/features/mastering-markdown/) formatted
-documentation files to their directory. A `readme.md` file, may describe
+documentation files to their directory. A `readme.md` file may describe
 an aspect or give clues how to use a certain component. You can split documentation
 over several files when you like to. We usually use `api.md`, `explain.md` or
 `comments.md`.
@@ -156,15 +156,15 @@ Valid order number prefixes look like `01_`, `01-`, `1_` or `1-`.
 # Architecture
 
 Architecture-wise dsk is split into a backend and frontend. The backend implemented 
-in Go takes care of understanding the defintions tree and provides a REST API for the
+in Go takes care of understanding the definitions tree and provides a REST API for the
 frontend, usually implemented in JavaScript. 
 
-Frontends are pluggable and the decoupled design allows you to create indvidually branded frontends. 
-These are entirely free in their implementation, they must adher to only a minimal set
+Frontends are pluggable and the decoupled design allows you to create individually branded frontends. 
+These are entirely free in their implementation, they must adhere to only a minimal set
 of rules.
 
-The frontend and backend and are than later compiled together into a single binary, making
-it usuable as a publicly hosted web application or a locally running design tool.
+The frontend and backend are than later compiled together into a single binary, making
+it usable as a publicly hosted web application or a locally running design tool.
 
 ## Building your own Frontend 
 
@@ -209,7 +209,7 @@ displaying a document's content wherever you like to.
 
 ### Baking
 
-To _bake_ your frontend into dsk, install the the development tools as described in the _Development_ section frist. 
+To _bake_ your frontend into dsk, install the the development tools as described in the _Development_ section first. 
 After doing so, you create your custom dsk build by running the following command.
 
 ```
@@ -326,7 +326,7 @@ server {
 
 ## Known Limitations
 
-- Symlinks inside the design defintions tree are not supported
+- Symlinks inside the design definitions tree are not supported
 - Not tested thoroughly on Windows
 
 ## Copyright & License
