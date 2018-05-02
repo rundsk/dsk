@@ -32,7 +32,6 @@ dev:
 clean:
 	if [ -d ./dist ]; then rm -r ./dist; fi
 	if [ -f ./dsk ]; then rm ./dsk; fi
-	if [ -f ./data.go ]; then rm ./data.go; fi
 	if [ -f ./dsk.test ]; then rm -r ./dsk.test; fi
 	if [ -f ./cpu.prof ]; then rm -r ./cpu.prof; fi
 	if [ -f ./mem.prof ]; then rm -r ./mem.prof; fi
