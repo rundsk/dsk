@@ -19,13 +19,13 @@ file to a directory inside the _design definitions tree_.
 
 2. The package is an archive that contains the `dsk` executable and an example design system. Double click on the downloaded file to unarchive both. 
 
-3. You start dsk by double clicking on the executable. On first use please follow [these instructions](https://support.apple.com/kb/PH25088) for macOS to skip the developer warning.
+3. You start DSK by double clicking on the executable. On first use please follow [these instructions](https://support.apple.com/kb/PH25088) for macOS to skip the developer warning.
 
-4. You should now see dsk starting in a small terminal window, [open the web application in your browser](http://localhost:8080), to browse through the design system.
+4. You should now see DSK starting in a small terminal window, [open the web application in your browser](http://localhost:8080), to browse through the design system.
 
 ## The Design Definitions Tree
 
-One of the fundamental ideas in dsk was to use the filesystem as the interface for content creation. This enables _direct manipulation_ of the content and frees us from tedious administration interfaces.
+One of the fundamental ideas in DSK was to use the filesystem as the interface for content creation. This enables _direct manipulation_ of the content and frees us from tedious administration interfaces.
 
 ![screenshot](https://atelierdisko.de/assets/app/img/github_dsk_fs.png)
 
@@ -66,7 +66,7 @@ an aspect or give clues how to use a certain component. You can split documentat
 over several files when you like to. We usually use `api.md`, `explain.md` or
 `comments.md`.
 
-_Note_: `readme.md` is in no ways treated specially by dsk, but is usually displayed by
+_Note_: `readme.md` is in no ways treated specially by DSK, but is usually displayed by
 GitHub as the primary document in the web interface. 
 
 _Another note_: If you prefer plain HTML documents over Markdown, these are
@@ -117,7 +117,7 @@ Possible meta data keys are:
 - `authors`: An array of email addresses of the document authors; see below.
 - `description`: A single sentence that roughly describes the design aspect.
 - `keywords`: An array of terms that are searched in addition to `tags`.
-- `related`: An array of related aspect URLs within dsk.
+- `related`: An array of related aspect URLs within DSK.
 - `tags`: An array of tags to group related aspects together.
 - `version`: A freeform version string.
 
@@ -155,7 +155,7 @@ Valid order number prefixes look like `01_`, `01-`, `1_` or `1-`.
 
 # Architecture
 
-Architecture-wise dsk is split into a backend and frontend. The backend implemented 
+Architecture-wise DSK is split into a backend and frontend. The backend implemented 
 in Go takes care of understanding the definitions tree and provides a REST API for the
 frontend, usually implemented in JavaScript. 
 
@@ -169,7 +169,7 @@ it usable as a publicly hosted web application or a locally running design tool.
 ## Building your own Frontend 
 
 The following sections describe everything you need to know when building your own frontend
-and bundle it with the dsk binary. By default dsk uses a builtin minimal frontend. The default frontend
+and bundle it with the `dsk` binary. By default DSK uses a builtin minimal frontend. The default frontend
 is a good starting point when developing your own. It can be found in the `frontend` directory of
 this project.
 
@@ -195,7 +195,7 @@ performs a search over the design definitions tree and returns
 a flat list of matched node URLs.
 
 `GET /api/v1/messages`,
-WebSocket for receiving messages from dsk, i.e. whenever the tree 
+WebSocket for receiving messages, i.e. whenever the tree 
 changes.
 
 ### Designing the URL Schema
@@ -209,8 +209,8 @@ displaying a document's content wherever you like to.
 
 ### Baking
 
-To _bake_ your frontend into dsk, install the the development tools as described in the _Development_ section first. 
-After doing so, you create your custom dsk build by running the following command.
+To _bake_ your frontend into DSK, install the the development tools as described in the _Development_ section first. 
+After doing so, you create your custom DSK build by running the following command.
 
 ```
 $ FRONTEND=/my/frontend make dist
@@ -260,14 +260,14 @@ with co-workers inside your company or proudly present it to the whole world.
 Design System Kit, works both in a local mode, as well in a hosted mode
 on a webserver. There are two options for the hosted mode.
 
-The following examples assume that you've installed the dsk binary
+The following examples assume that you've installed the `dsk` binary
 to `/bin/dsk`, are keeping the DDT in `/var/ds` and that
 your operating system uses systemd as its init system.
 
 ### Simple
 
 As long as you don't want any SSL encryption (you probably do), this is the
-quickest way to get started. It keeps dsk running on your server and answers
+quickest way to get started. It keeps DSK running on your server and answers
 requests directly.
 
 Please replace `192.168.1.1` with the public IP address of
@@ -289,8 +289,8 @@ WantedBy=default.target
 
 ### With NGINX as a reverse-proxy and SSL
 
-For SSL support we'll put dsk behind NGINX. The webserver will do the
-termination for us, then forward all requests to dsk. Dsk will be listening on
+For SSL support we'll put DSK behind NGINX. The webserver will do the
+termination for us, then forward all requests to DSK. DSK will be listening on
 the loopback interface on port 8080.
 
 ```ini
