@@ -221,7 +221,7 @@ Frontends created with [create react app](https://github.com/facebook/create-rea
 ```
 $ cd /my/frontend
 $ npm run build
-$ cd $(go env GOPATH)/github.com/atelierdisko/dsk
+$ cd $(go env GOPATH)/src/github.com/atelierdisko/dsk
 $ FRONTEND=/my/frontend/build make dist
 ```
 
