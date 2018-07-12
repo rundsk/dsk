@@ -256,10 +256,23 @@ func (t *NodeTree) Get(url string) (ok bool, n *Node, err error) {
 	return false, &Node{}, nil
 }
 
-// Performs a narrow fuzzy search on the node's visible attributes
-// (the title) plus tags & keywords and returns the collected results
-// as a flat node list.
-func (t *NodeTree) FuzzySearch(query string) ([]*Node, int, time.Duration) {
+// FullTextSearch uses a prebuild search index to perform a search
+// over all possible attributes of each node.
+func (t *NodeTree) FullTextSearch(query string) ([]*Node, int, time.Duration) {
+	start := time.Now()
+
+	t.RLock()
+	defer t.RUnlock()
+
+	var results []*Node
+
+	return results, len(results), time.Since(start)
+}
+
+// Performs a narrow restricted fuzzy search on the node's visible
+// attributes (the title) plus tags & keywords and returns the
+// collected results as a flat node list.
+func (t *NodeTree) RestrictedSearch(query string) ([]*Node, int, time.Duration) {
 	start := time.Now()
 
 	t.RLock()

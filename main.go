@@ -113,9 +113,14 @@ func main() {
 		log.Fatalf("Failed to open tree: %s", red(err))
 	}
 
-	log.Print("Mounting APIv1...")
-	apiv1 := NewAPIv1(tree, broker)
-	apiv1.MountHTTPHandlers()
+	apis := map[int]API{
+		1: NewAPIv1(tree, broker),
+		2: NewAPIv2(tree, broker),
+	}
+	for v, api := range apis {
+		log.Printf("Mounting APIv%d...", v)
+		api.MountHTTPHandlers()
+	}
 
 	// Handles frontend root document delivery and frontend assets.
 	log.Print("Mounting frontend...")

@@ -1,0 +1,101 @@
+// Copyright 2018 Atelier Disko. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// API provides a layer between our internal and external representation
+// of node data. It allows to implement a versioned API with a higher
+// guarantee of stability.
+package main
+
+import (
+	"net/http"
+	"path/filepath"
+	"time"
+)
+
+func NewAPIv2(tree *NodeTree, hub *MessageBroker) *APIv2 {
+	return &APIv2{
+		tree: tree,
+		v1:   NewAPIv1(tree, broker),
+	}
+}
+
+type APIv2 struct {
+	v1   *APIv1
+	tree *NodeTree
+}
+
+type APIv2SearchResults struct {
+	URLs  []string `json:"urls"`
+	Total int      `json:"total"`
+	Took  int64    `json:"took"` // nanoseconds
+}
+
+type APIv2FilterResults struct {
+	URLs  []string `json:"urls"`
+	Total int      `json:"total"`
+	Took  int64    `json:"took"` // nanoseconds
+}
+
+func (api APIv2) MountHTTPHandlers() {
+	http.HandleFunc("/api/v2/hello", api.v1.HelloHandler)
+	http.HandleFunc("/api/v2/tree", api.v1.TreeHandler)
+	http.HandleFunc("/api/v2/tree/", func(w http.ResponseWriter, r *http.Request) {
+		if filepath.Ext(r.URL.Path) != "" {
+			api.v1.NodeAssetHandler(w, r)
+		} else {
+			api.v1.NodeHandler(w, r)
+		}
+	})
+	http.HandleFunc("/api/v2/filter", api.FilterHandler)
+	http.HandleFunc("/api/v2/search", api.SearchHandler)
+	http.HandleFunc("/api/v2/messages", api.v1.MessagesHandler)
+}
+
+func (api APIv2) NewNodeTreeSearchResults(nodes []*Node, total int, took time.Duration) *APIv2SearchResults {
+	urls := make([]string, 0, len(nodes))
+	for _, n := range nodes {
+		urls = append(urls, n.URL())
+	}
+	return &APIv2SearchResults{urls, total, took.Nanoseconds()}
+}
+
+func (api APIv2) NewNodeTreeFilterResults(nodes []*Node, total int, took time.Duration) *APIv2FilterResults {
+	urls := make([]string, 0, len(nodes))
+	for _, n := range nodes {
+		urls = append(urls, n.URL())
+	}
+	return &APIv2FilterResults{urls, total, took.Nanoseconds()}
+}
+
+// Performs a full text search over the design defintions tree and
+// returns results in form of a flat list of URLs of matched nodes.
+//
+// Handles this URL:
+//   /api/v2/search?q={query}
+func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query().Get("q")
+
+	(&HTTPResponder{w, r, "application/json"}).OK(
+		api.NewNodeTreeSearchResults(
+			api.tree.FullTextSearch(q),
+		),
+	)
+}
+
+// Performs a restricted fuzzy search over the design defintions tree
+// and returns results in form of a flat list of URLs of matched
+// nodes.
+//
+// Handles this URL:
+//   /api/v2/filter?q={query}
+func (api APIv2) FilterHandler(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query().Get("q")
+
+	(&HTTPResponder{w, r, "application/json"}).OK(
+		api.NewNodeTreeFilterResults(
+			api.tree.RestrictedSearch(q),
+		),
+	)
+}

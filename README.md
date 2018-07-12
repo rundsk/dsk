@@ -175,28 +175,21 @@ this project.
 
 ### Available API Endpoints
 
-The backend provides the following API endpoints, that respond (with the
-exception of assets) with JSON.
+The backend provides the following API endpoints. The endpoint URL is
+constructed using the `/api` prefix, the version segment and the endpoint URL
+fragment from the table below, i.e. `/api/v1/hello`.
 
-`GET /api/v1/hello`,
-returns the version and a friendly greeting.
+| URL                             | Version   | Response  | Description                                  |              
+|---------------------------------|-----------|-----------|-----------------------------------|
+| `/hello`                        | >= 1      | JSON      | Returns the version and a friendly greeting. |
+| `/tree`                         | >= 1      | JSON      | Get the full design definitions tree as a nested tree of nodes. |
+| `/tree/{path}`                  | >= 1      | JSON      | Get information about a single node specified by `{path}`. |
+| `/tree/{path}/{asset}`          | >= 1      | data      | Requests a node's asset, `{asset}` is a single filename, |
+| `/search?q={query}`             | >= 1      | JSON      | Performs a full text search since. Before v2 returned a flat list of URLs, and performed only a restricted search, similar to `/filter`. |
+| `/filter?q={query}`             | >= 2      | JSON      | Performs a narrow restricted fuzzy search over visible node fields plus tags and keywords. |
+| `/messages`                     | >= 1      | WebSocket | For receiving messages, i.e. whenever the tree changes. |
 
-`GET /api/v1/tree`,
-get the full design definitions tree as a nested tree of nodes.
-
-`GET /api/v1/tree/{path}`,
-get information about a single node specified by `path`.
-
-`GET /api/v1/tree/{path}/{asset}`,
-requests a node's asset, `{asset}` is a single filename.
-
-`GET /api/v1/search?q={query}`,
-performs a search over the design definitions tree and returns
-a flat list of matched node URLs.
-
-`GET /api/v1/messages`,
-WebSocket for receiving messages, i.e. whenever the tree 
-changes.
+The API version is a single integer that gets incremented with each version release. 
 
 ### Designing the URL Schema
 

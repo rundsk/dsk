@@ -113,17 +113,17 @@ type APIv1Message struct {
 }
 
 func (api APIv1) MountHTTPHandlers() {
-	http.HandleFunc("/api/v1/hello", api.helloHandler)
-	http.HandleFunc("/api/v1/tree", api.treeHandler)
+	http.HandleFunc("/api/v1/hello", api.HelloHandler)
+	http.HandleFunc("/api/v1/tree", api.TreeHandler)
 	http.HandleFunc("/api/v1/tree/", func(w http.ResponseWriter, r *http.Request) {
 		if filepath.Ext(r.URL.Path) != "" {
-			api.nodeAssetHandler(w, r)
+			api.NodeAssetHandler(w, r)
 		} else {
-			api.nodeHandler(w, r)
+			api.NodeHandler(w, r)
 		}
 	})
-	http.HandleFunc("/api/v1/search", api.searchHandler)
-	http.HandleFunc("/api/v1/messages", api.messagesHandler)
+	http.HandleFunc("/api/v1/search", api.SearchHandler)
+	http.HandleFunc("/api/v1/messages", api.MessagesHandler)
 }
 
 func (api APIv1) NewHello() *APIv1Hello {
@@ -289,12 +289,12 @@ func (api APIv1) NewNodeTreeSearchResults(nodes []*Node, total int, took time.Du
 }
 
 // Says hello :)
-func (api APIv1) helloHandler(w http.ResponseWriter, r *http.Request) {
+func (api APIv1) HelloHandler(w http.ResponseWriter, r *http.Request) {
 	(&HTTPResponder{w, r, "application/json"}).OK(api.NewHello())
 }
 
 // WebSocket endpoint for receiving notifications.
-func (api *APIv1) messagesHandler(w http.ResponseWriter, r *http.Request) {
+func (api *APIv1) MessagesHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, ""}
 
 	conn, err := api.upgrader.Upgrade(w, r, nil)
@@ -326,7 +326,7 @@ func (api *APIv1) messagesHandler(w http.ResponseWriter, r *http.Request) {
 //
 // Handles this URL:
 //   /api/v1/tree
-func (api APIv1) treeHandler(w http.ResponseWriter, r *http.Request) {
+func (api APIv1) TreeHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, "application/json"}
 	// Not getting or checking path, as only tree requests are routed here.
 
@@ -348,7 +348,7 @@ func (api APIv1) treeHandler(w http.ResponseWriter, r *http.Request) {
 // Handles these kinds of URLs:
 //   /api/v1/tree/DisplayData/Table
 //   /api/v1/tree/DisplayData/Table/Row
-func (api APIv1) nodeHandler(w http.ResponseWriter, r *http.Request) {
+func (api APIv1) NodeHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, "application/json"}
 	path := r.URL.Path[len("/api/v1/tree/"):]
 
@@ -387,7 +387,7 @@ func (api APIv1) nodeHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/v1/tree/DisplayData/Table/Row/bar.mp4
 //   /api/v1/tree/DataEntry/Components/Button/test.png
 //   /api/v1/tree/Button/foo.mp4
-func (api APIv1) nodeAssetHandler(w http.ResponseWriter, r *http.Request) {
+func (api APIv1) NodeAssetHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, "application/json"}
 	path := r.URL.Path[len("/api/v1/tree/"):]
 
@@ -419,12 +419,12 @@ func (api APIv1) nodeAssetHandler(w http.ResponseWriter, r *http.Request) {
 //
 // Handles this URL:
 //   /api/v1/search?q={query}
-func (api APIv1) searchHandler(w http.ResponseWriter, r *http.Request) {
+func (api APIv1) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("q")
 
 	(&HTTPResponder{w, r, "application/json"}).OK(
 		api.NewNodeTreeSearchResults(
-			api.tree.FuzzySearch(q),
+			api.tree.RestrictedSearch(q),
 		),
 	)
 }
