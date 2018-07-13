@@ -79,8 +79,10 @@ func (t *NodeTree) Hash() ([]byte, error) {
 	return t.Root.Hash()
 }
 
-// One-way sync: updates tree from file system. Recursively crawls
-// the given root directory, constructing a tree of nodes.
+// Sync updates the tree from the file system. Recursively crawls the
+// given root directory, constructing a tree of nodes. Will rebuilt
+// the entire tree on every sync. This makes the algorithm really
+// simple - as we don't need to do branch selection - but also slow.
 func (t *NodeTree) Sync() error {
 	start := time.Now()
 
@@ -107,7 +109,7 @@ func (t *NodeTree) Sync() error {
 		return fmt.Errorf("Failed to walk directory tree %s: %s", t.path, err)
 	}
 
-	// In the second pass we're doing two thing: add the children
+	// In the second pass we're doing two things: add the children
 	// to the nodes and build up the lookup tables, as we're already
 	// iterating the nodes.
 	lookup := make(map[string]*Node)
