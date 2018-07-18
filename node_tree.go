@@ -282,12 +282,16 @@ func (t *NodeTree) FullTextSearch(query string) ([]*Node, int, time.Duration) {
 	searchResults, err := (*(t.searchIndex)).Search(bSearch)
 
 	if err != nil {
-		log.Fatal("Query: '%s' failed...", query)
+		log.Fatalf("Query: '%s' failed...", query)
 	}
 
 	var results []*Node
 	for _, hit := range searchResults.Hits {
-		results = append(results, &(Node{path: hit.ID}))
+		ok, node, err := t.Get(hit.ID)
+		if ok || err != nil {
+			log.Fatalf("For hit %s (ok? %t) something went wrong\n%s", hit.ID, ok, err)
+		}
+		results = append(results, node)
 	}
 
 	return results, len(results), time.Since(start)
