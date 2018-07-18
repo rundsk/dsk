@@ -269,7 +269,7 @@ func (t *NodeTree) Get(url string) (ok bool, n *Node, err error) {
 
 // FullTextSearch uses a prebuilt search index to perform a search
 // over all possible attributes of each node.
-func (t *NodeTree) FullTextSearch(query string) ([]string, int, time.Duration) {
+func (t *NodeTree) FullTextSearch(query string) ([]*Node, int, time.Duration) {
 	start := time.Now()
 
 	textQuery := bleve.NewMatchQuery(query)
@@ -285,9 +285,9 @@ func (t *NodeTree) FullTextSearch(query string) ([]string, int, time.Duration) {
 		log.Fatal("Query: '%s' failed...", query)
 	}
 
-	var results []string
+	var results []*Node
 	for _, hit := range searchResults.Hits {
-		results = append(results, hit.ID)
+		results = append(results, &(Node{path: hit.ID}))
 	}
 
 	return results, len(results), time.Since(start)
