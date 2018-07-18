@@ -12,20 +12,31 @@ import (
 	"net/http"
 	"path/filepath"
 	"time"
+
+	"github.com/blevesearch/bleve"
 )
 
-func NewAPIv2(tree *NodeTree, hub *MessageBroker) *APIv2 {
+func NewAPIv2(tree *NodeTree, hub *MessageBroker, index bleve.Index) *APIv2 {
 	return &APIv2{
-		tree: tree,
-		v1:   NewAPIv1(tree, broker),
+		tree:        tree,
+		v1:          NewAPIv1(tree, broker),
+		searchIndex: &index,
 	}
 }
 
 type APIv2 struct {
-	v1   *APIv1
-	tree *NodeTree
+	v1          *APIv1
+	tree        *NodeTree
+	searchIndex *(bleve.Index)
 }
 
+/*
+ * APIv2SearchResults has few options about what we add to it.
+ * We could add the context within which a match was found to have occurred.
+ * That would potentially require some sort of encoding a match scheme.
+ *
+ * For now, I'll elect to just maintain the existing node array that filter uses.
+ */
 type APIv2SearchResults struct {
 	URLs  []string `json:"urls"`
 	Total int      `json:"total"`

@@ -15,6 +15,7 @@ import (
 	"os/signal"
 	"path/filepath"
 
+	"github.com/blevesearch/bleve"
 	"github.com/fatih/color"
 	isatty "github.com/mattn/go-isatty"
 )
@@ -34,6 +35,8 @@ var (
 
 	// Global instance of a message broker.
 	broker *MessageBroker
+
+	searchIndex *bleve.Index
 )
 
 func main() {
@@ -59,6 +62,10 @@ func main() {
 			}
 			if broker != nil {
 				broker.Close()
+			}
+
+			if searchIndex != nil {
+				(*searchIndex).Close()
 			}
 			os.Exit(1)
 		}
@@ -97,8 +104,20 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to detect root of design definitions tree: %s", red(err))
 	}
+
 	log.Printf("Tree root found: %s", here)
 	PrettyPathRoot = here
+
+	log.Print("Opening search index...")
+	memIndex, err := createIndex()
+	if err != nil {
+		log.Fatalf("Failed to create search index: %s", red(err))
+	}
+
+	searchIndex = &memIndex
+	if err != nil {
+		log.Fatalf("Failed to create new memory index: %s", red(err))
+	}
 
 	log.Print("Begin watching tree for changes...")
 	w := NewWatcher(here)
@@ -115,7 +134,7 @@ func main() {
 
 	apis := map[int]API{
 		1: NewAPIv1(tree, broker),
-		2: NewAPIv2(tree, broker),
+		2: NewAPIv2(tree, broker, *searchIndex),
 	}
 	for v, api := range apis {
 		log.Printf("Mounting APIv%d...", v)
