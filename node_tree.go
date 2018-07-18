@@ -16,6 +16,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/blevesearch/bleve"
 	"github.com/fatih/color"
 )
 
@@ -61,6 +62,8 @@ type NodeTree struct {
 
 	// A place where we can send filtered messages to.
 	broker *MessageBroker
+
+	searchIndex *bleve.Index
 
 	// Quit channel, receiving true, when the tree is de-initialized.
 	done chan bool
@@ -163,6 +166,12 @@ func (t *NodeTree) Sync() error {
 	return nil
 }
 
+// Index avoids locking the tree while indexing is occuring
+// which could lead to stale results
+func (t *NodeTree) Index() error {
+	return t.Root.Index(*searchIndex)
+}
+
 // Open the tree and perform an initial tree sync, so the tree is
 // usable. Installs an auto-syncing process.
 func (t *NodeTree) Open() error {
@@ -258,15 +267,28 @@ func (t *NodeTree) Get(url string) (ok bool, n *Node, err error) {
 	return false, &Node{}, nil
 }
 
-// FullTextSearch uses a prebuild search index to perform a search
+// FullTextSearch uses a prebuilt search index to perform a search
 // over all possible attributes of each node.
-func (t *NodeTree) FullTextSearch(query string) ([]*Node, int, time.Duration) {
+func (t *NodeTree) FullTextSearch(query string) ([]string, int, time.Duration) {
 	start := time.Now()
 
-	t.RLock()
-	defer t.RUnlock()
+	textQuery := bleve.NewMatchQuery(query)
+	textQuery.SetFuzziness(2)
+	prefixQuery := bleve.NewPrefixQuery(query)
+	termQuery := bleve.NewTermQuery(query)
+	disjunctionQuery := bleve.NewDisjunctionQuery(prefixQuery, textQuery, termQuery)
 
-	var results []*Node
+	bSearch := bleve.NewSearchRequest(disjunctionQuery)
+	searchResults, err := (*(t.searchIndex)).Search(bSearch)
+
+	if err != nil {
+		log.Fatal("Query: '%s' failed...", query)
+	}
+
+	var results []string
+	for _, hit := range searchResults.Hits {
+		results = append(results, hit.ID)
+	}
 
 	return results, len(results), time.Since(start)
 }

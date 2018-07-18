@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -19,6 +20,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/blevesearch/bleve"
 	"github.com/fatih/color"
 )
 
@@ -153,6 +155,57 @@ func (n *Node) Hash() ([]byte, error) {
 	defer n.Unlock()
 	n.hash = hcom.Sum(nil)
 	return n.hash, nil
+}
+
+// Index intentionally avoids locking with the assumption that
+// stale results are the price to pay for
+func (n *Node) Index(index bleve.Index) error {
+	dirEntries, err := ioutil.ReadDir(n.path)
+	if err != nil {
+		return err
+	}
+
+	text := []string{}
+
+	for _, dirEntry := range dirEntries {
+		if dirEntry.IsDir() {
+			continue
+		}
+
+		fileName := path.Join(n.path, dirEntry.Name())
+		switch filepath.Ext(fileName) {
+		// This explicitly does not convert the .md to HTML
+		// with the view that signal to noise is lower in .md than HTML
+		case ".md":
+			rawBytes, err := ioutil.ReadFile(fileName)
+			if err != nil {
+				return err
+			}
+
+			stringified := string(rawBytes[:len(rawBytes)])
+			text = append(text, stringified)
+			// TODO: Index other the parts of the node:
+			// - assets: read exif data?
+		}
+	}
+
+	data := struct {
+		Text      string
+		FileNames []string
+		Path      string
+	}{
+		Text:      strings.Join(text, "\n\n"),
+		FileNames: nil,
+		Path:      n.URL(),
+	}
+
+	index.Index(n.path, data)
+
+	for _, v := range n.Children {
+		v.Index(index)
+	}
+
+	return nil
 }
 
 // Returns the normalized URL path fragment, that can be used to
