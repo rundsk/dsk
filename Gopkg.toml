@@ -56,3 +56,7 @@
 [[constraint]]
   name = "github.com/gorilla/websocket"
   version = "1.2.0"
+
+[[constraint]]
+  name = "github.com/blevesearch/bleve"
+  version = "0.7.0"
