@@ -166,10 +166,11 @@ func (t *NodeTree) Sync() error {
 	return nil
 }
 
-// Index avoids locking the tree while indexing is occuring
-// which could lead to stale results
 func (t *NodeTree) Index() error {
-	return t.Root.Index(*searchIndex)
+	t.Root.Lock()
+	defer t.Root.Unlock()
+
+	return t.Root.Index(searchIndex)
 }
 
 // Open the tree and perform an initial tree sync, so the tree is
@@ -272,15 +273,12 @@ func (t *NodeTree) Get(url string) (ok bool, n *Node, err error) {
 func (t *NodeTree) FullTextSearch(query string) ([]*Node, int, time.Duration) {
 	start := time.Now()
 
-	textQuery := bleve.NewMatchQuery(query)
-	textQuery.SetFuzziness(2)
-	prefixQuery := bleve.NewPrefixQuery(query)
-	termQuery := bleve.NewTermQuery(query)
-	disjunctionQuery := bleve.NewDisjunctionQuery(prefixQuery, textQuery, termQuery)
+	mq := bleve.NewMatchQuery(query)
+	mq.SetFuzziness(2)
+	disjunctionQuery := bleve.NewDisjunctionQuery(mq, bleve.NewPrefixQuery(query), bleve.NewPrefixQuery(query))
 
 	bSearch := bleve.NewSearchRequest(disjunctionQuery)
 	searchResults, err := (*(t.searchIndex)).Search(bSearch)
-
 	if err != nil {
 		log.Fatalf("Query: '%s' failed...", query)
 	}

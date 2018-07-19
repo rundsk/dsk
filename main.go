@@ -36,7 +36,7 @@ var (
 	// Global instance of a message broker.
 	broker *MessageBroker
 
-	searchIndex *bleve.Index
+	searchIndex bleve.Index
 )
 
 func main() {
@@ -65,7 +65,7 @@ func main() {
 			}
 
 			if searchIndex != nil {
-				(*searchIndex).Close()
+				searchIndex.Close()
 			}
 			os.Exit(1)
 		}
@@ -109,14 +109,9 @@ func main() {
 	PrettyPathRoot = here
 
 	log.Print("Opening search index...")
-	memIndex, err := createIndex()
+	searchIndex, err := createIndex()
 	if err != nil {
 		log.Fatalf("Failed to create search index: %s", red(err))
-	}
-
-	searchIndex = &memIndex
-	if err != nil {
-		log.Fatalf("Failed to create new memory index: %s", red(err))
 	}
 
 	log.Print("Begin watching tree for changes...")
@@ -134,7 +129,7 @@ func main() {
 
 	apis := map[int]API{
 		1: NewAPIv1(tree, broker),
-		2: NewAPIv2(tree, broker, *searchIndex),
+		2: NewAPIv2(tree, broker, searchIndex),
 	}
 	for v, api := range apis {
 		log.Printf("Mounting APIv%d...", v)

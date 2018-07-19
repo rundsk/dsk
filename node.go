@@ -11,7 +11,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"path"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -157,27 +156,23 @@ func (n *Node) Hash() ([]byte, error) {
 	return n.hash, nil
 }
 
-// Index intentionally avoids locking with the assumption that
-// stale results are the price to pay for
 func (n *Node) Index(index bleve.Index) error {
-	dirEntries, err := ioutil.ReadDir(n.path)
+	n.Lock()
+	defer n.Unlock()
+	dirEntries, err := n.Docs()
 	if err != nil {
 		return err
 	}
 
 	text := []string{}
 
-	for _, dirEntry := range dirEntries {
-		if dirEntry.IsDir() {
-			continue
-		}
-
-		fileName := path.Join(n.path, dirEntry.Name())
+	for _, nDoc := range dirEntries {
+		fileName := nDoc.path
 		switch filepath.Ext(fileName) {
 		// This explicitly does not convert the .md to HTML
 		// with the view that signal to noise is lower in .md than HTML
 		case ".md":
-			rawBytes, err := ioutil.ReadFile(fileName)
+			rawBytes, err := nDoc.Raw()
 			if err != nil {
 				return err
 			}
