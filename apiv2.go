@@ -20,14 +20,14 @@ func NewAPIv2(tree *NodeTree, hub *MessageBroker, index bleve.Index) *APIv2 {
 	return &APIv2{
 		tree:        tree,
 		v1:          NewAPIv1(tree, broker),
-		searchIndex: &index,
+		searchIndex: index,
 	}
 }
 
 type APIv2 struct {
 	v1          *APIv1
 	tree        *NodeTree
-	searchIndex *(bleve.Index)
+	searchIndex bleve.Index
 }
 
 /*
