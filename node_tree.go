@@ -63,7 +63,7 @@ type NodeTree struct {
 	// A place where we can send filtered messages to.
 	broker *MessageBroker
 
-	searchIndex *bleve.Index
+	searchIndex bleve.Index
 
 	// Quit channel, receiving true, when the tree is de-initialized.
 	done chan bool
@@ -166,11 +166,18 @@ func (t *NodeTree) Sync() error {
 	return nil
 }
 
+// Index Locking should probably occur here, but it interferes with
+// locking within Node's Index for the root Node.
 func (t *NodeTree) Index() error {
-	t.Root.Lock()
-	defer t.Root.Unlock()
+	log.Printf("Populating search index...")
 
-	return t.Root.Index(searchIndex)
+	start := time.Now()
+	err := t.Root.Index(t.searchIndex)
+	took := time.Since(start)
+
+	log.Printf("Indexing tree for search took %s", took)
+
+	return err
 }
 
 // Open the tree and perform an initial tree sync, so the tree is
@@ -278,7 +285,7 @@ func (t *NodeTree) FullTextSearch(query string) ([]*Node, int, time.Duration) {
 	disjunctionQuery := bleve.NewDisjunctionQuery(mq, bleve.NewPrefixQuery(query), bleve.NewPrefixQuery(query))
 
 	bSearch := bleve.NewSearchRequest(disjunctionQuery)
-	searchResults, err := (*(t.searchIndex)).Search(bSearch)
+	searchResults, err := t.searchIndex.Search(bSearch)
 	if err != nil {
 		log.Fatalf("Query: '%s' failed...", query)
 	}
@@ -286,7 +293,7 @@ func (t *NodeTree) FullTextSearch(query string) ([]*Node, int, time.Duration) {
 	var results []*Node
 	for _, hit := range searchResults.Hits {
 		ok, node, err := t.Get(hit.ID)
-		if ok || err != nil {
+		if !ok || err != nil {
 			log.Fatalf("For hit %s (ok? %t) something went wrong\n%s", hit.ID, ok, err)
 		}
 		results = append(results, node)

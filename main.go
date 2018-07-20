@@ -123,8 +123,15 @@ func main() {
 
 	log.Print("Opening tree...")
 	tree = NewNodeTree(here, watcher, broker) // assign to global
+
 	if err := tree.Open(); err != nil {
 		log.Fatalf("Failed to open tree: %s", red(err))
+	}
+
+	tree.searchIndex = searchIndex
+
+	if err := tree.Index(); err != nil {
+		log.Fatalf("Indexing of tree failed: %s", red(err))
 	}
 
 	apis := map[int]API{

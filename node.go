@@ -157,6 +157,7 @@ func (n *Node) Hash() ([]byte, error) {
 }
 
 func (n *Node) Index(index bleve.Index) error {
+	log.Printf("Indexing node %s", n.path)
 	n.Lock()
 	defer n.Unlock()
 	dirEntries, err := n.Docs()
@@ -194,7 +195,7 @@ func (n *Node) Index(index bleve.Index) error {
 		Path:      n.URL(),
 	}
 
-	index.Index(n.path, data)
+	index.Index(n.URL(), data)
 
 	for _, v := range n.Children {
 		v.Index(index)
