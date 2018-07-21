@@ -157,7 +157,7 @@ func (n *Node) Hash() ([]byte, error) {
 }
 
 func (n *Node) Index(index bleve.Index) error {
-	log.Printf("Indexing node %s", n.path)
+	log.Printf("Indexing node %s", prettyPath(n.path))
 	n.Lock()
 	defer n.Unlock()
 	dirEntries, err := n.Docs()
