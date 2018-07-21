@@ -12,11 +12,9 @@ import (
 	"net/http"
 	"path/filepath"
 	"time"
-
-	"github.com/blevesearch/bleve"
 )
 
-func NewAPIv2(tree *NodeTree, hub *MessageBroker, index bleve.Index) *APIv2 {
+func NewAPIv2(tree *NodeTree, hub *MessageBroker, index *SearchIndex) *APIv2 {
 	return &APIv2{
 		tree:        tree,
 		v1:          NewAPIv1(tree, broker),
@@ -27,7 +25,7 @@ func NewAPIv2(tree *NodeTree, hub *MessageBroker, index bleve.Index) *APIv2 {
 type APIv2 struct {
 	v1          *APIv1
 	tree        *NodeTree
-	searchIndex bleve.Index
+	searchIndex *SearchIndex
 }
 
 /*

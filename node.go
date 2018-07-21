@@ -19,7 +19,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/blevesearch/bleve"
 	"github.com/fatih/color"
 )
 
@@ -156,7 +155,7 @@ func (n *Node) Hash() ([]byte, error) {
 	return n.hash, nil
 }
 
-func (n *Node) Index(index bleve.Index) error {
+func (n *Node) Index(index *SearchIndex) error {
 	log.Printf("Indexing node %s", prettyPath(n.path))
 	n.Lock()
 	defer n.Unlock()

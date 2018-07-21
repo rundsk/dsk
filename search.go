@@ -1,3 +1,8 @@
+// Copyright 2018 Atelier Disko. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package main
 
 import (
@@ -8,20 +13,41 @@ import (
 	"github.com/blevesearch/bleve/mapping"
 )
 
-func createIndex() (bleve.Index, error) {
-	indexMapping := bleve.NewIndexMapping()
-	addMappings(indexMapping)
-	memIndex, err := bleve.NewMemOnly(indexMapping)
-	if err != nil {
-		return nil, err
-	}
-
-	return memIndex, nil
+func NewSearchIndex() *SearchIndex {
+	return &SearchIndex{}
 }
 
-// AddMappings attempts to be semi general purpose, and includes both
+// SearchIndex wraps bleve search index.
+type SearchIndex struct {
+	index bleve.Index
+}
+
+func (si *SearchIndex) Open() error {
+	memIndex, err := bleve.NewMemOnly(si.mapping())
+	si.index = memIndex
+	return err
+}
+
+func (si *SearchIndex) Close() error {
+	return si.index.Close()
+}
+
+func (si *SearchIndex) Index(id string, data interface{}) error {
+	return si.index.Index(id, data)
+}
+
+func (si *SearchIndex) Search(req *bleve.SearchRequest) (*bleve.SearchResult, error) {
+	return si.index.Search(req)
+}
+
+// Mapping attempts to be semi general purpose, and includes both
 // a tiny bit of fuzzing and exact matches.
-func addMappings(indexMapping *mapping.IndexMappingImpl) {
+//
+// TODO: Have english as default and support any additional language,
+//       possible configured via a command line option and/or through auto-detection.
+func (si *SearchIndex) mapping() *mapping.IndexMappingImpl {
+	indexMapping := bleve.NewIndexMapping()
+
 	node := bleve.NewDocumentMapping()
 	node.DefaultAnalyzer = de.AnalyzerName
 	germanTextMapping := bleve.NewTextFieldMapping()
@@ -39,4 +65,6 @@ func addMappings(indexMapping *mapping.IndexMappingImpl) {
 	node.AddFieldMappingsAt("Path", pathMapping, germanTextMapping, englishTextMapping)
 
 	indexMapping.AddDocumentMapping("article", node)
+
+	return indexMapping
 }

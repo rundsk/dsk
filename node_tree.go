@@ -28,12 +28,13 @@ var (
 
 // Returns an unsynced tree from path; you must initialize the Tree
 // using Sync() or by calling Start().
-func NewNodeTree(path string, w *Watcher, b *MessageBroker) *NodeTree {
+func NewNodeTree(path string, w *Watcher, b *MessageBroker, si *SearchIndex) *NodeTree {
 	return &NodeTree{
-		path:    path,
-		watcher: w,
-		broker:  broker,
-		done:    make(chan bool),
+		path:        path,
+		watcher:     w,
+		broker:      b,
+		searchIndex: si,
+		done:        make(chan bool),
 	}
 }
 
@@ -63,7 +64,7 @@ type NodeTree struct {
 	// A place where we can send filtered messages to.
 	broker *MessageBroker
 
-	searchIndex bleve.Index
+	searchIndex *SearchIndex
 
 	// Quit channel, receiving true, when the tree is de-initialized.
 	done chan bool

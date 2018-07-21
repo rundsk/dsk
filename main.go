@@ -15,7 +15,6 @@ import (
 	"os/signal"
 	"path/filepath"
 
-	"github.com/blevesearch/bleve"
 	"github.com/fatih/color"
 	isatty "github.com/mattn/go-isatty"
 )
@@ -36,7 +35,8 @@ var (
 	// Global instance of a message broker.
 	broker *MessageBroker
 
-	searchIndex bleve.Index
+	// Global instance of the search index.
+	searchIndex *SearchIndex
 )
 
 func main() {
@@ -63,7 +63,6 @@ func main() {
 			if broker != nil {
 				broker.Close()
 			}
-
 			if searchIndex != nil {
 				searchIndex.Close()
 			}
@@ -109,9 +108,9 @@ func main() {
 	PrettyPathRoot = here
 
 	log.Print("Opening search index...")
-	searchIndex, err := createIndex()
-	if err != nil {
-		log.Fatalf("Failed to create search index: %s", red(err))
+	si := NewSearchIndex()
+	if err := si.Open(); err != nil {
+		log.Fatalf("Failed to open search index: %s", red(err))
 	}
 
 	log.Print("Begin watching tree for changes...")
@@ -122,13 +121,11 @@ func main() {
 	watcher = w // assign to global
 
 	log.Print("Opening tree...")
-	tree = NewNodeTree(here, watcher, broker) // assign to global
+	tree = NewNodeTree(here, watcher, broker, searchIndex) // assign to global
 
 	if err := tree.Open(); err != nil {
 		log.Fatalf("Failed to open tree: %s", red(err))
 	}
-
-	tree.searchIndex = searchIndex
 
 	if err := tree.Index(); err != nil {
 		log.Fatalf("Indexing of tree failed: %s", red(err))
