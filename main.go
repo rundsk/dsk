@@ -60,11 +60,11 @@ func main() {
 			if watcher != nil {
 				watcher.Close()
 			}
-			if broker != nil {
-				broker.Close()
-			}
 			if searchIndex != nil {
 				searchIndex.Close()
+			}
+			if broker != nil {
+				broker.Close()
 			}
 			os.Exit(1)
 		}
@@ -107,12 +107,6 @@ func main() {
 	log.Printf("Tree root found: %s", here)
 	PrettyPathRoot = here
 
-	log.Print("Opening search index...")
-	si := NewSearchIndex()
-	if err := si.Open(); err != nil {
-		log.Fatalf("Failed to open search index: %s", red(err))
-	}
-
 	log.Print("Begin watching tree for changes...")
 	w := NewWatcher(here)
 	if err := w.Open(IgnoreNodesRegexp); err != nil {
@@ -126,9 +120,17 @@ func main() {
 	if err := tree.Open(); err != nil {
 		log.Fatalf("Failed to open tree: %s", red(err))
 	}
+	if err := tree.Sync(); err != nil {
+		log.Fatalf("Failed to perform initial tree sync: %s", red(err))
+	}
 
-	if err := tree.Index(); err != nil {
-		log.Fatalf("Indexing of tree failed: %s", red(err))
+	log.Print("Opening search index...")
+	searchIndex = NewSearchIndex(tree, broker) // assign to global
+	if err := searchIndex.Open(); err != nil {
+		log.Fatalf("Failed to open search index: %s", red(err))
+	}
+	if err := searchIndex.IndexTree(); err != nil {
+		log.Fatalf("Failed to perform initial tree indexing: %s", red(err))
 	}
 
 	apis := map[int]API{

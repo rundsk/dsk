@@ -155,54 +155,6 @@ func (n *Node) Hash() ([]byte, error) {
 	return n.hash, nil
 }
 
-func (n *Node) Index(index *SearchIndex) error {
-	log.Printf("Indexing node %s", prettyPath(n.path))
-	n.Lock()
-	defer n.Unlock()
-	dirEntries, err := n.Docs()
-	if err != nil {
-		return err
-	}
-
-	text := []string{}
-
-	for _, nDoc := range dirEntries {
-		fileName := nDoc.path
-		switch filepath.Ext(fileName) {
-		// This explicitly does not convert the .md to HTML
-		// with the view that signal to noise is lower in .md than HTML
-		case ".md":
-			rawBytes, err := nDoc.Raw()
-			if err != nil {
-				return err
-			}
-
-			stringified := string(rawBytes[:len(rawBytes)])
-			text = append(text, stringified)
-			// TODO: Index other the parts of the node:
-			// - assets: read exif data?
-		}
-	}
-
-	data := struct {
-		Text      string
-		FileNames []string
-		Path      string
-	}{
-		Text:      strings.Join(text, "\n\n"),
-		FileNames: nil,
-		Path:      n.URL(),
-	}
-
-	index.Index(n.URL(), data)
-
-	for _, v := range n.Children {
-		v.Index(index)
-	}
-
-	return nil
-}
-
 // Returns the normalized URL path fragment, that can be used to
 // address this node i.e Input/Password.
 func (n *Node) URL() string {

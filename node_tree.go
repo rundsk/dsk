@@ -160,33 +160,17 @@ func (t *NodeTree) Sync() error {
 	total := len(lookup)
 	took := time.Since(start)
 
-	t.broker.Accept(NewMessage(
+	defer t.broker.Accept(NewMessage(
 		MessageTypeTreeSynced, fmt.Sprintf("%d node/s in %s", total, took),
 	))
+
 	log.Printf("Synced tree with %d total node/s in %s", total, took)
 	return nil
 }
 
-// Index Locking should probably occur here, but it interferes with
-// locking within Node's Index for the root Node.
-func (t *NodeTree) Index() error {
-	log.Printf("Populating search index...")
-
-	start := time.Now()
-	err := t.Root.Index(t.searchIndex)
-	took := time.Since(start)
-
-	log.Printf("Indexing tree for search took %s", took)
-
-	return err
-}
-
-// Open the tree and perform an initial tree sync, so the tree is
-// usable. Installs an auto-syncing process.
+// Open installs an auto-syncing process, the initial sync must be
+// done using Sync() manually.
 func (t *NodeTree) Open() error {
-	if err := t.Sync(); err != nil {
-		return err
-	}
 	id, watch := t.watcher.Subscribe()
 
 	go func() {
@@ -202,7 +186,7 @@ func (t *NodeTree) Open() error {
 					log.Printf("Re-sync failed: %s", err)
 				}
 			case <-t.done:
-				log.Print("Stopping auto-syncing...")
+				log.Print("Stopping auto-syncing (received quit)...")
 				t.watcher.Unsubscribe(id)
 				return
 			}
@@ -274,6 +258,17 @@ func (t *NodeTree) Get(url string) (ok bool, n *Node, err error) {
 		return ok, n, nil
 	}
 	return false, &Node{}, nil
+}
+
+func (t *NodeTree) GetAll() []*Node {
+	t.RLock()
+	defer t.RUnlock()
+
+	ns := make([]*Node, 0, len(t.lookup))
+	for _, n := range t.lookup {
+		ns = append(ns, n)
+	}
+	return ns
 }
 
 // FullTextSearch uses a prebuilt search index to perform a search
