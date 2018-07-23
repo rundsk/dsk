@@ -64,6 +64,24 @@ func (si *SearchIndex) mapping() *mapping.IndexMappingImpl {
 	pathMapping.Analyzer = keyword.Name
 	node.AddFieldMappingsAt("Path", pathMapping, germanTextMapping, englishTextMapping)
 
+	// Whether or not mappings work correctly with arrays remains to be seen.
+	// Stemming certainly won't for fields like authors
+	authorMapping := bleve.NewTextFieldMapping()
+	pathMapping.Analyzer = keyword.Name
+	node.AddFieldMappingsAt("Authors", authorMapping)
+
+	descriptionMapping := bleve.NewTextFieldMapping()
+	descriptionMapping.Analyzer = "en"
+	node.AddFieldMappingsAt("Description", descriptionMapping)
+
+	tagMapping := bleve.NewTextFieldMapping()
+	tagMapping.Analyzer = keyword.Name
+	node.AddFieldMappingsAt("Tags", tagMapping)
+
+	versionMapping := bleve.NewTextFieldMapping()
+	versionMapping.Analyzer = keyword.Name
+	node.AddFieldMappingsAt("Version")
+
 	indexMapping.AddDocumentMapping("article", node)
 
 	return indexMapping
