@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"golang.org/x/text/unicode/norm"
 )
 
 var (
@@ -190,7 +191,7 @@ func (n *Node) Title() string {
 	if n.root == n.path {
 		return filepath.Base(n.root)
 	}
-	return removeOrderNumber(filepath.Base(n.path))
+	return norm.NFC.String(removeOrderNumber(filepath.Base(n.path)))
 }
 
 // Returns the full description of the node.

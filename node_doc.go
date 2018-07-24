@@ -13,6 +13,7 @@ import (
 
 	"github.com/russross/blackfriday"
 	"golang.org/x/net/html"
+	"golang.org/x/text/unicode/norm"
 )
 
 // NodeDoc is a document file.
@@ -30,7 +31,7 @@ func (d NodeDoc) Order() uint64 {
 // extension stripped off, usually for display purposes.
 func (d NodeDoc) Title() string {
 	base := filepath.Base(d.path)
-	return removeOrderNumber(strings.TrimSuffix(base, filepath.Ext(base)))
+	return norm.NFC.String(removeOrderNumber(strings.TrimSuffix(base, filepath.Ext(base))))
 }
 
 // HTML as parsed from the underlying file. The provided tree prefix
