@@ -14,18 +14,18 @@ import (
 	"time"
 )
 
-func NewAPIv2(tree *NodeTree, hub *MessageBroker, index *SearchIndex) *APIv2 {
+func NewAPIv2(t *NodeTree, hub *MessageBroker, s *Search) *APIv2 {
 	return &APIv2{
-		tree:        tree,
-		v1:          NewAPIv1(tree, broker),
-		searchIndex: index,
+		v1:     NewAPIv1(t, hub),
+		tree:   t,
+		search: s,
 	}
 }
 
 type APIv2 struct {
-	v1          *APIv1
-	tree        *NodeTree
-	searchIndex *SearchIndex
+	v1     *APIv1
+	tree   *NodeTree
+	search *Search
 }
 
 /*
@@ -88,7 +88,7 @@ func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 	(&HTTPResponder{w, r, "application/json"}).OK(
 		api.NewNodeTreeSearchResults(
-			api.tree.FullTextSearch(api.searchIndex, q),
+			api.tree.FullTextSearch(api.search, q),
 		),
 	)
 }

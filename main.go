@@ -36,7 +36,7 @@ var (
 	broker *MessageBroker
 
 	// Global instance of the search index.
-	searchIndex *SearchIndex
+	search *Search
 )
 
 func main() {
@@ -60,8 +60,8 @@ func main() {
 			if watcher != nil {
 				watcher.Close()
 			}
-			if searchIndex != nil {
-				searchIndex.Close()
+			if search != nil {
+				search.Close()
 			}
 			if broker != nil {
 				broker.Close()
@@ -125,18 +125,18 @@ func main() {
 	}
 
 	log.Print("Opening search index...")
-	searchIndex = NewSearchIndex(tree, broker) // assign to global
-	if err := searchIndex.Open(); err != nil {
+	search = NewSearch(tree, broker) // assign to global
+	if err := search.Open(); err != nil {
 		log.Fatalf("Failed to open search index: %s", red(err))
 	}
 
-	if err := searchIndex.IndexTree(); err != nil {
+	if err := search.IndexTree(); err != nil {
 		log.Fatalf("Failed to perform initial tree indexing: %s", red(err))
 	}
 
 	apis := map[int]API{
 		1: NewAPIv1(tree, broker),
-		2: NewAPIv2(tree, broker, searchIndex),
+		2: NewAPIv2(tree, broker, search),
 	}
 	for v, api := range apis {
 		log.Printf("Mounting APIv%d...", v)

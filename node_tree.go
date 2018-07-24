@@ -270,7 +270,7 @@ func (t *NodeTree) GetAll() []*Node {
 
 // FullTextSearch uses a prebuilt search index to perform a search
 // over all possible attributes of each node.
-func (t *NodeTree) FullTextSearch(si *SearchIndex, query string) ([]*Node, int, time.Duration) {
+func (t *NodeTree) FullTextSearch(si *Search, query string) ([]*Node, int, time.Duration) {
 	start := time.Now()
 
 	mq := bleve.NewMatchQuery(query)

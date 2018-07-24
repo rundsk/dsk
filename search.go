@@ -18,16 +18,15 @@ import (
 	"github.com/blevesearch/bleve/mapping"
 )
 
-func NewSearchIndex(t *NodeTree, b *MessageBroker) *SearchIndex {
-	return &SearchIndex{
+func NewSearch(t *NodeTree, b *MessageBroker) *Search {
+	return &Search{
 		tree:   t,
 		broker: b,
 		done:   make(chan bool),
 	}
 }
 
-// SearchIndex wraps bleve search index.
-type SearchIndex struct {
+type Search struct {
 	tree *NodeTree
 
 	index bleve.Index
@@ -38,12 +37,12 @@ type SearchIndex struct {
 	done chan bool
 }
 
-func (si *SearchIndex) Open() error {
-	memIndex, err := bleve.NewMemOnly(si.mapping())
-	si.index = memIndex
+func (s *Search) Open() error {
+	memIndex, err := bleve.NewMemOnly(s.mapping())
+	s.index = memIndex
 
 	go func() {
-		id, messages := si.broker.Subscribe()
+		id, messages := s.broker.Subscribe()
 
 		for {
 			select {
@@ -51,15 +50,15 @@ func (si *SearchIndex) Open() error {
 				if !ok {
 					// Channel is now closed.
 					log.Print("Stopping indexer (channel closed)...")
-					si.broker.Unsubscribe(id)
+					s.broker.Unsubscribe(id)
 					return
 				}
 				if m.(*Message).typ == MessageTypeTreeSynced {
-					si.IndexTree()
+					s.IndexTree()
 				}
-			case <-si.done:
+			case <-s.done:
 				log.Print("Stopping indexer (received quit)...")
-				si.broker.Unsubscribe(id)
+				s.broker.Unsubscribe(id)
 				return
 			}
 		}
@@ -67,18 +66,18 @@ func (si *SearchIndex) Open() error {
 	return err
 }
 
-func (si *SearchIndex) Close() error {
+func (s *Search) Close() error {
 	log.Print("Search index is closing...")
-	si.done <- true // Stop indexer
-	return si.index.Close()
+	s.done <- true // Stop indexer
+	return s.index.Close()
 }
 
-func (si *SearchIndex) IndexTree() error {
+func (s *Search) IndexTree() error {
 	start := time.Now()
 	log.Printf("Populating search index from tree...")
 
-	for _, n := range si.tree.GetAll() {
-		if err := si.IndexNode(n); err != nil {
+	for _, n := range s.tree.GetAll() {
+		if err := s.IndexNode(n); err != nil {
 			return err
 		}
 	}
@@ -88,7 +87,7 @@ func (si *SearchIndex) IndexTree() error {
 	return nil
 }
 
-func (si *SearchIndex) IndexNode(n *Node) error {
+func (s *Search) IndexNode(n *Node) error {
 	n.Lock()
 	defer n.Unlock()
 
@@ -127,20 +126,20 @@ func (si *SearchIndex) IndexNode(n *Node) error {
 		Path:      n.URL(),
 	}
 
-	si.Index(n.URL(), data)
+	s.Index(n.URL(), data)
 
 	for _, v := range n.Children {
-		si.IndexNode(v)
+		s.IndexNode(v)
 	}
 	return nil
 }
 
-func (si *SearchIndex) Index(id string, data interface{}) error {
-	return si.index.Index(id, data)
+func (s *Search) Index(id string, data interface{}) error {
+	return s.index.Index(id, data)
 }
 
-func (si *SearchIndex) Search(req *bleve.SearchRequest) (*bleve.SearchResult, error) {
-	return si.index.Search(req)
+func (s *Search) Search(req *bleve.SearchRequest) (*bleve.SearchResult, error) {
+	return s.index.Search(req)
 }
 
 // Mapping attempts to be semi general purpose, and includes both
@@ -148,7 +147,7 @@ func (si *SearchIndex) Search(req *bleve.SearchRequest) (*bleve.SearchResult, er
 //
 // TODO: Have english as default and support any additional language,
 //       possible configured via a command line option and/or through auto-detection.
-func (si *SearchIndex) mapping() *mapping.IndexMappingImpl {
+func (s *Search) mapping() *mapping.IndexMappingImpl {
 	indexMapping := bleve.NewIndexMapping()
 
 	node := bleve.NewDocumentMapping()
