@@ -18,9 +18,9 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func NewAPIv1(tree *NodeTree, hub *MessageBroker) *APIv1 {
+func NewAPIv1(t *NodeTree, hub *MessageBroker) *APIv1 {
 	return &APIv1{
-		tree:     tree,
+		tree:     t,
 		messages: hub,
 		upgrader: websocket.Upgrader{
 			ReadBufferSize:  1024,
