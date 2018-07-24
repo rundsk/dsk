@@ -170,12 +170,14 @@ func (si *SearchIndex) mapping() *mapping.IndexMappingImpl {
 	// Whether or not mappings work correctly with arrays remains to be seen.
 	// Stemming certainly won't for fields like authors
 	authorMapping := bleve.NewTextFieldMapping()
-	pathMapping.Analyzer = keyword.Name
+	authorMapping.Analyzer = keyword.Name
 	node.AddFieldMappingsAt("Authors", authorMapping)
 
 	descriptionMapping := bleve.NewTextFieldMapping()
 	descriptionMapping.Analyzer = "en"
-	node.AddFieldMappingsAt("Description", descriptionMapping)
+	descriptionKeywordMapping := bleve.NewTextFieldMapping()
+	descriptionKeywordMapping.Analyzer = keyword.Name
+	node.AddFieldMappingsAt("Description", descriptionMapping, descriptionKeywordMapping)
 
 	tagMapping := bleve.NewTextFieldMapping()
 	tagMapping.Analyzer = keyword.Name

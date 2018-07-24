@@ -275,7 +275,7 @@ func (t *NodeTree) FullTextSearch(si *SearchIndex, query string) ([]*Node, int, 
 
 	mq := bleve.NewMatchQuery(query)
 	mq.SetFuzziness(2)
-	disjunctionQuery := bleve.NewDisjunctionQuery(mq, bleve.NewPrefixQuery(query), bleve.NewPrefixQuery(query))
+	disjunctionQuery := bleve.NewDisjunctionQuery(mq, bleve.NewTermQuery(query), bleve.NewPrefixQuery(query))
 
 	bSearch := bleve.NewSearchRequest(disjunctionQuery)
 	searchResults, err := si.Search(bSearch)
