@@ -138,8 +138,67 @@ func (s *Search) Index(id string, data interface{}) error {
 	return s.index.Index(id, data)
 }
 
-func (s *Search) Search(req *bleve.SearchRequest) (*bleve.SearchResult, error) {
-	return s.index.Search(req)
+// BroadSearch performs a search over all possible attributes of each node.
+func (s *Search) BroadSearch(query string) ([]*Node, int, time.Duration) {
+	start := time.Now()
+
+	mq := bleve.NewMatchQuery(query)
+	mq.SetFuzziness(2)
+	disjunctionQuery := bleve.NewDisjunctionQuery(mq, bleve.NewPrefixQuery(query), bleve.NewPrefixQuery(query))
+
+	bSearch := bleve.NewSearchRequest(disjunctionQuery)
+	searchResults, err := s.index.Search(bSearch)
+	if err != nil {
+		log.Fatalf("Query: '%s' failed...", query)
+	}
+
+	var results []*Node
+	for _, hit := range searchResults.Hits {
+		ok, node, err := s.tree.Get(hit.ID)
+		if !ok || err != nil {
+			log.Fatalf("For hit %s (ok? %t) something went wrong\n%s", hit.ID, ok, err)
+		}
+		results = append(results, node)
+	}
+
+	return results, len(results), time.Since(start)
+}
+
+// NarrowSearch performs a narrow restricted fuzzy search on the
+// node's visible attributes (the title) plus tags & keywords and
+// returns the collected results as a flat node list.
+func (s *Search) NarrowSearch(query string) ([]*Node, int, time.Duration) {
+	start := time.Now()
+
+	var results []*Node
+
+	matches := func(source string, target string) bool {
+		if source == "" {
+			return false
+		}
+		return strings.Contains(strings.ToLower(target), strings.ToLower(source))
+	}
+
+Outer:
+	for _, n := range s.tree.GetAll() {
+		if matches(query, n.Title()) {
+			results = append(results, n)
+			continue Outer
+		}
+		for _, v := range n.Tags() {
+			if matches(query, v) {
+				results = append(results, n)
+				continue Outer
+			}
+		}
+		for _, v := range n.Keywords() {
+			if matches(query, v) {
+				results = append(results, n)
+				continue Outer
+			}
+		}
+	}
+	return results, len(results), time.Since(start)
 }
 
 // Mapping attempts to be semi general purpose, and includes both

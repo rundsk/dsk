@@ -12,11 +12,9 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
-	"strings"
 	"sync"
 	"time"
 
-	"github.com/blevesearch/bleve"
 	"github.com/fatih/color"
 )
 
@@ -266,71 +264,4 @@ func (t *NodeTree) GetAll() []*Node {
 		ns = append(ns, n)
 	}
 	return ns
-}
-
-// FullTextSearch uses a prebuilt search index to perform a search
-// over all possible attributes of each node.
-func (t *NodeTree) FullTextSearch(si *Search, query string) ([]*Node, int, time.Duration) {
-	start := time.Now()
-
-	mq := bleve.NewMatchQuery(query)
-	mq.SetFuzziness(2)
-	disjunctionQuery := bleve.NewDisjunctionQuery(mq, bleve.NewPrefixQuery(query), bleve.NewPrefixQuery(query))
-
-	bSearch := bleve.NewSearchRequest(disjunctionQuery)
-	searchResults, err := si.Search(bSearch)
-	if err != nil {
-		log.Fatalf("Query: '%s' failed...", query)
-	}
-
-	var results []*Node
-	for _, hit := range searchResults.Hits {
-		ok, node, err := t.Get(hit.ID)
-		if !ok || err != nil {
-			log.Fatalf("For hit %s (ok? %t) something went wrong\n%s", hit.ID, ok, err)
-		}
-		results = append(results, node)
-	}
-
-	return results, len(results), time.Since(start)
-}
-
-// Performs a narrow restricted fuzzy search on the node's visible
-// attributes (the title) plus tags & keywords and returns the
-// collected results as a flat node list.
-func (t *NodeTree) RestrictedSearch(query string) ([]*Node, int, time.Duration) {
-	start := time.Now()
-
-	t.RLock()
-	defer t.RUnlock()
-
-	var results []*Node
-
-	matches := func(source string, target string) bool {
-		if source == "" {
-			return false
-		}
-		return strings.Contains(strings.ToLower(target), strings.ToLower(source))
-	}
-
-Outer:
-	for _, n := range t.lookup {
-		if matches(query, n.Title()) {
-			results = append(results, n)
-			continue Outer
-		}
-		for _, v := range n.Tags() {
-			if matches(query, v) {
-				results = append(results, n)
-				continue Outer
-			}
-		}
-		for _, v := range n.Keywords() {
-			if matches(query, v) {
-				results = append(results, n)
-				continue Outer
-			}
-		}
-	}
-	return results, len(results), time.Since(start)
 }

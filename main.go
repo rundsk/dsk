@@ -135,7 +135,7 @@ func main() {
 	}
 
 	apis := map[int]API{
-		1: NewAPIv1(tree, broker),
+		1: NewAPIv1(tree, broker, search),
 		2: NewAPIv2(tree, broker, search),
 	}
 	for v, api := range apis {

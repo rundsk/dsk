@@ -16,7 +16,7 @@ import (
 
 func NewAPIv2(t *NodeTree, hub *MessageBroker, s *Search) *APIv2 {
 	return &APIv2{
-		v1:     NewAPIv1(t, hub),
+		v1:     NewAPIv1(t, hub, s),
 		tree:   t,
 		search: s,
 	}
@@ -88,7 +88,7 @@ func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 	(&HTTPResponder{w, r, "application/json"}).OK(
 		api.NewNodeTreeSearchResults(
-			api.tree.FullTextSearch(api.search, q),
+			api.search.BroadSearch(q),
 		),
 	)
 }
@@ -104,7 +104,7 @@ func (api APIv2) FilterHandler(w http.ResponseWriter, r *http.Request) {
 
 	(&HTTPResponder{w, r, "application/json"}).OK(
 		api.NewNodeTreeFilterResults(
-			api.tree.RestrictedSearch(q),
+			api.search.NarrowSearch(q),
 		),
 	)
 }
