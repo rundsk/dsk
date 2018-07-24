@@ -31,7 +31,7 @@ func (d NodeDoc) Order() uint64 {
 // extension stripped off, usually for display purposes.
 func (d NodeDoc) Title() string {
 	base := filepath.Base(d.path)
-	return norm.NFC.String(removeOrderNumber(strings.TrimSuffix(base, filepath.Ext(base))))
+	return removeOrderNumber(norm.NFC.String(strings.TrimSuffix(base, filepath.Ext(base))))
 }
 
 // HTML as parsed from the underlying file. The provided tree prefix

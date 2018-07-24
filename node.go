@@ -191,7 +191,7 @@ func (n *Node) Title() string {
 	if n.root == n.path {
 		return filepath.Base(n.root)
 	}
-	return norm.NFC.String(removeOrderNumber(filepath.Base(n.path)))
+	return removeOrderNumber(norm.NFC.String(filepath.Base(n.path)))
 }
 
 // Returns the full description of the node.
