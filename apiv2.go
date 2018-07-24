@@ -88,7 +88,7 @@ func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 	(&HTTPResponder{w, r, "application/json"}).OK(
 		api.NewNodeTreeSearchResults(
-			api.tree.FullTextSearch(q),
+			api.tree.FullTextSearch(api.searchIndex, q),
 		),
 	)
 }

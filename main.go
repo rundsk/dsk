@@ -115,7 +115,7 @@ func main() {
 	watcher = w // assign to global
 
 	log.Print("Opening tree...")
-	tree = NewNodeTree(here, watcher, broker, searchIndex) // assign to global
+	tree = NewNodeTree(here, watcher, broker) // assign to global
 
 	if err := tree.Open(); err != nil {
 		log.Fatalf("Failed to open tree: %s", red(err))
@@ -129,6 +129,7 @@ func main() {
 	if err := searchIndex.Open(); err != nil {
 		log.Fatalf("Failed to open search index: %s", red(err))
 	}
+
 	if err := searchIndex.IndexTree(); err != nil {
 		log.Fatalf("Failed to perform initial tree indexing: %s", red(err))
 	}

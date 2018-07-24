@@ -28,13 +28,12 @@ var (
 
 // Returns an unsynced tree from path; you must initialize the Tree
 // using Sync() or by calling Start().
-func NewNodeTree(path string, w *Watcher, b *MessageBroker, si *SearchIndex) *NodeTree {
+func NewNodeTree(path string, w *Watcher, b *MessageBroker) *NodeTree {
 	return &NodeTree{
-		path:        path,
-		watcher:     w,
-		broker:      b,
-		searchIndex: si,
-		done:        make(chan bool),
+		path:    path,
+		watcher: w,
+		broker:  b,
+		done:    make(chan bool),
 	}
 }
 
@@ -63,8 +62,6 @@ type NodeTree struct {
 
 	// A place where we can send filtered messages to.
 	broker *MessageBroker
-
-	searchIndex *SearchIndex
 
 	// Quit channel, receiving true, when the tree is de-initialized.
 	done chan bool
@@ -273,7 +270,7 @@ func (t *NodeTree) GetAll() []*Node {
 
 // FullTextSearch uses a prebuilt search index to perform a search
 // over all possible attributes of each node.
-func (t *NodeTree) FullTextSearch(query string) ([]*Node, int, time.Duration) {
+func (t *NodeTree) FullTextSearch(si *SearchIndex, query string) ([]*Node, int, time.Duration) {
 	start := time.Now()
 
 	mq := bleve.NewMatchQuery(query)
@@ -281,7 +278,7 @@ func (t *NodeTree) FullTextSearch(query string) ([]*Node, int, time.Duration) {
 	disjunctionQuery := bleve.NewDisjunctionQuery(mq, bleve.NewPrefixQuery(query), bleve.NewPrefixQuery(query))
 
 	bSearch := bleve.NewSearchRequest(disjunctionQuery)
-	searchResults, err := t.searchIndex.Search(bSearch)
+	searchResults, err := si.Search(bSearch)
 	if err != nil {
 		log.Fatalf("Query: '%s' failed...", query)
 	}
