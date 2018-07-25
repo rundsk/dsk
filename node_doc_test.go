@@ -1,4 +1,4 @@
-// Copyright 2017 Atelier Disko. All rights reserved.
+// Copyright 2018 Atelier Disko. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
@@ -24,12 +24,12 @@ func TestDocTitlesWithDecomposedFilenames(t *testing.T) {
 
 	node := &Node{root: tmp, path: filepath.Join(tmp, "foo")}
 
- 	docs, err := node.Docs()
+	docs, err := node.Docs()
 	if err != nil {
 		t.Errorf("can’t read docs")
 	}
 
 	if docs[0].Title() != "Café" {
-    t.Errorf("failed to decode file name, got %v", docs[0].Title())
-  }
+		t.Errorf("failed to decode file name, got %v", docs[0].Title())
+	}
 }
