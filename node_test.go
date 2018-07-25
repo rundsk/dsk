@@ -131,3 +131,10 @@ func BenchmarkHashCalculation(b *testing.B) {
 		n.Hash()
 	}
 }
+
+func TestTitlesWithDecomposedFilenames(t *testing.T) {
+  n := &Node{path: "/bar/Cafe\u0301", root: "/bar"}
+  if n.Title() != "Café" {
+    t.Errorf("failed to decode folder name, got %v", n.Title())
+  }
+}
