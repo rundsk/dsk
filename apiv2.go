@@ -14,18 +14,27 @@ import (
 	"time"
 )
 
-func NewAPIv2(tree *NodeTree, hub *MessageBroker) *APIv2 {
+func NewAPIv2(t *NodeTree, hub *MessageBroker, s *Search) *APIv2 {
 	return &APIv2{
-		tree: tree,
-		v1:   NewAPIv1(tree, broker),
+		v1:     NewAPIv1(t, hub, s),
+		tree:   t,
+		search: s,
 	}
 }
 
 type APIv2 struct {
-	v1   *APIv1
-	tree *NodeTree
+	v1     *APIv1
+	tree   *NodeTree
+	search *Search
 }
 
+/*
+ * APIv2SearchResults has few options about what we add to it.
+ * We could add the context within which a match was found to have occurred.
+ * That would potentially require some sort of encoding a match scheme.
+ *
+ * For now, I'll elect to just maintain the existing node array that filter uses.
+ */
 type APIv2SearchResults struct {
 	URLs  []string `json:"urls"`
 	Total int      `json:"total"`
@@ -79,7 +88,7 @@ func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 	(&HTTPResponder{w, r, "application/json"}).OK(
 		api.NewNodeTreeSearchResults(
-			api.tree.FullTextSearch(q),
+			api.search.BroadSearch(q),
 		),
 	)
 }
@@ -95,7 +104,7 @@ func (api APIv2) FilterHandler(w http.ResponseWriter, r *http.Request) {
 
 	(&HTTPResponder{w, r, "application/json"}).OK(
 		api.NewNodeTreeFilterResults(
-			api.tree.RestrictedSearch(q),
+			api.search.NarrowSearch(q),
 		),
 	)
 }

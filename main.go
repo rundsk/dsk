@@ -34,6 +34,9 @@ var (
 
 	// Global instance of a message broker.
 	broker *MessageBroker
+
+	// Global instance of the search index.
+	search *Search
 )
 
 func main() {
@@ -56,6 +59,9 @@ func main() {
 			}
 			if watcher != nil {
 				watcher.Close()
+			}
+			if search != nil {
+				search.Close()
 			}
 			if broker != nil {
 				broker.Close()
@@ -97,6 +103,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to detect root of design definitions tree: %s", red(err))
 	}
+
 	log.Printf("Tree root found: %s", here)
 	PrettyPathRoot = here
 
@@ -109,13 +116,27 @@ func main() {
 
 	log.Print("Opening tree...")
 	tree = NewNodeTree(here, watcher, broker) // assign to global
+
 	if err := tree.Open(); err != nil {
 		log.Fatalf("Failed to open tree: %s", red(err))
 	}
+	if err := tree.Sync(); err != nil {
+		log.Fatalf("Failed to perform initial tree sync: %s", red(err))
+	}
+
+	log.Print("Opening search index...")
+	search = NewSearch(tree, broker) // assign to global
+	if err := search.Open(); err != nil {
+		log.Fatalf("Failed to open search index: %s", red(err))
+	}
+
+	if err := search.IndexTree(); err != nil {
+		log.Fatalf("Failed to perform initial tree indexing: %s", red(err))
+	}
 
 	apis := map[int]API{
-		1: NewAPIv1(tree, broker),
-		2: NewAPIv2(tree, broker),
+		1: NewAPIv1(tree, broker, search),
+		2: NewAPIv2(tree, broker, search),
 	}
 	for v, api := range apis {
 		log.Printf("Mounting APIv%d...", v)
