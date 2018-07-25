@@ -144,7 +144,7 @@ func (s *Search) BroadSearch(query string) ([]*Node, int, time.Duration) {
 
 	mq := bleve.NewMatchQuery(query)
 	mq.SetFuzziness(2)
-	disjunctionQuery := bleve.NewDisjunctionQuery(mq, bleve.NewPrefixQuery(query), bleve.NewPrefixQuery(query))
+	disjunctionQuery := bleve.NewDisjunctionQuery(mq, bleve.NewTermQuery(query), bleve.NewPrefixQuery(query))
 
 	bSearch := bleve.NewSearchRequest(disjunctionQuery)
 	searchResults, err := s.index.Search(bSearch)
@@ -228,12 +228,14 @@ func (s *Search) mapping() *mapping.IndexMappingImpl {
 	// Whether or not mappings work correctly with arrays remains to be seen.
 	// Stemming certainly won't for fields like authors
 	authorMapping := bleve.NewTextFieldMapping()
-	pathMapping.Analyzer = keyword.Name
+	authorMapping.Analyzer = keyword.Name
 	node.AddFieldMappingsAt("Authors", authorMapping)
 
 	descriptionMapping := bleve.NewTextFieldMapping()
 	descriptionMapping.Analyzer = "en"
-	node.AddFieldMappingsAt("Description", descriptionMapping)
+	descriptionKeywordMapping := bleve.NewTextFieldMapping()
+	descriptionKeywordMapping.Analyzer = keyword.Name
+	node.AddFieldMappingsAt("Description", descriptionMapping, descriptionKeywordMapping)
 
 	tagMapping := bleve.NewTextFieldMapping()
 	tagMapping.Analyzer = keyword.Name
