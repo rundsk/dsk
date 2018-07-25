@@ -29,6 +29,9 @@ func (d NodeDoc) Order() uint64 {
 
 // Title of the document and computed with any ordering numbers and the
 // extension stripped off, usually for display purposes.
+// We normalize the title string to make sure all special characters
+// are represented in their composed form. For more on this topic see the
+// docblock of Node.Title().
 func (d NodeDoc) Title() string {
 	base := norm.NFC.String(filepath.Base(d.path))
 	return removeOrderNumber(strings.TrimSuffix(base, filepath.Ext(base)))

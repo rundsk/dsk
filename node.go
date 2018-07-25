@@ -187,6 +187,9 @@ func (n *Node) Order() uint64 {
 }
 
 // The node's computed title with any ordering numbers stripped off, usually for display purposes.
+// We normalize the title string to make sure all special characters are represented in their composed form.
+// Some filesystems store filenames in decomposed form. Using these directly in the frontend led to visual
+// problems. See: https://blog.golang.org/normalization
 func (n *Node) Title() string {
 	if n.root == n.path {
 		return norm.NFC.String(filepath.Base(n.root))
