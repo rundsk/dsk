@@ -64,9 +64,22 @@
   packages = ["unix"]
   revision = "378d26f46672a356c46195c28f61bdb4c0a781dd"
 
+[[projects]]
+  name = "golang.org/x/text"
+  packages = [
+    "internal/gen",
+    "internal/triegen",
+    "internal/ucd",
+    "transform",
+    "unicode/cldr",
+    "unicode/norm"
+  ]
+  revision = "f21a4dfb5e38f5895301dc265a8def02365cc3d0"
+  version = "v0.3.0"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "072b15b2748752cd8c010e8b205294adc9729c40830368d826e2464cb2ff6944"
+  inputs-digest = "ac708a02efc96ea0ee901e5e8cb3ea13f9bbefc8475771136a252b5694334ab3"
   solver-name = "gps-cdcl"
   solver-version = 1
