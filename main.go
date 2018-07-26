@@ -125,7 +125,7 @@ func main() {
 	}
 
 	log.Print("Opening search index...")
-	search = NewSearch(tree, broker) // assign to global
+	search = NewSearch(tree, broker, []string{"en"}) // assign to global
 	if err := search.Open(); err != nil {
 		log.Fatalf("Failed to open search index: %s", red(err))
 	}

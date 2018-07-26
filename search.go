@@ -20,10 +20,11 @@ import (
 
 // TODO: Have english as default and support any additional language,
 //       possible configured via a command line option and/or through auto-detection.
-func NewSearch(t *NodeTree, b *MessageBroker) *Search {
+func NewSearch(t *NodeTree, b *MessageBroker, langs []string) *Search {
 	return &Search{
 		getNode:     t.Get,
 		getAllNodes: t.GetAll,
+		langs:       langs,
 		broker:      b,
 		done:        make(chan bool),
 	}
@@ -33,6 +34,11 @@ func NewSearch(t *NodeTree, b *MessageBroker) *Search {
 type Search struct {
 	getNode     NodeGetter
 	getAllNodes NodesGetter
+
+	// Languages we support in our mapping/analyzer setup. You
+	// probably always want to include English as technical terms use
+	// this language.
+	langs []string
 
 	index bleve.Index
 
