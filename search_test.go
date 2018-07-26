@@ -24,10 +24,10 @@ func TestSearchGermanWord(t *testing.T) {
 	tmp, s := setupDocSearchTest(contents)
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _ := s.BroadSearch("farbe")
+	rs, _, _ := s.FullSearch("farbe")
 	expectSearchResult(t, rs, "foo")
 
-	rs, _, _ = s.BroadSearch("farben")
+	rs, _, _ = s.FullSearch("farben")
 	expectSearchResult(t, rs, "foo")
 }
 

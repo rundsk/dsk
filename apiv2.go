@@ -88,7 +88,7 @@ func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 	(&HTTPResponder{w, r, "application/json"}).OK(
 		api.NewNodeTreeSearchResults(
-			api.search.BroadSearch(q),
+			api.search.FullSearch(q),
 		),
 	)
 }
@@ -104,7 +104,7 @@ func (api APIv2) FilterHandler(w http.ResponseWriter, r *http.Request) {
 
 	(&HTTPResponder{w, r, "application/json"}).OK(
 		api.NewNodeTreeFilterResults(
-			api.search.NarrowSearch(q),
+			api.search.FilterSearch(q),
 		),
 	)
 }

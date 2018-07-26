@@ -151,10 +151,10 @@ func (s *Search) Index(id string, data interface{}) error {
 	return s.index.Index(id, data)
 }
 
-// BroadSearch is a superset of NarrowSearch in that it performs a
+// FullSearch is a superset of NarrowSearch in that it performs a
 // search over all possible attributes of each node. It does behave
 // more like a usual search people are used to.
-func (s *Search) BroadSearch(query string) ([]*Node, int, time.Duration) {
+func (s *Search) FullSearch(query string) ([]*Node, int, time.Duration) {
 	start := time.Now()
 
 	mq := bleve.NewMatchQuery(query)
@@ -179,7 +179,7 @@ func (s *Search) BroadSearch(query string) ([]*Node, int, time.Duration) {
 	return results, len(results), time.Since(start)
 }
 
-// NarrowSearch performs a narrow restricted fuzzy and term search on
+// FilterSearch performs a narrow restricted fuzzy and term search on
 // the node's visible attributes (the title) plus tags & keywords.
 //
 // We dealt with results where certain things that should have matched
@@ -201,7 +201,7 @@ func (s *Search) BroadSearch(query string) ([]*Node, int, time.Duration) {
 //
 // "It's better to have false positives than false negatives"
 // https://en.wikipedia.org/wiki/Precision_and_recall
-func (s *Search) NarrowSearch(query string) ([]*Node, int, time.Duration) {
+func (s *Search) FilterSearch(query string) ([]*Node, int, time.Duration) {
 	start := time.Now()
 
 	var results []*Node

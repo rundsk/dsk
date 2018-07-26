@@ -427,7 +427,7 @@ func (api APIv1) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 	(&HTTPResponder{w, r, "application/json"}).OK(
 		api.NewNodeTreeSearchResults(
-			api.search.NarrowSearch(q),
+			api.search.FilterSearch(q),
 		),
 	)
 }
