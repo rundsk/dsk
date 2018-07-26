@@ -185,8 +185,8 @@ fragment from the table below, i.e. `/api/v1/hello`.
 | `/tree`                         | >= 1      | JSON      | Get the full design definitions tree as a nested tree of nodes. |
 | `/tree/{path}`                  | >= 1      | JSON      | Get information about a single node specified by `{path}`. |
 | `/tree/{path}/{asset}`          | >= 1      | data      | Requests a node's asset, `{asset}` is a single filename, |
-| `/search?q={query}`             | >= 1      | JSON      | Performs a full text search since. Before v2 returned a flat list of URLs, and performed only a restricted search, similar to `/filter`. |
-| `/filter?q={query}`             | >= 2      | JSON      | Performs a narrow restricted fuzzy search over visible node fields plus tags and keywords. |
+| `/search?q={query}`             | >= 1      | JSON      | Performs a full text search. Since before v2 behaved like `/filter`. |
+| `/filter?q={query}`             | >= 2      | JSON      | Performs a narrow restricted fuzzy search. |
 | `/messages`                     | >= 1      | WebSocket | For receiving messages, i.e. whenever the tree changes. |
 
 The API version is a single integer that gets incremented with each version release. 

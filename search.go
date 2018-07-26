@@ -18,6 +18,10 @@ import (
 	"github.com/blevesearch/bleve/mapping"
 )
 
+// TODO: Have english as default and support any additional language,
+//       possible configured via a command line option and/or through auto-detection.
+//
+// TODO: Use bleve for NarrowSearch
 func NewSearch(t *NodeTree, b *MessageBroker) *Search {
 	return &Search{
 		getNode:     t.Get,
@@ -27,18 +31,25 @@ func NewSearch(t *NodeTree, b *MessageBroker) *Search {
 	}
 }
 
+// Search wraps a bleve search index and can be queried for results.
 type Search struct {
 	getNode     NodeGetter
 	getAllNodes NodesGetter
 
 	index bleve.Index
 
+	// Allows to listen for tree change messages.
 	broker *MessageBroker
 
 	// Quit channel, receiving true, when we are closed.
 	done chan bool
 }
 
+// Open installs a go routine ("the indexer") that will continously
+// watch for changes to the node tree and will reindex the tree
+// if necessary. The indexer can be stopped by sending true into
+// Search.done. It'll automatically stop if it detects the broker to
+// be closed.
 func (s *Search) Open() error {
 	memIndex, err := bleve.NewMemOnly(s.mapping())
 	s.index = memIndex
@@ -140,7 +151,9 @@ func (s *Search) Index(id string, data interface{}) error {
 	return s.index.Index(id, data)
 }
 
-// BroadSearch performs a search over all possible attributes of each node.
+// BroadSearch is a superset of NarrowSearch in that it performs a
+// search over all possible attributes of each node. It does behave
+// more like a usual search people are used to.
 func (s *Search) BroadSearch(query string) ([]*Node, int, time.Duration) {
 	start := time.Now()
 
@@ -166,9 +179,28 @@ func (s *Search) BroadSearch(query string) ([]*Node, int, time.Duration) {
 	return results, len(results), time.Since(start)
 }
 
-// NarrowSearch performs a narrow restricted fuzzy search on the
-// node's visible attributes (the title) plus tags & keywords and
-// returns the collected results as a flat node list.
+// NarrowSearch performs a narrow restricted fuzzy and term search on
+// the node's visible attributes (the title) plus tags & keywords.
+//
+// We dealt with results where certain things that should have matched
+// with a raw match query, did not. For example, `Farben` being an
+// article we wanted to match, we would type:
+//
+// | Input        | True positive |
+// | -------------|:-------------:|
+// | f            | true          |
+// | fa           | true          |
+// | far          | false         |
+// | farb         | false         |
+// | farbe        | true          |
+// | farben       | true          |
+//
+// What is used by bleve for fuzzy matching under the hood, Levenstein
+// distances weren't enough and weren't able to match this on its own.
+// Especially for just a few characters typed.
+//
+// "It's better to have false positives than false negatives"
+// https://en.wikipedia.org/wiki/Precision_and_recall
 func (s *Search) NarrowSearch(query string) ([]*Node, int, time.Duration) {
 	start := time.Now()
 
@@ -203,11 +235,6 @@ Outer:
 	return results, len(results), time.Since(start)
 }
 
-// Mapping attempts to be semi general purpose, and includes both
-// a tiny bit of fuzzing and exact matches.
-//
-// TODO: Have english as default and support any additional language,
-//       possible configured via a command line option and/or through auto-detection.
 func (s *Search) mapping() *mapping.IndexMappingImpl {
 	indexMapping := bleve.NewIndexMapping()
 
