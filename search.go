@@ -221,44 +221,30 @@ func (s *Search) FilterSearch(query string) ([]*Node, int, time.Duration) {
 }
 
 func (s *Search) mapping() *mapping.IndexMappingImpl {
-	indexMapping := bleve.NewIndexMapping()
+	englishMapping := bleve.NewTextFieldMapping()
+	englishMapping.Analyzer = "en"
+
+	germanMapping := bleve.NewTextFieldMapping()
+	germanMapping.Analyzer = de.AnalyzerName
+
+	keywordMapping := bleve.NewTextFieldMapping()
+	keywordMapping.Analyzer = keyword.Name
+
+	simpleMapping := bleve.NewTextFieldMapping()
+	simpleMapping.Analyzer = simple.Name
 
 	node := bleve.NewDocumentMapping()
 	node.DefaultAnalyzer = de.AnalyzerName
-	germanTextMapping := bleve.NewTextFieldMapping()
-	germanTextMapping.Analyzer = de.AnalyzerName
-	englishTextMapping := bleve.NewTextFieldMapping()
-	englishTextMapping.Analyzer = "en"
-	node.AddFieldMappingsAt("Text", germanTextMapping, englishTextMapping)
 
-	fileNamesTextFieldMapping := bleve.NewTextFieldMapping()
-	fileNamesTextFieldMapping.Analyzer = simple.Name
-	node.AddFieldMappingsAt("FileNames", fileNamesTextFieldMapping, germanTextMapping, englishTextMapping)
-
-	pathMapping := bleve.NewTextFieldMapping()
-	pathMapping.Analyzer = keyword.Name
-	node.AddFieldMappingsAt("Path", pathMapping, germanTextMapping, englishTextMapping)
-
-	// Whether or not mappings work correctly with arrays remains to be seen.
-	// Stemming certainly won't for fields like authors
-	authorMapping := bleve.NewTextFieldMapping()
-	authorMapping.Analyzer = keyword.Name
-	node.AddFieldMappingsAt("Authors", authorMapping)
-
-	descriptionMapping := bleve.NewTextFieldMapping()
-	descriptionMapping.Analyzer = "en"
-	descriptionKeywordMapping := bleve.NewTextFieldMapping()
-	descriptionKeywordMapping.Analyzer = keyword.Name
-	node.AddFieldMappingsAt("Description", descriptionMapping, descriptionKeywordMapping)
-
-	tagMapping := bleve.NewTextFieldMapping()
-	tagMapping.Analyzer = keyword.Name
-	node.AddFieldMappingsAt("Tags", tagMapping)
-
-	versionMapping := bleve.NewTextFieldMapping()
-	versionMapping.Analyzer = keyword.Name
+	node.AddFieldMappingsAt("Authors", simpleMapping)
+	node.AddFieldMappingsAt("Description", simpleMapping, keywordMapping, englishMapping)
+	node.AddFieldMappingsAt("FileNames", simpleMapping)
+	node.AddFieldMappingsAt("Path", simpleMapping, keywordMapping)
+	node.AddFieldMappingsAt("Tags", simpleMapping, keywordMapping, englishMapping, germanMapping)
+	node.AddFieldMappingsAt("Text", simpleMapping, keywordMapping, englishMapping, germanMapping)
 	node.AddFieldMappingsAt("Version")
 
+	indexMapping := bleve.NewIndexMapping()
 	indexMapping.AddDocumentMapping("article", node)
 
 	return indexMapping
