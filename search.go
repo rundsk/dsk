@@ -137,16 +137,12 @@ func (s *Search) IndexNode(n *Node) error {
 		Path:      n.URL(),
 	}
 
-	s.Index(n.URL(), data)
+	s.index.Index(n.URL(), data)
 
 	for _, v := range n.Children {
 		s.IndexNode(v)
 	}
 	return nil
-}
-
-func (s *Search) Index(id string, data interface{}) error {
-	return s.index.Index(id, data)
 }
 
 // FullSearch is a superset of NarrowSearch in that it performs a
