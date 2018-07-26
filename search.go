@@ -202,8 +202,6 @@ func (s *Search) FullSearch(query string) ([]*Node, int, time.Duration) {
 // "It's better to have false positives than false negatives"
 // https://en.wikipedia.org/wiki/Precision_and_recall
 func (s *Search) FilterSearch(query string) ([]*Node, int, time.Duration) {
-	start := time.Now()
-
 	mq := bleve.NewMatchQuery(query)
 	mq.SetFuzziness(2)
 	disjunctionQuery := bleve.NewDisjunctionQuery(mq, bleve.NewTermQuery(query), bleve.NewPrefixQuery(query))
@@ -214,7 +212,7 @@ func (s *Search) FilterSearch(query string) ([]*Node, int, time.Duration) {
 		log.Fatalf("Query: '%s' failed...", query)
 	}
 
-	var results []*Node
+	results := make([]*Node, 0, searchResults.Total)
 	for _, hit := range searchResults.Hits {
 		ok, node, err := s.getNode(hit.ID)
 		if !ok || err != nil {
@@ -223,7 +221,7 @@ func (s *Search) FilterSearch(query string) ([]*Node, int, time.Duration) {
 		results = append(results, node)
 	}
 
-	return results, len(results), time.Since(start)
+	return results, int(searchResults.Total), searchResults.Took
 }
 
 func (s *Search) mapping() *mapping.IndexMappingImpl {
