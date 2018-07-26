@@ -28,19 +28,27 @@ type APIv2 struct {
 	search *Search
 }
 
-/*
- * APIv2SearchResults has few options about what we add to it.
- * We could add the context within which a match was found to have occurred.
- * That would potentially require some sort of encoding a match scheme.
- *
- * For now, I'll elect to just maintain the existing node array that filter uses.
- */
+// TODO: Settle on final response fields
+//
+// APIv2SearchResults has few options about what we add to it.
+// We could add the context within which a match was found to have occurred.
+// That would potentially require some sort of encoding a match scheme.
+//
+// For now, I'll elect to just maintain the existing node array that filter uses.
+//
+// Clarify how this should look like in regards to:
+//       - pagination of results
+//       - freshness flags
+//       - additional stats
+//       - information on each results, probably just the node ref-URL is not enough
 type APIv2SearchResults struct {
 	URLs  []string `json:"urls"`
 	Total int      `json:"total"`
 	Took  int64    `json:"took"` // nanoseconds
 }
 
+// TODO: This will probably mirror SearchResults once that is settled excluding
+//       pagination and rich result information?
 type APIv2FilterResults struct {
 	URLs  []string `json:"urls"`
 	Total int      `json:"total"`
@@ -78,8 +86,7 @@ func (api APIv2) NewNodeTreeFilterResults(nodes []*Node, total int, took time.Du
 	return &APIv2FilterResults{urls, total, took.Nanoseconds()}
 }
 
-// Performs a full text search over the design defintions tree and
-// returns results in form of a flat list of URLs of matched nodes.
+// Performs a full broad search over the design defintions tree.
 //
 // Handles this URL:
 //   /api/v2/search?q={query}
@@ -93,9 +100,7 @@ func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-// Performs a restricted fuzzy search over the design defintions tree
-// and returns results in form of a flat list of URLs of matched
-// nodes.
+// Performs a restricted narrow search over the design defintions tree.
 //
 // Handles this URL:
 //   /api/v2/filter?q={query}
