@@ -14,7 +14,7 @@ import (
 	"github.com/blevesearch/bleve"
 )
 
-func TestSearchGermanWord(t *testing.T) {
+func TestFilterSearchGermanWordPartials(t *testing.T) {
 	contents := `# Farben
 
 	Blau, grün, gelb, violett sie sind wunderschön.
@@ -24,10 +24,13 @@ func TestSearchGermanWord(t *testing.T) {
 	tmp, s := setupDocSearchTest(contents)
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _ := s.FullSearch("farbe")
+	rs, _, _ := s.FilterSearch("fa")
 	expectSearchResult(t, rs, "foo")
 
-	rs, _, _ = s.FullSearch("farben")
+	rs, _, _ = s.FilterSearch("farbe")
+	expectSearchResult(t, rs, "foo")
+
+	rs, _, _ = s.FilterSearch("farben")
 	expectSearchResult(t, rs, "foo")
 }
 

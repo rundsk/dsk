@@ -20,8 +20,6 @@ import (
 
 // TODO: Have english as default and support any additional language,
 //       possible configured via a command line option and/or through auto-detection.
-//
-// TODO: Use bleve for NarrowSearch
 func NewSearch(t *NodeTree, b *MessageBroker) *Search {
 	return &Search{
 		getNode:     t.Get,
@@ -204,34 +202,25 @@ func (s *Search) FullSearch(query string) ([]*Node, int, time.Duration) {
 func (s *Search) FilterSearch(query string) ([]*Node, int, time.Duration) {
 	start := time.Now()
 
+	mq := bleve.NewMatchQuery(query)
+	mq.SetFuzziness(2)
+	disjunctionQuery := bleve.NewDisjunctionQuery(mq, bleve.NewTermQuery(query), bleve.NewPrefixQuery(query))
+
+	bSearch := bleve.NewSearchRequest(disjunctionQuery)
+	searchResults, err := s.index.Search(bSearch)
+	if err != nil {
+		log.Fatalf("Query: '%s' failed...", query)
+	}
+
 	var results []*Node
-
-	matches := func(source string, target string) bool {
-		if source == "" {
-			return false
+	for _, hit := range searchResults.Hits {
+		ok, node, err := s.getNode(hit.ID)
+		if !ok || err != nil {
+			log.Fatalf("For hit %s (ok? %t) something went wrong\n%s", hit.ID, ok, err)
 		}
-		return strings.Contains(strings.ToLower(target), strings.ToLower(source))
+		results = append(results, node)
 	}
 
-Outer:
-	for _, n := range s.getAllNodes() {
-		if matches(query, n.Title()) {
-			results = append(results, n)
-			continue Outer
-		}
-		for _, v := range n.Tags() {
-			if matches(query, v) {
-				results = append(results, n)
-				continue Outer
-			}
-		}
-		for _, v := range n.Keywords() {
-			if matches(query, v) {
-				results = append(results, n)
-				continue Outer
-			}
-		}
-	}
 	return results, len(results), time.Since(start)
 }
 
