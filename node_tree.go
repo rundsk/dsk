@@ -69,6 +69,9 @@ type NodeTree struct {
 // URL. When the node cannot be found ok will be false.
 type NodeGetter func(url string) (ok bool, n *Node, err error)
 
+// NodesGetter retrieves all nodes from the tree.
+type NodesGetter func() []*Node
+
 // HashGetter returns a calculated (or cached) hash.
 type HashGetter func() ([]byte, error)
 

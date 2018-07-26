@@ -20,14 +20,16 @@ import (
 
 func NewSearch(t *NodeTree, b *MessageBroker) *Search {
 	return &Search{
-		tree:   t,
-		broker: b,
-		done:   make(chan bool),
+		getNode:     t.Get,
+		getAllNodes: t.GetAll,
+		broker:      b,
+		done:        make(chan bool),
 	}
 }
 
 type Search struct {
-	tree *NodeTree
+	getNode     NodeGetter
+	getAllNodes NodesGetter
 
 	index bleve.Index
 
@@ -76,7 +78,7 @@ func (s *Search) IndexTree() error {
 	start := time.Now()
 	log.Printf("Populating search index from tree...")
 
-	for _, n := range s.tree.GetAll() {
+	for _, n := range s.getAllNodes() {
 		if err := s.IndexNode(n); err != nil {
 			return err
 		}
@@ -154,7 +156,7 @@ func (s *Search) BroadSearch(query string) ([]*Node, int, time.Duration) {
 
 	var results []*Node
 	for _, hit := range searchResults.Hits {
-		ok, node, err := s.tree.Get(hit.ID)
+		ok, node, err := s.getNode(hit.ID)
 		if !ok || err != nil {
 			log.Fatalf("For hit %s (ok? %t) something went wrong\n%s", hit.ID, ok, err)
 		}
@@ -180,7 +182,7 @@ func (s *Search) NarrowSearch(query string) ([]*Node, int, time.Duration) {
 	}
 
 Outer:
-	for _, n := range s.tree.GetAll() {
+	for _, n := range s.getAllNodes() {
 		if matches(query, n.Title()) {
 			results = append(results, n)
 			continue Outer
