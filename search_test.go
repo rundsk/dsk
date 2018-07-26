@@ -64,7 +64,7 @@ func setupDocSearchTest(contents string) (string, *Search) {
 }
 
 func teardownSearchTest(tmp string, s *Search) {
-	s.Close()
+	// s.Close()
 	os.RemoveAll(tmp)
 }
 
