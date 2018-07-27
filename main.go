@@ -14,6 +14,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 
 	"github.com/fatih/color"
 	isatty "github.com/mattn/go-isatty"
@@ -73,7 +74,11 @@ func main() {
 	host := flag.String("host", "127.0.0.1", "host IP to bind to")
 	port := flag.String("port", "8080", "port to bind to")
 	noColor := flag.Bool("no-color", false, "disables color output")
+	flang := flag.String("lang", "en", "language; separate multiple languages by commas")
 	flag.Parse()
+
+	// Used for configuring search.
+	langs := strings.Split(*flang, ",")
 
 	if len(flag.Args()) > 1 {
 		log.Fatalf("Too many arguments given, expecting exactly 0 or 1")
@@ -125,7 +130,7 @@ func main() {
 	}
 
 	log.Print("Opening search index...")
-	search = NewSearch(tree, broker, []string{"en"}) // assign to global
+	search = NewSearch(tree, broker, langs) // assign to global
 	if err := search.Open(); err != nil {
 		log.Fatalf("Failed to open search index: %s", red(err))
 	}

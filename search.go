@@ -18,8 +18,6 @@ import (
 	"github.com/blevesearch/bleve/mapping"
 )
 
-// TODO: Have english as default and support any additional language,
-//       possible configured via a command line option and/or through auto-detection.
 func NewSearch(t *NodeTree, b *MessageBroker, langs []string) *Search {
 	return &Search{
 		getNode:     t.Get,
@@ -35,9 +33,7 @@ type Search struct {
 	getNode     NodeGetter
 	getAllNodes NodesGetter
 
-	// Languages we support in our mapping/analyzer setup. You
-	// probably always want to include English as technical terms use
-	// this language.
+	// Languages we support in our mapping/analyzer setup.
 	langs []string
 
 	index bleve.Index
@@ -224,6 +220,7 @@ func (s *Search) FilterSearch(query string) ([]*Node, int, time.Duration) {
 	return results, int(searchResults.Total), searchResults.Took
 }
 
+// TODO: Add language specific analyzers by looking at s.langs
 func (s *Search) mapping() *mapping.IndexMappingImpl {
 	indexMapping := bleve.NewIndexMapping()
 
