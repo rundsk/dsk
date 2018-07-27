@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"golang.org/x/text/unicode/norm"
 )
 
 var (
@@ -186,11 +187,14 @@ func (n *Node) Order() uint64 {
 }
 
 // The node's computed title with any ordering numbers stripped off, usually for display purposes.
+// We normalize the title string to make sure all special characters are represented in their composed form.
+// Some filesystems store filenames in decomposed form. Using these directly in the frontend led to visual
+// inconsistencies. See: https://blog.golang.org/normalization
 func (n *Node) Title() string {
 	if n.root == n.path {
-		return filepath.Base(n.root)
+		return norm.NFC.String(filepath.Base(n.root))
 	}
-	return removeOrderNumber(filepath.Base(n.path))
+	return removeOrderNumber(norm.NFC.String(filepath.Base(n.path)))
 }
 
 // Returns the full description of the node.
