@@ -65,8 +65,7 @@
 [[projects]]
   name = "github.com/blevesearch/go-porterstemmer"
   packages = ["."]
-  revision = "b4dd94e38f29620fe0f97ae4b0f6994b0d5d75f0"
-  version = "v1.0.1"
+  revision = "9ac2252909b40e1607345cd2f68f76dc98a1c8fa"
 
 [[projects]]
   branch = "master"
@@ -211,6 +210,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9bea88774095119c904b84a6bd2f20a9d85405c076aeeebf5f8f1e7eb027361e"
+  inputs-digest = "7f6dd3dee57ea9c1eed34b40bd3a3cac914a39bb53418b30467d38728f61bfb9"
   solver-name = "gps-cdcl"
   solver-version = 1
