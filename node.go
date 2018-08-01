@@ -255,6 +255,10 @@ func (n *Node) Authors(as *Authors) []*Author {
 	return r
 }
 
+func (n *Node) AuthorsRaw() []string {
+	return n.meta.Authors
+}
+
 // Modified finds the most recently edited file in the node directory
 // and returns its modified time. In case the directory doesn't
 // contain any files, the func will still succeed but return a zero

@@ -110,10 +110,6 @@ func (s *Search) IndexNode(n *Node) error {
 	}
 
 	text := []string{}
-	version := ""
-	description := ""
-	tags := []string{}
-	authors := []string{}
 
 	for _, nDoc := range dirEntries {
 		fileName := nDoc.path
@@ -130,18 +126,8 @@ func (s *Search) IndexNode(n *Node) error {
 			text = append(text, stringified)
 			// TODO: Index other the parts of the node:
 			// - assets: read exif data?
-		// We probably need to guard against non-meta.yaml yaml here,
-		// but this is just a first go.
-		case ".yaml":
-			m, err := NewNodeMeta(nDoc.path)
-			if err != nil {
-				return err
-			}
-
-			version = m.Version
-			description = m.Description
-			tags = m.Tags
-			authors = m.Authors
+			// We probably need to guard against non-meta.yaml yaml here,
+			// but this is just a first go.
 		}
 	}
 
@@ -157,10 +143,10 @@ func (s *Search) IndexNode(n *Node) error {
 		Text:        strings.Join(text, "\n\n"),
 		FileNames:   nil,
 		Path:        n.URL(),
-		Authors:     authors,
-		Description: description,
-		Tags:        tags,
-		Version:     version,
+		Authors:     n.AuthorsRaw(),
+		Description: n.Description(),
+		Tags:        n.Tags(),
+		Version:     n.Version(),
 	}
 
 	s.index.Index(n.URL(), data)

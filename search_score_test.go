@@ -85,7 +85,6 @@ func TestTruePositiveSearchScore(t *testing.T) {
 }
 
 func setupScoringTest() *Search {
-	log.SetLevel(log.DebugLevel)
 	log.SetFormatter(&log.TextFormatter{FullTimestamp: true})
 	here = "test/design_system" // assignment to global
 	w := NewWatcher(here)
