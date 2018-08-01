@@ -7,6 +7,7 @@ package main
 
 import (
 	"io/ioutil"
+	"sort"
 	"testing"
 
 	"github.com/go-yaml/yaml"
@@ -37,7 +38,8 @@ func TestTruePositiveSearchScore(t *testing.T) {
 	// Avoid division by zero errors at the cost of a bit of precision.
 	succeeded := 1
 	testCount := 1
-	for query, shouldBeIn := range tests {
+	for _, query := range keysInOrder(tests) {
+		shouldBeIn := tests[query]
 		rs, _, _ := s.FilterSearch(query)
 
 		if stringInSlice(shouldBeIn, rs) {
@@ -50,7 +52,7 @@ func TestTruePositiveSearchScore(t *testing.T) {
 			}
 
 			log.WithFields(log.Fields{
-				"query":    query,
+				"_query":   query,
 				"actual":   foundPaths,
 				"expected": shouldBeIn,
 			}).Warn("Query result not found")
@@ -98,6 +100,17 @@ func setupScoringTest() *Search {
 		log.Fatalf("Failed to perform initial test tree indexing: %s", err)
 	}
 	return search
+}
+
+func keysInOrder(m map[string]string) []string {
+	// https://stackoverflow.com/a/23332089/1924257
+	var keys []string
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	return keys
 }
 
 func teardownScoringTest(s *Search) {
