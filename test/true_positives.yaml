@@ -1,7 +1,12 @@
+# query: node expected in
 # General search
 visual design: Components/Displaying-Content/List
 word: Content/Glossary
 wor: Content/Glossary
+
+# null isn't ever expected as a search result. These will always fail.
+sanity check: null
+aoeuaoeuaoeu: null
 
 # URL retrieval
 conte: Content
@@ -23,8 +28,12 @@ randall@evilcorp.org: Content/Glossary
 content needs to be: Components/Displaying-Content
 fanc: Content/Glossary
 fancy: Content/Glossary
-what we say: Content/Tone_of_Voice
+what we say: Content/Tone-of-Voice
 
 # tags
 langua: Content/Glossary
-progress/draft: Components/Display-Content/List
+progress/draft: Components/Displaying-Content/List
+
+# version
+2: Content/Glossary
+"Version:2": Content/Glossary

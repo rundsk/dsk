@@ -253,7 +253,7 @@ func (s *Search) mapping() *mapping.IndexMappingImpl {
 	node.AddFieldMappingsAt("Path", simpleMapping, keywordMapping)
 	node.AddFieldMappingsAt("Tags", simpleMapping, keywordMapping, englishMapping, germanMapping)
 	node.AddFieldMappingsAt("Text", simpleMapping, keywordMapping, englishMapping, germanMapping)
-	node.AddFieldMappingsAt("Version")
+	node.AddFieldMappingsAt("Version", simpleMapping, keywordMapping)
 
 	indexMapping := bleve.NewIndexMapping()
 	indexMapping.AddDocumentMapping("article", node)
