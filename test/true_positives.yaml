@@ -1,10 +1,20 @@
-randall: Content/Glossary
-evilcorp: Content/Glossary
+# General search
 word: Content/Glossary
 wor: Content/Glossary
-fanc: Content/Glossary
-fancy: Content/Glossary
-what we say: Content/Tone_of_Voice
+
+#
+# metafile tests
+#
+
+# description field
+
 # This test should be found, but there's something I don't understand
 # with the pathing and node.URL()?
 content needs to be: Content Components/Displaying-Content
+fanc: Content/Glossary
+fancy: Content/Glossary
+what we say: Content/Tone_of_Voice
+
+# authors field
+randall: Content/Glossary
+evilcorp: Content/Glossary
