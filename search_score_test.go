@@ -40,7 +40,7 @@ func TestTruePositiveSearchScore(t *testing.T) {
 	testCount := 1
 	for _, query := range keysInOrder(tests) {
 		shouldBeIn := tests[query]
-		rs, _, _ := s.FilterSearch(query)
+		rs, _, _ := s.FullSearch(query)
 
 		if stringInSlice(shouldBeIn, rs) {
 			succeeded++
