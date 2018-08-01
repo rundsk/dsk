@@ -44,6 +44,22 @@ func TestTruePositiveSearchScore(t *testing.T) {
 
 		if stringInSlice(shouldBeIn, rs) {
 			succeeded++
+
+			if len(rs) > 1 {
+				foundPaths := []string{}
+
+				for _, n := range rs {
+					if n.URL() != shouldBeIn {
+						foundPaths = append(foundPaths, n.URL())
+					}
+				}
+
+				log.WithFields(log.Fields{
+					"_query":   query,
+					"expected": shouldBeIn,
+					"extras":   foundPaths,
+				}).Debug("Query found with extras")
+			}
 		} else {
 			foundPaths := []string{}
 
@@ -69,6 +85,8 @@ func TestTruePositiveSearchScore(t *testing.T) {
 }
 
 func setupScoringTest() *Search {
+	log.SetLevel(log.DebugLevel)
+	log.SetFormatter(&log.TextFormatter{FullTimestamp: true})
 	here = "test/design_system" // assignment to global
 	w := NewWatcher(here)
 	if err := w.Open(IgnoreNodesRegexp); err != nil {
