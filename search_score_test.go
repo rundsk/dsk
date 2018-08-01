@@ -78,7 +78,7 @@ func TestTruePositiveSearchScore(t *testing.T) {
 
 	truePositive := float64(succeeded) / float64(testCount)
 
-	log.Printf("True positive search scoring on %s was %.2f (min required is %.2f)", here, truePositive, scoreThreshold)
+	log.Infof("True positive search scoring on %s was %.2f (min required is %.2f)", here, truePositive, scoreThreshold)
 	if truePositive < scoreThreshold {
 		t.Fail()
 	}
@@ -94,11 +94,11 @@ func setupScoringTest() *Search {
 	}
 	watcher = w // assign to global
 
-	log.Print("Starting message broker...")
+	log.Debug("Starting message broker...")
 	broker = NewMessageBroker() // assign to global
 	broker.Start()
 
-	log.Print("Opening tree...")
+	log.Debug("Opening tree...")
 	tree = NewNodeTree(here, watcher, broker) // assign to global
 
 	if err := tree.Open(); err != nil {
@@ -108,7 +108,7 @@ func setupScoringTest() *Search {
 		log.Fatalf("Failed to perform initial tree sync: %s", err)
 	}
 
-	log.Print("Opening test search index...")
+	log.Info("Opening test search index...")
 	search = NewSearch(tree, broker, []string{"en", "de"}) // assign to global
 	if err := search.Open(); err != nil {
 		log.Fatalf("Failed to open search index: %s", err)
