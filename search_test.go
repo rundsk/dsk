@@ -10,8 +10,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/blevesearch/bleve"
 )
 
 func TestFilterSearchGermanWordPartials(t *testing.T) {
@@ -54,17 +52,16 @@ func setupDocSearchTest(contents string) (string, *Search) {
 			ns = append(ns, foo)
 			return ns
 		},
-		done: make(chan bool), // Do not block on Close()
+		broker: NewMessageBroker(), // Allow to mount indexer, and to Close()
+		done:   make(chan bool),    // Do not block on Close()
 	}
-	memIndex, _ := bleve.NewMemOnly(s.mapping())
-	s.index = memIndex
+	s.Open()
 	s.IndexTree()
-
 	return tmp, s
 }
 
 func teardownSearchTest(tmp string, s *Search) {
-	// s.Close()
+	s.Close()
 	os.RemoveAll(tmp)
 }
 

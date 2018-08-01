@@ -65,8 +65,7 @@
 [[projects]]
   name = "github.com/blevesearch/go-porterstemmer"
   packages = ["."]
-  revision = "b4dd94e38f29620fe0f97ae4b0f6994b0d5d75f0"
-  version = "v1.0.1"
+  revision = "9ac2252909b40e1607345cd2f68f76dc98a1c8fa"
 
 [[projects]]
   branch = "master"
@@ -175,6 +174,12 @@
   revision = "86672fcb3f950f35f2e675df2240550f2a50762f"
 
 [[projects]]
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  revision = "3e01752db0189b9157070a0e1668a620f9a85da2"
+  version = "v1.0.6"
+
+[[projects]]
   branch = "master"
   name = "github.com/steveyen/gtreap"
   packages = ["."]
@@ -194,6 +199,12 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/crypto"
+  packages = ["ssh/terminal"]
+  revision = "c126467f60eb25f8f27e5a981f32a87e3965053f"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -205,12 +216,15 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = ["unix"]
+  packages = [
+    "unix",
+    "windows"
+  ]
   revision = "378d26f46672a356c46195c28f61bdb4c0a781dd"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9bea88774095119c904b84a6bd2f20a9d85405c076aeeebf5f8f1e7eb027361e"
+  inputs-digest = "d1d0aa670e11652e3df1005ee50f4713e803c202f8ee45f404373efcbc9a444f"
   solver-name = "gps-cdcl"
   solver-version = 1

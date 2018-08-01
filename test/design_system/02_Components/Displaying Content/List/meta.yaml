@@ -1,0 +1,11 @@
+authors:
+  - barb@hooli.com
+
+description: >
+  A List-component displays items in an ordered or unordered list.
+
+tags:
+  - Progress/Draft
+  - Release/0.6
+
+version: 1

@@ -18,12 +18,11 @@ import (
 	"github.com/blevesearch/bleve/mapping"
 )
 
-// TODO: Have english as default and support any additional language,
-//       possible configured via a command line option and/or through auto-detection.
-func NewSearch(t *NodeTree, b *MessageBroker) *Search {
+func NewSearch(t *NodeTree, b *MessageBroker, langs []string) *Search {
 	return &Search{
 		getNode:     t.Get,
 		getAllNodes: t.GetAll,
+		langs:       langs,
 		broker:      b,
 		done:        make(chan bool),
 	}
@@ -33,6 +32,9 @@ func NewSearch(t *NodeTree, b *MessageBroker) *Search {
 type Search struct {
 	getNode     NodeGetter
 	getAllNodes NodesGetter
+
+	// Languages we support in our mapping/analyzer setup.
+	langs []string
 
 	index bleve.Index
 
@@ -108,6 +110,10 @@ func (s *Search) IndexNode(n *Node) error {
 	}
 
 	text := []string{}
+	version := ""
+	description := ""
+	tags := []string{}
+	authors := []string{}
 
 	for _, nDoc := range dirEntries {
 		fileName := nDoc.path
@@ -124,17 +130,37 @@ func (s *Search) IndexNode(n *Node) error {
 			text = append(text, stringified)
 			// TODO: Index other the parts of the node:
 			// - assets: read exif data?
+		// We probably need to guard against non-meta.yaml yaml here,
+		// but this is just a first go.
+		case ".yaml":
+			m, err := NewNodeMeta(nDoc.path)
+			if err != nil {
+				return err
+			}
+
+			version = m.Version
+			description = m.Description
+			tags = m.Tags
+			authors = m.Authors
 		}
 	}
 
 	data := struct {
-		Text      string
-		FileNames []string
-		Path      string
+		Text        string
+		FileNames   []string
+		Path        string
+		Authors     []string
+		Description string
+		Tags        []string
+		Version     string
 	}{
-		Text:      strings.Join(text, "\n\n"),
-		FileNames: nil,
-		Path:      n.URL(),
+		Text:        strings.Join(text, "\n\n"),
+		FileNames:   nil,
+		Path:        n.URL(),
+		Authors:     authors,
+		Description: description,
+		Tags:        tags,
+		Version:     version,
 	}
 
 	s.index.Index(n.URL(), data)
@@ -196,8 +222,6 @@ func (s *Search) FullSearch(query string) ([]*Node, int, time.Duration) {
 // "It's better to have false positives than false negatives"
 // https://en.wikipedia.org/wiki/Precision_and_recall
 func (s *Search) FilterSearch(query string) ([]*Node, int, time.Duration) {
-	start := time.Now()
-
 	mq := bleve.NewMatchQuery(query)
 	mq.SetFuzziness(2)
 	disjunctionQuery := bleve.NewDisjunctionQuery(mq, bleve.NewTermQuery(query), bleve.NewPrefixQuery(query))
@@ -208,7 +232,7 @@ func (s *Search) FilterSearch(query string) ([]*Node, int, time.Duration) {
 		log.Fatalf("Query: '%s' failed...", query)
 	}
 
-	var results []*Node
+	results := make([]*Node, 0, searchResults.Total)
 	for _, hit := range searchResults.Hits {
 		ok, node, err := s.getNode(hit.ID)
 		if !ok || err != nil {
@@ -217,9 +241,10 @@ func (s *Search) FilterSearch(query string) ([]*Node, int, time.Duration) {
 		results = append(results, node)
 	}
 
-	return results, len(results), time.Since(start)
+	return results, int(searchResults.Total), searchResults.Took
 }
 
+// TODO: Add language specific analyzers by looking at s.langs
 func (s *Search) mapping() *mapping.IndexMappingImpl {
 	englishMapping := bleve.NewTextFieldMapping()
 	englishMapping.Analyzer = "en"
