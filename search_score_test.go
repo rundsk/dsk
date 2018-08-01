@@ -6,12 +6,15 @@
 package main
 
 import (
+	"io/ioutil"
 	"testing"
 
+	"github.com/go-yaml/yaml"
 	log "github.com/sirupsen/logrus"
 )
 
 const scoreThreshold = 0.8
+const truePositiveFp = "./test/true_positives.yaml"
 
 var (
 	here string
@@ -21,15 +24,14 @@ func TestTruePositiveSearchScore(t *testing.T) {
 	s := setupScoringTest()
 	defer teardownScoringTest(s)
 
-	// Potentially we want this in a different file (tsv or yaml(?))
-	tests := map[string]string{
-		"randall":     "Content/Glossary",
-		"evilcorp":    "Content/Glossary",
-		"word":        "Content/Glossary",
-		"wor":         "Content/Glossary",
-		"fanc":        "Content/Glossary",
-		"fancy":       "Content/Glossary",
-		"what we say": "Content/Tone_of_Voice",
+	raw, err := ioutil.ReadFile(truePositiveFp)
+	if err != nil {
+		log.Fatalf("Unable to read scoring test file: %s", err)
+	}
+
+	var tests map[string]string
+	if err := yaml.Unmarshal(raw, &tests); err != nil {
+		log.Fatalf("Unable to deserialize scoring test file: %s", err)
 	}
 
 	// Avoid division by zero errors at the cost of a bit of precision.
