@@ -174,12 +174,6 @@
   revision = "86672fcb3f950f35f2e675df2240550f2a50762f"
 
 [[projects]]
-  name = "github.com/sirupsen/logrus"
-  packages = ["."]
-  revision = "3e01752db0189b9157070a0e1668a620f9a85da2"
-  version = "v1.0.6"
-
-[[projects]]
   branch = "master"
   name = "github.com/steveyen/gtreap"
   packages = ["."]
@@ -199,12 +193,6 @@
 
 [[projects]]
   branch = "master"
-  name = "golang.org/x/crypto"
-  packages = ["ssh/terminal"]
-  revision = "c126467f60eb25f8f27e5a981f32a87e3965053f"
-
-[[projects]]
-  branch = "master"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -216,15 +204,12 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = [
-    "unix",
-    "windows"
-  ]
+  packages = ["unix"]
   revision = "378d26f46672a356c46195c28f61bdb4c0a781dd"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d1d0aa670e11652e3df1005ee50f4713e803c202f8ee45f404373efcbc9a444f"
+  inputs-digest = "e7c0fcfe9a945b17f7081ac4d70f2dbcf8db33310f208ee58ed955492cdd6314"
   solver-name = "gps-cdcl"
   solver-version = 1
