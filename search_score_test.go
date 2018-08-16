@@ -16,10 +16,6 @@ import (
 const scoreThreshold = 0.8
 const truePositiveFp = "./test/true_positives.yaml"
 
-var (
-	here string
-)
-
 func TestTruePositiveSearchScore(t *testing.T) {
 	tr, s := setupScoringTest()
 	defer teardownScoringTest(tr, s)
@@ -68,19 +64,17 @@ func TestTruePositiveSearchScore(t *testing.T) {
 	truePositive := float64(succeeded) / float64(testCount)
 
 	if truePositive < scoreThreshold {
-		t.Errorf("True positive search scoring on %s was %.2f (min required is %.2f)", here, truePositive, scoreThreshold)
+		t.Errorf("True positive search scoring on test/design_system was %.2f (min required is %.2f)", truePositive, scoreThreshold)
 	}
 }
 
 func setupScoringTest() (*NodeTree, *Search) {
-	here = "test/design_system" // assignment to global
-
 	// Do not initialize watcher and broker, we only need
 	// them to fullfill the interface.
-	w := NewWatcher(here)
+	w := NewWatcher("test/design_system")
 	b := NewMessageBroker()
 
-	tr := NewNodeTree(here, w, b)
+	tr := NewNodeTree("test/design_system", w, b)
 	tr.Open()
 	tr.Sync()
 
