@@ -13,9 +13,9 @@ import (
 	"github.com/go-yaml/yaml"
 )
 
-const scoreThreshold = 0.8
-
 func TestTruePositiveSearchScore(t *testing.T) {
+	scoreThreshold := 0.8
+
 	tr, s, tests := setupScoringTest(t, "./test/true_positives_search_score.yaml")
 	defer teardownScoringTest(tr, s)
 
