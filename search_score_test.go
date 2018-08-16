@@ -11,7 +11,6 @@ import (
 	"testing"
 
 	"github.com/go-yaml/yaml"
-	log "github.com/sirupsen/logrus"
 )
 
 const scoreThreshold = 0.8
@@ -22,17 +21,17 @@ var (
 )
 
 func TestTruePositiveSearchScore(t *testing.T) {
-	s := setupScoringTest()
-	defer teardownScoringTest(s)
+	tr, s := setupScoringTest()
+	defer teardownScoringTest(tr, s)
 
 	raw, err := ioutil.ReadFile(truePositiveFp)
 	if err != nil {
-		log.Fatalf("Unable to read scoring test file: %s", err)
+		t.Fatalf("Unable to read scoring test file: %s", err)
 	}
 
 	var tests map[string]string
 	if err := yaml.Unmarshal(raw, &tests); err != nil {
-		log.Fatalf("Unable to deserialize scoring test file: %s", err)
+		t.Fatalf("Unable to deserialize scoring test file: %s", err)
 	}
 
 	// Avoid division by zero errors at the cost of a bit of precision.
@@ -53,12 +52,7 @@ func TestTruePositiveSearchScore(t *testing.T) {
 						foundPaths = append(foundPaths, n.URL())
 					}
 				}
-
-				log.WithFields(log.Fields{
-					"_query":   query,
-					"expected": shouldBeIn,
-					"extras":   foundPaths,
-				}).Debug("Query found with extras")
+				t.Logf("Query found with extras:\nquery: %s\nexpected: %v\nextras: %v", query, shouldBeIn, foundPaths)
 			}
 		} else {
 			foundPaths := []string{}
@@ -66,61 +60,44 @@ func TestTruePositiveSearchScore(t *testing.T) {
 			for _, n := range rs {
 				foundPaths = append(foundPaths, n.URL())
 			}
-
-			log.WithFields(log.Fields{
-				"_query":   query,
-				"actual":   foundPaths,
-				"expected": shouldBeIn,
-			}).Warn("Query result not found")
+			t.Logf("Query result not found:\nquery: %s\nactual: %v\nexpected: %v", query, foundPaths, shouldBeIn)
 		}
 		testCount++
 	}
 
 	truePositive := float64(succeeded) / float64(testCount)
 
-	log.Infof("True positive search scoring on %s was %.2f (min required is %.2f)", here, truePositive, scoreThreshold)
 	if truePositive < scoreThreshold {
-		t.Fail()
+		t.Errorf("True positive search scoring on %s was %.2f (min required is %.2f)", here, truePositive, scoreThreshold)
 	}
 }
 
-func setupScoringTest() *Search {
-	log.SetFormatter(&log.TextFormatter{FullTimestamp: true})
+func setupScoringTest() (*NodeTree, *Search) {
 	here = "test/design_system" // assignment to global
+
+	// Do not initialize watcher and broker, we only need
+	// them to fullfill the interface.
 	w := NewWatcher(here)
-	if err := w.Open(IgnoreNodesRegexp); err != nil {
-		log.Fatalf("Failed to install watcher: %s", err)
-	}
-	watcher = w // assign to global
+	b := NewMessageBroker()
 
-	log.Debug("Starting message broker...")
-	broker = NewMessageBroker() // assign to global
-	broker.Start()
+	tr := NewNodeTree(here, w, b)
+	tr.Open()
+	tr.Sync()
 
-	log.Debug("Opening tree...")
-	tree = NewNodeTree(here, watcher, broker) // assign to global
+	s := NewSearch(tr, b, []string{"en", "de"})
+	s.Open()
+	s.IndexTree()
 
-	if err := tree.Open(); err != nil {
-		log.Fatalf("Failed to open tree: %s", err)
-	}
-	if err := tree.Sync(); err != nil {
-		log.Fatalf("Failed to perform initial tree sync: %s", err)
-	}
-
-	log.Info("Opening test search index...")
-	search = NewSearch(tree, broker, []string{"en", "de"}) // assign to global
-	if err := search.Open(); err != nil {
-		log.Fatalf("Failed to open search index: %s", err)
-	}
-
-	if err := search.IndexTree(); err != nil {
-		log.Fatalf("Failed to perform initial test tree indexing: %s", err)
-	}
-	return search
+	return tr, s
 }
 
+func teardownScoringTest(tr *NodeTree, s *Search) {
+	s.Close()
+	tr.Close()
+}
+
+// https://stackoverflow.com/a/23332089/1924257
 func keysInOrder(m map[string]string) []string {
-	// https://stackoverflow.com/a/23332089/1924257
 	var keys []string
 	for k := range m {
 		keys = append(keys, k)
@@ -128,10 +105,6 @@ func keysInOrder(m map[string]string) []string {
 	sort.Strings(keys)
 
 	return keys
-}
-
-func teardownScoringTest(s *Search) {
-	s.Close()
 }
 
 // This feels like it should baked in...
