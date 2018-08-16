@@ -16,8 +16,8 @@ import (
 func TestTruePositiveSearchScore(t *testing.T) {
 	scoreThreshold := 0.8
 
-	tr, s, tests := setupScoringTest(t, "./test/true_positives_search_score.yaml")
-	defer teardownScoringTest(tr, s)
+	tr, s, tests := setupSearchScoringTest(t, "./test/true_positives_search_score.yaml")
+	defer teardownSearchScoringTest(tr, s)
 
 	// Avoid division by zero errors at the cost of a bit of precision.
 	succeeded := 1
@@ -57,7 +57,7 @@ func TestTruePositiveSearchScore(t *testing.T) {
 	}
 }
 
-func setupScoringTest(t *testing.T, testFile string) (*NodeTree, *Search, map[string]string) {
+func setupSearchScoringTest(t *testing.T, testFile string) (*NodeTree, *Search, map[string]string) {
 	t.Helper()
 
 	// Do not initialize watcher and broker, we only need
@@ -85,7 +85,7 @@ func setupScoringTest(t *testing.T, testFile string) (*NodeTree, *Search, map[st
 	return tr, s, tests
 }
 
-func teardownScoringTest(tr *NodeTree, s *Search) {
+func teardownSearchScoringTest(tr *NodeTree, s *Search) {
 	s.Close()
 	tr.Close()
 }

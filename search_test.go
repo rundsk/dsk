@@ -19,7 +19,7 @@ func TestFilterSearchGermanWordPartials(t *testing.T) {
 	Nur rot mag ich nicht gerne.
 	`
 
-	tmp, s := setupDocSearchTest(contents)
+	tmp, s := setupSearchTest(contents)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _ := s.FilterSearch("fa")
@@ -32,7 +32,7 @@ func TestFilterSearchGermanWordPartials(t *testing.T) {
 	expectSearchResult(t, rs, "foo")
 }
 
-func setupDocSearchTest(contents string) (string, *Search) {
+func setupSearchTest(contents string) (string, *Search) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
 	node0 := filepath.Join(tmp, "foo")
