@@ -14,21 +14,10 @@ import (
 )
 
 const scoreThreshold = 0.8
-const truePositiveFp = "./test/true_positives.yaml"
 
 func TestTruePositiveSearchScore(t *testing.T) {
-	tr, s := setupScoringTest()
+	tr, s, tests := setupScoringTest(t, "./test/true_positives_search_score.yaml")
 	defer teardownScoringTest(tr, s)
-
-	raw, err := ioutil.ReadFile(truePositiveFp)
-	if err != nil {
-		t.Fatalf("Unable to read scoring test file: %s", err)
-	}
-
-	var tests map[string]string
-	if err := yaml.Unmarshal(raw, &tests); err != nil {
-		t.Fatalf("Unable to deserialize scoring test file: %s", err)
-	}
 
 	// Avoid division by zero errors at the cost of a bit of precision.
 	succeeded := 1
@@ -68,7 +57,9 @@ func TestTruePositiveSearchScore(t *testing.T) {
 	}
 }
 
-func setupScoringTest() (*NodeTree, *Search) {
+func setupScoringTest(t *testing.T, testFile string) (*NodeTree, *Search, map[string]string) {
+	t.Helper()
+
 	// Do not initialize watcher and broker, we only need
 	// them to fullfill the interface.
 	w := NewWatcher("test/design_system")
@@ -82,7 +73,16 @@ func setupScoringTest() (*NodeTree, *Search) {
 	s.Open()
 	s.IndexTree()
 
-	return tr, s
+	var tests map[string]string
+	raw, err := ioutil.ReadFile(testFile)
+	if err != nil {
+		t.Fatalf("Unable to read scoring test file: %s", err)
+	}
+	if err := yaml.Unmarshal(raw, &tests); err != nil {
+		t.Fatalf("Unable to deserialize scoring test file: %s", err)
+	}
+
+	return tr, s, tests
 }
 
 func teardownScoringTest(tr *NodeTree, s *Search) {
