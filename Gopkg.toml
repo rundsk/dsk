@@ -64,7 +64,3 @@
 [[override]]
   name = "github.com/blevesearch/go-porterstemmer"
   revision = "9ac2252909b40e1607345cd2f68f76dc98a1c8fa"
-
-[[override]]
-  name = "github.com/Sirupsen/logrus"
-  version = "1.0.6"
