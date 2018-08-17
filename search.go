@@ -179,9 +179,13 @@ func (s *Search) FullSearch(query string) ([]*Node, int, time.Duration, error) {
 
 	mq := bleve.NewMatchQuery(query)
 	mq.SetFuzziness(2)
-	disjunctionQuery := bleve.NewDisjunctionQuery(mq, bleve.NewTermQuery(query), bleve.NewPrefixQuery(query))
+	dQuery := bleve.NewDisjunctionQuery(
+		mq,
+		bleve.NewTermQuery(query),
+		bleve.NewPrefixQuery(query),
+	)
 
-	bSearch := bleve.NewSearchRequest(disjunctionQuery)
+	bSearch := bleve.NewSearchRequest(dQuery)
 	searchResults, err := s.index.Search(bSearch)
 	if err != nil {
 		return nil, 0, time.Duration(0), fmt.Errorf("Query '%s' failed: %s", query, err)
@@ -224,9 +228,13 @@ func (s *Search) FullSearch(query string) ([]*Node, int, time.Duration, error) {
 func (s *Search) FilterSearch(query string) ([]*Node, int, time.Duration, error) {
 	mq := bleve.NewMatchQuery(query)
 	mq.SetFuzziness(2)
-	disjunctionQuery := bleve.NewDisjunctionQuery(mq, bleve.NewTermQuery(query), bleve.NewPrefixQuery(query))
+	dQuery := bleve.NewDisjunctionQuery(
+		mq,
+		bleve.NewTermQuery(query),
+		bleve.NewPrefixQuery(query),
+	)
 
-	bSearch := bleve.NewSearchRequest(disjunctionQuery)
+	bSearch := bleve.NewSearchRequest(dQuery)
 	searchResults, err := s.index.Search(bSearch)
 	if err != nil {
 		return nil, 0, time.Duration(0), fmt.Errorf("Query '%s' failed: %s", query, err)
