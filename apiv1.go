@@ -97,8 +97,9 @@ type APIv1NodeDoc struct {
 }
 
 type APIv1NodeAsset struct {
-	URL  string `json:"url"`
-	Name string `json:"name"`
+	URL      string `json:"url"`
+	Name     string `json:"name"`
+	Modified int64  `json:"modified"`
 }
 
 type APIv1SearchResults struct {
@@ -152,10 +153,10 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 	}
 
 	nModified, err := n.Modified()
+	var modified int64
 	if err != nil {
 		return nil, err
 	}
-	modified := int64(0)
 	if !nModified.IsZero() {
 		modified = nModified.Unix()
 	}
@@ -187,7 +188,11 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		return nil, err
 	}
 	for _, v := range nDownloads {
-		downloads = append(downloads, &APIv1NodeAsset{URL: v.URL, Name: v.Name})
+		d, err := api.NewNodeAsset(v)
+		if err != nil {
+			return nil, err
+		}
+		downloads = append(downloads, d)
 	}
 
 	nCrumbs := n.Crumbs(api.tree.Get)
@@ -278,6 +283,22 @@ func (api APIv1) NewNodeTree(t *NodeTree) (*APIv1NodeTree, error) {
 		Root:  root,
 		Total: t.TotalNodes(),
 	}, err
+}
+
+func (api APIv1) NewNodeAsset(a *NodeAsset) (*APIv1NodeAsset, error) {
+	aModified, err := a.Modified()
+	var modified int64
+	if err != nil {
+		return nil, err
+	}
+	if !aModified.IsZero() {
+		modified = aModified.Unix()
+	}
+	return &APIv1NodeAsset{
+		URL:      a.URL,
+		Name:     a.Name,
+		Modified: modified,
+	}, nil
 }
 
 func (api APIv1) NewNodeTreeSearchResults(nodes []*Node, total int, took time.Duration) *APIv1SearchResults {

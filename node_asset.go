@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 // A downloadable file.
@@ -29,6 +30,14 @@ type NodeAsset struct {
 // IsDownloadable is true when the asset should be available for download.
 func (a NodeAsset) IsDownloadable() bool {
 	return true
+}
+
+func (a NodeAsset) Modified() (time.Time, error) {
+	f, err := os.Stat(a.path)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return f.ModTime(), nil
 }
 
 // Dimensions for asset media when these are possible to detect. "ok"
