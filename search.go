@@ -6,6 +6,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"path/filepath"
 	"strings"
@@ -15,6 +16,7 @@ import (
 	"github.com/blevesearch/bleve/analysis/analyzer/keyword"
 	"github.com/blevesearch/bleve/analysis/analyzer/simple"
 	"github.com/blevesearch/bleve/analysis/lang/de"
+	"github.com/blevesearch/bleve/analysis/lang/en"
 	"github.com/blevesearch/bleve/mapping"
 )
 
@@ -23,8 +25,12 @@ func NewSearch(t *NodeTree, b *MessageBroker, langs []string) *Search {
 		getNode:     t.Get,
 		getAllNodes: t.GetAll,
 		langs:       langs,
-		broker:      b,
-		done:        make(chan bool),
+		available: map[string]string{
+			"de": de.AnalyzerName,
+			"en": en.AnalyzerName,
+		},
+		broker: b,
+		done:   make(chan bool),
 	}
 }
 
@@ -33,8 +39,11 @@ type Search struct {
 	getNode     NodeGetter
 	getAllNodes NodesGetter
 
-	// Languages we support in our mapping/analyzer setup.
+	// Languages that should be used in our mapping/analyzer setup.
 	langs []string
+
+	// Available languages mapped to their analyzer names.
+	available map[string]string
 
 	index bleve.Index
 
@@ -51,7 +60,12 @@ type Search struct {
 // Search.done. It'll automatically stop if it detects the broker to
 // be closed.
 func (s *Search) Open() error {
-	memIndex, err := bleve.NewMemOnly(s.mapping())
+	m, err := s.mapping()
+	if err != nil {
+		return err
+	}
+
+	memIndex, err := bleve.NewMemOnly(m)
 	s.index = memIndex
 
 	go func() {
@@ -230,33 +244,40 @@ func (s *Search) FilterSearch(query string) ([]*Node, int, time.Duration) {
 	return results, int(searchResults.Total), searchResults.Took
 }
 
-// TODO: Add language specific analyzers by looking at s.langs
-func (s *Search) mapping() *mapping.IndexMappingImpl {
-	englishMapping := bleve.NewTextFieldMapping()
-	englishMapping.Analyzer = "en"
+func (s *Search) mapping() (*mapping.IndexMappingImpl, error) {
+	im := bleve.NewIndexMapping()
 
-	germanMapping := bleve.NewTextFieldMapping()
-	germanMapping.Analyzer = de.AnalyzerName
+	sm := bleve.NewTextFieldMapping()
+	sm.Analyzer = simple.Name
 
-	keywordMapping := bleve.NewTextFieldMapping()
-	keywordMapping.Analyzer = keyword.Name
+	km := bleve.NewTextFieldMapping()
+	km.Analyzer = keyword.Name
 
-	simpleMapping := bleve.NewTextFieldMapping()
-	simpleMapping.Analyzer = simple.Name
+	var tms []*mapping.FieldMapping
+	for _, l := range s.langs {
+		tm := bleve.NewTextFieldMapping()
+
+		an, ok := s.available[l]
+		if !ok {
+			return im, fmt.Errorf("Unsupported language: %s", l)
+		}
+		tm.Analyzer = an
+
+		tms = append(tms, tm)
+	}
 
 	node := bleve.NewDocumentMapping()
-	node.DefaultAnalyzer = de.AnalyzerName
+	node.DefaultAnalyzer = en.AnalyzerName
 
-	node.AddFieldMappingsAt("Authors", simpleMapping)
-	node.AddFieldMappingsAt("Description", simpleMapping, keywordMapping, englishMapping)
-	node.AddFieldMappingsAt("FileNames", simpleMapping)
-	node.AddFieldMappingsAt("Path", simpleMapping, keywordMapping)
-	node.AddFieldMappingsAt("Tags", simpleMapping, keywordMapping, englishMapping, germanMapping)
-	node.AddFieldMappingsAt("Text", simpleMapping, keywordMapping, englishMapping, germanMapping)
-	node.AddFieldMappingsAt("Version", simpleMapping, keywordMapping)
+	node.AddFieldMappingsAt("Authors", sm)
+	node.AddFieldMappingsAt("Description", append(tms, sm)...)
+	node.AddFieldMappingsAt("FileNames", sm)
+	node.AddFieldMappingsAt("Path", sm, km)
+	node.AddFieldMappingsAt("Tags", append(tms, sm, km)...)
+	node.AddFieldMappingsAt("Text", append(tms, sm, km)...)
+	node.AddFieldMappingsAt("Version", sm, km)
 
-	indexMapping := bleve.NewIndexMapping()
-	indexMapping.AddDocumentMapping("article", node)
+	im.AddDocumentMapping("article", node)
 
-	return indexMapping
+	return im, nil
 }
