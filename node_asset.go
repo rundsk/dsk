@@ -40,6 +40,15 @@ func (a NodeAsset) Modified() (time.Time, error) {
 	return f.ModTime(), nil
 }
 
+// Size returns the file size in bytes.
+func (a NodeAsset) Size() (int64, error) {
+	f, err := os.Stat(a.path)
+	if err != nil {
+		return 0, err
+	}
+	return f.Size(), nil
+}
+
 // Dimensions for asset media when these are possible to detect. "ok"
 // indicates if the format was supported.
 func (a NodeAsset) Dimensions() (ok bool, w int, h int, err error) {

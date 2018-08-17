@@ -100,6 +100,7 @@ type APIv1NodeAsset struct {
 	URL      string `json:"url"`
 	Name     string `json:"name"`
 	Modified int64  `json:"modified"`
+	Size     int64  `json:"size"`
 }
 
 type APIv1SearchResults struct {
@@ -294,10 +295,16 @@ func (api APIv1) NewNodeAsset(a *NodeAsset) (*APIv1NodeAsset, error) {
 	if !aModified.IsZero() {
 		modified = aModified.Unix()
 	}
+
+	size, err := a.Size()
+	if err != nil {
+		return nil, err
+	}
 	return &APIv1NodeAsset{
 		URL:      a.URL,
 		Name:     a.Name,
 		Modified: modified,
+		Size:     size,
 	}, nil
 }
 
