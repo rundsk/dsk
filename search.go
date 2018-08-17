@@ -175,8 +175,6 @@ func (s *Search) IndexNode(n *Node) error {
 // search over all possible attributes of each node. It does behave
 // more like a usual search people are used to.
 func (s *Search) FullSearch(query string) ([]*Node, int, time.Duration, error) {
-	start := time.Now()
-
 	mq := bleve.NewMatchQuery(query)
 	mq.SetFuzziness(2)
 	dQuery := bleve.NewDisjunctionQuery(
@@ -191,7 +189,7 @@ func (s *Search) FullSearch(query string) ([]*Node, int, time.Duration, error) {
 		return nil, 0, time.Duration(0), fmt.Errorf("Query '%s' failed: %s", query, err)
 	}
 
-	var results []*Node
+	results := make([]*Node, 0, 50)
 	for _, hit := range searchResults.Hits {
 		ok, node, err := s.getNode(hit.ID)
 		if !ok || err != nil {
@@ -200,7 +198,7 @@ func (s *Search) FullSearch(query string) ([]*Node, int, time.Duration, error) {
 		}
 		results = append(results, node)
 	}
-	return results, len(results), time.Since(start), nil
+	return results, int(searchResults.Total), searchResults.Took, nil
 }
 
 // FilterSearch performs a narrow restricted fuzzy and term search on
