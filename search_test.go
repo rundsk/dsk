@@ -22,13 +22,13 @@ func TestFilterSearchGermanWordPartials(t *testing.T) {
 	tmp, s := setupSearchTest(contents)
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _ := s.FilterSearch("fa")
+	rs, _, _, _ := s.FilterSearch("fa")
 	expectSearchResult(t, rs, "foo")
 
-	rs, _, _ = s.FilterSearch("farbe")
+	rs, _, _, _ = s.FilterSearch("farbe")
 	expectSearchResult(t, rs, "foo")
 
-	rs, _, _ = s.FilterSearch("farben")
+	rs, _, _, _ = s.FilterSearch("farben")
 	expectSearchResult(t, rs, "foo")
 }
 

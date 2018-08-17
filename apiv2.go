@@ -91,13 +91,16 @@ func (api APIv2) NewNodeTreeFilterResults(nodes []*Node, total int, took time.Du
 // Handles this URL:
 //   /api/v2/search?q={query}
 func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
+	wr := &HTTPResponder{w, r, "application/json"}
 	q := r.URL.Query().Get("q")
 
-	(&HTTPResponder{w, r, "application/json"}).OK(
-		api.NewNodeTreeSearchResults(
-			api.search.FullSearch(q),
-		),
-	)
+	results, total, took, err := api.search.FullSearch(q)
+	if err != nil {
+		wr.Error(HTTPErr, err)
+		return
+	}
+
+	wr.OK(api.NewNodeTreeSearchResults(results, total, took))
 }
 
 // Performs a restricted narrow search over the design defintions tree.
@@ -105,11 +108,14 @@ func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 // Handles this URL:
 //   /api/v2/filter?q={query}
 func (api APIv2) FilterHandler(w http.ResponseWriter, r *http.Request) {
+	wr := &HTTPResponder{w, r, "application/json"}
 	q := r.URL.Query().Get("q")
 
-	(&HTTPResponder{w, r, "application/json"}).OK(
-		api.NewNodeTreeFilterResults(
-			api.search.FilterSearch(q),
-		),
-	)
+	results, total, took, err := api.search.FilterSearch(q)
+	if err != nil {
+		wr.Error(HTTPErr, err)
+		return
+	}
+
+	wr.OK(api.NewNodeTreeFilterResults(results, total, took))
 }

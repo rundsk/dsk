@@ -174,7 +174,7 @@ func (s *Search) IndexNode(n *Node) error {
 // FullSearch is a superset of NarrowSearch in that it performs a
 // search over all possible attributes of each node. It does behave
 // more like a usual search people are used to.
-func (s *Search) FullSearch(query string) ([]*Node, int, time.Duration) {
+func (s *Search) FullSearch(query string) ([]*Node, int, time.Duration, error) {
 	start := time.Now()
 
 	mq := bleve.NewMatchQuery(query)
@@ -184,19 +184,19 @@ func (s *Search) FullSearch(query string) ([]*Node, int, time.Duration) {
 	bSearch := bleve.NewSearchRequest(disjunctionQuery)
 	searchResults, err := s.index.Search(bSearch)
 	if err != nil {
-		log.Fatalf("Query: '%s' failed...", query)
+		return nil, 0, time.Duration(0), fmt.Errorf("Query '%s' failed: %s", query, err)
 	}
 
 	var results []*Node
 	for _, hit := range searchResults.Hits {
 		ok, node, err := s.getNode(hit.ID)
 		if !ok || err != nil {
-			log.Fatalf("For hit %s (ok? %t) something went wrong\n%s", hit.ID, ok, err)
+			log.Printf("For hit %s (ok? %t) something went wrong: %s", hit.ID, ok, err)
+			continue
 		}
 		results = append(results, node)
 	}
-
-	return results, len(results), time.Since(start)
+	return results, len(results), time.Since(start), nil
 }
 
 // FilterSearch performs a narrow restricted fuzzy and term search on
@@ -221,7 +221,7 @@ func (s *Search) FullSearch(query string) ([]*Node, int, time.Duration) {
 //
 // "It's better to have false positives than false negatives"
 // https://en.wikipedia.org/wiki/Precision_and_recall
-func (s *Search) FilterSearch(query string) ([]*Node, int, time.Duration) {
+func (s *Search) FilterSearch(query string) ([]*Node, int, time.Duration, error) {
 	mq := bleve.NewMatchQuery(query)
 	mq.SetFuzziness(2)
 	disjunctionQuery := bleve.NewDisjunctionQuery(mq, bleve.NewTermQuery(query), bleve.NewPrefixQuery(query))
@@ -229,19 +229,19 @@ func (s *Search) FilterSearch(query string) ([]*Node, int, time.Duration) {
 	bSearch := bleve.NewSearchRequest(disjunctionQuery)
 	searchResults, err := s.index.Search(bSearch)
 	if err != nil {
-		log.Fatalf("Query: '%s' failed...", query)
+		return nil, 0, time.Duration(0), fmt.Errorf("Query '%s' failed: %s", query, err)
 	}
 
 	results := make([]*Node, 0, searchResults.Total)
 	for _, hit := range searchResults.Hits {
 		ok, node, err := s.getNode(hit.ID)
 		if !ok || err != nil {
-			log.Fatalf("For hit %s (ok? %t) something went wrong\n%s", hit.ID, ok, err)
+			log.Printf("For hit %s (ok? %t) something went wrong: %s", hit.ID, ok, err)
+			continue
 		}
 		results = append(results, node)
 	}
-
-	return results, int(searchResults.Total), searchResults.Took
+	return results, int(searchResults.Total), searchResults.Took, nil
 }
 
 func (s *Search) mapping() (*mapping.IndexMappingImpl, error) {

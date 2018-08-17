@@ -423,11 +423,14 @@ func (api APIv1) NodeAssetHandler(w http.ResponseWriter, r *http.Request) {
 // Handles this URL:
 //   /api/v1/search?q={query}
 func (api APIv1) SearchHandler(w http.ResponseWriter, r *http.Request) {
+	wr := &HTTPResponder{w, r, "application/json"}
 	q := r.URL.Query().Get("q")
 
-	(&HTTPResponder{w, r, "application/json"}).OK(
-		api.NewNodeTreeSearchResults(
-			api.search.FilterSearch(q),
-		),
-	)
+	results, total, took, err := api.search.FilterSearch(q)
+	if err != nil {
+		wr.Error(HTTPErr, err)
+		return
+	}
+
+	wr.OK(api.NewNodeTreeSearchResults(results, total, took))
 }
