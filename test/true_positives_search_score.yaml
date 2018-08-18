@@ -1,4 +1,6 @@
-# query: node expected in
+# Line format
+#   <query>: <node expected in>
+
 # General search
 visual design: Components/Displaying-Content/List
 word: Content/Glossary
@@ -14,17 +16,13 @@ content: Content
 ontent: Content
 content tone of voice: Content/Tone-of-Voice
 
-#
-# metafile tests
-#
-
-# authors field
+# authors
 evilcorp: Content/Glossary
 randall: Content/Glossary
 randall@evilcrp.org: Content/Glossary
 randall@evilcorp.org: Content/Glossary
 
-# description field
+# description
 content needs to be: Components/Displaying-Content
 fanc: Content/Glossary
 fancy: Content/Glossary
