@@ -20,12 +20,6 @@
   version = "v1.4.0"
 
 [[projects]]
-  name = "github.com/gosimple/slug"
-  packages = ["."]
-  revision = "91d42f4c3433698e88e87b17a3efbfe40b67c323"
-  version = "v1.2.0"
-
-[[projects]]
   name = "github.com/mattn/go-colorable"
   packages = ["."]
   revision = "167de6bfdfba052fa6b2d3664c8f5272e23c9072"
@@ -36,12 +30,6 @@
   packages = ["."]
   revision = "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c"
   version = "v0.0.4"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/rainycape/unidecode"
-  packages = ["."]
-  revision = "cb7f23ec59bec0d61b19c56cd88cee3d0cc1870c"
 
 [[projects]]
   name = "github.com/rjeczalik/notify"
@@ -92,6 +80,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ea7ec8d72ad2d3dc9344f9f47a15aa8208201e466ccfe7aeb528119b5e34f1b9"
+  inputs-digest = "3fae83073a1c87feb42d7aa2eebab328f491402ee9db1f3ce481b88a392172c5"
   solver-name = "gps-cdcl"
   solver-version = 1
