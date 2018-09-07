@@ -32,6 +32,15 @@
   version = "v0.0.4"
 
 [[projects]]
+  name = "github.com/mozillazg/go-unidecode"
+  packages = [
+    ".",
+    "table"
+  ]
+  revision = "7ab3c72180eeb79ccb8746137e14d6b0a60dd685"
+  version = "v0.1.0"
+
+[[projects]]
   name = "github.com/rjeczalik/notify"
   packages = ["."]
   revision = "0f065fa99b48b842c3fd3e2c8b194c6f2b69f6b8"
@@ -80,6 +89,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3fae83073a1c87feb42d7aa2eebab328f491402ee9db1f3ce481b88a392172c5"
+  inputs-digest = "81a03ba69e5d017737088871b75caec94ae1224e2e137de8417a40499663b7d3"
   solver-name = "gps-cdcl"
   solver-version = 1

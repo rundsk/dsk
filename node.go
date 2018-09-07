@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/mozillazg/go-unidecode"
 	"golang.org/x/text/unicode/norm"
 )
 
@@ -417,9 +418,11 @@ func normalizeNodeURL(url string) string {
 		}
 		p = norm.NFC.String(p)
 		p = removeOrderNumber(p)
+		p = unidecode.Unidecode(p)
 		p = NodePathInvalidCharsRegexp.ReplaceAllString(p, "-")
 		p = NodePathMultipleDashRegexp.ReplaceAllString(p, "-")
 		p = strings.Trim(p, "-")
+		p = strings.ToLower(p)
 
 		normalized = append(normalized, p)
 	}

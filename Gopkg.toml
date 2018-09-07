@@ -60,3 +60,7 @@
 [[constraint]]
   name = "golang.org/x/text"
   version = "0.3.0"
+
+[[constraint]]
+  name = "github.com/mozillazg/go-unidecode"
+  version = "0.1.0"
