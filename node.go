@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/gosimple/slug"
 	"golang.org/x/text/unicode/norm"
 )
 
@@ -41,9 +42,7 @@ var (
 	// Patterns for extracting order number and title from a node's
 	// path/URL segment in the form of 06_Foo. As well as for
 	// "slugging" the URL/path segment.
-	NodePathTitleRegexp        = regexp.MustCompile(`^0?(\d+)[_,-]+(.*)$`)
-	NodePathInvalidCharsRegexp = regexp.MustCompile(`[^A-Za-z0-9-_]`)
-	NodePathMultipleDashRegexp = regexp.MustCompile(`-+`)
+	NodePathTitleRegexp = regexp.MustCompile(`^0?(\d+)[_,-]+(.*)$`)
 )
 
 // Constructs a new node using its path in the filesystem. Returns a
@@ -417,9 +416,7 @@ func normalizeNodeURL(url string) string {
 		}
 		p = norm.NFC.String(p)
 		p = removeOrderNumber(p)
-		p = NodePathInvalidCharsRegexp.ReplaceAllString(p, "-")
-		p = NodePathMultipleDashRegexp.ReplaceAllString(p, "-")
-		p = strings.Trim(p, "-")
+		p = slug.Make(p)
 
 		normalized = append(normalized, p)
 	}
