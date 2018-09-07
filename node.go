@@ -422,7 +422,6 @@ func normalizeNodeURL(url string) string {
 		p = NodePathInvalidCharsRegexp.ReplaceAllString(p, "-")
 		p = NodePathMultipleDashRegexp.ReplaceAllString(p, "-")
 		p = strings.Trim(p, "-")
-		p = strings.ToLower(p)
 
 		normalized = append(normalized, p)
 	}
