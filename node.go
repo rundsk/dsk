@@ -404,6 +404,10 @@ func (n *Node) Crumbs(get NodeGetter) []*Node {
 //
 //   /foo/bar/  -> foo/bar
 //   foo/02_bar -> foo/bar
+//
+// Some filesystems store paths in decomposed form. Using these in the URL
+// led to URL inconsistencies between different OS. We therefore make sure
+// characters are composed. See: https://blog.golang.org/normalization
 func normalizeNodeURL(url string) string {
 	var normalized []string
 
@@ -411,6 +415,7 @@ func normalizeNodeURL(url string) string {
 		if p == "/" {
 			continue
 		}
+		p = norm.NFC.String(p)
 		p = removeOrderNumber(p)
 		p = NodePathInvalidCharsRegexp.ReplaceAllString(p, "-")
 		p = NodePathMultipleDashRegexp.ReplaceAllString(p, "-")
