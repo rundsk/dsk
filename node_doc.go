@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
 	"golang.org/x/net/html"
 	"golang.org/x/text/unicode/norm"
@@ -62,6 +63,26 @@ func (d NodeDoc) HTML(treePrefix string, nodeURL string, nodeGet NodeGetter) ([]
 	case ".txt":
 		html := fmt.Sprintf("<pre>%s</pre>", html.EscapeString(string(contents)))
 		return []byte(html), nil
+	}
+	return nil, fmt.Errorf("Document not in a supported format: %s", prettyPath(d.path))
+}
+
+// Text converted from original file format. Mardown is considered by
+// itself plaintext.
+func (d NodeDoc) Text() ([]byte, error) {
+	contents, err := ioutil.ReadFile(d.path)
+	if err != nil {
+		return nil, err
+	}
+
+	switch strings.ToLower(filepath.Ext(d.path)) {
+	case ".md", ".markdown":
+		fallthrough
+	case ".txt":
+		return contents, nil
+	case ".html", ".htm":
+		p := bluemonday.StrictPolicy()
+		return p.SanitizeBytes(contents), nil
 	}
 	return nil, fmt.Errorf("Document not in a supported format: %s", prettyPath(d.path))
 }

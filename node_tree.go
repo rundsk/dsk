@@ -12,7 +12,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
-	"strings"
 	"sync"
 	"time"
 
@@ -31,7 +30,7 @@ func NewNodeTree(path string, w *Watcher, b *MessageBroker) *NodeTree {
 	return &NodeTree{
 		path:    path,
 		watcher: w,
-		broker:  broker,
+		broker:  b,
 		done:    make(chan bool),
 	}
 }
@@ -69,6 +68,9 @@ type NodeTree struct {
 // NodeGetter retrieves nodes from the tree, using the node's relative
 // URL. When the node cannot be found ok will be false.
 type NodeGetter func(url string) (ok bool, n *Node, err error)
+
+// NodesGetter retrieves all nodes from the tree.
+type NodesGetter func() []*Node
 
 // HashGetter returns a calculated (or cached) hash.
 type HashGetter func() ([]byte, error)
@@ -156,19 +158,17 @@ func (t *NodeTree) Sync() error {
 	total := len(lookup)
 	took := time.Since(start)
 
-	t.broker.Accept(NewMessage(
+	defer t.broker.Accept(NewMessage(
 		MessageTypeTreeSynced, fmt.Sprintf("%d node/s in %s", total, took),
 	))
+
 	log.Printf("Synced tree with %d total node/s in %s", total, took)
 	return nil
 }
 
-// Open the tree and perform an initial tree sync, so the tree is
-// usable. Installs an auto-syncing process.
+// Open installs an auto-syncing process, the initial sync must be
+// done using Sync() manually.
 func (t *NodeTree) Open() error {
-	if err := t.Sync(); err != nil {
-		return err
-	}
 	id, watch := t.watcher.Subscribe()
 
 	go func() {
@@ -184,7 +184,7 @@ func (t *NodeTree) Open() error {
 					log.Printf("Re-sync failed: %s", err)
 				}
 			case <-t.done:
-				log.Print("Stopping auto-syncing...")
+				log.Print("Stopping tree auto-syncing (received quit)...")
 				t.watcher.Unsubscribe(id)
 				return
 			}
@@ -258,55 +258,17 @@ func (t *NodeTree) Get(url string) (ok bool, n *Node, err error) {
 	return false, &Node{}, nil
 }
 
-// FullTextSearch uses a prebuild search index to perform a search
-// over all possible attributes of each node.
-func (t *NodeTree) FullTextSearch(query string) ([]*Node, int, time.Duration) {
-	start := time.Now()
-
+func (t *NodeTree) GetAll() []*Node {
 	t.RLock()
 	defer t.RUnlock()
 
-	var results []*Node
-
-	return results, len(results), time.Since(start)
+	ns := make([]*Node, 0, len(t.lookup))
+	for _, n := range t.lookup {
+		ns = append(ns, n)
+	}
+	return ns
 }
 
-// Performs a narrow restricted fuzzy search on the node's visible
-// attributes (the title) plus tags & keywords and returns the
-// collected results as a flat node list.
-func (t *NodeTree) RestrictedSearch(query string) ([]*Node, int, time.Duration) {
-	start := time.Now()
-
-	t.RLock()
-	defer t.RUnlock()
-
-	var results []*Node
-
-	matches := func(source string, target string) bool {
-		if source == "" {
-			return false
-		}
-		return strings.Contains(strings.ToLower(target), strings.ToLower(source))
-	}
-
-Outer:
-	for _, n := range t.lookup {
-		if matches(query, n.Title()) {
-			results = append(results, n)
-			continue Outer
-		}
-		for _, v := range n.Tags() {
-			if matches(query, v) {
-				results = append(results, n)
-				continue Outer
-			}
-		}
-		for _, v := range n.Keywords() {
-			if matches(query, v) {
-				results = append(results, n)
-				continue Outer
-			}
-		}
-	}
-	return results, len(results), time.Since(start)
+func (t *NodeTree) GetAuthors() *Authors {
+	return t.authors
 }

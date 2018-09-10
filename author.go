@@ -38,6 +38,11 @@ type Author struct {
 	Name  string
 }
 
+// Add single author item to the internal data slice.
+func (as *Authors) Add(a *Author) {
+	as.data = append(as.data, a)
+}
+
 // Parses given file and adds authors to the internal data.
 // Extracts author information from AUTHORS.txt files in mailmap
 // format. Currently supports the simple syntax only.

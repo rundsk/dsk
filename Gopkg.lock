@@ -2,16 +2,128 @@
 
 
 [[projects]]
+  name = "github.com/RoaringBitmap/roaring"
+  packages = ["."]
+  revision = "3d677d3262197ee558b85029301eb69b8239f91a"
+  version = "v0.4.16"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/Smerity/govarint"
+  packages = ["."]
+  revision = "7265e41f48f15fd61751e16da866af3c704bb3ab"
+
+[[projects]]
+  name = "github.com/blevesearch/bleve"
+  packages = [
+    ".",
+    "analysis",
+    "analysis/analyzer/keyword",
+    "analysis/analyzer/simple",
+    "analysis/analyzer/standard",
+    "analysis/datetime/flexible",
+    "analysis/datetime/optional",
+    "analysis/lang/de",
+    "analysis/lang/en",
+    "analysis/token/lowercase",
+    "analysis/token/porter",
+    "analysis/token/stop",
+    "analysis/tokenizer/character",
+    "analysis/tokenizer/letter",
+    "analysis/tokenizer/single",
+    "analysis/tokenizer/unicode",
+    "document",
+    "geo",
+    "index",
+    "index/scorch",
+    "index/scorch/mergeplan",
+    "index/scorch/segment",
+    "index/scorch/segment/mem",
+    "index/scorch/segment/zap",
+    "index/store",
+    "index/store/boltdb",
+    "index/store/gtreap",
+    "index/upsidedown",
+    "mapping",
+    "numeric",
+    "registry",
+    "search",
+    "search/collector",
+    "search/facet",
+    "search/highlight",
+    "search/highlight/format/html",
+    "search/highlight/fragmenter/simple",
+    "search/highlight/highlighter/html",
+    "search/highlight/highlighter/simple",
+    "search/query",
+    "search/scorer",
+    "search/searcher"
+  ]
+  revision = "1a319cdf5bf77dc8cee35a6b99f908792c2547ef"
+  version = "v0.7.0"
+
+[[projects]]
+  name = "github.com/blevesearch/go-porterstemmer"
+  packages = ["."]
+  revision = "9ac2252909b40e1607345cd2f68f76dc98a1c8fa"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/blevesearch/segment"
+  packages = ["."]
+  revision = "762005e7a34fd909a84586299f1dd457371d36ee"
+
+[[projects]]
+  name = "github.com/boltdb/bolt"
+  packages = ["."]
+  revision = "2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8"
+  version = "v1.3.1"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/couchbase/vellum"
+  packages = [
+    ".",
+    "regexp",
+    "utf8"
+  ]
+  revision = "35d9e7346a69d2499623063cd39f305599fc7eae"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/edsrzf/mmap-go"
+  packages = ["."]
+  revision = "0bce6a6887123b67a60366d2c9fe2dfb74289d2e"
+
+[[projects]]
   name = "github.com/fatih/color"
   packages = ["."]
   revision = "5b77d2a35fb0ede96d138fc9a99f5c9b6aef11b4"
   version = "v1.7.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/glycerine/go-unsnap-stream"
+  packages = ["."]
+  revision = "9f0cb55181dd3a0a4c168d3dbc72d4aca4853126"
+
+[[projects]]
   name = "github.com/go-yaml/yaml"
   packages = ["."]
   revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
   version = "v2.2.1"
+
+[[projects]]
+  name = "github.com/golang/protobuf"
+  packages = ["proto"]
+  revision = "aa810b61a9c79d51363740d207bb46cf8e620ed5"
+  version = "v1.2.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/golang/snappy"
+  packages = ["."]
+  revision = "2e65f85255dbc3072edf28d6b5b8efc472979f5a"
 
 [[projects]]
   name = "github.com/gorilla/websocket"
@@ -32,6 +144,12 @@
   version = "v0.0.4"
 
 [[projects]]
+  name = "github.com/microcosm-cc/bluemonday"
+  packages = ["."]
+  revision = "82c7118e8ccf7403d4860175d97bb635e8e28239"
+  version = "v1.0.1"
+
+[[projects]]
   name = "github.com/mozillazg/go-unidecode"
   packages = [
     ".",
@@ -39,6 +157,18 @@
   ]
   revision = "7ab3c72180eeb79ccb8746137e14d6b0a60dd685"
   version = "v0.1.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/mschoch/smat"
+  packages = ["."]
+  revision = "90eadee771aeab36e8bf796039b8c261bebebe4f"
+
+[[projects]]
+  name = "github.com/philhofer/fwd"
+  packages = ["."]
+  revision = "bb6d471dc95d4fe11e432687f8b70ff496cf3136"
+  version = "v1.0.0"
 
 [[projects]]
   name = "github.com/rjeczalik/notify"
@@ -60,18 +190,37 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/steveyen/gtreap"
+  packages = ["."]
+  revision = "0abe01ef9be25c4aedc174758ec2d917314d6d70"
+
+[[projects]]
+  name = "github.com/tinylib/msgp"
+  packages = ["msgp"]
+  revision = "b2b6a672cf1e5b90748f79b8b81fc8c5cf0571a1"
+  version = "1.0.2"
+
+[[projects]]
+  name = "github.com/willf/bitset"
+  packages = ["."]
+  revision = "e553b05586428962bf7058d1044519d87ca72d74"
+  version = "v1.1.9"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/net"
   packages = [
+    "context",
     "html",
     "html/atom"
   ]
-  revision = "8a410e7b638dca158bf9e766925842f6651ff828"
+  revision = "161cd47e91fd58ac17490ef4d742dc98bb4cf60e"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "ebe1bf3edb3325c393447059974de898d5133eb8"
+  revision = "d0be0721c37eeb5299f245a996a483160fc36940"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -89,6 +238,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "81a03ba69e5d017737088871b75caec94ae1224e2e137de8417a40499663b7d3"
+  inputs-digest = "be869bea74c1647bd2b7152a639c182eba262c157c76772a0d70534196d5ce42"
   solver-name = "gps-cdcl"
   solver-version = 1

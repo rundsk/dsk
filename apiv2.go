@@ -14,22 +14,36 @@ import (
 	"time"
 )
 
-func NewAPIv2(tree *NodeTree, hub *MessageBroker) *APIv2 {
+func NewAPIv2(t *NodeTree, hub *MessageBroker, s *Search) *APIv2 {
 	return &APIv2{
-		tree: tree,
-		v1:   NewAPIv1(tree, broker),
+		v1:     NewAPIv1(t, hub, s),
+		tree:   t,
+		search: s,
 	}
 }
 
 type APIv2 struct {
-	v1   *APIv1
-	tree *NodeTree
+	v1     *APIv1
+	tree   *NodeTree
+	search *Search
 }
 
+// APIv2SearchResults differs from APIv2FilterResults in some
+// important ways: The results may be paginated. FilterResults always
+// contains all found results in form of a list of node URLs.
+//
+// The IsStale flag can be used to detect if a stale index was used
+// when querying for results. We allow the search index to become
+// slightly stale.
 type APIv2SearchResults struct {
-	URLs  []string `json:"urls"`
-	Total int      `json:"total"`
-	Took  int64    `json:"took"` // nanoseconds
+	Hits    []*APIv2SearchHit `json:"hits"`
+	Total   int               `json:"total"`
+	Took    int64             `json:"took"` // nanoseconds
+	IsStale bool              `json:"is_stale"`
+}
+
+type APIv2SearchHit struct {
+	URL string `json:"url"`
 }
 
 type APIv2FilterResults struct {
@@ -53,12 +67,13 @@ func (api APIv2) MountHTTPHandlers() {
 	http.HandleFunc("/api/v2/messages", api.v1.MessagesHandler)
 }
 
-func (api APIv2) NewNodeTreeSearchResults(nodes []*Node, total int, took time.Duration) *APIv2SearchResults {
-	urls := make([]string, 0, len(nodes))
-	for _, n := range nodes {
-		urls = append(urls, n.URL())
+func (api APIv2) NewNodeTreeSearchResults(hs []*SearchHit, total int, took time.Duration, isStale bool) *APIv2SearchResults {
+	hits := make([]*APIv2SearchHit, 0, len(hs))
+
+	for _, hit := range hs {
+		hits = append(hits, &APIv2SearchHit{hit.Node.URL()})
 	}
-	return &APIv2SearchResults{urls, total, took.Nanoseconds()}
+	return &APIv2SearchResults{hits, total, took.Nanoseconds(), isStale}
 }
 
 func (api APIv2) NewNodeTreeFilterResults(nodes []*Node, total int, took time.Duration) *APIv2FilterResults {
@@ -69,33 +84,38 @@ func (api APIv2) NewNodeTreeFilterResults(nodes []*Node, total int, took time.Du
 	return &APIv2FilterResults{urls, total, took.Nanoseconds()}
 }
 
-// Performs a full text search over the design defintions tree and
-// returns results in form of a flat list of URLs of matched nodes.
+// Performs a full broad search over the design defintions tree.
 //
 // Handles this URL:
 //   /api/v2/search?q={query}
+//   /api/v2/search?q={query}&fuzzy=true
 func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
+	wr := &HTTPResponder{w, r, "application/json"}
 	q := r.URL.Query().Get("q")
+	isFuzzy := r.URL.Query().Get("fuzzy") == "true"
 
-	(&HTTPResponder{w, r, "application/json"}).OK(
-		api.NewNodeTreeSearchResults(
-			api.tree.FullTextSearch(q),
-		),
-	)
+	results, total, took, isStale, err := api.search.FullSearch(q, isFuzzy)
+	if err != nil {
+		wr.Error(HTTPErr, err)
+		return
+	}
+
+	wr.OK(api.NewNodeTreeSearchResults(results, total, took, isStale))
 }
 
-// Performs a restricted fuzzy search over the design defintions tree
-// and returns results in form of a flat list of URLs of matched
-// nodes.
+// Performs a restricted narrow search over the design defintions tree.
 //
 // Handles this URL:
 //   /api/v2/filter?q={query}
 func (api APIv2) FilterHandler(w http.ResponseWriter, r *http.Request) {
+	wr := &HTTPResponder{w, r, "application/json"}
 	q := r.URL.Query().Get("q")
 
-	(&HTTPResponder{w, r, "application/json"}).OK(
-		api.NewNodeTreeFilterResults(
-			api.tree.RestrictedSearch(q),
-		),
-	)
+	results, total, took, err := api.search.FilterSearch(q)
+	if err != nil {
+		wr.Error(HTTPErr, err)
+		return
+	}
+
+	wr.OK(api.NewNodeTreeFilterResults(results, total, took))
 }

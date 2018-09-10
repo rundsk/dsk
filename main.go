@@ -14,6 +14,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 
 	"github.com/fatih/color"
 	isatty "github.com/mattn/go-isatty"
@@ -34,6 +35,9 @@ var (
 
 	// Global instance of a message broker.
 	broker *MessageBroker
+
+	// Global instance of the search index.
+	search *Search
 )
 
 func main() {
@@ -57,6 +61,9 @@ func main() {
 			if watcher != nil {
 				watcher.Close()
 			}
+			if search != nil {
+				search.Close()
+			}
 			if broker != nil {
 				broker.Close()
 			}
@@ -67,7 +74,11 @@ func main() {
 	host := flag.String("host", "127.0.0.1", "host IP to bind to")
 	port := flag.String("port", "8080", "port to bind to")
 	noColor := flag.Bool("no-color", false, "disables color output")
+	flang := flag.String("lang", "en", "language; separate multiple languages by commas")
 	flag.Parse()
+
+	// Used for configuring search.
+	langs := strings.Split(*flang, ",")
 
 	if len(flag.Args()) > 1 {
 		log.Fatalf("Too many arguments given, expecting exactly 0 or 1")
@@ -97,6 +108,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to detect root of design definitions tree: %s", red(err))
 	}
+
 	log.Printf("Tree root found: %s", here)
 	PrettyPathRoot = here
 
@@ -109,13 +121,27 @@ func main() {
 
 	log.Print("Opening tree...")
 	tree = NewNodeTree(here, watcher, broker) // assign to global
+
 	if err := tree.Open(); err != nil {
 		log.Fatalf("Failed to open tree: %s", red(err))
 	}
+	if err := tree.Sync(); err != nil {
+		log.Fatalf("Failed to perform initial tree sync: %s", red(err))
+	}
+
+	log.Print("Opening search index...")
+	search = NewSearch(tree, broker, langs) // assign to global
+	if err := search.Open(); err != nil {
+		log.Fatalf("Failed to open search index: %s", red(err))
+	}
+
+	if err := search.IndexTree(); err != nil {
+		log.Fatalf("Failed to perform initial tree indexing: %s", red(err))
+	}
 
 	apis := map[int]API{
-		1: NewAPIv1(tree, broker),
-		2: NewAPIv2(tree, broker),
+		1: NewAPIv1(tree, broker, search),
+		2: NewAPIv2(tree, broker, search),
 	}
 	for v, api := range apis {
 		log.Printf("Mounting APIv%d...", v)

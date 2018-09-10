@@ -18,9 +18,10 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func NewAPIv1(tree *NodeTree, hub *MessageBroker) *APIv1 {
+func NewAPIv1(t *NodeTree, hub *MessageBroker, s *Search) *APIv1 {
 	return &APIv1{
-		tree:     tree,
+		tree:     t,
+		search:   s,
 		messages: hub,
 		upgrader: websocket.Upgrader{
 			ReadBufferSize:  1024,
@@ -31,6 +32,8 @@ func NewAPIv1(tree *NodeTree, hub *MessageBroker) *APIv1 {
 
 type APIv1 struct {
 	tree *NodeTree
+
+	search *Search
 
 	// We subscribe to the broker in our messages endpoint.
 	messages *MessageBroker
@@ -448,11 +451,14 @@ func (api APIv1) NodeAssetHandler(w http.ResponseWriter, r *http.Request) {
 // Handles this URL:
 //   /api/v1/search?q={query}
 func (api APIv1) SearchHandler(w http.ResponseWriter, r *http.Request) {
+	wr := &HTTPResponder{w, r, "application/json"}
 	q := r.URL.Query().Get("q")
 
-	(&HTTPResponder{w, r, "application/json"}).OK(
-		api.NewNodeTreeSearchResults(
-			api.tree.RestrictedSearch(q),
-		),
-	)
+	results, total, took, err := api.search.FilterSearch(q)
+	if err != nil {
+		wr.Error(HTTPErr, err)
+		return
+	}
+
+	wr.OK(api.NewNodeTreeSearchResults(results, total, took))
 }
