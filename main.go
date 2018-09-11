@@ -89,12 +89,12 @@ func main() {
 	if *noColor {
 		color.NoColor = true
 	}
-	whiteOnBlue := color.New(color.FgWhite, color.BgBlue).SprintFunc()
-	green := color.New(color.FgGreen).SprintFunc()
-	red := color.New(color.FgRed).SprintFunc()
+	whiteOnBlue := color.New(color.FgWhite, color.BgBlue)
+	green := color.New(color.FgGreen)
+	red := color.New(color.FgRed)
 
 	if isTerminal {
-		log.Print(whiteOnBlue(" DSK "))
+		log.Print(whiteOnBlue.Sprint(" DSK "))
 		log.Printf("Version %s", Version)
 		log.Print()
 	}
@@ -106,7 +106,7 @@ func main() {
 	log.Printf("Detecting tree root...")
 	here, err := detectRoot(os.Args[0], flag.Arg(0))
 	if err != nil {
-		log.Fatalf("Failed to detect root of design definitions tree: %s", red(err))
+		log.Fatal(red.Sprintf("Failed to detect root of design definitions tree: %s", err))
 	}
 
 	log.Printf("Tree root found: %s", here)
@@ -115,7 +115,7 @@ func main() {
 	log.Print("Begin watching tree for changes...")
 	w := NewWatcher(here)
 	if err := w.Open(IgnoreNodesRegexp); err != nil {
-		log.Fatalf("Failed to install watcher: %s", red(err))
+		log.Fatal(red.Sprintf("Failed to install watcher: %s", err))
 	}
 	watcher = w // assign to global
 
@@ -123,20 +123,20 @@ func main() {
 	tree = NewNodeTree(here, watcher, broker) // assign to global
 
 	if err := tree.Open(); err != nil {
-		log.Fatalf("Failed to open tree: %s", red(err))
+		log.Fatal(red.Sprintf("Failed to open tree: %s", err))
 	}
 	if err := tree.Sync(); err != nil {
-		log.Fatalf("Failed to perform initial tree sync: %s", red(err))
+		log.Fatal(red.Sprintf("Failed to perform initial tree sync: %s", err))
 	}
 
 	log.Print("Opening search index...")
 	search = NewSearch(tree, broker, langs) // assign to global
 	if err := search.Open(); err != nil {
-		log.Fatalf("Failed to open search index: %s", red(err))
+		log.Fatal(red.Sprintf("Failed to open search index: %s", err))
 	}
 
 	if err := search.IndexTree(); err != nil {
-		log.Fatalf("Failed to perform initial tree indexing: %s", red(err))
+		log.Fatal(red.Sprintf("Failed to perform initial tree indexing: %s", err))
 	}
 
 	apis := map[int]API{
@@ -163,13 +163,13 @@ func main() {
 
 	if isTerminal {
 		log.Print()
-		log.Printf("Please visit: %s", green("http://"+addr))
+		log.Printf("Please visit: %s", green.Sprint("http://"+addr))
 		log.Print("Hit Ctrl+C to quit")
 		log.Print()
 	}
 
 	if err := http.ListenAndServe(addr, nil); err != nil {
-		log.Fatalf("Failed to start web interface: %s", red(err))
+		log.Fatal(red.Sprintf("Failed to start web interface: %s", err))
 	}
 }
 

@@ -144,10 +144,12 @@ func (t *NodeTree) Sync() error {
 	authorsFile := filepath.Join(t.path, AuthorsConfigBasename)
 	var as *Authors
 
+	yellow := color.New(color.FgYellow)
+
 	if _, err := os.Stat(authorsFile); err == nil {
 		as, err = NewAuthorsFromFile(authorsFile)
 		if err != nil {
-			log.Print(color.New(color.FgYellow).Sprintf("Failed parsing %s: %s", prettyPath(authorsFile), err))
+			log.Print(yellow.Sprintf("Failed parsing %s: %s", prettyPath(authorsFile), err))
 			as = &Authors{}
 		}
 	} else {
