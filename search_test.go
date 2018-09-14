@@ -17,7 +17,7 @@ import (
 	"github.com/go-yaml/yaml"
 )
 
-func TestFuzzyFullSearchGermanWordPartials(t *testing.T) {
+func TestFullSearchGermanWordPartials(t *testing.T) {
 	contents := `# Farben
 
 	Blau, grün, gelb, violett sie sind wunderschön.
@@ -59,7 +59,7 @@ func TestFilterSearchTitleUmlauts(t *testing.T) {
 	expectFilterSearchResult(t, rs, "Diversitat")
 }
 
-func TestTruePositiveFuzzyFullSearchScore(t *testing.T) {
+func TestTruePositiveFullSearchScore(t *testing.T) {
 	const scoreThreshold = 0.8
 
 	tr, s, tests := setupSearchScoringTest(t, "./test/true_positives_fuzzy_search_score.yaml")
