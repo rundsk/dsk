@@ -41,6 +41,10 @@ func NewSearch(t *NodeTree, b *MessageBroker, langs []string) *Search {
 // It follows the "It's better to have false positives than
 // false negatives" principle:
 // https://en.wikipedia.org/wiki/Precision_and_recall
+//
+// On a per query bassi fuzzy mode can enabled for FullSearch and
+// FilterSearch. The mode should be used if the result set doesn't
+// seem large enough.
 type Search struct {
 	getNode     NodeGetter
 	getAllNodes NodesGetter
@@ -207,11 +211,6 @@ func (s *Search) IndexNode(n *Node) error {
 // FullSearch performs a full text search over all possible attributes
 // of each node.
 //
-// Optionally a fuzzy mode can enabled on a per query basis. This
-// performs additional fuzzy and prefix matching. The mode allows to
-// use the FullSearch as kind of an alternative to the more narrowly
-// scoped FilterSearch, turning it into a hybrid of the two.
-//
 // For fuzzy mode we weren't able to use bleve's Fuzzy query as, we
 // dealt with results where certain things that should have matched
 // with a raw match query, did not. For example, `Farben` being an
@@ -226,9 +225,9 @@ func (s *Search) IndexNode(n *Node) error {
 // | farbe        | true          |
 // | farben       | true          |
 //
-// What is used by bleve for fuzzy matching under the hood, Levenstein
-// distances weren't enough and weren't able to match this on its own.
-// Especially for just a few characters typed.
+// What is used by bleve for fuzzy matching under the hood,
+// Levenshtein distances weren't enough and weren't able to match this
+// on its own. Especially for just a few characters typed.
 func (s *Search) FullSearch(q string, fuzzy bool) ([]*SearchHit, int, time.Duration, bool, error) {
 	var req *bleve.SearchRequest
 
@@ -274,7 +273,7 @@ func (s *Search) FullSearch(q string, fuzzy bool) ([]*SearchHit, int, time.Durat
 // scope on a per query basis. This means we'd need to keep a second
 // index just for filter searches. The simplistic approach used her is
 // "good enough" to fullfill the requirements.
-func (s *Search) FilterSearch(q string) ([]*Node, int, time.Duration, error) {
+func (s *Search) FilterSearch(q string, fuzzy bool) ([]*Node, int, time.Duration, error) {
 	start := time.Now()
 
 	var results []*Node

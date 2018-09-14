@@ -191,10 +191,9 @@ fragment from the table below, i.e. `/api/v1/hello`.
 
 The API version is a single integer that gets incremented with each version release. 
 
-The `search` endpoint supports the a `fuzzy` flag. It can optionally be enabled
-(`true`). This than performs additional fuzzy and prefix matching. The mode
-allows to use the endpoint as kind of an alternative to the more narrowly scoped
-`/filter`, turning it into a hybrid of the two.
+Both the `search` and `filter` endpoints support a `fuzzy` mode.
+It can optionally be enabled using a query parameter (i.e. `?q=foo&fuzzy=true`). This than performs 
+additional fuzzy matching and should be used, if the result sets don't seem large enough.
 
 ### Designing the URL Schema
 

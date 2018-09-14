@@ -110,8 +110,9 @@ func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 func (api APIv2) FilterHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, "application/json"}
 	q := r.URL.Query().Get("q")
+	isFuzzy := r.URL.Query().Get("fuzzy") == "true"
 
-	results, total, took, err := api.search.FilterSearch(q)
+	results, total, took, err := api.search.FilterSearch(q, isFuzzy)
 	if err != nil {
 		wr.Error(HTTPErr, err)
 		return

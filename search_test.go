@@ -52,10 +52,10 @@ func TestFilterSearchTitleUmlauts(t *testing.T) {
 	tmp, s := setupSearchTest(t, "de", "Diversität", "")
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _ := s.FilterSearch("Diversit")
+	rs, _, _, _ := s.FilterSearch("Diversit", false)
 	expectFilterSearchResult(t, rs, "Diversitat")
 
-	rs, _, _, _ = s.FilterSearch("Diversität")
+	rs, _, _, _ = s.FilterSearch("Diversität", false)
 	expectFilterSearchResult(t, rs, "Diversitat")
 }
 
