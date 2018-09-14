@@ -7,6 +7,7 @@ package main
 
 import (
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -17,46 +18,106 @@ import (
 	"github.com/go-yaml/yaml"
 )
 
-func TestFullSearchGermanWordPartials(t *testing.T) {
-	contents := `# Farben
-
-	Blau, grün, gelb, violett sie sind wunderschön.
-	Nur rot mag ich nicht gerne.
-	`
-
-	tmp, s := setupSearchTest(t, "de", "Farben", contents)
+func TestFullSearchFindsFullWords(t *testing.T) {
+	tmp, s := setupSearchTest(t, "de", "Diversität", "")
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FullSearch("fa", true)
-	expectFullSearchResult(t, rs, "Farben")
+	rs, _, _, _, _ := s.FullSearch("Diversität", true)
+	expectFullSearchResult(t, rs, "Diversitat")
 
-	rs, _, _, _, _ = s.FullSearch("farbe", true)
-	expectFullSearchResult(t, rs, "Farben")
-
-	rs, _, _, _, _ = s.FullSearch("farben", true)
-	expectFullSearchResult(t, rs, "Farben")
+	rs, _, _, _, _ = s.FullSearch("Diversität", false)
+	expectFullSearchResult(t, rs, "Diversitat")
 }
 
-func TestFullSearchTitleUmlauts(t *testing.T) {
+func TestFuzzyFullSearchWordPartials(t *testing.T) {
+	tmp, s := setupSearchTest(t, "en", "Colors", "")
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FullSearch("col", true)
+	expectFullSearchResult(t, rs, "Colors")
+
+	rs, _, _, _, _ = s.FullSearch("color", true)
+	expectFullSearchResult(t, rs, "Colors")
+
+	rs, _, _, _, _ = s.FullSearch("color", true)
+	expectFullSearchResult(t, rs, "Colors")
+}
+
+func TestFuzzyFullSearchGermanWordPartials(t *testing.T) {
 	tmp, s := setupSearchTest(t, "de", "Diversität", "")
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("Diversit", true)
 	expectFullSearchResult(t, rs, "Diversitat")
 
-	rs, _, _, _, _ = s.FullSearch("Diversität", true)
+	rs, _, _, _, _ = s.FullSearch("Diversita", true)
 	expectFullSearchResult(t, rs, "Diversitat")
 }
 
-func TestFilterSearchTitleUmlauts(t *testing.T) {
+// This is the inversion of TestFullSearchGermanWordPartials
+func TestOnlyFuzzyModeFindsPartialWords(t *testing.T) {
 	tmp, s := setupSearchTest(t, "de", "Diversität", "")
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _ := s.FilterSearch("Diversit", false)
-	expectFilterSearchResult(t, rs, "Diversitat")
+	rs, _, _, _, _ := s.FullSearch("Diversit", false)
+	expectNoFullSearchResult(t, rs, "Diversitat")
 
-	rs, _, _, _ = s.FilterSearch("Diversität", false)
-	expectFilterSearchResult(t, rs, "Diversitat")
+	rs, _, _, _, _ = s.FullSearch("Diversita", false)
+	expectNoFullSearchResult(t, rs, "Diversitat")
+}
+
+func TestGermanFullSearchNormalizesUmlauts(t *testing.T) {
+	tmp, s := setupSearchTest(t, "de", "Diversität", "")
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FullSearch("Diversität", true)
+	expectFullSearchResult(t, rs, "Diversitat")
+
+	rs, _, _, _, _ = s.FullSearch("Diversitat", true)
+	expectFullSearchResult(t, rs, "Diversitat")
+
+	rs, _, _, _, _ = s.FullSearch("Diversitaet", true)
+	expectFullSearchResult(t, rs, "Diversitat")
+
+	rs, _, _, _, _ = s.FullSearch("Diversität", false)
+	expectFullSearchResult(t, rs, "Diversitat")
+
+	rs, _, _, _, _ = s.FullSearch("Diversitat", false)
+	expectFullSearchResult(t, rs, "Diversitat")
+
+	rs, _, _, _, _ = s.FullSearch("Diversitaet", false)
+	expectFullSearchResult(t, rs, "Diversitat")
+}
+
+func TestEnglishFullSearchDoesNotNormalizeUmlauts(t *testing.T) {
+	tmp, s := setupSearchTest(t, "en", "Diversität", "")
+	defer teardownSearchTest(tmp, s)
+
+	// Exact matches always work, independent of languages.
+	rs, _, _, _, _ := s.FullSearch("Diversität", true)
+	expectFullSearchResult(t, rs, "Diversitat")
+
+	rs, _, _, _, _ = s.FullSearch("Diversitat", true)
+	expectFullSearchResult(t, rs, "Diversitat")
+
+	// Exact matches always work, independent of languages.
+	rs, _, _, _, _ = s.FullSearch("Diversität", false)
+	expectFullSearchResult(t, rs, "Diversitat")
+
+	// Cannot normalize Umlauts
+	rs, _, _, _, _ = s.FullSearch("Diversitat", false)
+	expectNoFullSearchResult(t, rs, "Diversitat")
+}
+
+func TestConsidersStopwords(t *testing.T) {
+	tmp, s := setupSearchTest(t, "en", "The Diversity", "")
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FullSearch("The", true)
+	expectNoFullSearchResult(t, rs, "Diversity")
+
+	rs, _, _, _, _ = s.FullSearch("The", false)
+	expectNoFullSearchResult(t, rs, "Diversity")
 }
 
 func TestTruePositiveFullSearchScore(t *testing.T) {
@@ -105,14 +166,12 @@ func TestTruePositiveFullSearchScore(t *testing.T) {
 
 func setupSearchTest(t *testing.T, lang string, name string, contents string) (string, *Search) {
 	t.Helper()
+	log.SetOutput(ioutil.Discard)
 
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	node0 := filepath.Join(tmp, name)
-	os.Mkdir(node0, 0777)
-
-	doc0 := filepath.Join(node0, "doc0.md")
-	ioutil.WriteFile(doc0, []byte(contents), 0666)
+	node0 := addDDTNode(tmp, name)
+	addDDTNodeDocument(node0, contents)
 
 	foo := &Node{root: tmp, path: node0}
 
@@ -145,6 +204,20 @@ func setupSearchTest(t *testing.T, lang string, name string, contents string) (s
 	return tmp, s
 }
 
+func addDDTNode(tmp string, title string) string {
+	node := filepath.Join(tmp, title)
+	os.Mkdir(node, 0777)
+
+	return node
+}
+
+func addDDTNodeDocument(node string, contents string) string {
+	doc := filepath.Join(node, "doc0.md")
+	ioutil.WriteFile(doc, []byte(contents), 0666)
+
+	return doc
+}
+
 func teardownSearchTest(tmp string, s *Search) {
 	s.Close()
 	os.RemoveAll(tmp)
@@ -152,6 +225,7 @@ func teardownSearchTest(tmp string, s *Search) {
 
 func setupSearchScoringTest(t *testing.T, testFile string) (*NodeTree, *Search, map[string]string) {
 	t.Helper()
+	log.SetOutput(ioutil.Discard)
 
 	// Do not initialize watcher and broker, we only need
 	// them to fullfill the interface.
@@ -185,17 +259,23 @@ func teardownSearchScoringTest(tr *NodeTree, s *Search) {
 
 func expectFullSearchResult(t *testing.T, hits []*SearchHit, url string) {
 	t.Helper()
-	t.Logf("Searching for expected result '%s'...", url)
 
 	for _, hit := range hits {
-		t.Logf("...having result '%s'", hit.Node.URL())
-
 		if hit.Node.URL() == url {
-			t.Logf("Found result '%s'!", url)
 			return
 		}
 	}
-	t.Errorf("Expected '%s' not included in results", url)
+	t.Errorf("Expected '%s', but not included in results", url)
+}
+
+func expectNoFullSearchResult(t *testing.T, hits []*SearchHit, url string) {
+	t.Helper()
+
+	for _, hit := range hits {
+		if hit.Node.URL() == url {
+			t.Errorf("Not expected '%s' to be included in results", url)
+		}
+	}
 }
 
 func hasFullSearchResult(t *testing.T, hits []*SearchHit, url string) bool {
@@ -211,17 +291,23 @@ func hasFullSearchResult(t *testing.T, hits []*SearchHit, url string) bool {
 
 func expectFilterSearchResult(t *testing.T, nodes []*Node, url string) {
 	t.Helper()
-	t.Logf("Searching for expected result '%s'..", url)
 
 	for _, node := range nodes {
-		t.Logf("...having result '%s'", node.URL())
-
 		if node.URL() == url {
-			t.Logf("Found result '%s'!", url)
 			return
 		}
 	}
-	t.Errorf("Expected '%s' not included in results", url)
+	t.Errorf("Expected '%s', but not included in results", url)
+}
+
+func expectNoFilterSearchResult(t *testing.T, nodes []*Node, url string) {
+	t.Helper()
+
+	for _, node := range nodes {
+		if node.URL() == url {
+			t.Errorf("Not expected '%s' to be included in results", url)
+		}
+	}
 }
 
 func keysInOrder(m map[string]string) []string {

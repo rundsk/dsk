@@ -51,6 +51,7 @@ type Search struct {
 	getAuthors  func() *Authors
 
 	// Languages that should be used in our mapping/analyzer setup.
+	// The first language provided will be used as the default language.
 	langs []string
 
 	// Available languages mapped to their analyzer names.
@@ -188,7 +189,6 @@ func (s *Search) IndexNode(n *Node) error {
 		Docs        string
 		Tags        []string
 		Title       string
-		URL         string
 		Version     string
 	}{
 		Authors:     ab.String(),
@@ -196,7 +196,6 @@ func (s *Search) IndexNode(n *Node) error {
 		Docs:        tb.String(),
 		Tags:        n.Tags(),
 		Title:       n.Title(),
-		URL:         n.URL(),
 		Version:     n.Version(),
 	}
 
@@ -310,6 +309,15 @@ Outer:
 func (s *Search) mapping() (*mapping.IndexMappingImpl, error) {
 	im := bleve.NewIndexMapping()
 
+	if len(s.langs) > 0 {
+		defaultLang := s.langs[0]
+		an, ok := s.available[defaultLang]
+		if !ok {
+			return im, fmt.Errorf("Unsupported language: %s", defaultLang)
+		}
+		im.DefaultAnalyzer = an
+	}
+
 	sm := bleve.NewTextFieldMapping()
 	sm.Analyzer = simple.Name
 
@@ -328,16 +336,14 @@ func (s *Search) mapping() (*mapping.IndexMappingImpl, error) {
 
 		tms = append(tms, tm)
 	}
-
 	node := bleve.NewDocumentMapping()
-	node.DefaultAnalyzer = en.AnalyzerName
+	node.DefaultAnalyzer = im.DefaultAnalyzer
 
 	node.AddFieldMappingsAt("Authors", sm)
-	node.AddFieldMappingsAt("Description", append(tms, sm)...)
-	node.AddFieldMappingsAt("Docs", append(tms, sm, km)...)
-	node.AddFieldMappingsAt("Tags", append(tms, sm, km)...)
+	node.AddFieldMappingsAt("Description", tms...)
+	node.AddFieldMappingsAt("Docs", tms...)
+	node.AddFieldMappingsAt("Tags", sm, km)
 	node.AddFieldMappingsAt("Title", tms...)
-	node.AddFieldMappingsAt("URL", sm, km)
 	node.AddFieldMappingsAt("Version", sm, km)
 
 	im.AddDocumentMapping("article", node)
