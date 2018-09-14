@@ -183,6 +183,7 @@ func (s *Search) IndexNode(n *Node) error {
 		Description string
 		Docs        string
 		Tags        []string
+		Title       string
 		URL         string
 		Version     string
 	}{
@@ -190,6 +191,7 @@ func (s *Search) IndexNode(n *Node) error {
 		Description: n.Description(),
 		Docs:        tb.String(),
 		Tags:        n.Tags(),
+		Title:       n.Title(),
 		URL:         n.URL(),
 		Version:     n.Version(),
 	}
@@ -335,6 +337,7 @@ func (s *Search) mapping() (*mapping.IndexMappingImpl, error) {
 	node.AddFieldMappingsAt("Description", append(tms, sm)...)
 	node.AddFieldMappingsAt("Docs", append(tms, sm, km)...)
 	node.AddFieldMappingsAt("Tags", append(tms, sm, km)...)
+	node.AddFieldMappingsAt("Title", tms...)
 	node.AddFieldMappingsAt("URL", sm, km)
 	node.AddFieldMappingsAt("Version", sm, km)
 
