@@ -59,6 +59,20 @@ func TestFilterSearchTitleUmlauts(t *testing.T) {
 	expectFilterSearchResult(t, rs, "Diversitat")
 }
 
+// This sort of test is less useful than a test ranking two candidate matches would be.
+func TestFilterSearchWithFuzziness(t *testing.T) {
+	tmp, s := setupSearchTest(t, "de", "Diversität", "")
+	defer teardownSearchTest(tmp, s)
+
+	// Diversit mangled to Divi
+	rs, _, _, _ := s.FilterSearch("Divi", true)
+	expectFilterSearchResult(t, rs, "Diversitat")
+
+	// Diversität mangled to Divsersität
+	rs, _, _, _ = s.FilterSearch("Diversität", true)
+	expectFilterSearchResult(t, rs, "Diversitat")
+}
+
 func TestTruePositiveFullSearchScore(t *testing.T) {
 	const scoreThreshold = 0.8
 

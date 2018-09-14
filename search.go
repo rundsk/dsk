@@ -18,6 +18,7 @@ import (
 	"github.com/blevesearch/bleve/analysis/lang/en"
 	"github.com/blevesearch/bleve/mapping"
 	"github.com/fatih/color"
+	"github.com/sahilm/fuzzy"
 )
 
 func NewSearch(t *NodeTree, b *MessageBroker, langs []string) *Search {
@@ -266,6 +267,18 @@ func (s *Search) FullSearch(q string, fuzzy bool) ([]*SearchHit, int, time.Durat
 	return hits, int(res.Total), res.Took, s.isStale, nil
 }
 
+type Nodes []*Node
+
+// String matches https://github.com/sahilm/fuzzy Source interface
+func (n Nodes) String(i int) string {
+	return n[i].Title()
+}
+
+// Len matches https://github.com/sahilm/fuzzy Source interface
+func (n Nodes) Len() int {
+	return len(n)
+}
+
 // FilterSearch performs a narrow restricted prefix search on the
 // node's visible attributes (the title) plus tags & keywords.
 //
@@ -273,10 +286,20 @@ func (s *Search) FullSearch(q string, fuzzy bool) ([]*SearchHit, int, time.Durat
 // scope on a per query basis. This means we'd need to keep a second
 // index just for filter searches. The simplistic approach used her is
 // "good enough" to fullfill the requirements.
-func (s *Search) FilterSearch(q string, fuzzy bool) ([]*Node, int, time.Duration, error) {
+func (s *Search) FilterSearch(q string, isFuzzy bool) ([]*Node, int, time.Duration, error) {
 	start := time.Now()
 
 	var results []*Node
+
+	if isFuzzy {
+		ns := Nodes(s.getAllNodes())
+		matches := fuzzy.FindFrom(q, ns)
+
+		for _, match := range matches {
+			results = append(results, ns[match.Index])
+		}
+		return results, len(results), time.Since(start), nil
+	}
 
 	matches := func(source string, target string) bool {
 		if source == "" {

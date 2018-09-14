@@ -183,6 +183,12 @@
   version = "v2.0.0"
 
 [[projects]]
+  name = "github.com/sahilm/fuzzy"
+  packages = ["."]
+  revision = "0ca8ec0fccc8cd7d336a6d6dec490a327a8d5cb0"
+  version = "v0.1.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/shurcooL/sanitized_anchor_name"
   packages = ["."]
@@ -238,6 +244,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "be869bea74c1647bd2b7152a639c182eba262c157c76772a0d70534196d5ce42"
+  inputs-digest = "cd53444d72570c8c6943ef6ed7b1ad02e5ee0e25777d95d4e931c68aea5ca364"
   solver-name = "gps-cdcl"
   solver-version = 1
