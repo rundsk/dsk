@@ -41,13 +41,7 @@ func TestFullSearchTitleUmlauts(t *testing.T) {
 	tmp, s := setupSearchTest(t, "de", "Diversität", "")
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FullSearch("Diversit", false)
-	expectFullSearchResult(t, rs, "Diversitat")
-
-	rs, _, _, _, _ = s.FullSearch("Diversität", false)
-	expectFullSearchResult(t, rs, "Diversitat")
-
-	rs, _, _, _, _ = s.FullSearch("Diversit", true)
+	rs, _, _, _, _ := s.FullSearch("Diversit", true)
 	expectFullSearchResult(t, rs, "Diversitat")
 
 	rs, _, _, _, _ = s.FullSearch("Diversität", true)
