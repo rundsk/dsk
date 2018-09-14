@@ -73,6 +73,7 @@ func main() {
 
 	host := flag.String("host", "127.0.0.1", "host IP to bind to")
 	port := flag.String("port", "8080", "port to bind to")
+	version := flag.Bool("version", false, "print DSK version")
 	noColor := flag.Bool("no-color", false, "disables color output")
 	flang := flag.String("lang", "en", "language; separate multiple languages by commas")
 	flag.Parse()
@@ -82,6 +83,11 @@ func main() {
 
 	if len(flag.Args()) > 1 {
 		log.Fatalf("Too many arguments given, expecting exactly 0 or 1")
+	}
+
+	if *version {
+		fmt.Println(Version)
+		os.Exit(1)
 	}
 
 	// Color package automatically disables colors when not a TTY. We
