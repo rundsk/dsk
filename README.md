@@ -225,7 +225,7 @@ $ FRONTEND=/my/frontend/build make dist
 
 ## Development
 
-[Go](https://golang.org/) version 1.9 or later is needed for developing and
+[Go](https://golang.org/) version 1.10 or later is needed for developing and
 testing the application. 
 
 If you're setting up a Go environment from scratch, add Go's `bin` directory to
