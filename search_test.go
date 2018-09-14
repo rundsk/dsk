@@ -12,30 +12,60 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/blevesearch/bleve/analysis/lang/de"
+	"github.com/blevesearch/bleve/analysis/lang/en"
 	"github.com/go-yaml/yaml"
 )
 
-func TestFullFuzzySearchGermanWordPartials(t *testing.T) {
+func TestFuzzyFullSearchGermanWordPartials(t *testing.T) {
 	contents := `# Farben
 
 	Blau, grün, gelb, violett sie sind wunderschön.
 	Nur rot mag ich nicht gerne.
 	`
 
-	tmp, s := setupSearchTest(contents)
+	tmp, s := setupSearchTest(t, "de", "Farben", contents)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("fa", true)
-	expectSearchResult(t, rs, "foo")
+	expectFullSearchResult(t, rs, "Farben")
 
 	rs, _, _, _, _ = s.FullSearch("farbe", true)
-	expectSearchResult(t, rs, "foo")
+	expectFullSearchResult(t, rs, "Farben")
 
 	rs, _, _, _, _ = s.FullSearch("farben", true)
-	expectSearchResult(t, rs, "foo")
+	expectFullSearchResult(t, rs, "Farben")
 }
 
-func TestTruePositiveFuzzySearchScore(t *testing.T) {
+func TestFullSearchTitleUmlauts(t *testing.T) {
+	tmp, s := setupSearchTest(t, "de", "Diversität", "")
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FullSearch("Diversit", false)
+	expectFullSearchResult(t, rs, "Diversitat")
+
+	rs, _, _, _, _ = s.FullSearch("Diversität", false)
+	expectFullSearchResult(t, rs, "Diversitat")
+
+	rs, _, _, _, _ = s.FullSearch("Diversit", true)
+	expectFullSearchResult(t, rs, "Diversitat")
+
+	rs, _, _, _, _ = s.FullSearch("Diversität", true)
+	expectFullSearchResult(t, rs, "Diversitat")
+}
+
+func TestFilterSearchTitleUmlauts(t *testing.T) {
+	tmp, s := setupSearchTest(t, "de", "Diversität", "")
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _ := s.FilterSearch("Diversit")
+	expectFilterSearchResult(t, rs, "Diversitat")
+
+	rs, _, _, _ = s.FilterSearch("Diversität")
+	expectFilterSearchResult(t, rs, "Diversitat")
+}
+
+func TestTruePositiveFuzzyFullSearchScore(t *testing.T) {
 	const scoreThreshold = 0.8
 
 	tr, s, tests := setupSearchScoringTest(t, "./test/true_positives_fuzzy_search_score.yaml")
@@ -48,7 +78,7 @@ func TestTruePositiveFuzzySearchScore(t *testing.T) {
 		shouldBeIn := tests[query]
 		hits, _, _, _, _ := s.FullSearch(query, true)
 
-		if hasSearchResult(t, hits, shouldBeIn) {
+		if hasFullSearchResult(t, hits, shouldBeIn) {
 			succeeded++
 
 			if len(hits) > 1 {
@@ -79,10 +109,12 @@ func TestTruePositiveFuzzySearchScore(t *testing.T) {
 	}
 }
 
-func setupSearchTest(contents string) (string, *Search) {
+func setupSearchTest(t *testing.T, lang string, name string, contents string) (string, *Search) {
+	t.Helper()
+
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	node0 := filepath.Join(tmp, "foo")
+	node0 := filepath.Join(tmp, name)
 	os.Mkdir(node0, 0777)
 
 	doc0 := filepath.Join(node0, "doc0.md")
@@ -104,10 +136,17 @@ func setupSearchTest(contents string) (string, *Search) {
 			a.Add(&Author{Name: "Randall Hyman", Email: "randall@evilcorp.org"})
 			return a
 		},
+		available: map[string]string{
+			"de": de.AnalyzerName,
+			"en": en.AnalyzerName,
+		},
+		langs:  []string{lang},
 		broker: NewMessageBroker(), // Allow to mount indexer, and to Close()
 		done:   make(chan bool),    // Do not block on Close()
 	}
-	s.Open()
+	if err := s.Open(); err != nil {
+		t.Fatal(err)
+	}
 	s.IndexTree()
 	return tmp, s
 }
@@ -150,18 +189,22 @@ func teardownSearchScoringTest(tr *NodeTree, s *Search) {
 	tr.Close()
 }
 
-func expectSearchResult(t *testing.T, hits []*SearchHit, url string) {
+func expectFullSearchResult(t *testing.T, hits []*SearchHit, url string) {
 	t.Helper()
+	t.Logf("Searching for expected result '%s'...", url)
 
 	for _, hit := range hits {
+		t.Logf("...having result '%s'", hit.Node.URL())
+
 		if hit.Node.URL() == url {
+			t.Logf("Found result '%s'!", url)
 			return
 		}
 	}
-	t.Errorf("Expected hit '%s' not included in results", url)
+	t.Errorf("Expected '%s' not included in results", url)
 }
 
-func hasSearchResult(t *testing.T, hits []*SearchHit, url string) bool {
+func hasFullSearchResult(t *testing.T, hits []*SearchHit, url string) bool {
 	t.Helper()
 
 	for _, hit := range hits {
@@ -170,6 +213,21 @@ func hasSearchResult(t *testing.T, hits []*SearchHit, url string) bool {
 		}
 	}
 	return false
+}
+
+func expectFilterSearchResult(t *testing.T, nodes []*Node, url string) {
+	t.Helper()
+	t.Logf("Searching for expected result '%s'..", url)
+
+	for _, node := range nodes {
+		t.Logf("...having result '%s'", node.URL())
+
+		if node.URL() == url {
+			t.Logf("Found result '%s'!", url)
+			return
+		}
+	}
+	t.Errorf("Expected '%s' not included in results", url)
 }
 
 func keysInOrder(m map[string]string) []string {
