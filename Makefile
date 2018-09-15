@@ -39,9 +39,7 @@ clean:
 .PHONY: dist
 dist: dist/dsk-darwin-amd64 dist/dsk-linux-amd64 dist/dsk-windows-386.exe 
 dist: dist/dsk-darwin-amd64.zip dist/dsk-linux-amd64.tar.gz dist/dsk-windows-386.zip
-
-dist/%-darwin-amd64: $(ANY_DEPS) data.go
-	GOOS=darwin GOARCH=amd64 go build -ldflags "$(GOFLAGS)" -o $@
+	ls -lh dist
 
 dist/%.zip: dist/%
 	cd dist && zip $(notdir $@) $(notdir $<)
@@ -58,11 +56,14 @@ dist/%.tar: dist/%
 dist/%.tar.gz: | dist/%.tar
 	gzip $(basename $@)
 
+dist/%-darwin-amd64: $(ANY_DEPS) data.go
+	GOOS=darwin GOARCH=amd64 go build -ldflags "$(GOFLAGS) -s -w" -o $@
+
 dist/%-linux-amd64: $(ANY_DEPS) data.go
-	GOOS=linux GOARCH=amd64 go build -ldflags "$(GOFLAGS)" -o $@
+	GOOS=linux GOARCH=amd64 go build -ldflags "$(GOFLAGS) -s -w" -o $@
 
 dist/%-windows-386.exe: $(ANY_DEPS) data.go
-	GOOS=windows GOARCH=386 go build -ldflags "$(GOFLAGS)" -o $@
+	GOOS=windows GOARCH=386 go build -ldflags "$(GOFLAGS) -s -w" -o $@
 
 data.go: $(shell find $(FRONTEND) -type f) 
 	$(GOBINDATA) -prefix $(FRONTEND) -ignore=node_modules -o data.go $(FRONTEND)/...
