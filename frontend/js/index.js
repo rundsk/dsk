@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
       nav.setRoot(tree.root);
       nav.render();
     } else {
-      Client.search(q).then((results) => {
+      Client.filter(q).then((results) => {
         nav.setRoot(tree.filteredBy(results.urls).root);
         nav.render();
         search.setStats(results.total, results.took);

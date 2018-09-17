@@ -71,7 +71,7 @@ class Search {
       this.onFilter(this.tree.root, this.query);
       this.render();
     } else {
-      Client.search(this.query).then((results) => {
+      Client.filter(this.query).then((results) => {
         this.onFilter(this.tree.filteredBy(results.urls).root, this.query);
         this.total = results.total;
         this.took = results.took;

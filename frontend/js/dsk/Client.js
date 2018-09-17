@@ -3,10 +3,10 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-// Client for accessing the dsk APIv1.
+// Client for accessing the dsk APIv2.
 class Client {
   static hello() {
-    return this.fetch('/api/v1/hello');
+    return this.fetch('/api/v2/hello');
   }
 
   // Returns a WebSocket connection to the messages endpoint. Asummes it
@@ -16,14 +16,16 @@ class Client {
     let host = window.location.hostname;
     let port = (window.location.port ? `:${window.location.port}` : '');
 
-    return new WebSocket(`${protocol}://${host}${port}/api/v1/messages`);
+    return new WebSocket(`${protocol}://${host}${port}/api/v2/messages`);
   }
 
   static tree() {
-    return this.fetch('/api/v1/tree');
+    return this.fetch('/api/v2/tree');
   }
 
-  // Returns node for given relative URL path.
+  // Returns node for given relative URL path. Will automatically strip leading
+  // and trailing slashes from the given node URL to turn it into a valid node
+  // URL for lookup.
   static get(url) {
     if (url.charAt(0) === '/') {
       url = url.substring(1);
@@ -31,14 +33,29 @@ class Client {
     if (url.charAt(url.length - 1) === '/') {
       url = url.slice(0, -1);
     }
-    return this.fetch(`/api/v1/tree/${url}`);
+    return this.fetch(`/api/v2/tree/${url}`);
   }
 
-  // Performs a search against the tree and returns the URLs
-  // from the nodes included in the result set. Use filteredBy()
-  // to create a new tree view.
-  static search(q) {
-    return this.fetch(`/api/v1/search?q=${encodeURIComponent(q)}`);
+  // Performs a full text search against the tree and returns the response
+  // unfiltered.
+  static search(q, isFuzzy = false) {
+    let params = new URLSearchParams();
+
+    params.set('q', encodeURIComponent(q));
+    params.set('fuzzy', isFuzzy ? 'true' : 'false');
+
+    return this.fetch(`/api/v2/search?${params.toString()}`);
+  }
+
+  // Performs a narrow search against the tree. The returned node URLs together
+  // with `Tree.filteredBy()` can be used to create a new filtered tree view.
+  static filter(q, isFuzzy = false) {
+    let params = new URLSearchParams();
+
+    params.set('q', encodeURIComponent(q));
+    params.set('fuzzy', isFuzzy ? 'true' : 'false');
+
+    return this.fetch(`/api/v2/filter?${params.toString()}`);
   }
 
   // Performs API requests. Fail promise when there is a network issue (catch)
