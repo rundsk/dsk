@@ -19,7 +19,12 @@ import (
 )
 
 func TestFullSearchFindsFullWords(t *testing.T) {
-	tmp, s := setupSearchTest(t, "de", "Diversität", "")
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Diversität"), tmp)
+	n.Create()
+
+	s := setupSearchTest(t, tmp, "de", n)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("Diversität", true)
@@ -30,7 +35,13 @@ func TestFullSearchFindsFullWords(t *testing.T) {
 }
 
 func TestFuzzyFullSearchWordPartials(t *testing.T) {
-	tmp, s := setupSearchTest(t, "en", "Colors", "")
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n.Create()
+	n.Load()
+
+	s := setupSearchTest(t, tmp, "en", n)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("col", true)
@@ -44,7 +55,13 @@ func TestFuzzyFullSearchWordPartials(t *testing.T) {
 }
 
 func TestFuzzyFullSearchGermanWordPartials(t *testing.T) {
-	tmp, s := setupSearchTest(t, "de", "Diversität", "")
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Diversität"), tmp)
+	n.Create()
+	n.Load()
+
+	s := setupSearchTest(t, tmp, "de", n)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("Diversit", true)
@@ -56,7 +73,13 @@ func TestFuzzyFullSearchGermanWordPartials(t *testing.T) {
 
 // This is the inversion of TestFullSearchGermanWordPartials
 func TestOnlyFuzzyModeFindsPartialWords(t *testing.T) {
-	tmp, s := setupSearchTest(t, "de", "Diversität", "")
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Diversität"), tmp)
+	n.Create()
+	n.Load()
+
+	s := setupSearchTest(t, tmp, "de", n)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("Diversit", false)
@@ -67,7 +90,13 @@ func TestOnlyFuzzyModeFindsPartialWords(t *testing.T) {
 }
 
 func TestGermanFullSearchNormalizesUmlauts(t *testing.T) {
-	tmp, s := setupSearchTest(t, "de", "Diversität", "")
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Diversität"), tmp)
+	n.Create()
+	n.Load()
+
+	s := setupSearchTest(t, tmp, "de", n)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("Diversität", true)
@@ -90,7 +119,13 @@ func TestGermanFullSearchNormalizesUmlauts(t *testing.T) {
 }
 
 func TestEnglishFullSearchDoesNotNormalizeUmlauts(t *testing.T) {
-	tmp, s := setupSearchTest(t, "en", "Diversität", "")
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Diversität"), tmp)
+	n.Create()
+	n.Load()
+
+	s := setupSearchTest(t, tmp, "en", n)
 	defer teardownSearchTest(tmp, s)
 
 	// Exact matches always work, independent of languages.
@@ -110,7 +145,13 @@ func TestEnglishFullSearchDoesNotNormalizeUmlauts(t *testing.T) {
 }
 
 func TestConsidersStopwords(t *testing.T) {
-	tmp, s := setupSearchTest(t, "en", "The Diversity", "")
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "The Diversity"), tmp)
+	n.Create()
+	n.Load()
+
+	s := setupSearchTest(t, tmp, "en", n)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("The", true)
@@ -164,24 +205,17 @@ func TestTruePositiveFullSearchScore(t *testing.T) {
 	}
 }
 
-func setupSearchTest(t *testing.T, lang string, name string, contents string) (string, *Search) {
+func setupSearchTest(t *testing.T, tmp string, lang string, node *Node) *Search {
 	t.Helper()
 	log.SetOutput(ioutil.Discard)
 
-	tmp, _ := ioutil.TempDir("", "tree")
-
-	node0 := addDDTNode(tmp, name)
-	addDDTNodeDocument(node0, contents)
-
-	foo := &Node{root: tmp, path: node0}
-
 	s := &Search{
 		getNode: func(url string) (bool, *Node, error) {
-			return true, foo, nil
+			return true, node, nil
 		},
 		getAllNodes: func() []*Node {
 			ns := make([]*Node, 0)
-			ns = append(ns, foo)
+			ns = append(ns, node)
 			return ns
 		},
 		getAuthors: func() *Authors {
@@ -201,21 +235,7 @@ func setupSearchTest(t *testing.T, lang string, name string, contents string) (s
 		t.Fatal(err)
 	}
 	s.IndexTree()
-	return tmp, s
-}
-
-func addDDTNode(tmp string, title string) string {
-	node := filepath.Join(tmp, title)
-	os.Mkdir(node, 0777)
-
-	return node
-}
-
-func addDDTNodeDocument(node string, contents string) string {
-	doc := filepath.Join(node, "doc0.md")
-	ioutil.WriteFile(doc, []byte(contents), 0666)
-
-	return doc
+	return s
 }
 
 func teardownSearchTest(tmp string, s *Search) {

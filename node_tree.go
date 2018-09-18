@@ -24,8 +24,9 @@ var (
 	IgnoreNodesRegexp = regexp.MustCompile(`^(x[-_].*|_.*|\..*|node_modules)$`)
 )
 
-// Returns an unsynced tree from path; you must initialize the Tree
-// using Sync() or by calling Start().
+// NewNodeTree construct and partially initializes a NodeTree. Returns
+// an unsynced tree from path; you must finalize initialization using
+// Sync() or by calling Start().
 func NewNodeTree(path string, w *Watcher, b *MessageBroker) *NodeTree {
 	return &NodeTree{
 		path:    path,
@@ -82,9 +83,14 @@ func (t *NodeTree) Hash() ([]byte, error) {
 }
 
 // Sync updates the tree from the file system. Recursively crawls the
-// given root directory, constructing a tree of nodes. Will rebuilt
+// given root directory, constructing a tree of nodes. Will rebuild
 // the entire tree on every sync. This makes the algorithm really
 // simple - as we don't need to do branch selection - but also slow.
+//
+// Nodes that are discover but fail to finalize their initialization
+// using Node.Load() will not be skipped but kept in tree in
+// a semi-initialized way. So that the their children are not
+// disconnected and no gaps exist in tree branches.
 func (t *NodeTree) Sync() error {
 	start := time.Now()
 
@@ -103,7 +109,12 @@ func (t *NodeTree) Sync() error {
 			if IgnoreNodesRegexp.MatchString(f.Name()) && !isRoot {
 				return filepath.SkipDir
 			}
-			nodes = append(nodes, NewNode(path, t.path))
+			n := NewNode(path, t.path)
+
+			if err := n.Load(); err != nil {
+				log.Print(color.New(color.FgYellow).Sprint(err))
+			}
+			nodes = append(nodes, n)
 		}
 		return nil
 	})

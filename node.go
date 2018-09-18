@@ -47,21 +47,15 @@ var (
 	NodePathMultipleDashRegexp = regexp.MustCompile(`-+`)
 )
 
-// Constructs a new node using its path in the filesystem. Returns a
-// node instance even if uncritical errors happened. This is to not
-// interrupt tree creation in many cases. Tree creation must fail once
-// a bridging node cannot be constructed.
+// NewNode constructs a new Node using its path in the filesystem and
+// initalizing fields. The initialization must finalized by using Load().
 func NewNode(path string, root string) *Node {
-	n := &Node{
+	return &Node{
 		root:     root,
 		path:     path,
 		Children: make([]*Node, 0),
+		meta:     &NodeMeta{},
 	}
-
-	if err := n.loadMeta(); err != nil {
-		log.Print(color.New(color.FgYellow).Sprint(err))
-	}
-	return n
 }
 
 // Node represents a directory inside the design definitions tree.
@@ -83,20 +77,37 @@ type Node struct {
 	Children []*Node
 
 	// Meta data as parsed from the node configuration file.
-	meta NodeMeta
+	meta *NodeMeta
 
 	// Cached hash of the node.
 	hash []byte
 }
 
-// Loads node meta data from the first config file found. Config files
-// are optional.
-func (n *Node) loadMeta() error {
+func (n *Node) Create() error {
+	return os.Mkdir(n.path, 0777)
+}
+
+// CreateMeta creates a meta file in the node's directory using the
+// given name as the file name. The provided NodeMeta struct, does not
+// need to have its path initialized, this is done by this function.
+func (n *Node) CreateMeta(name string, meta *NodeMeta) error {
+	n.meta = meta
+	n.meta.path = filepath.Join(n.path, name)
+	return n.meta.Create()
+}
+
+// CreateDoc creates a document in the node's directory.
+func (n *Node) CreateDoc(name string, contents []byte) error {
+	return ioutil.WriteFile(filepath.Join(n.path, name), contents, 0666)
+}
+
+// Load node meta data from the first config file found and further
+// initialize Node.
+func (n *Node) Load() error {
 	files, err := ioutil.ReadDir(n.path)
 	if err != nil {
 		return err
 	}
-
 	for _, f := range files {
 		if f.IsDir() {
 			continue
@@ -104,14 +115,13 @@ func (n *Node) loadMeta() error {
 		if !NodeMetaRegexp.MatchString(f.Name()) {
 			continue
 		}
-		m, err := NewNodeMeta(filepath.Join(n.path, f.Name()))
-		if err != nil {
+		n.meta.path = filepath.Join(n.path, f.Name())
+		if err := n.meta.Load(); err != nil {
 			return err
 		}
-		n.meta = m
 		return nil
 	}
-	// No node configuration found.
+	// No node configuration found, but is optional.
 	return nil
 }
 

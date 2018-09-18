@@ -14,37 +14,49 @@ import (
 	"github.com/go-yaml/yaml"
 )
 
-// Parses given node configuration file into a NodeMeta.
-func NewNodeMeta(file string) (NodeMeta, error) {
-	m := NodeMeta{path: file}
-
-	contents, err := ioutil.ReadFile(file)
-	if err != nil {
-		return m, err
-	}
-
-	switch filepath.Ext(file) {
-	case ".json":
-		if err := json.Unmarshal(contents, &m); err != nil {
-			return m, fmt.Errorf("Failed parsing %s: %s", prettyPath(file), err)
-		}
-		return m, nil
-	case ".yaml", ".yml":
-		if err := yaml.Unmarshal(contents, &m); err != nil {
-			return m, fmt.Errorf("Failed parsing %s: %s", prettyPath(file), err)
-		}
-		return m, nil
-	}
-	return m, fmt.Errorf("Config not in a supported format: %s", prettyPath(file))
-}
-
 // Metadata parsed from node configuration.
 type NodeMeta struct {
-	path        string
-	Authors     []string // Email addresses of node authors.
-	Description string
-	Keywords    []string
-	Related     []string
-	Tags        []string
-	Version     string // Freeform version string.
+	path string
+	// Email addresses of node authors.
+	Authors     []string `json:"authors,omitempty" yaml:"authors,omitempty"`
+	Description string   `json:"description,omitempty" yaml:"description,omitempty"`
+	Keywords    []string `json:"keywords,omitempty" yaml:"keywords,omitempty"`
+	Related     []string `json:"related,omitempty" yaml:"related,omitempty"`
+	Tags        []string `json:"tags,omitempty" yaml:"tags,omitempty"`
+	// Freeform version string.
+	Version string `json:"version,omitempty" yaml:"version,omitempty"`
+}
+
+func (m *NodeMeta) Create() error {
+	var b []byte
+	var err error
+
+	switch filepath.Ext(m.path) {
+	case ".json":
+		b, err = json.Marshal(m)
+	case ".yaml", ".yml":
+		b, err = yaml.Marshal(m)
+	default:
+		return fmt.Errorf("Unsupported format: %s", prettyPath(m.path))
+	}
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(m.path, b, 0666)
+}
+
+func (m *NodeMeta) Load() error {
+	contents, err := ioutil.ReadFile(m.path)
+	if err != nil {
+		return err
+	}
+
+	switch filepath.Ext(m.path) {
+	case ".json":
+		return json.Unmarshal(contents, &m)
+	case ".yaml", ".yml":
+		return yaml.Unmarshal(contents, &m)
+	default:
+		return fmt.Errorf("Unsupported format: %s", prettyPath(m.path))
+	}
 }
