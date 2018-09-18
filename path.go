@@ -51,7 +51,7 @@ func checkSafePath(path string, root string) error {
 // current working directory. This function needs the full path to the
 // binary as a first argument and optionally an explicitly given path
 // as the second argument.
-func detectRoot(binary string, given string) (string, error) {
+func detectTreeRoot(binary string, given string) (string, error) {
 	var here string
 
 	if given != "" {

@@ -110,7 +110,7 @@ func main() {
 	broker.Start()
 
 	log.Printf("Detecting tree root...")
-	here, err := detectRoot(os.Args[0], flag.Arg(0))
+	here, err := detectTreeRoot(os.Args[0], flag.Arg(0))
 	if err != nil {
 		log.Fatal(red.Sprintf("Failed to detect root of design definitions tree: %s", err))
 	}
