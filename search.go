@@ -157,17 +157,12 @@ func (s *Search) IndexTree() error {
 }
 
 func (s *Search) IndexNode(n *Node) error {
-	var ab strings.Builder
-	var tb strings.Builder
+	var as []string
+	var ts []string
 
-	s.getAuthors()
-
-	authors := n.Authors(s.getAuthors())
-	for _, a := range authors {
-		ab.WriteString(a.Name)
-		ab.WriteString("\n")
-		ab.WriteString(a.Email)
-		ab.WriteString("\n")
+	for _, a := range n.Authors(s.getAuthors()) {
+		as = append(as, a.Name)
+		as = append(as, a.Email)
 	}
 
 	docs, err := n.Docs()
@@ -179,21 +174,20 @@ func (s *Search) IndexNode(n *Node) error {
 		if err != nil {
 			return err
 		}
-		tb.WriteString("\n\n")
-		tb.Write(text)
+		ts = append(ts, string(text))
 	}
 
 	data := struct {
-		Authors     string
+		Authors     []string
 		Description string
-		Docs        string
+		Docs        []string
 		Tags        []string
 		Title       string
 		Version     string
 	}{
-		Authors:     ab.String(),
+		Authors:     as,
 		Description: n.Description(),
-		Docs:        tb.String(),
+		Docs:        ts,
 		Tags:        n.Tags(),
 		Title:       n.Title(),
 		Version:     n.Version(),

@@ -161,6 +161,45 @@ func TestConsidersStopwords(t *testing.T) {
 	expectNoFullSearchResult(t, rs, "Diversity")
 }
 
+func TestSearchFindsAllTagsWhenProvidedAsSlice(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Diversity"), tmp)
+	n.Create()
+	n.CreateMeta("meta.yaml", &NodeMeta{
+		Tags: []string{"foo", "bar"},
+	})
+	n.Load()
+
+	s := setupSearchTest(t, tmp, "en", n)
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FullSearch("foo", false)
+	expectFullSearchResult(t, rs, "Diversity")
+
+	rs, _, _, _, _ = s.FullSearch("bar", false)
+	expectFullSearchResult(t, rs, "Diversity")
+}
+
+func TestSearchConsidersMultipleDocs(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Diversity"), tmp)
+	n.Create()
+	n.CreateDoc("0.md", []byte("lorem ipsum foo"))
+	n.CreateDoc("1.md", []byte("dolor amet bar"))
+	n.Load()
+
+	s := setupSearchTest(t, tmp, "en", n)
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FullSearch("foo", false)
+	expectFullSearchResult(t, rs, "Diversity")
+
+	rs, _, _, _, _ = s.FullSearch("bar", false)
+	expectFullSearchResult(t, rs, "Diversity")
+}
+
 func TestTruePositiveFullSearchScore(t *testing.T) {
 	const scoreThreshold = 0.8
 
