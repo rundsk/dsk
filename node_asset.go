@@ -31,6 +31,11 @@ func (a NodeAsset) Name() string {
 	return removeOrderNumber(norm.NFC.String(filepath.Base(a.path)))
 }
 
+func (a NodeAsset) Title() string {
+	base := norm.NFC.String(filepath.Base(a.path))
+	return removeOrderNumber(strings.TrimSuffix(base, filepath.Ext(base)))
+}
+
 // IsDownloadable is true when the asset should be available for download.
 func (a NodeAsset) IsDownloadable() bool {
 	return true

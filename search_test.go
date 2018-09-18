@@ -215,6 +215,21 @@ func TestSearchConsidersFilenames(t *testing.T) {
 	expectFullSearchResult(t, rs, "Diversity")
 }
 
+func TestSearchConsidersTitles(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Diversity"), tmp)
+	n.Create()
+	n.CreateDoc("document.md", []byte("lorem ipsum"))
+	n.Load()
+
+	s := setupSearchTest(t, tmp, "en", n)
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FullSearch("document", false)
+	expectFullSearchResult(t, rs, "Diversity")
+}
+
 func TestTruePositiveFullSearchScore(t *testing.T) {
 	const scoreThreshold = 0.8
 

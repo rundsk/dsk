@@ -160,8 +160,10 @@ func (s *Search) IndexNode(n *Node) error {
 	var as []string
 	var ts []string
 	var fs []string
+	var titles []string
 
 	fs = append(fs, n.Name())
+	titles = append(titles, n.Title())
 
 	for _, a := range n.Authors(s.getAuthors()) {
 		as = append(as, a.Name)
@@ -179,6 +181,7 @@ func (s *Search) IndexNode(n *Node) error {
 		}
 		ts = append(ts, string(text))
 		fs = append(fs, doc.Name())
+		titles = append(titles, doc.Title())
 	}
 
 	downloads, err := n.Downloads()
@@ -187,6 +190,7 @@ func (s *Search) IndexNode(n *Node) error {
 	}
 	for _, d := range downloads {
 		fs = append(fs, d.Name())
+		titles = append(titles, d.Title())
 	}
 
 	data := struct {
@@ -195,7 +199,7 @@ func (s *Search) IndexNode(n *Node) error {
 		Docs        []string
 		Files       []string
 		Tags        []string
-		Title       string
+		Titles      []string
 		Version     string
 	}{
 		Authors:     as,
@@ -203,7 +207,7 @@ func (s *Search) IndexNode(n *Node) error {
 		Docs:        ts,
 		Files:       fs,
 		Tags:        n.Tags(),
-		Title:       n.Title(),
+		Titles:      titles,
 		Version:     n.Version(),
 	}
 
@@ -352,7 +356,7 @@ func (s *Search) mapping() (*mapping.IndexMappingImpl, error) {
 	node.AddFieldMappingsAt("Docs", tms...)
 	node.AddFieldMappingsAt("Files", sm)
 	node.AddFieldMappingsAt("Tags", sm, km)
-	node.AddFieldMappingsAt("Title", tms...)
+	node.AddFieldMappingsAt("Titles", tms...)
 	node.AddFieldMappingsAt("Version", sm, km)
 
 	im.AddDocumentMapping("article", node)
