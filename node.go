@@ -197,6 +197,11 @@ func (n *Node) Order() uint64 {
 	return orderNumber(filepath.Base(n.path))
 }
 
+// Name is the basename of the file without its order number.
+func (n Node) Name() string {
+	return removeOrderNumber(norm.NFC.String(filepath.Base(n.path)))
+}
+
 // The node's computed title with any ordering numbers stripped off, usually for display purposes.
 // We normalize the title string to make sure all special characters are represented in their composed form.
 // Some filesystems store filenames in decomposed form. Using these directly in the frontend led to visual
@@ -310,7 +315,6 @@ func (n *Node) Asset(name string) (*NodeAsset, error) {
 	}
 	return &NodeAsset{
 		path: filepath.Join(n.path, f.Name()),
-		Name: f.Name(),
 		URL:  filepath.Join(n.URL(), f.Name()),
 	}, nil
 }
@@ -335,7 +339,6 @@ func (n *Node) Assets() ([]*NodeAsset, error) {
 		}
 		as = append(as, &NodeAsset{
 			path: filepath.Join(n.path, f.Name()),
-			Name: f.Name(),
 			URL:  filepath.Join(n.URL(), f.Name()),
 		})
 	}

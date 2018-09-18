@@ -329,7 +329,7 @@ func (dt NodeDocTransformer) discoverNodeInfo(u *url.URL) (string, string) {
 	// is part of the node, let's check that.
 	a, err := n.Asset(path.Base(u.Path))
 	if err == nil {
-		return n.URL(), a.Name
+		return n.URL(), a.Name()
 	}
 	// We'll ignore invalid assets on valid nodes for now and keep on going.
 	return n.URL(), ""

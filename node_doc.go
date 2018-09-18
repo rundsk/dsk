@@ -28,6 +28,11 @@ func (d NodeDoc) Order() uint64 {
 	return orderNumber(filepath.Base(d.path))
 }
 
+// Name is the basename of the file without its order number.
+func (d NodeDoc) Name() string {
+	return removeOrderNumber(norm.NFC.String(filepath.Base(d.path)))
+}
+
 // Title of the document and computed with any ordering numbers and the
 // extension stripped off, usually for display purposes.
 // We normalize the title string to make sure all special characters

@@ -13,6 +13,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"golang.org/x/text/unicode/norm"
 )
 
 // A downloadable file.
@@ -22,9 +24,11 @@ type NodeAsset struct {
 
 	// The URL, relative to the design defintion tree root.
 	URL string
+}
 
-	// The basename of the file, usually for display purposes.
-	Name string
+// Name is the basename of the file without its order number.
+func (a NodeAsset) Name() string {
+	return removeOrderNumber(norm.NFC.String(filepath.Base(a.path)))
 }
 
 // IsDownloadable is true when the asset should be available for download.

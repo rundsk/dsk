@@ -305,7 +305,7 @@ func (api APIv1) NewNodeAsset(a *NodeAsset) (*APIv1NodeAsset, error) {
 	}
 	return &APIv1NodeAsset{
 		URL:      a.URL,
-		Name:     a.Name,
+		Name:     a.Name(),
 		Modified: modified,
 		Size:     size,
 	}, nil
