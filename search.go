@@ -159,6 +159,9 @@ func (s *Search) IndexTree() error {
 func (s *Search) IndexNode(n *Node) error {
 	var as []string
 	var ts []string
+	var fs []string
+
+	fs = append(fs, n.Name())
 
 	for _, a := range n.Authors(s.getAuthors()) {
 		as = append(as, a.Name)
@@ -175,12 +178,22 @@ func (s *Search) IndexNode(n *Node) error {
 			return err
 		}
 		ts = append(ts, string(text))
+		fs = append(fs, doc.Name())
+	}
+
+	downloads, err := n.Downloads()
+	if err != nil {
+		return err
+	}
+	for _, d := range downloads {
+		fs = append(fs, d.Name())
 	}
 
 	data := struct {
 		Authors     []string
 		Description string
 		Docs        []string
+		Files       []string
 		Tags        []string
 		Title       string
 		Version     string
@@ -188,6 +201,7 @@ func (s *Search) IndexNode(n *Node) error {
 		Authors:     as,
 		Description: n.Description(),
 		Docs:        ts,
+		Files:       fs,
 		Tags:        n.Tags(),
 		Title:       n.Title(),
 		Version:     n.Version(),
@@ -336,6 +350,7 @@ func (s *Search) mapping() (*mapping.IndexMappingImpl, error) {
 	node.AddFieldMappingsAt("Authors", sm)
 	node.AddFieldMappingsAt("Description", tms...)
 	node.AddFieldMappingsAt("Docs", tms...)
+	node.AddFieldMappingsAt("Files", sm)
 	node.AddFieldMappingsAt("Tags", sm, km)
 	node.AddFieldMappingsAt("Title", tms...)
 	node.AddFieldMappingsAt("Version", sm, km)
