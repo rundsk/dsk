@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -279,8 +280,32 @@ func (n *Node) Authors(as *Authors) []*Author {
 // and returns its modified time. In case the directory doesn't
 // contain any files, the func will still succeed but return a zero
 // time.
+//
+// Tries to retrieve modified time through Git, assuming some DDTs are
+// version controlled. Will use progressive enhancement and silently
+// fall back to stat. This is trying to fix situations where the
+// modified date on disk may not reflect the actual modification date.
+// This is the case when the DDT was checked out from Git during a
+// build process step.
 func (n *Node) Modified() (time.Time, error) {
 	var modified time.Time
+
+	args := []string{
+		"-C",
+		n.path,
+		"log",
+		"--date=iso-strict",
+		"--format=%cd",
+		"-1",
+		n.path,
+	}
+	out, err := exec.Command("git", args...).CombinedOutput()
+	if err == nil {
+		modified, err := time.Parse(time.RFC3339, strings.TrimSpace(string(out)))
+		if err == nil {
+			return modified, nil
+		}
+	}
 
 	files, err := ioutil.ReadDir(n.path)
 	if err != nil {
