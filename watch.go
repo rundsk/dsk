@@ -74,6 +74,9 @@ func (w *Watcher) Open(ignore *regexp.Regexp) error {
 
 func (w *Watcher) Close() {
 	w.UnsubscribeAll()
-	w.done <- true
+	select {
+	case w.done <- true:
+	default:
+	}
 	notify.Stop(w.changes)
 }

@@ -13,8 +13,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/blevesearch/bleve/analysis/lang/de"
-	"github.com/blevesearch/bleve/analysis/lang/en"
+	"github.com/blevesearch/bleve"
 	"github.com/go-yaml/yaml"
 )
 
@@ -278,6 +277,8 @@ func setupSearchTest(t *testing.T, tmp string, lang string, node *Node) *Search 
 	t.Helper()
 	log.SetOutput(ioutil.Discard)
 
+	index, _ := bleve.NewMemOnly(NewSearchMapping([]string{lang}))
+
 	s := &Search{
 		getNode: func(url string) (bool, *Node, error) {
 			return true, node, nil
@@ -292,16 +293,10 @@ func setupSearchTest(t *testing.T, tmp string, lang string, node *Node) *Search 
 			a.Add(&Author{Name: "Randall Hyman", Email: "randall@evilcorp.org"})
 			return a
 		},
-		available: map[string]string{
-			"de": de.AnalyzerName,
-			"en": en.AnalyzerName,
-		},
 		langs:  []string{lang},
+		index:  index,
 		broker: NewMessageBroker(), // Allow to mount indexer, and to Close()
 		done:   make(chan bool),    // Do not block on Close()
-	}
-	if err := s.Open(); err != nil {
-		t.Fatal(err)
 	}
 	s.IndexTree()
 	return s
@@ -325,7 +320,7 @@ func setupSearchScoringTest(t *testing.T, testFile string) (*NodeTree, *Search, 
 	tr.Open()
 	tr.Sync()
 
-	s := NewSearch(tr, b, []string{"en", "de"})
+	s, _ := NewSearch(tr, b, []string{"en", "de"})
 	s.Open()
 	s.IndexTree()
 

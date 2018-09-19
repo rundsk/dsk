@@ -222,9 +222,12 @@ func (t *NodeTree) Open() error {
 	return nil
 }
 
-// Close the tree.
+// Close the tree and stop the watcher if it's running.
 func (t *NodeTree) Close() {
-	t.done <- true
+	select {
+	case t.done <- true:
+	default:
+	}
 }
 
 // Returns the neighboring previous and next nodes for the given

@@ -137,7 +137,10 @@ func main() {
 	}()
 
 	log.Print("Opening search index...")
-	search = NewSearch(tree, broker, langs) // assign to global
+	search, err = NewSearch(tree, broker, langs) // assign to global
+	if err != nil {
+		log.Fatal(red.Sprintf("Failed to open search index: %s", err))
+	}
 	go func() {
 		if err := search.Open(); err != nil {
 			log.Fatal(red.Sprintf("Failed to open search index: %s", err))

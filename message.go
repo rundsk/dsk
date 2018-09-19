@@ -77,7 +77,11 @@ func (b *MessageBroker) Start() {
 
 func (b *MessageBroker) Close() {
 	b.UnsubscribeAll()
-	b.done <- true
+
+	select {
+	case b.done <- true:
+	default:
+	}
 }
 
 // Accept a message for fan-out. Will never block. When the
