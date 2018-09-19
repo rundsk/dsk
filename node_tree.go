@@ -30,6 +30,7 @@ var (
 func NewNodeTree(path string, w *Watcher, b *MessageBroker) *NodeTree {
 	return &NodeTree{
 		path:    path,
+		authors: &Authors{},
 		watcher: w,
 		broker:  b,
 		done:    make(chan bool),
@@ -99,6 +100,8 @@ func (t *NodeTree) Sync() error {
 
 	var nodes []*Node
 
+	yellow := color.New(color.FgYellow)
+
 	err := filepath.Walk(t.path, func(path string, f os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -112,7 +115,7 @@ func (t *NodeTree) Sync() error {
 			n := NewNode(path, t.path)
 
 			if err := n.Load(); err != nil {
-				log.Print(color.New(color.FgYellow).Sprint(err))
+				log.Print(yellow.Sprint(err))
 			}
 			nodes = append(nodes, n)
 		}
@@ -152,21 +155,9 @@ func (t *NodeTree) Sync() error {
 
 	// Refresh the authors database; file may appear or disappear between
 	// syncs.
-	authorsFile := filepath.Join(t.path, AuthorsConfigBasename)
-	var as *Authors
-
-	yellow := color.New(color.FgYellow)
-
-	if _, err := os.Stat(authorsFile); err == nil {
-		as, err = NewAuthorsFromFile(authorsFile)
-		if err != nil {
-			log.Print(yellow.Sprintf("Failed parsing %s: %s", prettyPath(authorsFile), err))
-			as = &Authors{}
-		}
-	} else {
-		as = &Authors{}
+	if err := t.loadAuthors(); err != nil {
+		log.Print(yellow.Sprintf("Failed loading authors file: %s", err))
 	}
-	t.authors = as
 
 	total := len(lookup)
 	took := time.Since(start)
@@ -176,6 +167,21 @@ func (t *NodeTree) Sync() error {
 	))
 
 	log.Printf("Synced tree with %d total node/s in %s", total, took)
+	return nil
+}
+
+func (t *NodeTree) loadAuthors() error {
+	authorsFile := filepath.Join(t.path, AuthorsConfigBasename)
+
+	if _, err := os.Stat(authorsFile); os.IsNotExist(err) {
+		return nil
+	}
+	as, err := NewAuthorsFromFile(authorsFile)
+	if err != nil {
+		return err
+	}
+
+	t.authors = as
 	return nil
 }
 
