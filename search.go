@@ -110,6 +110,8 @@ func (s *Search) Open() error {
 					s.isStale = true
 					continue
 				}
+				// React only on Synced not Loaded messages, the
+				// initial indexing and load is triggered manually.
 				if m.(*Message).typ == MessageTypeTreeSynced {
 					// Throw away previous index and start from scratch until we
 					// have the needs to incrementally invalidate and re-index.

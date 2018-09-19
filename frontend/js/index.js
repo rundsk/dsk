@@ -68,12 +68,12 @@ document.addEventListener('DOMContentLoaded', () => {
     messages.addEventListener('message', (ev) => {
       let m = JSON.parse(ev.data);
 
-      if (m.type === 'tree-synced') {
+      if (m.type === 'tree-loaded') {
         let repage = Client.get(page.node.url);
         let resync = tree.sync();
 
         resync.then(() => {
-          notify('Re-synchronized', m.text);
+          notify('Re-loaded', m.text);
 
           // Will re-render nav through onFilter.
           search.perform();

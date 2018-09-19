@@ -12,8 +12,12 @@ import (
 )
 
 const (
+	// MessageTypeTreeLoaded happens whenever the node tree has
+	// been re-loaded.
+	MessageTypeTreeLoaded = "tree-loaded"
+
 	// MessageTypeTreeSynced happens whenever the node tree has
-	// been (initially or after a rsync) synchronized.
+	// been synchronized after i.e. a file changed.
 	MessageTypeTreeSynced = "tree-synced"
 
 	// MessageTypeTreeChanged happens when something in the tree has

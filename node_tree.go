@@ -83,16 +83,16 @@ func (t *NodeTree) Hash() ([]byte, error) {
 	return t.Root.Hash()
 }
 
-// Sync updates the tree from the file system. Recursively crawls the
-// given root directory, constructing a tree of nodes. Will rebuild
-// the entire tree on every sync. This makes the algorithm really
-// simple - as we don't need to do branch selection - but also slow.
+// Load recursively crawls the given root directory, constructing a
+// tree of nodes. Will rebuild the entire tree on every sync. This
+// makes the algorithm really simple - as we don't need to do branch
+// selection - but also slow.
 //
 // Nodes that are discover but fail to finalize their initialization
 // using Node.Load() will not be skipped but kept in tree in
 // a semi-initialized way. So that the their children are not
 // disconnected and no gaps exist in tree branches.
-func (t *NodeTree) Sync() error {
+func (t *NodeTree) Load() error {
 	start := time.Now()
 
 	t.Lock()
@@ -163,10 +163,10 @@ func (t *NodeTree) Sync() error {
 	took := time.Since(start)
 
 	defer t.broker.Accept(NewMessage(
-		MessageTypeTreeSynced, fmt.Sprintf("%d node/s in %s", total, took),
+		MessageTypeTreeLoaded, fmt.Sprintf("%d node/s in %s", total, took),
 	))
 
-	log.Printf("Synced tree with %d total node/s in %s", total, took)
+	log.Printf("Loaded tree with %d total node/s in %s", total, took)
 	return nil
 }
 
@@ -185,8 +185,18 @@ func (t *NodeTree) loadAuthors() error {
 	return nil
 }
 
-// Open installs an auto-syncing process, the initial sync must be
-// done using Sync() manually.
+// Sync updates the tree from the file system, usually after a change
+// has been detected.
+func (t *NodeTree) Sync() error {
+	if err := t.Load(); err != nil {
+		return err
+	}
+	defer t.broker.Accept(NewMessage(MessageTypeTreeSynced, ""))
+	return nil
+}
+
+// Open installs an auto-syncing process, the initial load must be
+// done using Load() manually.
 func (t *NodeTree) Open() error {
 	id, watch := t.watcher.Subscribe()
 

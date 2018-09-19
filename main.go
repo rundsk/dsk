@@ -127,23 +127,25 @@ func main() {
 
 	log.Print("Opening tree...")
 	tree = NewNodeTree(here, watcher, broker) // assign to global
-
-	if err := tree.Open(); err != nil {
-		log.Fatal(red.Sprintf("Failed to open tree: %s", err))
-	}
-	if err := tree.Sync(); err != nil {
-		log.Fatal(red.Sprintf("Failed to perform initial tree sync: %s", err))
-	}
+	go func() {
+		if err := tree.Open(); err != nil {
+			log.Fatal(red.Sprintf("Failed to open tree: %s", err))
+		}
+		if err := tree.Load(); err != nil {
+			log.Fatal(red.Sprintf("Failed to perform initial tree load: %s", err))
+		}
+	}()
 
 	log.Print("Opening search index...")
 	search = NewSearch(tree, broker, langs) // assign to global
-	if err := search.Open(); err != nil {
-		log.Fatal(red.Sprintf("Failed to open search index: %s", err))
-	}
-
-	if err := search.IndexTree(); err != nil {
-		log.Fatal(red.Sprintf("Failed to perform initial tree indexing: %s", err))
-	}
+	go func() {
+		if err := search.Open(); err != nil {
+			log.Fatal(red.Sprintf("Failed to open search index: %s", err))
+		}
+		if err := search.IndexTree(); err != nil {
+			log.Fatal(red.Sprintf("Failed to perform initial tree indexing: %s", err))
+		}
+	}()
 
 	apis := map[int]API{
 		1: NewAPIv1(tree, broker, search),
