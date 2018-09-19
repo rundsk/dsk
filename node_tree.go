@@ -27,10 +27,10 @@ var (
 // NewNodeTree construct and partially initializes a NodeTree. Returns
 // an unsynced tree from path; you must finalize initialization using
 // Sync() or by calling Start().
-func NewNodeTree(path string, w *Watcher, b *MessageBroker) *NodeTree {
+func NewNodeTree(path string, as *Authors, w *Watcher, b *MessageBroker) *NodeTree {
 	return &NodeTree{
 		path:    path,
-		Authors: &Authors{},
+		Authors: as,
 		watcher: w,
 		broker:  b,
 		done:    make(chan bool),
@@ -83,7 +83,7 @@ func (t *NodeTree) Hash() ([]byte, error) {
 	return t.Root.Hash()
 }
 
-// Load recursively crawls the given root directory, constructing a
+// Sync recursively crawls the given root directory, constructing a
 // tree of nodes. Will rebuild the entire tree on every sync. This
 // makes the algorithm really simple - as we don't need to do branch
 // selection - but also slow.
@@ -92,7 +92,7 @@ func (t *NodeTree) Hash() ([]byte, error) {
 // using Node.Load() will not be skipped but kept in tree in
 // a semi-initialized way. So that the their children are not
 // disconnected and no gaps exist in tree branches.
-func (t *NodeTree) Load() error {
+func (t *NodeTree) Sync() error {
 	start := time.Now()
 
 	t.Lock()
@@ -153,51 +153,25 @@ func (t *NodeTree) Load() error {
 	t.ordered = ordered
 	t.Root = lookup[""]
 
-	// Refresh the authors database; file may appear or disappear between
-	// syncs.
-	if err := t.loadAuthors(); err != nil {
-		log.Print(yellow.Sprintf("Failed loading authors file: %s", err))
-	}
-
 	total := len(lookup)
 	took := time.Since(start)
 
+	// Refresh the authors database; file may appear or disappear between
+	// syncs. New entries might be added.
+	if err := t.Authors.Sync(); err != nil {
+		log.Print(yellow.Sprintf("Failed syncing authors: %s", err))
+	}
+
 	defer t.broker.Accept(NewMessage(
-		MessageTypeTreeLoaded, fmt.Sprintf("%d node/s in %s", total, took),
+		MessageTypeTreeSynced, fmt.Sprintf("%d node/s in %s", total, took),
 	))
 
-	log.Printf("Loaded tree with %d total node/s in %s", total, took)
+	log.Printf("Synced tree with %d total node/s in %s", total, took)
 	return nil
 }
 
-func (t *NodeTree) loadAuthors() error {
-	authorsFile := filepath.Join(t.path, AuthorsConfigBasename)
-
-	if _, err := os.Stat(authorsFile); os.IsNotExist(err) {
-		return nil
-	}
-	as, err := NewAuthorsFromFile(authorsFile)
-	if err != nil {
-		return err
-	}
-
-	t.Authors = as
-	return nil
-}
-
-// Sync updates the tree from the file system, usually after a change
-// has been detected.
-func (t *NodeTree) Sync() error {
-	if err := t.Load(); err != nil {
-		return err
-	}
-	defer t.broker.Accept(NewMessage(MessageTypeTreeSynced, ""))
-	return nil
-}
-
-// Open installs an auto-syncing process, the initial load must be
-// done using Load() manually.
-func (t *NodeTree) Open() error {
+// StartSyncer installs an auto-syncing process.
+func (t *NodeTree) StartSyncer() error {
 	id, watch := t.watcher.Subscribe()
 
 	go func() {
@@ -222,12 +196,8 @@ func (t *NodeTree) Open() error {
 	return nil
 }
 
-// Close the tree and stop the watcher if it's running.
-func (t *NodeTree) Close() {
-	select {
-	case t.done <- true:
-	default:
-	}
+func (t *NodeTree) StopSyncer() {
+	t.done <- true
 }
 
 // Returns the neighboring previous and next nodes for the given

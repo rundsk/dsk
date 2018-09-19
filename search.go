@@ -129,12 +129,12 @@ type SearchHit struct {
 	Node *Node
 }
 
-// Open installs a go routine ("the indexer") that will continously
-// watch for changes to the node tree and will reindex the tree
-// if necessary. The indexer can be stopped by sending true into
+// StartIndexer installs a go routine ("the indexer") that will
+// continously watch for changes to the node tree and will reindex the
+// tree if necessary. The indexer can be stopped by sending true into
 // Search.done. It'll automatically stop if it detects the broker to
 // be closed.
-func (s *Search) Open() error {
+func (s *Search) StartIndexer() error {
 	red := color.New(color.FgRed)
 	yellow := color.New(color.FgYellow)
 
@@ -186,12 +186,11 @@ func (s *Search) Open() error {
 	return nil
 }
 
-// Close stops the indexer if it's running and closes the bleve index.
+func (s *Search) StopIndexer() {
+	s.done <- true
+}
+
 func (s *Search) Close() error {
-	select {
-	case s.done <- true:
-	default:
-	}
 	return s.index.Close()
 }
 

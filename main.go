@@ -56,15 +56,19 @@ func main() {
 			// Close services in reverse order of starting them. They might
 			// not yet have been started, if we've been invoked early.
 			if tree != nil {
-				tree.Close()
+				tree.StopSyncer()
+				// tree doesn't need to be closed.
 			}
 			if watcher != nil {
+				watcher.Stop()
 				watcher.Close()
 			}
 			if search != nil {
+				search.StopIndexer()
 				search.Close()
 			}
 			if broker != nil {
+				broker.Stop()
 				broker.Close()
 			}
 			os.Exit(1)
@@ -105,10 +109,6 @@ func main() {
 		log.Print()
 	}
 
-	log.Print("Starting message broker...")
-	broker = NewMessageBroker() // assign to global
-	broker.Start()
-
 	log.Printf("Detecting tree root...")
 	here, err := detectTreeRoot(os.Args[0], flag.Arg(0))
 	if err != nil {
@@ -118,37 +118,34 @@ func main() {
 	log.Printf("Tree root found: %s", here)
 	PrettyPathRoot = here
 
-	log.Print("Begin watching tree for changes...")
-	w := NewWatcher(here)
-	if err := w.Open(IgnoreNodesRegexp); err != nil {
-		log.Fatal(red.Sprintf("Failed to install watcher: %s", err))
-	}
-	watcher = w // assign to global
-
-	log.Print("Opening tree...")
-	tree = NewNodeTree(here, watcher, broker) // assign to global
-	go func() {
-		if err := tree.Open(); err != nil {
-			log.Fatal(red.Sprintf("Failed to open tree: %s", err))
-		}
-		if err := tree.Load(); err != nil {
-			log.Fatal(red.Sprintf("Failed to perform initial tree load: %s", err))
-		}
-	}()
-
-	log.Print("Opening search index...")
-	search, err = NewSearch(tree, broker, langs) // assign to global
+	authors := NewAuthors(here)
+	broker = NewMessageBroker()                        // assign to global
+	watcher = NewWatcher(here)                         // assign to global
+	tree = NewNodeTree(here, authors, watcher, broker) // assign to global
+	search, err = NewSearch(tree, broker, langs)       // assign to global
 	if err != nil {
 		log.Fatal(red.Sprintf("Failed to open search index: %s", err))
 	}
-	go func() {
-		if err := search.Open(); err != nil {
-			log.Fatal(red.Sprintf("Failed to open search index: %s", err))
-		}
-		if err := search.IndexTree(); err != nil {
-			log.Fatal(red.Sprintf("Failed to perform initial tree indexing: %s", err))
-		}
-	}()
+
+	broker.Start()
+
+	if err := watcher.Start(IgnoreNodesRegexp); err != nil {
+		log.Fatal(red.Sprintf("Failed to start watcher: %s", err))
+	}
+	if err := tree.StartSyncer(); err != nil {
+		log.Fatal(red.Sprintf("Failed to start tree syncer: %s", err))
+	}
+	if err := search.StartIndexer(); err != nil {
+		log.Fatal(red.Sprintf("Failed to start indexer: %s", err))
+	}
+
+	if err := authors.Sync(); err != nil {
+		log.Fatal(red.Sprintf("Failed to perform initial authors sync: %s", err))
+	}
+	if err := tree.Sync(); err != nil {
+		log.Fatal(red.Sprintf("Failed to perform initial tree sync: %s", err))
+	}
+	// tree.Sync() will indirectly through messaging trigger initial indexing.
 
 	apis := map[int]API{
 		1: NewAPIv1(tree, broker, search),

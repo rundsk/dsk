@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     messages.addEventListener('message', (ev) => {
       let m = JSON.parse(ev.data);
 
-      if (m.type === 'tree-loaded') {
+      if (m.type === 'tree-synced') {
         let repage = Client.get(page.node.url);
         let resync = tree.sync();
 

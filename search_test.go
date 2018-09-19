@@ -315,13 +315,12 @@ func setupSearchScoringTest(t *testing.T, testFile string) (*NodeTree, *Search, 
 	// them to fullfill the interface.
 	w := NewWatcher("test/design_system")
 	b := NewMessageBroker()
+	as := NewAuthors("tes/design_system")
 
-	tr := NewNodeTree("test/design_system", w, b)
-	tr.Open()
+	tr := NewNodeTree("test/design_system", as, w, b)
 	tr.Sync()
 
 	s, _ := NewSearch(tr, b, []string{"en", "de"})
-	s.Open()
 	s.IndexTree()
 
 	var tests map[string]string
@@ -338,7 +337,6 @@ func setupSearchScoringTest(t *testing.T, testFile string) (*NodeTree, *Search, 
 
 func teardownSearchScoringTest(tr *NodeTree, s *Search) {
 	s.Close()
-	tr.Close()
 }
 
 func expectFullSearchResult(t *testing.T, hits []*SearchHit, url string) {

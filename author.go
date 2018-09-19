@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -19,19 +20,19 @@ const (
 	AuthorsConfigBasename = "AUTHORS.txt"
 )
 
-func NewAuthorsFromFile(path string) (*Authors, error) {
-	as := &Authors{}
-
-	f, err := os.Open(path)
-	defer f.Close()
-
-	if err != nil {
-		return as, err
+func NewAuthors(path string) *Authors {
+	return &Authors{
+		path: filepath.Join(path, AuthorsConfigBasename),
+		data: make([]*Author, 0),
 	}
-	return as, as.AddFrom(f)
 }
 
+// Authors allows to Extract author information from AUTHORS.txt files
+// in mailmap format. Currently supports the simple syntax only.
+//
+// See: https://github.com/git/git/blob/master/Documentation/mailmap.txt
 type Authors struct {
+	path string
 	data []*Author
 }
 
@@ -40,16 +41,27 @@ type Author struct {
 	Name  string
 }
 
+func (as *Authors) Sync() error {
+	as.data = make([]*Author, 0)
+
+	if _, err := os.Stat(as.path); os.IsNotExist(err) {
+		return nil
+	}
+	f, err := os.Open(as.path)
+	defer f.Close()
+
+	if err != nil {
+		return err
+	}
+	return as.AddFrom(f)
+}
+
 // Add single author item to the internal data slice.
 func (as *Authors) Add(a *Author) {
 	as.data = append(as.data, a)
 }
 
 // Parses given file and adds authors to the internal data.
-// Extracts author information from AUTHORS.txt files in mailmap
-// format. Currently supports the simple syntax only.
-//
-// See: https://github.com/git/git/blob/master/Documentation/mailmap.txt
 func (as *Authors) AddFrom(r io.Reader) error {
 	parsed, err := as.parse(r)
 	if err != nil {

@@ -39,7 +39,7 @@ type Watcher struct {
 
 // Open watcher to look for changes below root. Will filter out changes
 // to paths where a segment of it matches the ignore regexp.
-func (w *Watcher) Open(ignore *regexp.Regexp) error {
+func (w *Watcher) Start(ignore *regexp.Regexp) error {
 	if err := notify.Watch(w.path+"/...", w.changes, notify.All); err != nil {
 		return err
 	}
@@ -72,11 +72,11 @@ func (w *Watcher) Open(ignore *regexp.Regexp) error {
 	return nil
 }
 
+func (w *Watcher) Stop() {
+	w.done <- true
+	notify.Stop(w.changes)
+}
+
 func (w *Watcher) Close() {
 	w.UnsubscribeAll()
-	select {
-	case w.done <- true:
-	default:
-	}
-	notify.Stop(w.changes)
 }

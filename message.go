@@ -12,10 +12,6 @@ import (
 )
 
 const (
-	// MessageTypeTreeLoaded happens whenever the node tree has
-	// been re-loaded.
-	MessageTypeTreeLoaded = "tree-loaded"
-
 	// MessageTypeTreeSynced happens whenever the node tree has
 	// been synchronized after i.e. a file changed.
 	MessageTypeTreeSynced = "tree-synced"
@@ -75,13 +71,12 @@ func (b *MessageBroker) Start() {
 	}()
 }
 
+func (b *MessageBroker) Stop() {
+	b.done <- true
+}
+
 func (b *MessageBroker) Close() {
 	b.UnsubscribeAll()
-
-	select {
-	case b.done <- true:
-	default:
-	}
 }
 
 // Accept a message for fan-out. Will never block. When the
