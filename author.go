@@ -14,6 +14,8 @@ import (
 )
 
 const (
+	// AuthorsConfigBasename is the canonical name of the file, we
+	// expect the authors text database to live in.
 	AuthorsConfigBasename = "AUTHORS.txt"
 )
 

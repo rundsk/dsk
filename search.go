@@ -22,7 +22,7 @@ import (
 )
 
 var (
-	// Available languages mapped to their analyzer names.
+	// AvailableSearchLangs are languages mapped to their analyzer names.
 	AvailableSearchLangs = map[string]string{
 		"de": de.AnalyzerName,
 		"en": en.AnalyzerName,
@@ -98,7 +98,7 @@ func NewSearchMapping(langs []string) *mapping.IndexMappingImpl {
 // false negatives" principle:
 // https://en.wikipedia.org/wiki/Precision_and_recall
 //
-// On a per query bassi fuzzy mode can enabled for FullSearch and
+// Fuzzy mode can be enabled on a per query basis for FullSearch and
 // FilterSearch. The mode should be used if the result set doesn't
 // seem large enough.
 type Search struct {
