@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/blevesearch/bleve"
@@ -46,6 +47,8 @@ func NewSearch(t *NodeTree, b *MessageBroker, langs []string) *Search {
 // FilterSearch. The mode should be used if the result set doesn't
 // seem large enough.
 type Search struct {
+	sync.RWMutex
+
 	getNode     NodeGetter
 	getAllNodes NodesGetter
 	getAuthors  func() *Authors
@@ -107,20 +110,25 @@ func (s *Search) Open() error {
 					return
 				}
 				if m.(*Message).typ == MessageTypeTreeChanged {
+					s.Lock()
 					s.isStale = true
+					s.Unlock()
 					continue
 				}
 				// React only on Synced not Loaded messages, the
 				// initial indexing and load is triggered manually.
 				if m.(*Message).typ == MessageTypeTreeSynced {
+					s.Lock()
 					// Throw away previous index and start from scratch until we
 					// have the needs to incrementally invalidate and re-index.
 					memIndex, err := bleve.NewMemOnly(ma)
 					if err != nil {
+						s.Unlock()
 						log.Print(red.Sprintf("Stopping indexer, failed to construct new index: %s", err))
 						return
 					}
 					s.index = memIndex
+					s.Unlock()
 
 					if err := s.IndexTree(); err != nil {
 						log.Print(yellow.Sprintf("Failed to index tree: %s", err))
@@ -154,7 +162,9 @@ func (s *Search) IndexTree() error {
 	took := time.Since(start)
 
 	log.Printf("Indexed tree for search in %s", took)
+	s.Lock()
 	s.isStale = false
+	s.Unlock()
 	return nil
 }
 
@@ -213,7 +223,9 @@ func (s *Search) IndexNode(n *Node) error {
 		Version:     n.Version(),
 	}
 
+	s.RLock()
 	s.index.Index(n.URL(), data)
+	s.RUnlock()
 
 	for _, v := range n.Children {
 		s.IndexNode(v)
@@ -242,6 +254,9 @@ func (s *Search) IndexNode(n *Node) error {
 // Levenshtein distances weren't enough and weren't able to match this
 // on its own. Especially for just a few characters typed.
 func (s *Search) FullSearch(q string, fuzzy bool) ([]*SearchHit, int, time.Duration, bool, error) {
+	s.RLock()
+	defer s.RUnlock()
+
 	var req *bleve.SearchRequest
 
 	if fuzzy {
