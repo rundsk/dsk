@@ -152,7 +152,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 	}
 
 	authors := make([]*APIv1NodeAuthor, 0)
-	for _, author := range n.Authors(api.tree.authors) {
+	for _, author := range n.Authors(api.tree.Authors) {
 		authors = append(authors, &APIv1NodeAuthor{author.Email, author.Name})
 	}
 

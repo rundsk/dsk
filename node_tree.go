@@ -30,7 +30,7 @@ var (
 func NewNodeTree(path string, w *Watcher, b *MessageBroker) *NodeTree {
 	return &NodeTree{
 		path:    path,
-		authors: &Authors{},
+		Authors: &Authors{},
 		watcher: w,
 		broker:  b,
 		done:    make(chan bool),
@@ -55,7 +55,7 @@ type NodeTree struct {
 	Root *Node `json:"root"`
 
 	// Authors database, if AUTHORS.txt file exists.
-	authors *Authors
+	Authors *Authors
 
 	// Changes to the directory tree are watched here.
 	watcher *Watcher
@@ -181,7 +181,7 @@ func (t *NodeTree) loadAuthors() error {
 		return err
 	}
 
-	t.authors = as
+	t.Authors = as
 	return nil
 }
 
@@ -289,5 +289,5 @@ func (t *NodeTree) GetAll() []*Node {
 }
 
 func (t *NodeTree) GetAuthors() *Authors {
-	return t.authors
+	return t.Authors
 }
