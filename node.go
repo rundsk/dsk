@@ -276,10 +276,10 @@ func (n *Node) Authors(as *Authors) []*Author {
 	return r
 }
 
-// Modified finds the most recently edited file in the node directory
-// and returns its modified time. In case the directory doesn't
-// contain any files, the func will still succeed but return a zero
-// time.
+// Modified finds the most recent modified time considering the
+// directory itself as well as any file inside it. File systems update
+// a directories modified time whenever a new file is created, but
+// don't do so when a file is modified.
 //
 // Tries to retrieve modified time through Git, assuming some DDTs are
 // version controlled. Will use progressive enhancement and silently
@@ -306,6 +306,12 @@ func (n *Node) Modified() (time.Time, error) {
 			return modified, nil
 		}
 	}
+
+	d, err := os.Stat(n.path)
+	if err != nil {
+		return modified, err
+	}
+	modified = d.ModTime()
 
 	files, err := ioutil.ReadDir(n.path)
 	if err != nil {
