@@ -109,7 +109,6 @@ func main() {
 		log.Print()
 	}
 
-	log.Printf("Detecting tree root...")
 	here, err := detectTreeRoot(os.Args[0], flag.Arg(0))
 	if err != nil {
 		log.Fatal(red.Sprintf("Failed to detect root of design definitions tree: %s", err))
@@ -157,7 +156,6 @@ func main() {
 	}
 
 	// Handles frontend root document delivery and frontend assets.
-	log.Print("Mounting frontend...")
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if filepath.Ext(r.URL.Path) != "" {
 			assetHandler(w, r)
@@ -167,7 +165,7 @@ func main() {
 	})
 
 	addr := fmt.Sprintf("%s:%s", *host, *port)
-	log.Printf("Starting web interface on %s....", addr)
+	log.Printf("Starting web interface on %s...", addr)
 
 	if isTerminal {
 		log.Print()
