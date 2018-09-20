@@ -47,6 +47,8 @@ func NewMessageBroker() *MessageBroker {
 	}
 }
 
+// MessageBroker is the main event bus that services inside the DSK
+// backend subscribe to.
 type MessageBroker struct {
 	*Subscribable
 

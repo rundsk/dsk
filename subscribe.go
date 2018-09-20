@@ -11,6 +11,8 @@ import (
 	"sync"
 )
 
+// Subscribable is meant to be embedded by other structs, that
+// are acting as a message/event bus.
 type Subscribable struct {
 	sync.RWMutex
 
