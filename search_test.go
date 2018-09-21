@@ -305,6 +305,7 @@ func setupSearchTest(t *testing.T, tmp string, lang string, node *Node) *Search 
 func teardownSearchTest(tmp string, s *Search) {
 	s.Close()
 	os.RemoveAll(tmp)
+	log.SetOutput(os.Stderr)
 }
 
 func setupSearchScoringTest(t *testing.T, testFile string) (*NodeTree, *Search, map[string]string) {
@@ -337,6 +338,7 @@ func setupSearchScoringTest(t *testing.T, testFile string) (*NodeTree, *Search, 
 
 func teardownSearchScoringTest(tr *NodeTree, s *Search) {
 	s.Close()
+	log.SetOutput(os.Stderr)
 }
 
 func expectFullSearchResult(t *testing.T, hits []*SearchHit, url string) {
