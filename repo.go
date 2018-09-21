@@ -95,6 +95,13 @@ func (r *Repository) IsCacheStale() bool {
 // BuildCache will warm up the cache. So lookups for a file's modified time
 // are speed up. Will cache modified time for all files and directories
 // discovered in root, which is recursively walked.
+//
+// Implementation based upon snippet provided in:
+// https://github.com/src-d/go-git/issues/604
+//
+// Also see:
+// https://github.com/src-d/go-git/issues/417
+// https://github.com/src-d/go-git/issues/826
 func (r *Repository) BuildCache() error {
 	r.Lock()
 	defer r.Unlock()
@@ -188,13 +195,6 @@ Outer:
 
 // Modified considers any changes inside given path or its
 // subdirectories as a change to the path.
-//
-// Implementation based upon snippet provided in:
-// https://github.com/src-d/go-git/issues/604
-//
-// Also see:
-// https://github.com/src-d/go-git/issues/417
-// https://github.com/src-d/go-git/issues/826
 func (r *Repository) Modified(path string) (time.Time, error) {
 	// Fast path for files.
 	if m, ok := r.lookup[path]; ok {
