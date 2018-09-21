@@ -134,7 +134,7 @@ type SearchHit struct {
 // tree if necessary. The indexer can be stopped by sending true into
 // Search.done. It'll automatically stop if it detects the broker to
 // be closed.
-func (s *Search) StartIndexer() error {
+func (s *Search) StartIndexer() {
 	red := color.New(color.FgRed)
 	yellow := color.New(color.FgYellow)
 
@@ -183,7 +183,6 @@ func (s *Search) StartIndexer() error {
 			}
 		}
 	}()
-	return nil
 }
 
 func (s *Search) StopIndexer() {

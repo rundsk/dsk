@@ -11,7 +11,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -286,32 +285,8 @@ func (n *Node) Authors(as *Authors) []*Author {
 // Most file systems change the mtime of the directory when a new file
 // or directory is created inside it, the mtime will not change when a
 // file has been modified.
-//
-// Tries to retrieve modified time through Git, assuming some DDTs are
-// version controlled. Will use progressive enhancement and silently
-// fall back to stat. This is trying to fix situations where the
-// modified date on disk may not reflect the actual modification date.
-// This is the case when the DDT was checked out from Git during a
-// build process step.
 func (n *Node) Modified() (time.Time, error) {
 	var modified time.Time
-
-	args := []string{
-		"-C",
-		n.path,
-		"log",
-		"--date=iso-strict",
-		"--format=%cd",
-		"-1",
-		n.path,
-	}
-	out, err := exec.Command("git", args...).CombinedOutput()
-	if err == nil {
-		modified, err := time.Parse(time.RFC3339, strings.TrimSpace(string(out)))
-		if err == nil {
-			return modified, nil
-		}
-	}
 
 	d, err := os.Stat(n.path)
 	if err != nil {
@@ -344,6 +319,16 @@ func (n *Node) Modified() (time.Time, error) {
 
 	}
 	return modified, nil
+}
+
+// ModifiedFromRepository uses a Repository for calculating the
+// modified time. This is trying to provide a better solution for
+// situations where the modified date on disk may not reflect the
+// actual modification date. This is the case when the DDT was checked
+// out from Git during a build process step.
+func (n *Node) ModifiedFromRepository(repo *Repository) (time.Time, error) {
+	path, _ := filepath.Rel(n.root, n.path)
+	return repo.Modified(path)
 }
 
 func (n *Node) Version() string {

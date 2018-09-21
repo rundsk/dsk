@@ -316,9 +316,9 @@ func setupSearchScoringTest(t *testing.T, testFile string) (*NodeTree, *Search, 
 	// them to fullfill the interface.
 	w := NewWatcher("test/design_system")
 	b := NewMessageBroker()
-	as := NewAuthors("tes/design_system")
+	as := NewAuthors("test/design_system")
 
-	tr := NewNodeTree("test/design_system", as, w, b)
+	tr := NewNodeTree("test/design_system", as, nil, w, b)
 	tr.Sync()
 
 	s, _ := NewSearch(tr, b, []string{"en", "de"})

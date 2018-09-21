@@ -156,10 +156,21 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		authors = append(authors, &APIv1NodeAuthor{author.Email, author.Name})
 	}
 
-	nModified, err := n.Modified()
+	// Fall back to file system based retrieval if a repository is not
+	// available. Also covers present but uncommitted files.
 	var modified int64
-	if err != nil {
-		return nil, err
+	var nModified time.Time
+	if api.tree.Repository != nil {
+		nModified, err = n.ModifiedFromRepository(api.tree.Repository)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if nModified.IsZero() {
+		nModified, err = n.Modified()
+		if err != nil {
+			return nil, err
+		}
 	}
 	if !nModified.IsZero() {
 		modified = nModified.Unix()

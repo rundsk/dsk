@@ -27,13 +27,14 @@ var (
 // NewNodeTree construct and partially initializes a NodeTree. Returns
 // an unsynced tree from path; you must finalize initialization using
 // Sync() or by calling Start().
-func NewNodeTree(path string, as *Authors, w *Watcher, b *MessageBroker) *NodeTree {
+func NewNodeTree(path string, as *Authors, repo *Repository, w *Watcher, b *MessageBroker) *NodeTree {
 	return &NodeTree{
-		path:    path,
-		Authors: as,
-		watcher: w,
-		broker:  b,
-		done:    make(chan bool),
+		path:       path,
+		Authors:    as,
+		Repository: repo,
+		watcher:    w,
+		broker:     b,
+		done:       make(chan bool),
 	}
 }
 
@@ -56,6 +57,9 @@ type NodeTree struct {
 
 	// Authors database, if AUTHORS.txt file exists.
 	Authors *Authors
+
+	// Repository, if the tree is version controlled.
+	Repository *Repository
 
 	// Changes to the directory tree are watched here.
 	watcher *Watcher
@@ -171,7 +175,7 @@ func (t *NodeTree) Sync() error {
 }
 
 // StartSyncer installs an auto-syncing process.
-func (t *NodeTree) StartSyncer() error {
+func (t *NodeTree) StartSyncer() {
 	id, watch := t.watcher.Subscribe()
 
 	go func() {
@@ -193,7 +197,6 @@ func (t *NodeTree) StartSyncer() error {
 			}
 		}
 	}()
-	return nil
 }
 
 func (t *NodeTree) StopSyncer() {

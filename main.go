@@ -36,6 +36,9 @@ var (
 	// Global instance of a message broker.
 	broker *MessageBroker
 
+	// Global instance of the repository.
+	repository *Repository
+
 	// Global instance of the search index.
 	search *Search
 )
@@ -62,6 +65,10 @@ func main() {
 			if watcher != nil {
 				watcher.Stop()
 				watcher.Close()
+			}
+			if repository != nil {
+				repository.StopCacher()
+				repository.Close()
 			}
 			if search != nil {
 				search.StopIndexer()
@@ -101,6 +108,7 @@ func main() {
 	}
 	whiteOnBlue := color.New(color.FgWhite, color.BgBlue)
 	green := color.New(color.FgGreen)
+	yellow := color.New(color.FgYellow)
 	red := color.New(color.FgRed)
 
 	if isTerminal {
@@ -118,10 +126,18 @@ func main() {
 	PrettyPathRoot = here
 
 	authors := NewAuthors(here)
-	broker = NewMessageBroker()                        // assign to global
-	watcher = NewWatcher(here)                         // assign to global
-	tree = NewNodeTree(here, authors, watcher, broker) // assign to global
-	search, err = NewSearch(tree, broker, langs)       // assign to global
+	broker = NewMessageBroker() // assign to global
+	watcher = NewWatcher(here)  // assign to global
+	if _, err := os.Stat(filepath.Join(here, ".git")); err == nil {
+		log.Print("Detected VCS support")
+
+		repository, err = NewRepository(here) // assign to global
+		if err != nil {
+			log.Print(yellow.Sprintf("Failed to enable VCS support: %s", err))
+		}
+	}
+	tree = NewNodeTree(here, authors, repository, watcher, broker) // assign to global
+	search, err = NewSearch(tree, broker, langs)                   // assign to global
 	if err != nil {
 		log.Fatal(red.Sprintf("Failed to open search index: %s", err))
 	}
@@ -131,12 +147,11 @@ func main() {
 	if err := watcher.Start(IgnoreNodesRegexp); err != nil {
 		log.Fatal(red.Sprintf("Failed to start watcher: %s", err))
 	}
-	if err := tree.StartSyncer(); err != nil {
-		log.Fatal(red.Sprintf("Failed to start tree syncer: %s", err))
+	tree.StartSyncer()
+	if repository != nil {
+		repository.StartCacher()
 	}
-	if err := search.StartIndexer(); err != nil {
-		log.Fatal(red.Sprintf("Failed to start indexer: %s", err))
-	}
+	search.StartIndexer()
 
 	if err := authors.Sync(); err != nil {
 		log.Fatal(red.Sprintf("Failed to perform initial authors sync: %s", err))
@@ -145,6 +160,13 @@ func main() {
 		log.Fatal(red.Sprintf("Failed to perform initial tree sync: %s", err))
 	}
 	// tree.Sync() will indirectly through messaging trigger initial indexing.
+	if repository != nil {
+		go func() {
+			if err := repository.BuildCache(); err != nil {
+				log.Fatal(red.Sprintf("Failed to build initial repository cache: %s", err))
+			}
+		}()
+	}
 
 	apis := map[int]API{
 		1: NewAPIv1(tree, broker, search),
