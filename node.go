@@ -276,10 +276,16 @@ func (n *Node) Authors(as *Authors) []*Author {
 	return r
 }
 
-// Modified finds the most recent modified time considering the
-// directory itself as well as any file inside it. File systems update
-// a directories modified time whenever a new file is created, but
-// don't do so when a file is modified.
+// Modified finds the most recent modified time of the node.
+//
+// Modified will look at the directory's and all files modification
+// times, and recursively into each contained directory's (node) and
+// return the most recent time.
+//
+// This method has different semantics than the file system's mtime:
+// Most file systems change the mtime of the directory when a new file
+// or directory is created inside it, the mtime will not change when a
+// file has been modified.
 //
 // Tries to retrieve modified time through Git, assuming some DDTs are
 // version controlled. Will use progressive enhancement and silently
@@ -325,6 +331,17 @@ func (n *Node) Modified() (time.Time, error) {
 		if f.ModTime().After(modified) {
 			modified = f.ModTime()
 		}
+	}
+
+	for _, c := range n.Children {
+		cmodified, err := c.Modified()
+		if err != nil {
+			return modified, err
+		}
+		if cmodified.After(modified) {
+			modified = cmodified
+		}
+
 	}
 	return modified, nil
 }
