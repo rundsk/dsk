@@ -199,7 +199,7 @@ func (n *Node) Order() uint64 {
 }
 
 // Name is the basename of the file without its order number.
-func (n Node) Name() string {
+func (n *Node) Name() string {
 	return removeOrderNumber(norm.NFC.String(filepath.Base(n.path)))
 }
 
