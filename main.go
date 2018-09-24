@@ -108,7 +108,6 @@ func main() {
 	}
 	whiteOnBlue := color.New(color.FgWhite, color.BgBlue)
 	green := color.New(color.FgGreen)
-	yellow := color.New(color.FgYellow)
 	red := color.New(color.FgRed)
 
 	if isTerminal {
@@ -133,7 +132,7 @@ func main() {
 
 		repository, err = NewRepository(here) // assign to global
 		if err != nil {
-			log.Print(yellow.Sprintf("Failed to enable VCS support: %s", err))
+			log.Fatal(red.Sprintf("Failed to enable VCS support: %s", err))
 		}
 	}
 	tree = NewNodeTree(here, authors, repository, watcher, broker) // assign to global
