@@ -46,7 +46,6 @@ func NewRepository(mainPath string, subPath string) (*Repository, error) {
 				}
 				path = subPath
 				repo = subRepo
-				return nil, nil
 			}
 		}
 	}
