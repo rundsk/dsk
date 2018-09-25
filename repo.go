@@ -141,6 +141,7 @@ func (r *Repository) BuildLookup() error {
 		return nil
 	}
 	r.head = ref
+	log.Printf("Building repository lookup table for %s...", r.path)
 
 	err := filepath.Walk(r.path, func(path string, f os.FileInfo, err error) error {
 		if err != nil {
