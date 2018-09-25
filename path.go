@@ -6,7 +6,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -14,7 +16,9 @@ import (
 )
 
 var (
-	PrettyPathRoot string
+	PrettyPathRoot     string
+	TreeRootNotFound   = errors.New("no tree root found")
+	RepositoryNotFound = errors.New("no repository found")
 )
 
 // Does not include the tree root directort.
@@ -66,7 +70,36 @@ func detectTreeRoot(binary string, given string) (string, error) {
 	if err != nil {
 		return here, err
 	}
-	return filepath.EvalSymlinks(here)
+	p, err := filepath.EvalSymlinks(here)
+	if err != nil {
+		return "", err
+	}
+	return p, nil
+}
+
+// Searches beginning at given path up, until it finds a directory
+// containing a ".git" directory. We differentiate between submodules
+// having a ".git" file and regular repositories where ".git" is an
+// actual directory.
+func detectRepository(treeRoot string, searchSubmodule bool) (string, error) {
+	var path = treeRoot
+
+	for path != "." {
+		s, err := os.Stat(filepath.Join(path, ".git"))
+
+		if err == nil {
+			if searchSubmodule && s.Mode().IsRegular() {
+				return path, nil
+			} else if !searchSubmodule && s.Mode().IsDir() {
+				return path, nil
+			}
+		}
+		path, err = filepath.Abs(path + "/..")
+		if err != nil {
+			return path, err
+		}
+	}
+	return "", RepositoryNotFound
 }
 
 // Checks if any of the path segments in the given path, matches regexp.

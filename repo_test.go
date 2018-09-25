@@ -29,7 +29,7 @@ func TestRepoLastModified(t *testing.T) {
 	n.CreateDoc("doc0.md", []byte("a"))
 	n.CreateDoc("doc1.md", []byte("a"))
 
-	repo, err := NewRepository(tmp)
+	repo, err := NewRepository(tmp, "")
 	if err != nil {
 		t.Fatal(err)
 	}

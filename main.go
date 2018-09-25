@@ -127,10 +127,23 @@ func main() {
 	authors := NewAuthors(here)
 	broker = NewMessageBroker() // assign to global
 	watcher = NewWatcher(here)  // assign to global
-	if _, err := os.Stat(filepath.Join(here, ".git")); err == nil {
-		log.Print("Detected VCS support")
 
-		repository, err = NewRepository(here) // assign to global
+	rroot, err := detectRepository(here, false)
+	if err != nil {
+		log.Fatal(red.Sprintf("Failed to detect repository: %s", err))
+	}
+	if err != RepositoryNotFound {
+		log.Printf("Detected VCS support in: %s", rroot)
+
+		rsub, err := detectRepository(here, true)
+		if err != nil {
+			log.Fatal(red.Sprintf("Failed to detect repository: %s", err))
+		}
+		if err != RepositoryNotFound {
+			log.Printf("Using submodule in: %s", rsub)
+		}
+
+		repository, err = NewRepository(rroot, rsub) // assign to global
 		if err != nil {
 			log.Fatal(red.Sprintf("Failed to enable VCS support: %s", err))
 		}

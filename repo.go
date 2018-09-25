@@ -19,16 +19,44 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
-func NewRepository(path string) (*Repository, error) {
-	repo, err := git.PlainOpen(path)
+func NewRepository(mainPath string, subPath string) (*Repository, error) {
+	var path string
+	var repo *git.Repository
 
+	path = mainPath
+	repo, err := git.PlainOpen(mainPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if subPath != mainPath {
+		wt, err := repo.Worktree()
+		if err != nil {
+			return nil, err
+		}
+		subs, err := wt.Submodules()
+		if err != nil {
+			return nil, err
+		}
+		for _, sub := range subs {
+			if filepath.Join(mainPath, sub.Config().Path) == subPath {
+				subRepo, err := sub.Repository()
+				if err != nil {
+					return nil, err
+				}
+				path = subPath
+				repo = subRepo
+				return nil, nil
+			}
+		}
+	}
 	return &Repository{
 		Repository: repo,
-		lookup:     make(map[string]time.Time, 0),
 		path:       path,
+		lookup:     make(map[string]time.Time, 0),
 		ticker:     time.NewTicker(5 * time.Second),
 		done:       make(chan bool),
-	}, err
+	}, nil
 }
 
 type Repository struct {
@@ -41,8 +69,7 @@ type Repository struct {
 	// Current head reference.
 	head *plumbing.Reference
 
-	// Root of the repository's worktree, containing the .git
-	// directory.
+	// Root of the repository's worktree.
 	path string
 
 	// Ticker which triggers a cache rebuild.
