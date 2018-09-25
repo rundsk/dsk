@@ -41,7 +41,7 @@ func TestRepoLastModified(t *testing.T) {
 			When: now,
 		},
 	})
-	repo.BuildCache()
+	repo.BuildLookup()
 
 	result, err := repo.Modified("Diversity")
 	if err != nil {
@@ -59,7 +59,7 @@ func TestRepoLastModified(t *testing.T) {
 			When: now,
 		},
 	})
-	repo.BuildCache()
+	repo.BuildLookup()
 
 	result, err = repo.Modified("Diversity")
 	if err != nil {

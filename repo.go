@@ -71,35 +71,35 @@ type Repository struct {
 	// Root of the repository's worktree.
 	path string
 
-	// Ticker which triggers a cache rebuild.
+	// Ticker which triggers a lookup rebuild.
 	ticker *time.Ticker
 
 	// Quit channel, receiving true, when we are closed.
 	done chan bool
 }
 
-func (r *Repository) StartCacher() {
+func (r *Repository) StartLookupBuilder() {
 	yellow := color.New(color.FgYellow)
 
 	go func() {
 		for {
 			select {
 			case <-r.ticker.C:
-				if r.IsCacheStale() {
-					if err := r.BuildCache(); err != nil {
-						log.Print(yellow.Sprintf("Failed to rebuild repository cache: %s", err))
+				if r.IsLookupStale() {
+					if err := r.BuildLookup(); err != nil {
+						log.Print(yellow.Sprintf("Failed to rebuild repository lookup table: %s", err))
 						continue
 					}
 				}
 			case <-r.done:
-				log.Print("Stopping repo cacher (received quit)...")
+				log.Print("Stopping repo lookup builder (received quit)...")
 				return
 			}
 		}
 	}()
 }
 
-func (r *Repository) StopCacher() {
+func (r *Repository) StopLookupBuilder() {
 	r.done <- true
 }
 
@@ -107,9 +107,15 @@ func (r *Repository) Close() {
 	r.ticker.Stop()
 }
 
-func (r *Repository) IsCacheStale() bool {
+// IsLookupStale considers a totally empty lookup table uninitialized
+// and thus always stale.
+func (r *Repository) IsLookupStale() bool {
 	r.RLock()
 	defer r.RUnlock()
+
+	if len(r.lookup) == 0 {
+		return true
+	}
 
 	if r.head == nil {
 		return false
@@ -118,9 +124,9 @@ func (r *Repository) IsCacheStale() bool {
 	return r.head.Hash() != ref.Hash()
 }
 
-// BuildCache will warm up the cache. So lookups for a file's modified time
-// are speed up. Will cache modified time for all files and directories
-// discovered in root, which is recursively walked.
+// BuildLookup will build the lookup table. This allows lookups of
+// a file's modified time. Will add modified time for all files and
+// directories discovered in root, which is recursively walked.
 //
 // Implementation based upon snippet provided in:
 // https://github.com/src-d/go-git/issues/604
@@ -128,7 +134,7 @@ func (r *Repository) IsCacheStale() bool {
 // Also see:
 // https://github.com/src-d/go-git/issues/417
 // https://github.com/src-d/go-git/issues/826
-func (r *Repository) BuildCache() error {
+func (r *Repository) BuildLookup() error {
 	r.Lock()
 	defer r.Unlock()
 
@@ -215,7 +221,7 @@ Outer:
 		prevTree = currentTree
 	}
 
-	log.Printf("Built repository cache in %s", time.Since(start))
+	log.Printf("Built repository lookup table in %s", time.Since(start))
 	return nil
 }
 

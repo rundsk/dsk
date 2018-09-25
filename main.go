@@ -67,7 +67,7 @@ func main() {
 				watcher.Close()
 			}
 			if repository != nil {
-				repository.StopCacher()
+				repository.StopLookupBuilder()
 				repository.Close()
 			}
 			if search != nil {
@@ -161,7 +161,7 @@ func main() {
 	}
 	tree.StartSyncer()
 	if repository != nil {
-		repository.StartCacher()
+		repository.StartLookupBuilder()
 	}
 	search.StartIndexer()
 
@@ -174,7 +174,7 @@ func main() {
 	// tree.Sync() will indirectly through messaging trigger initial indexing.
 	if repository != nil {
 		go func() {
-			if err := repository.BuildCache(); err != nil {
+			if err := repository.BuildLookup(); err != nil {
 				log.Fatal(red.Sprintf("Failed to build initial repository cache: %s", err))
 			}
 		}()
