@@ -107,15 +107,9 @@ func (r *Repository) Close() {
 	r.ticker.Stop()
 }
 
-// IsLookupStale considers a totally empty lookup table uninitialized
-// and thus always stale.
 func (r *Repository) IsLookupStale() bool {
 	r.RLock()
 	defer r.RUnlock()
-
-	if len(r.lookup) == 0 {
-		return true
-	}
 
 	if r.head == nil {
 		return false
