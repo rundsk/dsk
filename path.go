@@ -84,7 +84,7 @@ func detectTreeRoot(binary string, given string) (string, error) {
 func detectRepository(treeRoot string, searchSubmodule bool) (string, error) {
 	var path = treeRoot
 
-	for path != "." {
+	for path != "." && path != "/" {
 		s, err := os.Stat(filepath.Join(path, ".git"))
 
 		if err == nil {
@@ -96,7 +96,7 @@ func detectRepository(treeRoot string, searchSubmodule bool) (string, error) {
 		}
 		path, err = filepath.Abs(path + "/..")
 		if err != nil {
-			return path, err
+			return "", err
 		}
 	}
 	return "", RepositoryNotFound

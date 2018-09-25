@@ -136,11 +136,11 @@ func main() {
 		log.Printf("Detected VCS support in: %s", rroot)
 
 		rsub, err := detectRepository(here, true)
-		if err != nil {
-			log.Fatal(red.Sprintf("Failed to detect repository: %s", err))
-		}
-		if err != RepositoryNotFound {
+		if err == nil {
 			log.Printf("Using submodule in: %s", rsub)
+		}
+		if err != nil && err != RepositoryNotFound {
+			log.Fatal(red.Sprintf("Failed to detect repository: %s", err))
 		}
 
 		repository, err = NewRepository(rroot, rsub) // assign to global
