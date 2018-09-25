@@ -29,6 +29,8 @@ func NewRepository(mainPath string, subPath string) (*Repository, error) {
 		return nil, err
 	}
 
+	var hasFoundMatchingSub bool
+
 	if subPath != mainPath {
 		wt, err := repo.Worktree()
 		if err != nil {
@@ -38,15 +40,23 @@ func NewRepository(mainPath string, subPath string) (*Repository, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		for _, sub := range subs {
-			if filepath.Join(mainPath, sub.Config().Path) == subPath {
-				subRepo, err := sub.Repository()
-				if err != nil {
-					return nil, err
-				}
-				path = subPath
-				repo = subRepo
+			if filepath.Join(mainPath, sub.Config().Path) != subPath {
+				log.Printf("Skipping submodule at %s", filepath.Join(mainPath, sub.Config().Path))
+				continue
 			}
+			subRepo, err := sub.Repository()
+			if err != nil {
+				return nil, err
+			}
+			path = subPath
+			repo = subRepo
+
+			hasFoundMatchingSub = true
+		}
+		if !hasFoundMatchingSub {
+			return nil, fmt.Errorf("Failed to match subrepository %s to available ones", subPath)
 		}
 	}
 	return &Repository{
