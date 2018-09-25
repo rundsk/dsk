@@ -129,7 +129,7 @@ func main() {
 	watcher = NewWatcher(here)  // assign to global
 
 	rroot, err := detectRepository(here, false)
-	if err != nil {
+	if err != nil && err != RepositoryNotFound {
 		log.Fatal(red.Sprintf("Failed to detect repository: %s", err))
 	}
 	if err != RepositoryNotFound {
