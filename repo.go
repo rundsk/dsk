@@ -19,6 +19,9 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
+// NewRepository initializes a new Repository. A mainPath must always
+// be given, an optional subPath may be given when submodules are in
+// use.
 func NewRepository(mainPath string, subPath string) (*Repository, error) {
 	var path string
 	var repo *git.Repository
@@ -31,7 +34,7 @@ func NewRepository(mainPath string, subPath string) (*Repository, error) {
 
 	var hasFoundMatchingSub bool
 
-	if subPath != mainPath {
+	if subPath != "" && subPath != mainPath {
 		wt, err := repo.Worktree()
 		if err != nil {
 			return nil, err
