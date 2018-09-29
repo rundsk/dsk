@@ -162,7 +162,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 	var nModified time.Time
 	if api.tree.Repository != nil {
 		nModified, err = n.ModifiedFromRepository(api.tree.Repository)
-		if err != nil {
+		if err != nil && err != ErrNoData {
 			return nil, err
 		}
 	}
@@ -308,7 +308,7 @@ func (api APIv1) NewNodeAsset(a *NodeAsset) (*APIv1NodeAsset, error) {
 	var err error
 	if api.tree.Repository != nil {
 		aModified, err = a.ModifiedFromRepository(api.tree.Repository)
-		if err != nil {
+		if err != nil && err != ErrNoData {
 			return nil, err
 		}
 	}

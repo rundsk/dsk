@@ -6,6 +6,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -17,6 +18,10 @@ import (
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
+)
+
+var (
+	ErrNoData = errors.New("not enough or no data")
 )
 
 // NewRepository initializes a new Repository. A mainPath must always
@@ -262,7 +267,7 @@ func (r *Repository) Modified(path string) (time.Time, error) {
 		return modified, nil
 	}
 	if r.head == nil {
-		return modified, nil
+		return modified, ErrNoData
 	}
 	// When there's only one commit no diffing has been taken place.
 	// It can be assumed that this is an initial commit adding all
