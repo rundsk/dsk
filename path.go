@@ -17,8 +17,8 @@ import (
 
 var (
 	PrettyPathRoot     string
-	TreeRootNotFound   = errors.New("no tree root found")
-	RepositoryNotFound = errors.New("no repository found")
+	ErrTreeRootNotFound   = errors.New("no tree root found")
+	ErrRepositoryNotFound = errors.New("no repository found")
 )
 
 // Does not include the tree root directort.
@@ -99,7 +99,7 @@ func detectRepository(treeRoot string, searchSubmodule bool) (string, error) {
 			return "", err
 		}
 	}
-	return "", RepositoryNotFound
+	return "", ErrRepositoryNotFound
 }
 
 // Checks if any of the path segments in the given path, matches regexp.

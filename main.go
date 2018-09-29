@@ -129,17 +129,17 @@ func main() {
 	watcher = NewWatcher(here)  // assign to global
 
 	rroot, err := detectRepository(here, false)
-	if err != nil && err != RepositoryNotFound {
+	if err != nil && err != ErrRepositoryNotFound {
 		log.Fatal(red.Sprintf("Failed to detect repository: %s", err))
 	}
-	if err != RepositoryNotFound {
+	if err != ErrRepositoryNotFound {
 		log.Printf("Detected VCS support in: %s", rroot)
 
 		rsub, err := detectRepository(here, true)
 		if err == nil {
 			log.Printf("Using submodule in: %s", rsub)
 		}
-		if err != nil && err != RepositoryNotFound {
+		if err != nil && err != ErrRepositoryNotFound {
 			log.Fatal(red.Sprintf("Failed to detect repository: %s", err))
 		}
 
