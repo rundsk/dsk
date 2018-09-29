@@ -43,7 +43,7 @@ func TestRepoLastModified(t *testing.T) {
 	})
 	repo.BuildLookup()
 
-	result, err := repo.Modified("Diversity")
+	result, err := repo.Modified(filepath.Join(tmp, "Diversity"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -61,7 +61,7 @@ func TestRepoLastModified(t *testing.T) {
 	})
 	repo.BuildLookup()
 
-	result, err = repo.Modified("Diversity")
+	result, err = repo.Modified(filepath.Join(tmp, "Diversity"))
 	if err != nil {
 		t.Fatal(err)
 	}

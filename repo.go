@@ -233,15 +233,21 @@ Outer:
 	return nil
 }
 
-// Modified considers any changes inside given path or its
-// subdirectories as a change to the path.
+// Modified considers any changes in and below given path as a change
+// to the path. The path must be absolute and rooted at the repository
+// path.
 func (r *Repository) Modified(path string) (time.Time, error) {
+	var modified time.Time
+
+	path, err := filepath.Rel(r.path, path)
+	if err != nil {
+		return modified, err
+	}
+
 	// Fast path for files.
 	if m, ok := r.lookup[path]; ok {
 		return m, nil
 	}
-
-	var modified time.Time
 
 	for p, m := range r.lookup {
 		if !filepath.HasPrefix(p, path) {

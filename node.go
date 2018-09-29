@@ -327,8 +327,7 @@ func (n *Node) Modified() (time.Time, error) {
 // actual modification date. This is the case when the DDT was checked
 // out from Git during a build process step.
 func (n *Node) ModifiedFromRepository(repo *Repository) (time.Time, error) {
-	path, _ := filepath.Rel(n.root, n.path)
-	return repo.Modified(path)
+	return repo.Modified(n.path)
 }
 
 func (n *Node) Version() string {
