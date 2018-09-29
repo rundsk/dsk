@@ -25,7 +25,7 @@ require (
 	github.com/gliderlabs/ssh v0.1.1 // indirect
 	github.com/glycerine/go-unsnap-stream v0.0.0-20180323001048-9f0cb55181dd // indirect
 	github.com/glycerine/goconvey v0.0.0-20180728074245-46e3a41ad493 // indirect
-	github.com/go-yaml/yaml v2.0.0+incompatible
+	github.com/go-yaml/yaml v2.1.0+incompatible
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
 	github.com/google/go-cmp v0.2.0 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20180825215210-0210a2f0f73c // indirect
@@ -45,7 +45,7 @@ require (
 	github.com/philhofer/fwd v1.0.0 // indirect
 	github.com/pkg/errors v0.8.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/rjeczalik/notify v0.9.1
+	github.com/rjeczalik/notify v0.9.2
 	github.com/russross/blackfriday v2.0.0+incompatible
 	github.com/sergi/go-diff v1.0.0 // indirect
 	github.com/shurcooL/sanitized_anchor_name v0.0.0-20170918181015-86672fcb3f95 // indirect
@@ -61,6 +61,7 @@ require (
 	github.com/xanzy/ssh-agent v0.2.0 // indirect
 	golang.org/x/crypto v0.0.0-20180927165925-5295e8364332 // indirect
 	golang.org/x/net v0.0.0-20180926154720-4dfa2610cdf3
+	golang.org/x/sys v0.0.0-20180928133829-e4b3c5e90611 // indirect
 	golang.org/x/text v0.3.0
 	gopkg.in/src-d/go-billy.v4 v4.3.0 // indirect
 	gopkg.in/src-d/go-git-fixtures.v3 v3.1.1 // indirect
