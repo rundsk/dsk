@@ -10,8 +10,8 @@ github.com/blevesearch/bleve v0.7.0 h1:znyZ3zjsh2Scr60vszs7rbF29TU6i1q9bfnZf1vh0
 github.com/blevesearch/bleve v0.7.0/go.mod h1:Y2lmIkzV6mcNfAnAdOd+ZxHkHchhBfU/xroGIp61wfw=
 github.com/blevesearch/blevex v0.0.0-20180227211930-4b158bb555a3 h1:U6vnxZrTfItfiUiYx0lf/LgHjRSfaKK5QHSom3lEbnA=
 github.com/blevesearch/blevex v0.0.0-20180227211930-4b158bb555a3/go.mod h1:WH+MU2F4T0VmSdaPX+Wu5GYoZBrYWdOZWSjzvYcDmqQ=
-github.com/blevesearch/go-porterstemmer v1.0.1 h1:+ZjIF3K4U+LxqMybaE4hxyMuMvdX1Fq17CyzOXxJaiM=
-github.com/blevesearch/go-porterstemmer v1.0.1/go.mod h1:haWQqFT3RdOGz7PJuM3or/pWNJS1pKkoZJWCkWu0DVA=
+github.com/blevesearch/go-porterstemmer v0.0.0-20141125113124-9ac2252909b4 h1:CR/W6V/u3GBJvFUnaNxe9cNW2ic0OU0QZ0TgNbH6PoY=
+github.com/blevesearch/go-porterstemmer v0.0.0-20141125113124-9ac2252909b4/go.mod h1:haWQqFT3RdOGz7PJuM3or/pWNJS1pKkoZJWCkWu0DVA=
 github.com/blevesearch/segment v0.0.0-20160915185041-762005e7a34f h1:kqbi9lqXLLs+zfWlgo1PIiRQ86n33K1JKotjj4rSYOg=
 github.com/blevesearch/segment v0.0.0-20160915185041-762005e7a34f/go.mod h1:IInt5XRvpiGE09KOk9mmCMLjHhydIhNPKPPFLFBB7L8=
 github.com/boltdb/bolt v1.3.1 h1:JQmyP4ZBrce+ZQu0dY660FMfatumYDLun9hBCUVIkF4=

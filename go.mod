@@ -7,7 +7,7 @@ require (
 	github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239 // indirect
 	github.com/blevesearch/bleve v0.7.0
 	github.com/blevesearch/blevex v0.0.0-20180227211930-4b158bb555a3 // indirect
-	github.com/blevesearch/go-porterstemmer v1.0.1 // indirect
+	github.com/blevesearch/go-porterstemmer v0.0.0-20141125113124-9ac2252909b4 // indirect
 	github.com/blevesearch/segment v0.0.0-20160915185041-762005e7a34f // indirect
 	github.com/boltdb/bolt v1.3.1 // indirect
 	github.com/couchbase/vellum v0.0.0-20180910213445-01d5c56e6095 // indirect
