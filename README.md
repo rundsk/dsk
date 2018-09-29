@@ -224,8 +224,8 @@ $ FRONTEND=/my/frontend/build make dist
 
 ## Development
 
-[Go](https://golang.org/) version 1.10 or later is needed for developing and
-testing the application. 
+[Go](https://golang.org/) version 1.11 or later with go module support enabled
+is needed for developing and testing the application.
 
 If you're setting up a Go environment from scratch, add Go's `bin` directory to
 your `PATH`, so that go binaries like `go-bindata` can be found. In `.profile`
