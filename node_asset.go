@@ -49,6 +49,15 @@ func (a NodeAsset) Modified() (time.Time, error) {
 	return f.ModTime(), nil
 }
 
+// ModifiedFromRepository uses a Repository for calculating the
+// modified time. This is trying to provide a better solution for
+// situations where the modified date on disk may not reflect the
+// actual modification date. This is the case when the DDT was checked
+// out from Git during a build process step.
+func (a NodeAsset) ModifiedFromRepository(repo *Repository) (time.Time, error) {
+	return repo.Modified(a.path)
+}
+
 // Size returns the file size in bytes.
 func (a NodeAsset) Size() (int64, error) {
 	f, err := os.Stat(a.path)

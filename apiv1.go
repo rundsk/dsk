@@ -301,10 +301,22 @@ func (api APIv1) NewNodeTree(t *NodeTree) (*APIv1NodeTree, error) {
 }
 
 func (api APIv1) NewNodeAsset(a *NodeAsset) (*APIv1NodeAsset, error) {
-	aModified, err := a.Modified()
+	// Fall back to file system based retrieval if a repository is not
+	// available. Also covers present but uncommitted files.
 	var modified int64
-	if err != nil {
-		return nil, err
+	var aModified time.Time
+	var err error
+	if api.tree.Repository != nil {
+		aModified, err = a.ModifiedFromRepository(api.tree.Repository)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if aModified.IsZero() {
+		aModified, err = a.Modified()
+		if err != nil {
+			return nil, err
+		}
 	}
 	if !aModified.IsZero() {
 		modified = aModified.Unix()
