@@ -48,7 +48,9 @@ require (
 	github.com/rjeczalik/notify v0.9.2
 	github.com/russross/blackfriday v2.0.0+incompatible
 	github.com/sergi/go-diff v1.0.0 // indirect
+	github.com/shurcooL/httpfs v0.0.0-20171119174359-809beceb2371 // indirect
 	github.com/shurcooL/sanitized_anchor_name v0.0.0-20170918181015-86672fcb3f95 // indirect
+	github.com/shurcooL/vfsgen v0.0.0-20180915214035-33ae1944be3f
 	github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d // indirect
 	github.com/smartystreets/goconvey v0.0.0-20180222194500-ef6db91d284a // indirect
 	github.com/src-d/gcfg v1.3.0 // indirect
@@ -63,6 +65,7 @@ require (
 	golang.org/x/net v0.0.0-20180926154720-4dfa2610cdf3
 	golang.org/x/sys v0.0.0-20180928133829-e4b3c5e90611 // indirect
 	golang.org/x/text v0.3.0
+	golang.org/x/tools v0.0.0-20181004021813-1f2a8f46bd66 // indirect
 	gopkg.in/src-d/go-billy.v4 v4.3.0 // indirect
 	gopkg.in/src-d/go-git-fixtures.v3 v3.1.1 // indirect
 	gopkg.in/src-d/go-git.v4 v4.7.0

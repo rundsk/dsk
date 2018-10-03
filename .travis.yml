@@ -19,9 +19,6 @@ notifications:
 
 sudo: false
 
-before_install:
-  - go get github.com/twitter/go-bindata/...
-
 # Auto upload release artificats to GitHub, when a new release is tagged. Build
 # releases with latest Go version only.
 before_deploy:

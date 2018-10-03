@@ -5,27 +5,25 @@
 
 VERSION ?= head-$(shell git rev-parse --short HEAD)
 GOFLAGS = -X main.Version=$(VERSION)
-GOBINDATA = $(shell go env GOPATH)/bin/go-bindata
 ANY_DEPS = $(wildcard *.go)
 FRONTEND ?= $(shell pwd)/frontend
 
 .PHONY: test
-test: data.go
-	go test -race
+test:
+	go test -tags=dev -race
 
 .PHONY: bench
-bench: data.go
-	go test -run XXX -bench .
+bench:
+	go test -tags=dev -run XXX -bench .
 
 .PHONY: profile
-profile: data.go
-	go test -run ^$$ -bench . -cpuprofile cpu.prof -memprofile mem.prof
+profile:
+	go test -tags=dev -run ^$$ -bench . -cpuprofile cpu.prof -memprofile mem.prof
 	@echo Now run: go tool pprof dsk.test cpu.prof
 
 .PHONY: dev
 dev:
-	$(GOBINDATA) -debug -prefix $(FRONTEND) -ignore=node_modules -o data.go $(FRONTEND)/...
-	go build -race -ldflags "$(GOFLAGS)"
+	go build -tags=dev -race -ldflags "$(GOFLAGS)"
 	./dsk example
 
 .PHONY: clean
@@ -56,14 +54,14 @@ dist/%.tar: dist/%
 dist/%.tar.gz: | dist/%.tar
 	gzip $(basename $@)
 
-dist/%-darwin-amd64: $(ANY_DEPS) data.go
+dist/%-darwin-amd64: $(ANY_DEPS) frontend_vfsdata.go
 	GOOS=darwin GOARCH=amd64 go build -ldflags "$(GOFLAGS) -s -w" -o $@
 
-dist/%-linux-amd64: $(ANY_DEPS) data.go
+dist/%-linux-amd64: $(ANY_DEPS) frontend_vfsdata.go
 	GOOS=linux GOARCH=amd64 go build -ldflags "$(GOFLAGS) -s -w" -o $@
 
-dist/%-windows-386.exe: $(ANY_DEPS) data.go
+dist/%-windows-386.exe: $(ANY_DEPS) frontend_vfsdata.go
 	GOOS=windows GOARCH=386 go build -ldflags "$(GOFLAGS) -s -w" -o $@
 
-data.go: $(shell find $(FRONTEND) -type f) 
-	$(GOBINDATA) -prefix $(FRONTEND) -ignore=node_modules -o data.go $(FRONTEND)/...
+frontend_vfsdata.go: $(shell find $(FRONTEND) -type f) 
+	FRONTEND=$(FRONTEND) go run frontend_generate.go

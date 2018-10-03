@@ -6,7 +6,6 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"log"
@@ -41,6 +40,9 @@ var (
 
 	// Global instance of the search index.
 	search *Search
+
+	// Global instance of a http.Filesystem to access frontend assets
+	frontend http.FileSystem
 )
 
 func main() {
@@ -180,6 +182,8 @@ func main() {
 		}()
 	}
 
+	frontend = assets // assign to global
+
 	apis := map[int]API{
 		1: NewAPIv1(tree, broker, search),
 		2: NewAPIv2(tree, broker, search),
@@ -192,9 +196,9 @@ func main() {
 	// Handles frontend root document delivery and frontend assets.
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if filepath.Ext(r.URL.Path) != "" {
-			assetHandler(w, r)
+			frontendAssetHandler(w, r)
 		} else {
-			rootHandler(w, r)
+			frontendRootHandler(w, r)
 		}
 	})
 
@@ -219,24 +223,27 @@ func main() {
 //   /
 //   /index.html
 //   /* <catch all>
-func rootHandler(w http.ResponseWriter, r *http.Request) {
+func frontendRootHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, ""}
 	path := "index.html"
 
 	// Does not check on path, as we only ever serve a single
 	// file from here, and that path is hard-coded.
 
-	buf, err := Asset(path)
+	asset, err := frontend.Open(path)
 	if err != nil {
 		wr.Error(HTTPErrNoSuchAsset, err)
 		return
 	}
-	info, err := AssetInfo(path)
+	defer asset.Close()
+
+	info, err := asset.Stat()
 	if err != nil {
 		wr.Error(HTTPErr, err)
 		return
 	}
-	http.ServeContent(w, r, info.Name(), info.ModTime(), bytes.NewReader(buf))
+
+	http.ServeContent(w, r, info.Name(), info.ModTime(), asset)
 }
 
 // Serves the frontend's assets.
@@ -244,7 +251,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 // Handles these kinds of URLs:
 //   /assets/css/base.css
 //   /static/css/main.41064805.css
-func assetHandler(w http.ResponseWriter, r *http.Request) {
+func frontendAssetHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, ""}
 	path := r.URL.Path[len("/"):]
 
@@ -253,15 +260,17 @@ func assetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	buf, err := Asset(path)
+	asset, err := frontend.Open(path)
 	if err != nil {
 		wr.Error(HTTPErrNoSuchAsset, err)
 		return
 	}
-	info, err := AssetInfo(path)
+	defer asset.Close()
+
+	info, err := asset.Stat()
 	if err != nil {
 		wr.Error(HTTPErr, err)
 		return
 	}
-	http.ServeContent(w, r, info.Name(), info.ModTime(), bytes.NewReader(buf))
+	http.ServeContent(w, r, info.Name(), info.ModTime(), asset)
 }
