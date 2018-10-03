@@ -48,7 +48,9 @@ func NewRepository(mainPath string, subPath string) (*Repository, error) {
 		if err != nil {
 			return nil, err
 		}
-
+		if len(subs) == 0 {
+			return nil, errors.New("No submodules available. Are you missing a .gitmodules file?")
+		}
 		for _, sub := range subs {
 			if filepath.Join(mainPath, sub.Config().Path) != subPath {
 				log.Printf("Skipping submodule at %s", filepath.Join(mainPath, sub.Config().Path))
