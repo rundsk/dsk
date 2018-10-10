@@ -10,11 +10,9 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"sort"
 	"testing"
 
 	"github.com/blevesearch/bleve"
-	"github.com/go-yaml/yaml"
 )
 
 func TestFullSearchFindsFullWords(t *testing.T) {
@@ -229,50 +227,6 @@ func TestSearchConsidersTitles(t *testing.T) {
 	expectFullSearchResult(t, rs, "Diversity")
 }
 
-func TestTruePositiveFullSearchScore(t *testing.T) {
-	const scoreThreshold = 0.8
-
-	tr, s, tests := setupSearchScoringTest(t, "./test/true_positives_fuzzy_search_score.yaml")
-	defer teardownSearchScoringTest(tr, s)
-
-	// Avoid division by zero errors at the cost of a bit of precision.
-	succeeded := 1
-	testCount := 1
-	for _, query := range keysInOrder(tests) {
-		shouldBeIn := tests[query]
-		hits, _, _, _, _ := s.FullSearch(query, true)
-
-		if hasFullSearchResult(t, hits, shouldBeIn) {
-			succeeded++
-
-			if len(hits) > 1 {
-				foundPaths := []string{}
-
-				for _, hit := range hits {
-					if hit.Node.URL() != shouldBeIn {
-						foundPaths = append(foundPaths, hit.Node.URL())
-					}
-				}
-				t.Logf("Query found with extras:\nquery: %s\nexpected: %v\nextras: %v", query, shouldBeIn, foundPaths)
-			}
-		} else {
-			foundPaths := []string{}
-
-			for _, hit := range hits {
-				foundPaths = append(foundPaths, hit.Node.URL())
-			}
-			t.Logf("Query result not found:\nquery: %s\nactual: %v\nexpected: %v", query, foundPaths, shouldBeIn)
-		}
-		testCount++
-	}
-
-	truePositive := float64(succeeded) / float64(testCount)
-
-	if truePositive < scoreThreshold {
-		t.Errorf("True positive search scoring on test/design_system was %.2f (min required is %.2f)", truePositive, scoreThreshold)
-	}
-}
-
 func setupSearchTest(t *testing.T, tmp string, lang string, node *Node) *Search {
 	t.Helper()
 	log.SetOutput(ioutil.Discard)
@@ -305,39 +259,6 @@ func setupSearchTest(t *testing.T, tmp string, lang string, node *Node) *Search 
 func teardownSearchTest(tmp string, s *Search) {
 	s.Close()
 	os.RemoveAll(tmp)
-	log.SetOutput(os.Stderr)
-}
-
-func setupSearchScoringTest(t *testing.T, testFile string) (*NodeTree, *Search, map[string]string) {
-	t.Helper()
-	log.SetOutput(ioutil.Discard)
-
-	// Do not initialize watcher and broker, we only need
-	// them to fullfill the interface.
-	w := NewWatcher("test/design_system")
-	b := NewMessageBroker()
-	as := NewAuthors("test/design_system")
-
-	tr := NewNodeTree("test/design_system", as, nil, w, b)
-	tr.Sync()
-
-	s, _ := NewSearch(tr, b, []string{"en", "de"})
-	s.IndexTree()
-
-	var tests map[string]string
-	raw, err := ioutil.ReadFile(testFile)
-	if err != nil {
-		t.Fatalf("Unable to read scoring test file: %s", err)
-	}
-	if err := yaml.Unmarshal(raw, &tests); err != nil {
-		t.Fatalf("Unable to deserialize scoring test file: %s", err)
-	}
-
-	return tr, s, tests
-}
-
-func teardownSearchScoringTest(tr *NodeTree, s *Search) {
-	s.Close()
 	log.SetOutput(os.Stderr)
 }
 
@@ -392,14 +313,4 @@ func expectNoFilterSearchResult(t *testing.T, nodes []*Node, url string) {
 			t.Errorf("Not expected '%s' to be included in results", url)
 		}
 	}
-}
-
-func keysInOrder(m map[string]string) []string {
-	var keys []string
-	for k := range m {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-
-	return keys
 }
