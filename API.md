@@ -22,20 +22,20 @@ Version 2 of the API first appeared with DSK Version 1.1.
 
 | URL                             | Response  | Description                       |
 |---------------------------------|-----------|-----------------------------------|
-| `/hello`                        | JSON      | Returns the version and a friendly greeting. |
-| `/tree`                         | JSON      | Get the full design definitions tree as a nested tree of nodes. |
-| `/tree/{path}`                  | JSON      | Get information about a single node specified by `{path}`. |
-| `/tree/{path}/{asset}`          | data      | Requests a node's asset, `{asset}` is a single filename, |
-| `/search?q={query}`             | JSON      | Performs a full text search. |
-| `/filter?q={query}`             | JSON      | Filters nodes by given query. |
-| `/messages`                     | WebSocket | For receiving messages, i.e. whenever the tree changes. |
+| `/hello`                        | JSON      | Returns the version and a friendly greeting |
+| `/tree`                         | JSON      | Get the full design definitions tree as a nested tree of nodes |
+| `/tree/{path}`                  | JSON      | Get information about a single node specified by `{path}` |
+| `/tree/{path}/{asset}`          | data      | Requests a node's asset, `{asset}` is a single filename |
+| `/search?q={query}`             | JSON      | Performs a full text search |
+| `/filter?q={query}`             | JSON      | Filters nodes by given query |
+| `/messages`                     | WebSocket | For receiving messages, i.e. whenever the tree changes |
 
 ### Filtering & Searching
 
 Both the `search` and `filter` endpoints support a special `fuzzy` mode, which
 will yield more results for the cost of more false positives. The mode should
 be used if you feel the result sets are not large enough. It can optionally be
-enabled using a query parameter (i.e. `?q=foo&fuzzy=true`). This than performs
+enabled using a query parameter (i.e. `?q=foo&fuzzy=true`).
 
 But how do `filter` and `search` differ? 
 
@@ -55,7 +55,7 @@ multiple times in the result set.
 |                   | _Fulltext Search_ | _Filtering_ | _Finding_ |
 | ----------------- | ----------------- | ----------- | --------- |
 | As seen in… | Google | Tree-Nav | Sublime |
-| Purpose | research | navigate | navigate |
+| Purpose | research | navigate | jump |
 | Possible number of results | 1 million | 20-30 | 1  |
 | Result type | hit | result | finding |
 | | you don't know your goal | set always contains goal | get to your goal |

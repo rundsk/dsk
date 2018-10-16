@@ -92,15 +92,16 @@ func NewSearchMapping(langs []string) *mapping.IndexMappingImpl {
 	return im
 }
 
-// Search wraps a bleve search index and can be queried for results.
+// Search provides facilities for differnt kinds of search purposes.
+// It allows to perform full text searching through FullSearch(),
+// wrapping a bleve search index and to perform filtering through
+// FilterSearch().
 //
-// It follows the "It's better to have false positives than
-// false negatives" principle:
+// Fuzzy mode can be enabled on a per query basis for FullSearch
+// and FilterSearch. The mode should be used if the result
+// set doesn't seem large enough. It follows the "It's better
+// to have false positives than false negatives" principle:
 // https://en.wikipedia.org/wiki/Precision_and_recall
-//
-// Fuzzy mode can be enabled on a per query basis for FullSearch and
-// FilterSearch. The mode should be used if the result set doesn't
-// seem large enough.
 type Search struct {
 	sync.RWMutex
 
