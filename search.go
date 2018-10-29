@@ -49,16 +49,27 @@ func NewSearch(t *NodeTree, b *MessageBroker, langs []string) (*Search, error) {
 	}
 	s.langs = langs
 
-	index, err := bleve.NewMemOnly(NewSearchMapping(s.langs))
+	wideIndex, narrowIndex, err := NewIndexes(langs)
 	if err != nil {
 		return s, err
 	}
-	s.index = index
+	s.wideIndex = wideIndex
+	s.narrowIndex = narrowIndex
 
 	return s, nil
 }
 
-func NewSearchMapping(langs []string) *mapping.IndexMappingImpl {
+func NewIndexes(langs []string) (bleve.Index, bleve.Index, error) {
+	wideIndex, wideErr := bleve.NewMemOnly(NewSearchMapping(langs, true))
+	narrowIndex, narrowErr := bleve.NewMemOnly(NewSearchMapping(langs, false))
+
+	if wideErr != nil {
+		return wideIndex, narrowIndex, wideErr
+	}
+	return wideIndex, narrowIndex, narrowErr
+}
+
+func NewSearchMapping(langs []string, isWide bool) *mapping.IndexMappingImpl {
 	im := bleve.NewIndexMapping()
 
 	if len(langs) > 0 {
@@ -80,13 +91,15 @@ func NewSearchMapping(langs []string) *mapping.IndexMappingImpl {
 	node := bleve.NewDocumentMapping()
 	node.DefaultAnalyzer = im.DefaultAnalyzer
 
-	node.AddFieldMappingsAt("Authors", sm)
-	node.AddFieldMappingsAt("Description", tms...)
-	node.AddFieldMappingsAt("Docs", tms...)
-	node.AddFieldMappingsAt("Files", sm)
-	node.AddFieldMappingsAt("Tags", sm, km)
 	node.AddFieldMappingsAt("Titles", tms...)
-	node.AddFieldMappingsAt("Version", sm, km)
+	node.AddFieldMappingsAt("Tags", sm, km)
+	if isWide {
+		node.AddFieldMappingsAt("Authors", sm)
+		node.AddFieldMappingsAt("Description", tms...)
+		node.AddFieldMappingsAt("Docs", tms...)
+		node.AddFieldMappingsAt("Files", sm)
+		node.AddFieldMappingsAt("Version", sm, km)
+	}
 
 	im.AddDocumentMapping("article", node)
 	return im
@@ -113,7 +126,8 @@ type Search struct {
 	// The first language provided will be used as the default language.
 	langs []string
 
-	index bleve.Index
+	wideIndex   bleve.Index
+	narrowIndex bleve.Index
 
 	// A freshness flag whether the current index is stale and does
 	// reflect recent changes from the tree.
@@ -161,15 +175,16 @@ func (s *Search) StartIndexer() {
 				// initial indexing and load is triggered manually.
 				if m.(*Message).typ == MessageTypeTreeSynced {
 					s.Lock()
-					// Throw away previous index and start from scratch until we
+					// Throw away previous indexes and start from scratch until we
 					// have the needs to incrementally invalidate and re-index.
-					memIndex, err := bleve.NewMemOnly(NewSearchMapping(s.langs))
+					wideIndex, narrowIndex, err := NewIndexes(s.langs)
 					if err != nil {
 						s.Unlock()
-						log.Print(red.Sprintf("Stopping indexer, failed to construct new index: %s", err))
+						log.Print(red.Sprintf("Stopping indexer, failed to construct new indexes: %s", err))
 						return
 					}
-					s.index = memIndex
+					s.wideIndex = wideIndex
+					s.narrowIndex = narrowIndex
 					s.Unlock()
 
 					if err := s.IndexTree(); err != nil {
@@ -191,7 +206,13 @@ func (s *Search) StopIndexer() {
 }
 
 func (s *Search) Close() error {
-	return s.index.Close()
+	wideErr := s.wideIndex.Close()
+	narrowErr := s.narrowIndex.Close()
+
+	if wideErr != nil {
+		return wideErr
+	}
+	return narrowErr
 }
 
 func (s *Search) IndexTree() error {
@@ -248,7 +269,7 @@ func (s *Search) IndexNode(n *Node) error {
 		titles = append(titles, d.Title())
 	}
 
-	data := struct {
+	wideData := struct {
 		Authors     []string
 		Description string
 		Docs        []string
@@ -265,9 +286,17 @@ func (s *Search) IndexNode(n *Node) error {
 		Titles:      titles,
 		Version:     n.Version(),
 	}
+	narrowData := struct {
+		Tags   []string
+		Titles []string
+	}{
+		Tags:   wideData.Tags,
+		Titles: wideData.Titles,
+	}
 
 	s.RLock()
-	s.index.Index(n.URL(), data)
+	s.wideIndex.Index(n.URL(), wideData)
+	s.narrowIndex.Index(n.URL(), narrowData)
 	s.RUnlock()
 
 	for _, v := range n.Children {
@@ -277,47 +306,16 @@ func (s *Search) IndexNode(n *Node) error {
 }
 
 // FullSearch performs a full text search over all possible attributes
-// of each node.
-//
-// For fuzzy mode we weren't able to use bleve's Fuzzy query as, we
-// dealt with results where certain things that should have matched
-// with a raw match query, did not. For example, `Farben` being an
-// article we wanted to match, we would type:
-//
-// | Input        | True positive |
-// | -------------|:-------------:|
-// | f            | true          |
-// | fa           | true          |
-// | far          | false         |
-// | farb         | false         |
-// | farbe        | true          |
-// | farben       | true          |
-//
-// What is used by bleve for fuzzy matching under the hood,
-// Levenshtein distances weren't enough and weren't able to match this
-// on its own. Especially for just a few characters typed.
-func (s *Search) FullSearch(q string, fuzzy bool) ([]*SearchHit, int, time.Duration, bool, error) {
+// of each node using the wide index. Returns a slice of SearchHits.
+func (s *Search) FullSearch(q string) ([]*SearchHit, int, time.Duration, bool, error) {
 	s.RLock()
 	defer s.RUnlock()
 
-	var req *bleve.SearchRequest
+	mq := bleve.NewMatchQuery(q)
+	mq.SetFuzziness(2)
+	req := bleve.NewSearchRequest(mq)
 
-	if fuzzy {
-		mq := bleve.NewMatchQuery(q)
-		mq.SetFuzziness(2)
-
-		dq := bleve.NewDisjunctionQuery(
-			mq,
-			bleve.NewTermQuery(q),
-			bleve.NewPrefixQuery(q),
-		)
-		req = bleve.NewSearchRequest(dq)
-	} else {
-		mq := bleve.NewMatchQuery(q)
-		req = bleve.NewSearchRequest(mq)
-	}
-
-	res, err := s.index.Search(req)
+	res, err := s.wideIndex.Search(req)
 	if err != nil {
 		return nil, 0, time.Duration(0), s.isStale, fmt.Errorf("Query '%s' failed: %s", q, err)
 	}
@@ -338,13 +336,58 @@ func (s *Search) FullSearch(q string, fuzzy bool) ([]*SearchHit, int, time.Durat
 }
 
 // FilterSearch performs a narrow restricted prefix search on the
-// node's visible attributes (the title) plus tags & keywords.
+// node's visible attributes (the title) plus tags using the narrow
+// index by default. Returns a slice of found unique Nodes.
+func (s *Search) FilterSearch(q string, useWideIndex bool) ([]*Node, int, time.Duration, bool, error) {
+	s.RLock()
+	defer s.RUnlock()
+
+	mq := bleve.NewMatchQuery(q)
+	mq.SetFuzziness(2)
+	dq := bleve.NewDisjunctionQuery(
+		mq,
+		bleve.NewPrefixQuery(q),
+	)
+	req := bleve.NewSearchRequest(dq)
+
+	var res *bleve.SearchResult
+	var err error
+	if useWideIndex {
+		res, err = s.wideIndex.Search(req)
+	} else {
+		res, err = s.narrowIndex.Search(req)
+	}
+	if err != nil {
+		return nil, 0, time.Duration(0), s.isStale, fmt.Errorf("Query '%s' failed: %s", q, err)
+	}
+
+	var nodes []*Node
+	seen := make(map[string]bool)
+	for _, hit := range res.Hits {
+		ok, n, err := s.getNode(hit.ID)
+		if err != nil {
+			return nodes, len(nodes), res.Took, s.isStale, fmt.Errorf("Failed to get node for hit %s: %s", hit.ID, err)
+		}
+		if _, hasSeen := seen[n.URL()]; hasSeen {
+			continue // Keep nodes unique.
+		}
+		if !ok {
+			log.Printf("Node for hit %s not found, skipping hit", hit.ID)
+			continue
+		}
+		nodes = append(nodes, n)
+		seen[n.URL()] = true
+	}
+	return nodes, len(nodes), res.Took, s.isStale, nil
+}
+
+// LegacyFilterSearch performs a narrow restricted haystack/needle
+// search on the node's visible attributes (the title) plus tags &
+// keywords.
 //
-// Does not use search index, as it's not possible to narrow field
-// scope on a per query basis. This means we'd need to keep a second
-// index just for filter searches. The simplistic approach used her is
-// "good enough" to fullfill the requirements.
-func (s *Search) FilterSearch(q string, fuzzy bool) ([]*Node, int, time.Duration, error) {
+// A new filter search has been introduced for APIv2, which we can't
+// simply switch into a APIv1 backwards compatible maintaining mode.
+func (s *Search) LegacyFilterSearch(q string, fuzzy bool) ([]*Node, int, time.Duration, error) {
 	start := time.Now()
 
 	var results []*Node

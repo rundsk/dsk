@@ -2,10 +2,19 @@
 
 ## [1.1.0] Unreleased
 
-- Add full text search, #44
-- Add initial Git support
-- Read modified dates from Git if possible
-- Add APIv2 
+- Add HTTP APIv2
+- Introduce full search in APIv2, #44
+- New and improved filter search in APIv2: 
+  - now uses prefix matching instead of haystack/needle,
+  - slightly more immune to typos by using fuzzy matching,
+  - uses analyzers as full search does,
+  - supports `wide` mode, 
+  - API responses now use `nodes` key instead of `urls` to return an
+    array of so-called _RefNodes_ with title and URL for each node. This
+    makes that part of the response uniform when compared to other API
+    responses.
+  - keywords are not searched anymore.
+- Add initial Git support and read modified dates from it, if possible
 - Replace go-bindata build time dependency with vfsgen, fixes #40 and #49
 - Require Go v1.11, drop support for Go v1.9 and v1.10
 - Improve transliteration when creating node slugs

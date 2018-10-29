@@ -38,22 +38,33 @@ class Client {
 
   // Performs a full text search against the tree and returns the response
   // unfiltered.
-  static search(q, isFuzzy = false) {
+  static search(q) {
     let params = new URLSearchParams();
 
     params.set('q', encodeURIComponent(q));
-    params.set('fuzzy', isFuzzy ? 'true' : 'false');
 
     return this.fetch(`/api/v2/search?${params.toString()}`);
   }
 
-  // Performs a narrow search against the tree. The returned node URLs together
-  // with `Tree.filteredBy()` can be used to create a new filtered tree view.
-  static filter(q, isFuzzy = false) {
+  // Performs a narrow search against the tree. The returned nodes together
+  // with `Tree.filteredBy()` can be used to create a new filtered tree view:
+  //
+  // ```
+  // Client.filter('foo')
+  //   .then((res) => {
+  //      return res.nodes.map(n => n.url);
+  //   })
+  //   .then((urls) => {
+  //      return Tree.filteredBy(urls);
+  //   });
+  // ```
+  static filter(q, useWideIndex = false) {
     let params = new URLSearchParams();
 
     params.set('q', encodeURIComponent(q));
-    params.set('fuzzy', isFuzzy ? 'true' : 'false');
+    if (useWideIndex) {
+      params.set('index', 'wide');
+    }
 
     return this.fetch(`/api/v2/filter?${params.toString()}`);
   }

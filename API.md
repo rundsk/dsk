@@ -32,12 +32,12 @@ Version 2 of the API first appeared with DSK Version 1.1.
 
 ### Filtering & Searching
 
-Both the `search` and `filter` endpoints support a special `fuzzy` mode, which
+The `filter` endpoint support a special `wide` mode, which
 will yield more results for the cost of more false positives. The mode should
 be used if you feel the result sets are not large enough. It can optionally be
-enabled using a query parameter (i.e. `?q=foo&fuzzy=true`).
+enabled using a query parameter (i.e. `?q=foo&index=wide`).
 
-But how do `filter` and `search` differ? 
+#### But how do `filter` and `search` differ? 
 
 `filter` by default matches on all the node's "visible" attributes, it always
 returns all matched results without pagination and weighting. Each result is
@@ -75,6 +75,6 @@ Version 1 of the API first appeared with DSK Version 1.0.
 | `/hello`                        | JSON      | Returns the version and a friendly greeting. |
 | `/tree`                         | JSON      | Get the full design definitions tree as a nested tree of nodes. |
 | `/tree/{path}`                  | JSON      | Get information about a single node specified by `{path}`. |
-| `/tree/{path}/{asset}`          | data      | Requests a node's asset, `{asset}` is a single filename, |
+| `/tree/{path}/{asset}`          | data      | Requests a node's asset, `{asset}` is a single filename. |
 | `/filter?q={query}`             | JSON      | Performs a narrow restricted fuzzy search. |
 | `/messages`                     | WebSocket | For receiving messages, i.e. whenever the tree changes. |

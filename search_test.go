@@ -11,150 +11,234 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/blevesearch/bleve"
 )
 
-func TestFullSearchFindsFullWords(t *testing.T) {
+// Tests for FullSearch:
+
+func TestFullSearchAuthorsEmail(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Diversität"), tmp)
+	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
 	n.Create()
 
-	s := setupSearchTest(t, tmp, "de", n)
+	n.CreateMeta("meta.yaml", &NodeMeta{
+		Authors: []string{"randall@evilcorp.org"},
+	})
+	n.Load()
+
+	s := setupSearchTest(t, tmp, "en", []*Node{n})
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FullSearch("Diversität", true)
-	expectFullSearchResult(t, rs, "Diversitat")
+	rs, _, _, _, _ := s.FullSearch("randall@evilcorp.org")
+	expectFullSearchResult(t, rs, "Colors")
 
-	rs, _, _, _, _ = s.FullSearch("Diversität", false)
-	expectFullSearchResult(t, rs, "Diversitat")
+	rs, _, _, _, _ = s.FullSearch("randall")
+	expectFullSearchResult(t, rs, "Colors")
+
+	rs, _, _, _, _ = s.FullSearch("evilcorp.org")
+	expectFullSearchResult(t, rs, "Colors")
+
+	rs, _, _, _, _ = s.FullSearch("evilcrp.org")
+	expectFullSearchResult(t, rs, "Colors")
 }
 
-func TestFuzzyFullSearchWordPartials(t *testing.T) {
+func TestFullSearchVersion(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n.Create()
+
+	n.CreateMeta("meta.yaml", &NodeMeta{
+		Version: "2",
+	})
+	n.Load()
+
+	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FullSearch("2")
+	expectFullSearchResult(t, rs, "Colors")
+
+	rs, _, _, _, _ = s.FullSearch("Version:2")
+	expectFullSearchResult(t, rs, "Colors")
+}
+
+func TestFullSearchDescription(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n.Create()
+
+	n.CreateMeta("meta.yaml", &NodeMeta{
+		Description: "The things we actually mean when we say words that sound fancy.",
+	})
+	n.Load()
+
+	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FullSearch("fancy")
+	expectFullSearchResult(t, rs, "Colors")
+}
+
+func TestFullSearchDocumentContents(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n.Create()
+	n.CreateDoc("About.md", []byte("The following visual design has been agreed upon by our team:"))
+
+	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FullSearch("visual design")
+	expectFullSearchResult(t, rs, "Colors")
+}
+
+// Tests for FilterSearch:
+
+func TestFilterSearchWordPartials(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
 	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
 	n.Create()
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", n)
+	s := setupSearchTest(t, tmp, "en", []*Node{n})
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FullSearch("col", true)
-	expectFullSearchResult(t, rs, "Colors")
+	rs, _, _, _, _ := s.FilterSearch("col", false)
+	expectFilterSearchResult(t, rs, "Colors")
 
-	rs, _, _, _, _ = s.FullSearch("color", true)
-	expectFullSearchResult(t, rs, "Colors")
+	rs, _, _, _, _ = s.FilterSearch("color", false)
+	expectFilterSearchResult(t, rs, "Colors")
 
-	rs, _, _, _, _ = s.FullSearch("color", true)
-	expectFullSearchResult(t, rs, "Colors")
+	rs, _, _, _, _ = s.FilterSearch("color", false)
+	expectFilterSearchResult(t, rs, "Colors")
 }
 
-func TestFuzzyFullSearchGermanWordPartials(t *testing.T) {
+func TestFilterSearchGermanWordPartials(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
 	n := NewNode(filepath.Join(tmp, "Diversität"), tmp)
 	n.Create()
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "de", n)
+	s := setupSearchTest(t, tmp, "de", []*Node{n})
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FullSearch("Diversit", true)
+	rs, _, _, _, _ := s.FilterSearch("Diversit", false)
+	expectFilterSearchResult(t, rs, "Diversitat")
+
+	rs, _, _, _, _ = s.FilterSearch("Diversita", false)
+	expectFilterSearchResult(t, rs, "Diversitat")
+}
+
+// Tests for search in general, often testing only FullSearch, but
+// assumes FilterSearch behaves the same, as both use the same search
+// backend:
+
+func TestSearchFindsFullWords(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Diversität"), tmp)
+	n.Create()
+
+	s := setupSearchTest(t, tmp, "de", []*Node{n})
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FullSearch("Diversität")
 	expectFullSearchResult(t, rs, "Diversitat")
 
-	rs, _, _, _, _ = s.FullSearch("Diversita", true)
+	rs, _, _, _, _ = s.FullSearch("Diversität")
 	expectFullSearchResult(t, rs, "Diversitat")
 }
 
-// This is the inversion of TestFullSearchGermanWordPartials
-func TestOnlyFuzzyModeFindsPartialWords(t *testing.T) {
+func TestSearchFindsMultipleWords(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n0 := NewNode(filepath.Join(tmp, "Great"), tmp)
+	n0.Create()
+
+	n1 := NewNode(filepath.Join(tmp, "Fantastic"), tmp)
+	n1.Create()
+
+	n2 := NewNode(filepath.Join(tmp, "Amazing"), tmp)
+	n2.Create()
+
+	s := setupSearchTest(t, tmp, "de", []*Node{n0, n1, n2})
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FullSearch("fantastic great")
+	expectFullSearchResult(t, rs, "Fantastic")
+	expectFullSearchResult(t, rs, "Great")
+}
+
+func TestGermanSearchNormalizesUmlauts(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
 	n := NewNode(filepath.Join(tmp, "Diversität"), tmp)
 	n.Create()
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "de", n)
+	s := setupSearchTest(t, tmp, "de", []*Node{n})
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FullSearch("Diversit", false)
-	expectNoFullSearchResult(t, rs, "Diversitat")
+	rs, _, _, _, _ := s.FullSearch("Diversität")
+	expectFullSearchResult(t, rs, "Diversitat")
 
-	rs, _, _, _, _ = s.FullSearch("Diversita", false)
-	expectNoFullSearchResult(t, rs, "Diversitat")
+	rs, _, _, _, _ = s.FullSearch("Diversitat")
+	expectFullSearchResult(t, rs, "Diversitat")
+
+	rs, _, _, _, _ = s.FullSearch("Diversitaet")
+	expectFullSearchResult(t, rs, "Diversitat")
+
+	rs, _, _, _, _ = s.FullSearch("Diversität")
+	expectFullSearchResult(t, rs, "Diversitat")
+
+	rs, _, _, _, _ = s.FullSearch("Diversitat")
+	expectFullSearchResult(t, rs, "Diversitat")
+
+	rs, _, _, _, _ = s.FullSearch("Diversitaet")
+	expectFullSearchResult(t, rs, "Diversitat")
 }
 
-func TestGermanFullSearchNormalizesUmlauts(t *testing.T) {
+func TestExactMatchesWorkIndependentofLang(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
 	n := NewNode(filepath.Join(tmp, "Diversität"), tmp)
 	n.Create()
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "de", n)
-	defer teardownSearchTest(tmp, s)
-
-	rs, _, _, _, _ := s.FullSearch("Diversität", true)
-	expectFullSearchResult(t, rs, "Diversitat")
-
-	rs, _, _, _, _ = s.FullSearch("Diversitat", true)
-	expectFullSearchResult(t, rs, "Diversitat")
-
-	rs, _, _, _, _ = s.FullSearch("Diversitaet", true)
-	expectFullSearchResult(t, rs, "Diversitat")
-
-	rs, _, _, _, _ = s.FullSearch("Diversität", false)
-	expectFullSearchResult(t, rs, "Diversitat")
-
-	rs, _, _, _, _ = s.FullSearch("Diversitat", false)
-	expectFullSearchResult(t, rs, "Diversitat")
-
-	rs, _, _, _, _ = s.FullSearch("Diversitaet", false)
-	expectFullSearchResult(t, rs, "Diversitat")
-}
-
-func TestEnglishFullSearchDoesNotNormalizeUmlauts(t *testing.T) {
-	tmp, _ := ioutil.TempDir("", "tree")
-
-	n := NewNode(filepath.Join(tmp, "Diversität"), tmp)
-	n.Create()
-	n.Load()
-
-	s := setupSearchTest(t, tmp, "en", n)
+	s := setupSearchTest(t, tmp, "en", []*Node{n})
 	defer teardownSearchTest(tmp, s)
 
 	// Exact matches always work, independent of languages.
-	rs, _, _, _, _ := s.FullSearch("Diversität", true)
+	rs, _, _, _, _ := s.FullSearch("Diversität")
 	expectFullSearchResult(t, rs, "Diversitat")
 
-	rs, _, _, _, _ = s.FullSearch("Diversitat", true)
+	rs, _, _, _, _ = s.FullSearch("Diversitat")
 	expectFullSearchResult(t, rs, "Diversitat")
 
 	// Exact matches always work, independent of languages.
-	rs, _, _, _, _ = s.FullSearch("Diversität", false)
+	rs, _, _, _, _ = s.FullSearch("Diversität")
 	expectFullSearchResult(t, rs, "Diversitat")
-
-	// Cannot normalize Umlauts
-	rs, _, _, _, _ = s.FullSearch("Diversitat", false)
-	expectNoFullSearchResult(t, rs, "Diversitat")
 }
 
-func TestConsidersStopwords(t *testing.T) {
+func TestSearchConsidersStopwords(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
 	n := NewNode(filepath.Join(tmp, "The Diversity"), tmp)
 	n.Create()
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", n)
+	s := setupSearchTest(t, tmp, "en", []*Node{n})
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FullSearch("The", true)
+	rs, _, _, _, _ := s.FullSearch("The")
 	expectNoFullSearchResult(t, rs, "Diversity")
 
-	rs, _, _, _, _ = s.FullSearch("The", false)
+	rs, _, _, _, _ = s.FullSearch("The")
 	expectNoFullSearchResult(t, rs, "Diversity")
 }
 
@@ -168,13 +252,13 @@ func TestSearchFindsAllTagsWhenProvidedAsSlice(t *testing.T) {
 	})
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", n)
+	s := setupSearchTest(t, tmp, "en", []*Node{n})
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FullSearch("foo", false)
+	rs, _, _, _, _ := s.FullSearch("foo")
 	expectFullSearchResult(t, rs, "Diversity")
 
-	rs, _, _, _, _ = s.FullSearch("bar", false)
+	rs, _, _, _, _ = s.FullSearch("bar")
 	expectFullSearchResult(t, rs, "Diversity")
 }
 
@@ -187,13 +271,13 @@ func TestSearchConsidersMultipleDocs(t *testing.T) {
 	n.CreateDoc("1.md", []byte("dolor amet bar"))
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", n)
+	s := setupSearchTest(t, tmp, "en", []*Node{n})
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FullSearch("foo", false)
+	rs, _, _, _, _ := s.FullSearch("foo")
 	expectFullSearchResult(t, rs, "Diversity")
 
-	rs, _, _, _, _ = s.FullSearch("bar", false)
+	rs, _, _, _, _ = s.FullSearch("bar")
 	expectFullSearchResult(t, rs, "Diversity")
 }
 
@@ -205,10 +289,10 @@ func TestSearchConsidersFilenames(t *testing.T) {
 	n.CreateDoc("document.md", []byte("lorem ipsum"))
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", n)
+	s := setupSearchTest(t, tmp, "en", []*Node{n})
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FullSearch("document.md", false)
+	rs, _, _, _, _ := s.FullSearch("document.md")
 	expectFullSearchResult(t, rs, "Diversity")
 }
 
@@ -220,26 +304,39 @@ func TestSearchConsidersTitles(t *testing.T) {
 	n.CreateDoc("document.md", []byte("lorem ipsum"))
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", n)
+	s := setupSearchTest(t, tmp, "en", []*Node{n})
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FullSearch("document", false)
+	rs, _, _, _, _ := s.FullSearch("document")
 	expectFullSearchResult(t, rs, "Diversity")
 }
 
-func setupSearchTest(t *testing.T, tmp string, lang string, node *Node) *Search {
+// Search test helpers:
+
+func setupSearchTest(t *testing.T, tmp string, lang string, nodes []*Node) *Search {
 	t.Helper()
 	log.SetOutput(ioutil.Discard)
 
-	index, _ := bleve.NewMemOnly(NewSearchMapping([]string{lang}))
+	wideIndex, narrowIndex, _ := NewIndexes([]string{lang})
+
+	lookup := make(map[string]*Node)
+	for _, n := range nodes {
+		lookup[n.URL()] = n
+	}
 
 	s := &Search{
 		getNode: func(url string) (bool, *Node, error) {
-			return true, node, nil
+			if n, ok := lookup[url]; ok {
+				return true, n, nil
+			}
+			return false, nil, nil
 		},
 		getAllNodes: func() []*Node {
 			ns := make([]*Node, 0)
-			ns = append(ns, node)
+
+			for _, n := range lookup {
+				ns = append(ns, n)
+			}
 			return ns
 		},
 		getAuthors: func() *Authors {
@@ -247,10 +344,11 @@ func setupSearchTest(t *testing.T, tmp string, lang string, node *Node) *Search 
 			a.Add(&Author{Name: "Randall Hyman", Email: "randall@evilcorp.org"})
 			return a
 		},
-		langs:  []string{lang},
-		index:  index,
-		broker: NewMessageBroker(), // Allow to mount indexer, and to Close()
-		done:   make(chan bool),    // Do not block on Close()
+		langs:       []string{lang},
+		wideIndex:   wideIndex,
+		narrowIndex: narrowIndex,
+		broker:      NewMessageBroker(), // Allow to mount indexer, and to Close()
+		done:        make(chan bool),    // Do not block on Close()
 	}
 	s.IndexTree()
 	return s

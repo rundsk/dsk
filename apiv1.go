@@ -477,7 +477,7 @@ func (api APIv1) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, "application/json"}
 	q := r.URL.Query().Get("q")
 
-	results, total, took, err := api.search.FilterSearch(q, false)
+	results, total, took, err := api.search.LegacyFilterSearch(q, false)
 	if err != nil {
 		wr.Error(HTTPErr, err)
 		return

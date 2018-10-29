@@ -47,9 +47,10 @@ type APIv2SearchHit struct {
 }
 
 type APIv2FilterResults struct {
-	URLs  []string `json:"urls"`
-	Total int      `json:"total"`
-	Took  int64    `json:"took"` // nanoseconds
+	Nodes   []*APIv1RefNode `json:"nodes"`
+	Total   int             `json:"total"`
+	Took    int64           `json:"took"` // nanoseconds
+	IsStale bool            `json:"is_stale"`
 }
 
 func (api APIv2) MountHTTPHandlers() {
@@ -76,12 +77,12 @@ func (api APIv2) NewNodeTreeSearchResults(hs []*SearchHit, total int, took time.
 	return &APIv2SearchResults{hits, total, took.Nanoseconds(), isStale}
 }
 
-func (api APIv2) NewNodeTreeFilterResults(nodes []*Node, total int, took time.Duration) *APIv2FilterResults {
-	urls := make([]string, 0, len(nodes))
+func (api APIv2) NewNodeTreeFilterResults(nodes []*Node, total int, took time.Duration, isStale bool) *APIv2FilterResults {
+	ns := make([]*APIv1RefNode, 0, len(nodes))
 	for _, n := range nodes {
-		urls = append(urls, n.URL())
+		ns = append(ns, &APIv1RefNode{n.URL(), n.Title()})
 	}
-	return &APIv2FilterResults{urls, total, took.Nanoseconds()}
+	return &APIv2FilterResults{ns, total, took.Nanoseconds(), isStale}
 }
 
 // Performs a full broad search over the design defintions tree.
@@ -92,9 +93,8 @@ func (api APIv2) NewNodeTreeFilterResults(nodes []*Node, total int, took time.Du
 func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, "application/json"}
 	q := r.URL.Query().Get("q")
-	isFuzzy := r.URL.Query().Get("fuzzy") == "true"
 
-	results, total, took, isStale, err := api.search.FullSearch(q, isFuzzy)
+	results, total, took, isStale, err := api.search.FullSearch(q)
 	if err != nil {
 		wr.Error(HTTPErr, err)
 		return
@@ -110,13 +110,13 @@ func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 func (api APIv2) FilterHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, "application/json"}
 	q := r.URL.Query().Get("q")
-	isFuzzy := r.URL.Query().Get("fuzzy") == "true"
+	useWideIndex := r.URL.Query().Get("index") == "wide"
 
-	results, total, took, err := api.search.FilterSearch(q, isFuzzy)
+	results, total, took, isStale, err := api.search.FilterSearch(q, useWideIndex)
 	if err != nil {
 		wr.Error(HTTPErr, err)
 		return
 	}
 
-	wr.OK(api.NewNodeTreeFilterResults(results, total, took))
+	wr.OK(api.NewNodeTreeFilterResults(results, total, took, isStale))
 }
