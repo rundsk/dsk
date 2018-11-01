@@ -71,12 +71,15 @@ class Search {
       this.onFilter(this.tree.root, this.query);
       this.render();
     } else {
-      Client.filter(this.query).then((results) => {
-        this.onFilter(this.tree.filteredBy(results.urls).root, this.query);
-        this.total = results.total;
-        this.took = results.took;
-        this.render();
-      });
+      Client.filter(this.query)
+        .then((res) => {
+          let urls = res.nodes.map(n => n.url);
+
+          this.onFilter(this.tree.filteredBy(urls).root, this.query);
+          this.total = res.total;
+          this.took = res.took;
+          this.render();
+        });
     }
   }
 }

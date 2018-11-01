@@ -130,12 +130,16 @@ document.addEventListener('DOMContentLoaded', () => {
       nav.setRoot(tree.root);
       nav.render();
     } else {
-      Client.filter(q).then((results) => {
-        nav.setRoot(tree.filteredBy(results.urls).root);
-        nav.render();
-        search.setStats(results.total, results.took);
-        search.render();
-      });
+      Client.filter(q)
+        .then((res) => {
+          let urls = res.nodes.map(_n => _n.url);
+
+          nav.setRoot(tree.filteredBy(urls).root);
+          nav.render();
+
+          search.setStats(res.total, res.took);
+          search.render();
+        });
     }
   }
 
