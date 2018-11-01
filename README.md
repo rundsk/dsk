@@ -96,11 +96,6 @@ description: >
   sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
   magna aliquyam erat, sed diam voluptua.
 
-keywords: 
-  - typography
-  - font
-  - type
-
 related:
   - DataEntry/TextField
 
@@ -116,7 +111,6 @@ Possible meta data keys are:
 
 - `authors`: An array of email addresses of the document authors; see below.
 - `description`: A single sentence that roughly describes the design aspect.
-- `keywords`: An array of terms that are searched in addition to `tags`.
 - `related`: An array of related aspect URLs within DSK.
 - `tags`: An array of tags to group related aspects together.
 - `version`: A freeform version string.

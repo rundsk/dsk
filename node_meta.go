@@ -17,14 +17,17 @@ import (
 // Metadata parsed from node configuration.
 type NodeMeta struct {
 	path string
+
 	// Email addresses of node authors.
 	Authors     []string `json:"authors,omitempty" yaml:"authors,omitempty"`
 	Description string   `json:"description,omitempty" yaml:"description,omitempty"`
-	Keywords    []string `json:"keywords,omitempty" yaml:"keywords,omitempty"`
 	Related     []string `json:"related,omitempty" yaml:"related,omitempty"`
 	Tags        []string `json:"tags,omitempty" yaml:"tags,omitempty"`
 	// Freeform version string.
 	Version string `json:"version,omitempty" yaml:"version,omitempty"`
+
+	// Deprecated:
+	Keywords []string `json:"keywords,omitempty" yaml:"keywords,omitempty"`
 }
 
 func (m *NodeMeta) Create() error {

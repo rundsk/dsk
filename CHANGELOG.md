@@ -10,6 +10,7 @@
 - Require Go v1.11, drop support for Go v1.9 and v1.10
 - Improve transliteration when creating node slugs
 - Normalize strings when they are read from the filesystem, fixes #48.
+- Deprecate `keywords` in meta data
 
 ## [1.0.2] 2018-09-06
 
