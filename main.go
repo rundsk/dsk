@@ -88,7 +88,7 @@ func main() {
 	port := flag.String("port", "8080", "port to bind to")
 	version := flag.Bool("version", false, "print DSK version")
 	noColor := flag.Bool("no-color", false, "disables color output")
-	flang := flag.String("lang", "en", "language; separate multiple languages by commas")
+	flang := flag.String("lang", "en", "language; separate multiple by commas, first is primary")
 	flag.Parse()
 
 	// Used for configuring search.
