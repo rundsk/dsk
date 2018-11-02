@@ -89,7 +89,6 @@ func (api APIv2) NewNodeTreeFilterResults(nodes []*Node, total int, took time.Du
 //
 // Handles this URL:
 //   /api/v2/search?q={query}
-//   /api/v2/search?q={query}&fuzzy=true
 func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, "application/json"}
 	q := r.URL.Query().Get("q")
@@ -105,8 +104,9 @@ func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 // Performs a restricted narrow search over the design defintions tree.
 //
-// Handles this URL:
+// Handles these URLs:
 //   /api/v2/filter?q={query}
+//   /api/v2/filter?q={query}&index=wide
 func (api APIv2) FilterHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, "application/json"}
 	q := r.URL.Query().Get("q")
