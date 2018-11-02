@@ -1,6 +1,11 @@
 # Changelog
 
-## [1.1.0] Unreleased
+## 1.1.0 Unreleased
+
+The first minor release following the release of 1.0.0, featuring a 
+brandnew search build on top of the go native 
+[bleve](https://github.com/blevesearch/bleve) 
+and laying foundation by adding initial Git support.
 
 - Add HTTP APIv2
 - Introduce full search in APIv2, #44
@@ -17,16 +22,23 @@
 - Add initial Git support and read modified dates from it, if possible
 - Replace go-bindata build time dependency with vfsgen, fixes #40 and #49
 - Require Go v1.11, drop support for Go v1.9 and v1.10
+- Use go modules in favor of of go dep
 - Improve transliteration when creating node slugs
 - Normalize strings when they are read from the filesystem, fixes #48.
 - Deprecate `keywords` in meta data
 
-## [1.0.2] 2018-09-06
+Thanks to [Zach Wegrzyniak](https://github.com/wegry/) for contributing to 
+the search implementation and edge-testing the Git foundations.
+
+## 1.0.2 2018-09-06
 
 - Add support for Go v1.11
 
-## [1.0.1] 2018-06-27
+## 1.0.1 2018-06-27
 
 - Normalize strings when they are read from the filesystem, fixes #48.
 
-## [1.0.0] 2018-05-15
+## 1.0.0 2018-05-15
+
+This is the first stable release of DSK, which we introduce in the
+[release announcement post](https://atelierdisko.de/journal/post-167-dsk).
