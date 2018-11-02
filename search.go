@@ -387,7 +387,7 @@ func (s *Search) FilterSearch(q string, useWideIndex bool) ([]*Node, int, time.D
 //
 // A new filter search has been introduced for APIv2, which we can't
 // simply switch into a APIv1 backwards compatible maintaining mode.
-func (s *Search) LegacyFilterSearch(q string, fuzzy bool) ([]*Node, int, time.Duration, error) {
+func (s *Search) LegacyFilterSearch(q string) ([]*Node, int, time.Duration, error) {
 	start := time.Now()
 
 	var results []*Node
