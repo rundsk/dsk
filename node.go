@@ -213,6 +213,29 @@ func (n *Node) Title() string {
 	return removeOrderNumber(norm.NFC.String(filepath.Base(n.path)))
 }
 
+// TitleURL returns all titles of this node's parents and the node's
+// title concatenated by dashes. Does not look at parent titles, but
+// instead derives the titles from the URL for speed and less lock
+// contention (we'd need to lock our way up and potentially the whole
+// tree). This method is very similar to normalizeNodeURL(), but does
+// not "slug" the URL.
+func (n *Node) TitleURL() string {
+	var normalized []string
+
+	url := strings.TrimPrefix(n.path, n.root+"/")
+	for _, p := range strings.Split(url, "/") {
+		if p == "/" {
+			continue
+		}
+		p = norm.NFC.String(p)
+		p = removeOrderNumber(p)
+		p = unidecode.Unidecode(p)
+
+		normalized = append(normalized, p)
+	}
+	return strings.Join(normalized, "/")
+}
+
 // Returns the full description of the node.
 func (n *Node) Description() string {
 	return n.meta.Description
