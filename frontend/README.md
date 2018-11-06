@@ -2,19 +2,19 @@
 
 This is the frontend being used by default by DSK. 
 
-We build it using vanilla JavaScript utilizing modern web technologies, so
-that first the code can be understood without expert knowledge of specific
-frameworks, libraries or (sometimes very complicated) transpilation processes.
-We hope that custom frontend authors find the code a good kind of documentation
-when building their own. Second, we want to test how far vanilly JavaScript and
-web technologies today can take us.
+We are using vanilla JavaScript utilizing modern web technologies to build
+it, so that - first - the code can be understood without expert knowledge of
+specific frameworks, libraries or (sometimes very complicated) transpilation
+processes. We hope that custom frontend authors find the code a good kind of
+documentation when building their own. Second - we want to test how far this
+development concept can take us today.
 
 The frontend interacts with the DSK backend using its HTTP API. It accesses
 that API via the `Client` JavaScript class from the DSK JavaScript package in
 `js/dsk`. 
 
 The DSK JavaScript package contains other usefull utilities, like `Tree`, that
-help with traversing and filtering tree, i.e. for the filter navigation. The
+help with traversing and filtering trees, i.e. for the filter navigation. The
 package can be separately installed via `npm install @atelierdisko/dsk`.
 
 ## Requirements
