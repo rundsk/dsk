@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.0 Unreleased
+
+- The frontend now uses ES modules
+- `frontend/js/dsk` is now a package
+
 ## 1.1.0 Unreleased
 
 The first minor release following the release of 1.0.0, featuring a 
