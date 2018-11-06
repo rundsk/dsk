@@ -5,6 +5,7 @@
   "env": {"browser": true},
   "rules": {
     "import/no-named-as-default-member": "off",
+    "import/extensions": "off",
     "react/prop-types": "off",
     "no-console": "off",
     "prefer-destructuring": "off",

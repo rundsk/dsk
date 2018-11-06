@@ -17,7 +17,7 @@ navigation.
 
 ## Requirements
 
-DSK APIv2 and a browser that supports ES6.
+DSK APIv2 and a browser that supports ES6 and ES modules.
 
 ## Copyright & License
 

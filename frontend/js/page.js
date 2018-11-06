@@ -5,10 +5,11 @@
  * license that can be found in the LICENSE file.
  */
 
-/* globals Client: false */
 /* globals Prism: false */
 
-class Page {
+import Client from './dsk/Client.js';
+
+export default class Page {
   constructor(main, props) {
     this.main = main;
 

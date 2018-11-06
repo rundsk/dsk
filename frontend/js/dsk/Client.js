@@ -3,8 +3,8 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-// Client for accessing the dsk APIv2.
-class Client {
+// Client for accessing the DSK APIv2.
+export default class Client {
   static hello() {
     return this.fetch('/api/v2/hello');
   }

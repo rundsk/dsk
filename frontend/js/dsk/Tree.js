@@ -3,10 +3,12 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
+import Client from './Client.js';
+
 // Tree data structure for working with responses from the dsk API.
 //
 // https://en.wikipedia.org/wiki/Tree_traversal
-class Tree {
+export default class Tree {
   constructor(root) {
     this.root = root;
   }

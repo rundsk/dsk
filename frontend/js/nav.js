@@ -5,7 +5,7 @@
  * license that can be found in the LICENSE file.
  */
 
-class Nav {
+export default class Nav {
   constructor(nav, props) {
     this.nav = nav;
     this.onNavigate = props.onNavigate;

@@ -5,9 +5,9 @@
  * license that can be found in the LICENSE file.
  */
 
-/* globals Client: false */
+import Client from './dsk/Client.js';
 
-class Search {
+export default class Search {
   constructor(field, clear, stats, tree, props) {
     this.field = field;
     this.clear = clear;

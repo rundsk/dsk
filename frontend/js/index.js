@@ -5,12 +5,13 @@
  * license that can be found in the LICENSE file.
  */
 
-/* globals Nav: false */
-/* globals Page: false */
-/* globals Search: false */
-/* globals Tree: false */
-/* globals Client: false */
 /* globals URLSearchParams: false */
+
+import Client from './dsk/Client.js';
+import Tree from './dsk/Tree.js';
+import Nav from './Nav.js';
+import Page from './Page.js';
+import Search from './Search.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const $1 = document.querySelector.bind(document);
