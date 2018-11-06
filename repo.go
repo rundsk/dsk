@@ -235,7 +235,7 @@ Outer:
 		prevTree = currentTree
 	}
 
-	log.Printf("Built repository lookup table in %s with %d entries", time.Since(start), len(r.lookup))
+	log.Printf("Created repository lookup table with %d object/s in %s", len(r.lookup), time.Since(start))
 	return nil
 }
 
