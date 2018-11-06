@@ -1,13 +1,13 @@
-# Builtin DSK Frontend
+# Built-in DSK Frontend
 
 This is the frontend being used by default by DSK. 
 
-We are using vanilla JavaScript utilizing modern web technologies to build
-it, so that - first - the code can be understood without expert knowledge of
-specific frameworks, libraries or (sometimes very complicated) transpilation
-processes. We hope that custom frontend authors find the code a good kind of
-documentation when building their own. Second - we want to test how far this
-development concept can take us today.
+We are using vanilla JavaScript and utilize modern web technologies for
+development, so that - first - the code can be understood without expert
+knowledge of specific frameworks, libraries or (sometimes very complicated)
+transpilation processes. We hope that custom frontend authors find the code a
+good kind of documentation when building their own. Second - we want to test how
+far this development concept can take us today.
 
 The frontend interacts with the DSK backend using its HTTP API. It accesses
 that API via the `Client` JavaScript class from the DSK JavaScript package in

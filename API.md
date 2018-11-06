@@ -43,7 +43,7 @@ enabled using a query parameter (i.e. `?q=foo&index=wide`).
 returns all matched results without pagination and weighting. Each result is
 unique in the set and the total number of results and cannot exceed the number
 of total nodes in the tree. We created `filter` for the purpose to drive the
-left hand tree navigation of the builtin frontend.
+left hand tree navigation of the built-in frontend.
 
 `search` does a lot more work before actually matching, by analyzing context
 and content thoroughly. We imagine that even information about actual search

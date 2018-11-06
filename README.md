@@ -163,7 +163,7 @@ it usable as a publicly hosted web application or a locally running design tool.
 ## Building your own Frontend 
 
 The following sections describe everything you need to know when building your own frontend
-and bundle it with the `dsk` binary. By default DSK uses a builtin minimal frontend. The default frontend
+and bundle it with the `dsk` binary. By default DSK uses a built-in minimal frontend. The default frontend
 is a good starting point when developing your own. It can be found in the `frontend` directory of
 this project.
 
@@ -228,7 +228,7 @@ $ make dev
 To run the unit tests use `make test`, to run the benchmarks use `make bench`,
 for performance profiling run `make profile`.
 
-When updating the files of the builtin frontend, the file `frontend_vfsdata.go`
+When updating the files of the built-in frontend, the file `frontend_vfsdata.go`
 also needs to be remade. Run `make frontend_vfsdata.go` to do so. The file is 
 provided to make DSK go gettable.
 
