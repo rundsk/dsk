@@ -380,7 +380,7 @@ func teardownSearchTest(tmp string, s *Search) {
 	log.SetOutput(os.Stderr)
 }
 
-func expectFullSearchResult(t *testing.T, hits []*SearchHit, url string) {
+func expectFullSearchResult(t *testing.T, hits []*FullSearchHit, url string) {
 	t.Helper()
 
 	for _, hit := range hits {
@@ -391,7 +391,7 @@ func expectFullSearchResult(t *testing.T, hits []*SearchHit, url string) {
 	t.Errorf("Expected '%s', but not included in results", url)
 }
 
-func expectNoFullSearchResult(t *testing.T, hits []*SearchHit, url string) {
+func expectNoFullSearchResult(t *testing.T, hits []*FullSearchHit, url string) {
 	t.Helper()
 
 	for _, hit := range hits {
@@ -401,7 +401,7 @@ func expectNoFullSearchResult(t *testing.T, hits []*SearchHit, url string) {
 	}
 }
 
-func hasFullSearchResult(t *testing.T, hits []*SearchHit, url string) bool {
+func hasFullSearchResult(t *testing.T, hits []*FullSearchHit, url string) bool {
 	t.Helper()
 
 	for _, hit := range hits {
