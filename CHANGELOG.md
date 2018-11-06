@@ -26,6 +26,7 @@ and laying foundation by adding initial Git support.
 - Improve transliteration when creating node slugs
 - Normalize strings when they are read from the filesystem, fixes #48.
 - Deprecate `keywords` in meta data
+- Rewrite built-in frontend
 
 Thanks to [Zach Wegrzyniak](https://github.com/wegry/) for contributing to 
 the search implementation and edge-testing the Git foundations.

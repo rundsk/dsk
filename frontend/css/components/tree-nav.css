@@ -1,0 +1,81 @@
+/*!
+ * Copyright 2018 Atelier Disko. All rights reserved.
+ *
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+
+ .tree-nav {
+  flex-grow: 1;
+  overflow-y: auto;
+
+  background-color: var(--color-gray-1000);
+  padding: 4rem 2rem;
+  padding-top: 56px;
+}
+
+/* All ul */
+.tree-nav ul {
+  margin-left: 3rem;
+  list-style: none;
+}
+
+.tree-nav ul li a {
+  text-decoration: none;
+  color: inherit;
+  transition: color .3s;
+  width: 100%;
+  display: inline-block;
+  line-height: 1.6em;
+  padding-bottom: .4rem;
+}
+
+.tree-nav ul li a:hover {
+  color: var(--color-blue);
+}
+
+.tree-nav ul li.is-active > a {
+  color: var(--color-blue);
+}
+
+/* Top Level ul */
+.tree-nav > ul {
+  margin-left: 0;
+}
+
+.tree-nav > ul > li {
+  margin-bottom: 4rem;
+  font-weight: bold;
+}
+
+/* Lower Level ul */
+.tree-nav ul ul li {
+  font-weight: 400;
+}
+
+.tree-nav ul ul li::before, .tree-nav ul ul li a::before {
+  display: inline-block;
+  width: 1em;
+  position: absolute;
+  top: 0em;
+  left: -1.3em;
+  text-align: right;
+}
+
+.tree-nav ul ul li::before {
+  content: "—";
+  visibility: visible;
+}
+
+.tree-nav ul ul li:hover::before, .tree-nav ul ul li.is-active::before {
+  visibility: hidden;
+}
+
+.tree-nav ul ul li a::before {
+  content: "→";
+  visibility: hidden;
+}
+
+.tree-nav ul ul li:hover > a::before, .tree-nav ul ul li.is-active > a::before {
+  visibility: visible;
+}

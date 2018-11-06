@@ -1,0 +1,62 @@
+/*!
+ * Copyright 2018 Atelier Disko. All rights reserved.
+ *
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+
+
+/* Sans */
+.t-alpha-sans {
+  font-family: var(--font-family-sans);
+  font-size: 48px;
+  line-height: 60px;
+}
+
+.t-alpha-sans-bold {
+  font-family: var(--font-family-sans);
+  font-weight: bold;
+  font-size: 48px;
+  line-height: 60px;
+}
+
+.t-beta-sans {
+  font-family: var(--font-family-sans);
+  font-size: 28px;
+  line-height: 44px;
+}
+
+.t-gamma-sans {
+   font-family: var(--font-family-sans);
+   font-size: 16px;
+   line-height: 28px;
+}
+
+.t-gamma-sans-bold {
+  font-family: var(--font-family-sans);
+  font-size: 16px;
+  line-height: 28px;
+  font-weight: bold;
+}
+
+.t-delta-sans {
+  font-family: var(--font-family-sans);
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.t-delta-sans-bold {
+  font-family: var(--font-family-sans);
+  font-weight: bold;
+  font-size: 11px;
+  line-height: 20px;
+  letter-spacing: 0.06em;
+}
+
+/* Mono */
+
+.t-gamma-mono {
+  font-family: var(--font-family-mono);
+  font-size: 16px;
+  line-height: 32px;
+}

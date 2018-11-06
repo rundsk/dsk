@@ -1,0 +1,223 @@
+/*!
+ * Copyright 2018 Atelier Disko. All rights reserved.
+ *
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+
+/* --- Doc Styling --- */
+
+.doc {
+  width: 100%;
+}
+
+.doc h1, .doc h2, .doc p, .doc li, .doc blockquote {
+  max-width: calc(70px * var(--spacing-base-unit));
+}
+
+/* Headings */
+
+.doc h1 {
+  margin-bottom: calc(2px * var(--spacing-base-unit));
+  margin-top: calc(8px * var(--spacing-base-unit));
+  font-family: var(--font-family-sans);
+  font-size: 16px;
+  line-height: 32px;
+  font-weight: bold;
+}
+
+.doc h2 {
+  color: var(--color-gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  margin-top: calc(6px * var(--spacing-base-unit));
+  margin-bottom: calc(2px * var(--spacing-base-unit)/2);
+  font-family: var(--font-family-sans);
+  font-weight: bold;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.doc h1:first-child, .doc h2:first-child {
+  margin-top: 0;
+}
+
+/* Paragraphs */
+
+.doc p {
+  margin-bottom: calc(2px * var(--spacing-base-unit));
+  font-family: var(--font-family-sans);
+}
+
+.doc p:last-child {
+  margin-bottom: 0;
+}
+
+/* Links */
+
+.doc a {
+  color: inherit;
+}
+
+/* Internal Link */
+
+.doc a[data-node] {
+  cursor: pointer;
+  background-color: var(--color-gray-900);
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  padding: .8em .8em .6em .8em;
+  border-radius: .25rem;
+}
+
+/* List */
+
+.doc ul {
+  margin-left: -4rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.doc ul ul {
+  margin-left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.doc ul li {
+  margin: .5rem 0 .5rem 4rem;
+}
+
+/* Table */
+
+.doc table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 4rem 0;
+}
+
+.doc table:last-child {
+  margin-bottom: 0;
+}
+
+.doc table td, .doc table th {
+  text-align: left;
+  padding: 1rem 4rem .75rem 0;
+  vertical-align: top;
+}
+
+.doc table td:last-child, .doc table th:last-child {
+  padding-right: 0;
+}
+
+.doc table th {
+  font-size: 12px;
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+}
+
+.doc table tr {
+  border-bottom: 1px dotted var( --color-gray-800);
+}
+
+.doc table tbody tr:last-child {
+  border-bottom: none;
+}
+
+/* Horizontal Rule */
+
+.doc hr {
+  margin: 3rem 0;
+  padding: 0;
+  border: none;
+  border-bottom: 1px dotted var( --color-gray-800);
+}
+
+/* Code & Codeblock */
+
+.source__code code,
+.doc code {
+  color: var(--color-gray-200);
+  background-color: var(--color-gray-1000);
+  border: 2px solid var(--color-gray-1000);
+  border-left-width: 5px;
+  border-right-width: 5px;
+  border-radius: 3px;
+  font-family: "SF Mono", "Monaco", monospace;
+  font-size: .82em;
+  letter-spacing: 0.03em;
+  line-height: 1.2em;
+  font-weight: normal;
+}
+
+.source__code,
+.doc pre {
+  margin: 3rem 0;
+  background-color: var(--color-gray-1000);
+  border: 1px solid var(--color-gray-900);
+  padding: 2rem;
+  border-radius: 3px;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.source__code code,
+.doc pre code {
+  background-color: transparent;
+  border: none;
+}
+
+/* Images */
+
+.doc img, .doc video {
+  max-width: 100%;
+  height: auto;
+  margin-top: calc(4px * var(--spacing-base-unit));
+  margin-bottom: calc(4px * var(--spacing-base-unit));
+}
+
+.doc p > img, .doc p > video {
+  margin-bottom: calc(2px * var(--spacing-base-unit));
+}
+
+/* Blockquote */
+
+.doc blockquote {
+  border-left: 2px solid var(--color-cyan);
+  color: var(--color-gray-500);
+  padding-left: 1.5rem;
+  margin-left: -1.6rem;
+  padding-top: .3em;
+  margin-bottom: 1.7rem;
+}
+
+/* Print */
+
+@media print {
+  .doc img:first-child {
+    max-height: 450px;
+    width: auto;
+  }
+
+  .doc pre {
+    border: 1px solid var(--color-gray-900);
+  }
+
+  .doc code {
+    border: none;
+  }
+
+  .doc table tr {
+    border-bottom-style: solid;
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  .doc table td {
+    page-break-inside: avoid;
+  }
+}

@@ -1,0 +1,27 @@
+/*!
+ * Copyright 2018 Atelier Disko. All rights reserved.
+ *
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+
+
+/* Unit base is 8 pixels */
+
+
+/* Paddings */
+
+.cp--v1 {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+/* Margins */
+.cm--v1 {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.cm--v2-bottom {
+  margin-bottom: 16px;
+}

@@ -1,0 +1,40 @@
+/*!
+ * Copyright 2018 Atelier Disko. All rights reserved.
+ *
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+
+.tags {
+  user-select: none;
+  list-style: none;
+  padding-top: calc(2px * var(--spacing-base-unit));
+}
+
+.tags__tag {
+  display: inline-block;
+  user-select: none;
+  margin-right: 8px;
+}
+.tags__tag a {
+  background-color: var(--color-cyan);
+  color: var(--color-white);
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 10px;
+  line-height: 20px;
+  letter-spacing: 0.12em;
+
+  padding: .8em .8em .6em .8em;
+  border-radius: 3px;
+}
+
+@media print {
+  .tags__tag a {
+    padding: 0;
+    margin-right: 1rem;
+    background-color: transparent;
+    color: var( --color-gray-800);
+  }
+}
