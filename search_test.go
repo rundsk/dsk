@@ -97,6 +97,26 @@ func TestFullSearchDocumentContents(t *testing.T) {
 
 // Tests for FilterSearch:
 
+func TestFilterSearchPrefixes(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n.Create()
+	n.Load()
+
+	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FilterSearch("c", false)
+	expectFilterSearchResult(t, rs, "Colors")
+
+	rs, _, _, _, _ = s.FilterSearch("co", false)
+	expectFilterSearchResult(t, rs, "Colors")
+
+	rs, _, _, _, _ = s.FilterSearch("col", false)
+	expectFilterSearchResult(t, rs, "Colors")
+}
+
 func TestFilterSearchWordPartials(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
