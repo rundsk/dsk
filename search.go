@@ -218,11 +218,25 @@ func (s *Search) Close() error {
 func (s *Search) IndexTree() error {
 	start := time.Now()
 
+	wideBatch := s.wideIndex.NewBatch()
+	narrowBatch := s.narrowIndex.NewBatch()
+
 	for _, n := range s.getAllNodes() {
-		if err := s.IndexNode(n); err != nil {
+		if err := s.IndexNode(n, wideBatch, narrowBatch); err != nil {
 			return err
 		}
 	}
+
+	var err error
+	err = s.wideIndex.Batch(wideBatch)
+	if err != nil {
+		return err
+	}
+	err = s.narrowIndex.Batch(narrowBatch)
+	if err != nil {
+		return err
+	}
+
 	took := time.Since(start)
 
 	log.Printf("Indexed tree for search in %s", took)
@@ -232,7 +246,7 @@ func (s *Search) IndexTree() error {
 	return nil
 }
 
-func (s *Search) IndexNode(n *Node) error {
+func (s *Search) IndexNode(n *Node, wideBatch, narrowBatch *bleve.Batch) error {
 	var as []string
 	var ts []string
 	var fs []string
@@ -295,12 +309,12 @@ func (s *Search) IndexNode(n *Node) error {
 	}
 
 	s.RLock()
-	s.wideIndex.Index(n.URL(), wideData)
-	s.narrowIndex.Index(n.URL(), narrowData)
+	wideBatch.Index(n.URL(), wideData)
+	narrowBatch.Index(n.URL(), narrowData)
 	s.RUnlock()
 
 	for _, v := range n.Children {
-		s.IndexNode(v)
+		s.IndexNode(v, wideBatch, narrowBatch)
 	}
 	return nil
 }
