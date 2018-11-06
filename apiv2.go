@@ -31,15 +31,10 @@ type APIv2 struct {
 // APIv2SearchResults differs from APIv2FilterResults in some
 // important ways: The results may be paginated. FilterResults always
 // contains all found results in form of a list of node URLs.
-//
-// The IsStale flag can be used to detect if a stale index was used
-// when querying for results. We allow the search index to become
-// slightly stale.
 type APIv2SearchResults struct {
-	Hits    []*APIv2SearchHit `json:"hits"`
-	Total   int               `json:"total"`
-	Took    int64             `json:"took"` // nanoseconds
-	IsStale bool              `json:"is_stale"`
+	Hits  []*APIv2SearchHit `json:"hits"`
+	Total int               `json:"total"`
+	Took  int64             `json:"took"` // nanoseconds
 }
 
 type APIv2SearchHit struct {
@@ -47,10 +42,9 @@ type APIv2SearchHit struct {
 }
 
 type APIv2FilterResults struct {
-	Nodes   []*APIv1RefNode `json:"nodes"`
-	Total   int             `json:"total"`
-	Took    int64           `json:"took"` // nanoseconds
-	IsStale bool            `json:"is_stale"`
+	Nodes []*APIv1RefNode `json:"nodes"`
+	Total int             `json:"total"`
+	Took  int64           `json:"took"` // nanoseconds
 }
 
 func (api APIv2) MountHTTPHandlers() {
@@ -68,21 +62,21 @@ func (api APIv2) MountHTTPHandlers() {
 	http.HandleFunc("/api/v2/messages", api.v1.MessagesHandler)
 }
 
-func (api APIv2) NewNodeTreeSearchResults(hs []*SearchHit, total int, took time.Duration, isStale bool) *APIv2SearchResults {
+func (api APIv2) NewNodeTreeSearchResults(hs []*SearchHit, total int, took time.Duration) *APIv2SearchResults {
 	hits := make([]*APIv2SearchHit, 0, len(hs))
 
 	for _, hit := range hs {
 		hits = append(hits, &APIv2SearchHit{hit.Node.URL()})
 	}
-	return &APIv2SearchResults{hits, total, took.Nanoseconds(), isStale}
+	return &APIv2SearchResults{hits, total, took.Nanoseconds()}
 }
 
-func (api APIv2) NewNodeTreeFilterResults(nodes []*Node, total int, took time.Duration, isStale bool) *APIv2FilterResults {
+func (api APIv2) NewNodeTreeFilterResults(nodes []*Node, total int, took time.Duration) *APIv2FilterResults {
 	ns := make([]*APIv1RefNode, 0, len(nodes))
 	for _, n := range nodes {
 		ns = append(ns, &APIv1RefNode{n.URL(), n.Title()})
 	}
-	return &APIv2FilterResults{ns, total, took.Nanoseconds(), isStale}
+	return &APIv2FilterResults{ns, total, took.Nanoseconds()}
 }
 
 // Performs a full broad search over the design defintions tree.
@@ -93,13 +87,13 @@ func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, "application/json"}
 	q := r.URL.Query().Get("q")
 
-	results, total, took, isStale, err := api.search.FullSearch(q)
+	results, total, took, _, err := api.search.FullSearch(q)
 	if err != nil {
 		wr.Error(HTTPErr, err)
 		return
 	}
 
-	wr.OK(api.NewNodeTreeSearchResults(results, total, took, isStale))
+	wr.OK(api.NewNodeTreeSearchResults(results, total, took))
 }
 
 // Performs a restricted narrow search over the design defintions tree.
@@ -112,11 +106,11 @@ func (api APIv2) FilterHandler(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("q")
 	useWideIndex := r.URL.Query().Get("index") == "wide"
 
-	results, total, took, isStale, err := api.search.FilterSearch(q, useWideIndex)
+	results, total, took, _, err := api.search.FilterSearch(q, useWideIndex)
 	if err != nil {
 		wr.Error(HTTPErr, err)
 		return
 	}
 
-	wr.OK(api.NewNodeTreeFilterResults(results, total, took, isStale))
+	wr.OK(api.NewNodeTreeFilterResults(results, total, took))
 }
