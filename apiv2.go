@@ -28,10 +28,10 @@ type APIv2 struct {
 	search *Search
 }
 
-// APIv2SearchResults differs from APIv2FilterResults in some
+// APIv2FullSearchResults differs from APIv2FilterResults in some
 // important ways: The results may be paginated. FilterResults always
 // contains all found results in form of a list of node URLs.
-type APIv2SearchResults struct {
+type APIv2FullSearchResults struct {
 	Hits  []*APIv2FullSearchHit `json:"hits"`
 	Total int               `json:"total"`
 	Took  int64             `json:"took"` // nanoseconds
@@ -62,13 +62,13 @@ func (api APIv2) MountHTTPHandlers() {
 	http.HandleFunc("/api/v2/messages", api.v1.MessagesHandler)
 }
 
-func (api APIv2) NewNodeTreeSearchResults(hs []*FullSearchHit, total int, took time.Duration) *APIv2SearchResults {
+func (api APIv2) NewNodeTreeSearchResults(hs []*FullSearchHit, total int, took time.Duration) *APIv2FullSearchResults {
 	hits := make([]*APIv2FullSearchHit, 0, len(hs))
 
 	for _, hit := range hs {
 		hits = append(hits, &APIv2FullSearchHit{&APIv1RefNode{hit.Node.URL(), hit.Node.Title()}})
 	}
-	return &APIv2SearchResults{hits, total, took.Nanoseconds()}
+	return &APIv2FullSearchResults{hits, total, took.Nanoseconds()}
 }
 
 func (api APIv2) NewNodeTreeFilterResults(nodes []*Node, total int, took time.Duration) *APIv2FilterResults {
