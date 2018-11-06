@@ -38,7 +38,7 @@ type APIv2SearchResults struct {
 }
 
 type APIv2SearchHit struct {
-	URL string `json:"url"`
+	Node *APIv1RefNode `json:"node"`
 }
 
 type APIv2FilterResults struct {
@@ -66,7 +66,7 @@ func (api APIv2) NewNodeTreeSearchResults(hs []*SearchHit, total int, took time.
 	hits := make([]*APIv2SearchHit, 0, len(hs))
 
 	for _, hit := range hs {
-		hits = append(hits, &APIv2SearchHit{hit.Node.URL()})
+		hits = append(hits, &APIv2SearchHit{&APIv1RefNode{hit.Node.URL(), hit.Node.Title()}})
 	}
 	return &APIv2SearchResults{hits, total, took.Nanoseconds()}
 }
