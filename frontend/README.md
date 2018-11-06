@@ -10,10 +10,12 @@ when building their own. Second, we want to test how far vanilly JavaScript and
 web technologies today can take us.
 
 The frontend interacts with the DSK backend using its HTTP API. It accesses
-that API via the `Client` JavaScript class from the DSK JavaScript module in
-`js/dsk`. The DSK JavaScript module contains other usefull utilities, like
-`Tree`, that help with traversing and filtering tree, i.e. for the filter
-navigation.
+that API via the `Client` JavaScript class from the DSK JavaScript package in
+`js/dsk`. 
+
+The DSK JavaScript package contains other usefull utilities, like `Tree`, that
+help with traversing and filtering tree, i.e. for the filter navigation. The
+package can be separately installed via `npm install @atelierdisko/dsk`.
 
 ## Requirements
 
