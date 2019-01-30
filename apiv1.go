@@ -264,6 +264,10 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 }
 
 func (api APIv1) NewTreeNode(n *Node) (*APIv1TreeNode, error) {
+	if n.hidden {
+		return nil, nil
+	}
+
 	hash, err := n.Hash()
 	if err != nil {
 		return nil, err
@@ -275,7 +279,10 @@ func (api APIv1) NewTreeNode(n *Node) (*APIv1TreeNode, error) {
 		if err != nil {
 			return nil, err
 		}
-		children = append(children, n)
+
+		if n != nil {
+			children = append(children, n)
+		}
 	}
 
 	return &APIv1TreeNode{

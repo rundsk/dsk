@@ -20,7 +20,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/mozillazg/go-unidecode"
+	unidecode "github.com/mozillazg/go-unidecode"
 	"golang.org/x/text/unicode/norm"
 )
 
@@ -45,6 +45,9 @@ var (
 	NodePathTitleRegexp        = regexp.MustCompile(`^0?(\d+)[_,-]+(.*)$`)
 	NodePathInvalidCharsRegexp = regexp.MustCompile(`[^A-Za-z0-9-_]`)
 	NodePathMultipleDashRegexp = regexp.MustCompile(`-+`)
+	// NodeHiddenRegexp hides nodes but still includes them in the tree) instead of displaying them in either the tree or assets
+	// if the path contains the following regex.
+	NodeHiddenRegexp = regexp.MustCompile(`hidden[_-]`)
 )
 
 // NewNode constructs a new Node using its path in the filesystem and
@@ -55,6 +58,7 @@ func NewNode(path string, root string) *Node {
 		path:     path,
 		Children: make([]*Node, 0),
 		meta:     &NodeMeta{},
+		hidden:   NodeHiddenRegexp.MatchString(path),
 	}
 }
 
@@ -81,6 +85,9 @@ type Node struct {
 
 	// Cached hash of the node.
 	hash []byte
+
+	// Not shown in tree or assets but still watched and served
+	hidden bool
 }
 
 func (n *Node) Create() error {
@@ -363,10 +370,9 @@ func (n *Node) Assets() ([]*NodeAsset, error) {
 	}
 
 	for _, f := range files {
-		if f.IsDir() {
-			continue
-		}
-		if IgnoreAssetsRegexp.MatchString(f.Name()) {
+		if n.hidden ||
+			f.IsDir() ||
+			IgnoreAssetsRegexp.MatchString(f.Name()) {
 			continue
 		}
 		as = append(as, &NodeAsset{
