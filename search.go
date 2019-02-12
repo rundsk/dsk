@@ -266,7 +266,7 @@ func (s *Search) IndexNode(n *Node, wideBatch, narrowBatch *bleve.Batch) error {
 		return err
 	}
 	for _, doc := range docs {
-		text, err := doc.Text()
+		text, err := doc.CleanText()
 		if err != nil {
 			return err
 		}
@@ -327,8 +327,25 @@ func (s *Search) FullSearch(q string) ([]*SearchHit, int, time.Duration, bool, e
 	defer s.RUnlock()
 
 	mq := bleve.NewMatchQuery(q)
-	mq.SetFuzziness(2)
-	req := bleve.NewSearchRequest(mq)
+	mq.SetFuzziness(1)
+
+	tq := bleve.NewMatchQuery(q)
+	tq.SetField("Titles")
+	tq.SetBoost(2)
+
+	tq2 := bleve.NewPrefixQuery(q)
+	tq2.SetField("Titles")
+	tq2.SetBoost(4)
+
+	dq := bleve.NewDisjunctionQuery(
+		mq,
+		bleve.NewPrefixQuery(q),
+		tq,
+	)
+
+	//fmt.Printf('%v', dq.ParseQuery())
+
+	req := bleve.NewSearchRequest(dq)
 	req.Highlight = bleve.NewHighlight()
 
 	res, err := s.wideIndex.Search(req)

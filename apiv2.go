@@ -9,7 +9,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"path/filepath"
 	"time"
@@ -44,8 +43,10 @@ type APIv2SearchResults struct {
 }
 
 type APIv2SearchHit struct {
-	URL string `json:"url"`
-    Fragments []string      `json:"fragments"`
+	URL         string   `json:"url"`
+	Title       string   `json:"title"`
+	Description string   `json:"description"`
+	Fragments   []string `json:"fragments"`
 }
 
 type APIv2FilterResults struct {
@@ -76,9 +77,6 @@ func (api APIv2) NewNodeTreeSearchResults(hs []*SearchHit, total int, took time.
 	for _, hit := range hs {
 		var fragments []string
 
-		fmt.Printf("%+v\n", hit.Fragments["Description"])
-		fmt.Printf("%+v\n", hit.Fragments["Docs"])
-
 		// We only want fragments from the description or the docs, not title or the files
 		for _, subFragment := range hit.Fragments["Description"] {
 			fragments = append(fragments, subFragment)
@@ -88,7 +86,7 @@ func (api APIv2) NewNodeTreeSearchResults(hs []*SearchHit, total int, took time.
 			fragments = append(fragments, subFragment)
 		}
 
-		hits = append(hits, &APIv2SearchHit{&APIv1RefNode{hit.Node.URL(), hit.Node.Title()}, fragments})
+		hits = append(hits, &APIv2SearchHit{hit.Node.URL(), hit.Node.Title(), hit.Node.Description(), fragments})
 	}
 	return &APIv2SearchResults{hits, total, took.Nanoseconds(), isStale}
 }

@@ -92,6 +92,26 @@ func (d NodeDoc) Text() ([]byte, error) {
 	return nil, fmt.Errorf("Document not in a supported format: %s", prettyPath(d.path))
 }
 
+func (d NodeDoc) CleanText() ([]byte, error) {
+	contents, err := ioutil.ReadFile(d.path)
+	if err != nil {
+		return nil, err
+	}
+
+	switch strings.ToLower(filepath.Ext(d.path)) {
+	case ".md", ".markdown":
+		c, _ := d.parseMarkdown(contents)
+		p := bluemonday.StrictPolicy()
+		return p.SanitizeBytes(c), nil
+	case ".txt":
+		return contents, nil
+	case ".html", ".htm":
+		p := bluemonday.StrictPolicy()
+		return p.SanitizeBytes(contents), nil
+	}
+	return nil, fmt.Errorf("Document not in a supported format: %s", prettyPath(d.path))
+}
+
 // Raw content of the underlying file.
 func (d NodeDoc) Raw() ([]byte, error) {
 	return ioutil.ReadFile(d.path)
