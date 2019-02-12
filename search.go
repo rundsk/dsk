@@ -141,7 +141,8 @@ type Search struct {
 }
 
 type SearchHit struct {
-	Node *Node
+	Node      *Node
+	Fragments map[string][]string
 }
 
 // StartIndexer installs a go routine ("the indexer") that will
@@ -328,6 +329,7 @@ func (s *Search) FullSearch(q string) ([]*SearchHit, int, time.Duration, bool, e
 	mq := bleve.NewMatchQuery(q)
 	mq.SetFuzziness(2)
 	req := bleve.NewSearchRequest(mq)
+	req.Highlight = bleve.NewHighlight()
 
 	res, err := s.wideIndex.Search(req)
 	if err != nil {
@@ -344,7 +346,7 @@ func (s *Search) FullSearch(q string) ([]*SearchHit, int, time.Duration, bool, e
 			log.Printf("Node for hit %s not found, skipping hit", hit.ID)
 			continue
 		}
-		hits = append(hits, &SearchHit{n})
+		hits = append(hits, &SearchHit{n, hit.Fragments})
 	}
 	return hits, int(res.Total), res.Took, s.isStale, nil
 }
