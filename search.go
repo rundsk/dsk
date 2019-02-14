@@ -72,9 +72,9 @@ func NewIndexes(langs []string) (bleve.Index, bleve.Index, error) {
 func NewSearchMapping(langs []string, isWide bool) *mapping.IndexMappingImpl {
 	im := bleve.NewIndexMapping()
 
-	if len(langs) > 0 {
-		im.DefaultAnalyzer = AvailableSearchLangs[langs[0]]
-	}
+	// if len(langs) > 0 {
+	// 	im.DefaultAnalyzer = AvailableSearchLangs[langs[0]]
+	// }
 
 	sm := bleve.NewTextFieldMapping()
 	sm.Analyzer = simple.Name
@@ -89,11 +89,12 @@ func NewSearchMapping(langs []string, isWide bool) *mapping.IndexMappingImpl {
 		tms = append(tms, tm)
 	}
 	node := bleve.NewDocumentMapping()
-	node.DefaultAnalyzer = im.DefaultAnalyzer
+	// node.DefaultAnalyzer = im.DefaultAnalyzer
 
-	node.AddFieldMappingsAt("Titles", tms...)
+	node.AddFieldMappingsAt("Title", sm)
 	node.AddFieldMappingsAt("Tags", sm, km)
 	if isWide {
+		node.AddFieldMappingsAt("Titles", tms...)
 		node.AddFieldMappingsAt("Authors", sm)
 		node.AddFieldMappingsAt("Description", tms...)
 		node.AddFieldMappingsAt("Docs", tms...)
@@ -292,6 +293,7 @@ func (s *Search) IndexNode(n *Node, wideBatch, narrowBatch *bleve.Batch) error {
 		Tags        []string
 		Titles      []string
 		Version     string
+		Title       string
 	}{
 		Authors:     as,
 		Description: n.Description(),
@@ -300,13 +302,14 @@ func (s *Search) IndexNode(n *Node, wideBatch, narrowBatch *bleve.Batch) error {
 		Tags:        n.Tags(),
 		Titles:      titles,
 		Version:     n.Version(),
+		Title:       n.Title(),
 	}
 	narrowData := struct {
-		Tags   []string
-		Titles []string
+		Tags  []string
+		Title string
 	}{
-		Tags:   wideData.Tags,
-		Titles: wideData.Titles,
+		Tags:  wideData.Tags,
+		Title: wideData.Title,
 	}
 
 	s.RLock()
@@ -329,21 +332,22 @@ func (s *Search) FullSearch(q string) ([]*SearchHit, int, time.Duration, bool, e
 	mq := bleve.NewMatchQuery(q)
 	mq.SetFuzziness(1)
 
-	tq := bleve.NewMatchQuery(q)
-	tq.SetField("Titles")
+	pq := bleve.NewPrefixQuery(q)
+
+	tmq := bleve.NewMatchQuery(q)
+	tq.SetField("Title")
 	tq.SetBoost(2)
 
-	tq2 := bleve.NewPrefixQuery(q)
-	tq2.SetField("Titles")
-	tq2.SetBoost(4)
+	tpq := bleve.NewPrefixQuery(q)
+	tpq.SetField("Title")
+	tpq.SetBoost(3)
 
 	dq := bleve.NewDisjunctionQuery(
 		mq,
-		bleve.NewPrefixQuery(q),
-		tq,
+		pq,
+		tmq,
+		tpq,
 	)
-
-	//fmt.Printf('%v', dq.ParseQuery())
 
 	req := bleve.NewSearchRequest(dq)
 	req.Highlight = bleve.NewHighlight()
