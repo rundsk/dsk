@@ -335,8 +335,8 @@ func (s *Search) FullSearch(q string) ([]*SearchHit, int, time.Duration, bool, e
 	pq := bleve.NewPrefixQuery(q)
 
 	tmq := bleve.NewMatchQuery(q)
-	tq.SetField("Title")
-	tq.SetBoost(2)
+	tmq.SetField("Title")
+	tmq.SetBoost(2)
 
 	tpq := bleve.NewPrefixQuery(q)
 	tpq.SetField("Title")
