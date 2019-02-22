@@ -353,12 +353,12 @@ class Page {
         d.classList.add('downloads__item-title');
         a.appendChild(d);
 
-        let modified = new Date(c.modified);
+        let modified = (new Date(c.modified * 1000)).toLocaleDateString();
 
         let p = document.createElement('p');
         p.classList.add('downloads__item-info');
         p.classList.add('t-gamma-sans');
-        p.innerText = `${(c.size / 102400).toFixed(2)} MB — ${modified.toLocaleDateString()}`;
+        p.innerText = `${(c.size / 102400).toFixed(2)} MB — ${modified}`;
         a.appendChild(p);
       });
     }
