@@ -11,7 +11,11 @@
   width: 100%;
 }
 
-.doc h1, .doc h2, .doc p, .doc li, .doc blockquote {
+.doc h1,
+.doc h2,
+.doc p,
+.doc li,
+.doc blockquote {
   max-width: calc(70px * var(--spacing-base-unit));
 }
 
@@ -38,7 +42,8 @@
   line-height: 20px;
 }
 
-.doc h1:first-child, .doc h2:first-child {
+.doc h1:first-child,
+.doc h2:first-child {
   margin-top: 0;
 }
 
@@ -68,9 +73,9 @@
   font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: .1em;
-  padding: .8em .8em .6em .8em;
-  border-radius: .25rem;
+  letter-spacing: 0.1em;
+  padding: 0.8em 0.8em 0.6em 0.8em;
+  border-radius: 0.25rem;
 }
 
 /* List */
@@ -88,7 +93,7 @@
 }
 
 .doc ul li {
-  margin: .5rem 0 .5rem 4rem;
+  margin: 0.5rem 0 0.5rem 4rem;
 }
 
 /* Table */
@@ -103,13 +108,15 @@
   margin-bottom: 0;
 }
 
-.doc table td, .doc table th {
+.doc table td,
+.doc table th {
   text-align: left;
-  padding: 1rem 4rem .75rem 0;
+  padding: 1rem 4rem 0.75rem 0;
   vertical-align: top;
 }
 
-.doc table td:last-child, .doc table th:last-child {
+.doc table td:last-child,
+.doc table th:last-child {
   padding-right: 0;
 }
 
@@ -121,7 +128,7 @@
 }
 
 .doc table tr {
-  border-bottom: 1px dotted var( --color-gray-800);
+  border-bottom: 1px dotted var(--color-gray-800);
 }
 
 .doc table tbody tr:last-child {
@@ -134,7 +141,7 @@
   margin: 3rem 0;
   padding: 0;
   border: none;
-  border-bottom: 1px dotted var( --color-gray-800);
+  border-bottom: 1px dotted var(--color-gray-800);
 }
 
 /* Code & Codeblock */
@@ -148,7 +155,7 @@
   border-right-width: 5px;
   border-radius: 3px;
   font-family: "SF Mono", "Monaco", monospace;
-  font-size: .82em;
+  font-size: 0.82em;
   letter-spacing: 0.03em;
   line-height: 1.2em;
   font-weight: normal;
@@ -173,14 +180,16 @@
 
 /* Images */
 
-.doc img, .doc video {
+.doc img,
+.doc video {
   max-width: 100%;
   height: auto;
   margin-top: calc(4px * var(--spacing-base-unit));
   margin-bottom: calc(4px * var(--spacing-base-unit));
 }
 
-.doc p > img, .doc p > video {
+.doc p > img,
+.doc p > video {
   margin-bottom: calc(2px * var(--spacing-base-unit));
 }
 
@@ -191,7 +200,7 @@
   color: var(--color-gray-500);
   padding-left: 1.5rem;
   margin-left: -1.6rem;
-  padding-top: .3em;
+  padding-top: 0.3em;
   margin-bottom: 1.7rem;
 }
 

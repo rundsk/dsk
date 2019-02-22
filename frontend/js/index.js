@@ -19,18 +19,24 @@ document.addEventListener('DOMContentLoaded', () => {
   let tree = new Tree();
 
   let nav = new Nav($1('.tree-nav'), {
-    onNavigate: navigateToNode,
+    onNavigate: navigateToNode
   });
-  let search = new Search($1('.search__field'), $1('.search__clear'), $1('.search__stats'), tree, {
-    // onFilter set later below.
-  });
+  let search = new Search(
+    $1('.search__field'),
+    $1('.search__clear'),
+    $1('.search__stats'),
+    tree,
+    {
+      // onFilter set later below.
+    }
+  );
   let page = new Page($1('main'), {
     onSearch: (q) => {
       search.setQuery(q);
       search.render();
       search.perform();
     },
-    onNavigate: navigateToNode,
+    onNavigate: navigateToNode
   });
 
   // Capture page and nav.
@@ -38,11 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
     history.replaceState(
       {
         node: page.node,
-        search: q || '',
+        search: q || ''
       },
       '',
       // Every search action can be navigated to, just the "q" part changes.
-      q ? `${window.location.pathname}?q=${q}` : window.location.pathname,
+      q ? `${window.location.pathname}?q=${q}` : window.location.pathname
     );
 
     nav.setRoot(root);
@@ -108,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
         restoreState(params.get('q'), vals[0]);
       });
     });
-  }());
+  })();
 
   // Restore previous state, when navigating back and forth.
   window.addEventListener('popstate', (ev) => {
@@ -130,16 +136,15 @@ document.addEventListener('DOMContentLoaded', () => {
       nav.setRoot(tree.root);
       nav.render();
     } else {
-      Client.filter(q)
-        .then((res) => {
-          let urls = res.nodes.map(_n => _n.url);
+      Client.filter(q).then((res) => {
+        let urls = res.nodes.map((_n) => _n.url);
 
-          nav.setRoot(tree.filteredBy(urls).root);
-          nav.render();
+        nav.setRoot(tree.filteredBy(urls).root);
+        nav.render();
 
-          search.setStats(res.total, res.took);
-          search.render();
-        });
+        search.setStats(res.total, res.took);
+        search.render();
+      });
     }
   }
 
@@ -152,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
       history[replaceState ? 'replaceState' : 'pushState'](
         { node: n, search: q },
         '',
-        q ? `/tree/${nurl}?q=${q}` : `/tree/${nurl}`,
+        q ? `/tree/${nurl}?q=${q}` : `/tree/${nurl}`
       );
 
       page.setNode(n);

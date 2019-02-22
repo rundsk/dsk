@@ -5,7 +5,6 @@
  * license that can be found in the LICENSE file.
  */
 
-
 /* Sans */
 .t-alpha-sans {
   font-family: var(--font-family-sans);
@@ -27,9 +26,9 @@
 }
 
 .t-gamma-sans {
-   font-family: var(--font-family-sans);
-   font-size: 16px;
-   line-height: 28px;
+  font-family: var(--font-family-sans);
+  font-size: 16px;
+  line-height: 28px;
 }
 
 .t-gamma-sans-bold {

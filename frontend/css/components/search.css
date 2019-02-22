@@ -5,9 +5,7 @@
  * license that can be found in the LICENSE file.
  */
 
-
- .search__field-wrapper {
-
+.search__field-wrapper {
 }
 
 .search__field {
@@ -18,7 +16,7 @@
   font-family: inherit;
   font-size: inherit;
   line-height: 1em;
-  border-radius: .5rem;
+  border-radius: 0.5rem;
 }
 
 .search__field:focus {
@@ -47,7 +45,7 @@
 .search__stats {
   margin-top: 1rem;
   margin-bottom: -1rem;
-  margin-left: .5rem;
+  margin-left: 0.5rem;
   font-size: 10px;
   color: white;
   display: none;

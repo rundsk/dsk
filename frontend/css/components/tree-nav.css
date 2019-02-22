@@ -5,7 +5,7 @@
  * license that can be found in the LICENSE file.
  */
 
- .tree-nav {
+.tree-nav {
   flex-grow: 1;
   overflow-y: auto;
 
@@ -23,11 +23,11 @@
 .tree-nav ul li a {
   text-decoration: none;
   color: inherit;
-  transition: color .3s;
+  transition: color 0.3s;
   width: 100%;
   display: inline-block;
   line-height: 1.6em;
-  padding-bottom: .4rem;
+  padding-bottom: 0.4rem;
 }
 
 .tree-nav ul li a:hover {
@@ -53,7 +53,8 @@
   font-weight: 400;
 }
 
-.tree-nav ul ul li::before, .tree-nav ul ul li a::before {
+.tree-nav ul ul li::before,
+.tree-nav ul ul li a::before {
   display: inline-block;
   width: 1em;
   position: absolute;
@@ -67,7 +68,8 @@
   visibility: visible;
 }
 
-.tree-nav ul ul li:hover::before, .tree-nav ul ul li.is-active::before {
+.tree-nav ul ul li:hover::before,
+.tree-nav ul ul li.is-active::before {
   visibility: hidden;
 }
 
@@ -76,6 +78,7 @@
   visibility: hidden;
 }
 
-.tree-nav ul ul li:hover > a::before, .tree-nav ul ul li.is-active > a::before {
+.tree-nav ul ul li:hover > a::before,
+.tree-nav ul ul li.is-active > a::before {
   visibility: visible;
 }

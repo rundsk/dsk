@@ -8,7 +8,6 @@
 /* globals Client: false */
 /* globals Prism: false */
 
-
 class Page {
   constructor(main, props) {
     this.main = main;
@@ -98,13 +97,11 @@ class Page {
     // Always display the tab
     let switches = document.createElement('section');
     switches.classList.add('doc-switches');
-    //docs.appendChild(switches);
     tabContainer.appendChild(switches);
 
     // Metadata Container
     let metaDataContainer = document.createElement('section');
     metaDataContainer.classList.add('meta-data-container');
-    //metaDataContainer.classList.add('remove-styling');
     this.main.appendChild(metaDataContainer);
 
     // Crumbs
@@ -172,7 +169,6 @@ class Page {
 
     // Doc Switcher
     if (this.node.docs.length > 1) {
-
       this.node.docs.sort((a, b) => {
         if (a.title.toLowerCase() === 'readme') {
           return -1;
@@ -221,19 +217,25 @@ class Page {
         docs.appendChild(text);
       });
     } else {
-
       // With no docs, Contents tab option is showed
       let a = document.createElement('a');
-      a.innerText = "Contents";
+
+      a.innerText = 'Contents';
+
       a.classList.add('doc-switch');
       a.classList.add('active');
       a.classList.add('t-gamma-sans');
-      a.href = "#table";
+
+      a.href = '#table';
       switches.appendChild(a);
+
       a.addEventListener('click', (ev) => {
         ev.preventDefault();
+
         this.main.querySelector('.doc-switch.active').classList.remove('active');
+
         a.classList.add('active');
+
         this.main.querySelector('.children-table').classList.toggle('hide');
         this.main.querySelectorAll('.doc').forEach((el) => {
           el.classList.add('hide');
@@ -281,13 +283,14 @@ class Page {
         h1.innerText += 's';
       }
       metaDataContainer.appendChild(h1);
-      this.node.authors.forEach(author => {
+
+      this.node.authors.forEach((author) => {
         let p = document.createElement('p');
         p.classList.add('meta-data-container__info');
         p.classList.add('t-gamma-sans');
         p.innerText = author.name;
         metaDataContainer.appendChild(p);
-      })
+      });
     }
 
     if (this.node.version) {
@@ -296,6 +299,7 @@ class Page {
       h1.classList.add('t-delta-sans-bold');
       h1.innerText = 'version';
       metaDataContainer.appendChild(h1);
+
       let p = document.createElement('p');
       p.classList.add('meta-data-container__info');
       p.classList.add('t-gamma-sans');
@@ -309,10 +313,12 @@ class Page {
       h1.classList.add('t-delta-sans-bold');
       h1.innerText = 'last changed';
       metaDataContainer.appendChild(h1);
+
       let p = document.createElement('p');
       p.classList.add('meta-data-container__info');
       p.classList.add('t-gamma-sans');
-      let modified = new Date(this.node.modified * 1000).toLocaleDateString();
+
+      let modified = (new Date(this.node.modified * 1000)).toLocaleDateString();
       p.innerText = modified;
       metaDataContainer.appendChild(p);
     }
@@ -352,7 +358,7 @@ class Page {
         let p = document.createElement('p');
         p.classList.add('downloads__item-info');
         p.classList.add('t-gamma-sans');
-        p.innerText = (c.size/102400).toFixed(2)+' MB — '+ modified.toLocaleDateString();
+        p.innerText = `${(c.size / 102400).toFixed(2)} MB — ${modified.toLocaleDateString()}`;
         a.appendChild(p);
       });
     }
@@ -370,7 +376,7 @@ class Page {
     let wrap = document.createElement('article');
     wrap.classList.add('hide');
     wrap.classList.add('doc');
-    wrap.id = "source-code";// Put the right id
+    wrap.id = 'source-code';
     source.appendChild(wrap);
 
     let pre = document.createElement('pre');
@@ -403,7 +409,7 @@ class Page {
 
       if (this.node.docs.length) {
         this.main.querySelectorAll('.doc').forEach((el) => {
-          el.classList.add('hide', el.id !== "source-code");
+          el.classList.add('hide', el.id !== 'source-code');
         });
       } else {
         this.main.querySelector('.children-table').classList.add('hide');

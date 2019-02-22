@@ -5,7 +5,6 @@
  * license that can be found in the LICENSE file.
  */
 
-
 .doc-switches {
   border-bottom: 1px solid var(--color-gray-800);
   display: flex;
@@ -20,7 +19,7 @@
   margin-right: calc(2px * var(--spacing-base-unit));
   text-decoration: none;
   border-bottom: 2px solid transparent;
-  transition: all .1s;
+  transition: all 0.1s;
   padding-left: calc(1px * var(--spacing-base-unit));
   padding-right: calc(1px * var(--spacing-base-unit));
 }
@@ -30,7 +29,7 @@
 }
 
 .doc-switch:hover {
-  border-bottom-color: var( --color-gray-800);
+  border-bottom-color: var(--color-gray-800);
 }
 
 .doc-switch.active {
