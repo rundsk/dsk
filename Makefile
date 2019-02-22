@@ -55,13 +55,13 @@ dist/%.tar.gz: | dist/%.tar
 	gzip $(basename $@)
 
 dist/%-darwin-amd64: $(ANY_DEPS) frontend_vfsdata.go
-	GOOS=darwin GOARCH=amd64 go build -ldflags "$(GOFLAGS) -s -w" -o $@
+	GOOS=darwin GOARCH=amd64 go build -mod=vendor -ldflags "$(GOFLAGS) -s -w" -o $@
 
 dist/%-linux-amd64: $(ANY_DEPS) frontend_vfsdata.go
-	GOOS=linux GOARCH=amd64 go build -ldflags "$(GOFLAGS) -s -w" -o $@
+	GOOS=linux GOARCH=amd64 go build -mod=vendor -ldflags "$(GOFLAGS) -s -w" -o $@
 
 dist/%-windows-386.exe: $(ANY_DEPS) frontend_vfsdata.go
-	GOOS=windows GOARCH=386 go build -ldflags "$(GOFLAGS) -s -w" -o $@
+	GOOS=windows GOARCH=386 go build -mod=vendor -ldflags "$(GOFLAGS) -s -w" -o $@
 
 frontend_vfsdata.go: $(shell find $(FRONTEND) -type f) 
 	FRONTEND=$(FRONTEND) go run frontend_generate.go
