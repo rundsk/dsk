@@ -143,7 +143,7 @@ type Search struct {
 
 type SearchHit struct {
 	Node      *Node
-	Fragments map[string][]string
+	Fragments []string
 }
 
 // StartIndexer installs a go routine ("the indexer") that will
@@ -291,18 +291,18 @@ func (s *Search) IndexNode(n *Node, wideBatch, narrowBatch *bleve.Batch) error {
 		Docs        []string
 		Files       []string
 		Tags        []string
+		Title       string
 		Titles      []string
 		Version     string
-		Title       string
 	}{
 		Authors:     as,
 		Description: n.Description(),
 		Docs:        ts,
 		Files:       fs,
 		Tags:        n.Tags(),
+		Title:       n.Title(),
 		Titles:      titles,
 		Version:     n.Version(),
-		Title:       n.Title(),
 	}
 	narrowData := struct {
 		Tags  []string
@@ -367,7 +367,19 @@ func (s *Search) FullSearch(q string) ([]*SearchHit, int, time.Duration, bool, e
 			log.Printf("Node for hit %s not found, skipping hit", hit.ID)
 			continue
 		}
-		hits = append(hits, &SearchHit{n, hit.Fragments})
+
+		fragments := make([]string, 0)
+
+		// We only want fragments from the description or the docs, not title or the files
+		for _, subFragment := range hit.Fragments["Description"] {
+			fragments = append(fragments, subFragment)
+		}
+
+		for _, subFragment := range hit.Fragments["Docs"] {
+			fragments = append(fragments, subFragment)
+		}
+
+		hits = append(hits, &SearchHit{n, fragments})
 	}
 	return hits, int(res.Total), res.Took, s.isStale, nil
 }
