@@ -92,7 +92,7 @@ func NewSearchMapping(langs []string, isWide bool) *mapping.IndexMappingImpl {
 	// node.DefaultAnalyzer = im.DefaultAnalyzer
 
 	node.AddFieldMappingsAt("Title", sm)
-	node.AddFieldMappingsAt("Tags", sm, km)
+	node.AddFieldMappingsAt("Tags", km)
 	if isWide {
 		node.AddFieldMappingsAt("Titles", tms...)
 		node.AddFieldMappingsAt("Authors", sm)
@@ -392,7 +392,8 @@ func (s *Search) FilterSearch(q string, useWideIndex bool) ([]*Node, int, time.D
 	defer s.RUnlock()
 
 	mq := bleve.NewMatchQuery(q)
-	mq.SetFuzziness(2)
+	mq.SetFuzziness(1)
+
 	dq := bleve.NewDisjunctionQuery(
 		mq,
 		bleve.NewPrefixQuery(q),

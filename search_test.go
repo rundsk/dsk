@@ -157,6 +157,34 @@ func TestFilterSearchGermanWordPartials(t *testing.T) {
 // Tests for search in general, often testing only FullSearch, but
 // assumes FilterSearch behaves the same, as both use the same search
 // backend:
+func TestSearchWordPartials(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Navigation"), tmp)
+	n.Create()
+	n.Load()
+
+	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FullSearch("na")
+	expectFullSearchResult(t, rs, "Navigation")
+
+	rs, _, _, _, _ = s.FullSearch("nav")
+	expectFullSearchResult(t, rs, "Navigation")
+
+	rs, _, _, _, _ = s.FullSearch("naviga")
+	expectFullSearchResult(t, rs, "Navigation")
+
+	rs, _, _, _, _ = s.FullSearch("navigati")
+	expectFullSearchResult(t, rs, "Navigation")
+
+	rs, _, _, _, _ = s.FullSearch("navigatio")
+	expectFullSearchResult(t, rs, "Navigation")
+
+	rs, _, _, _, _ = s.FullSearch("navigation")
+	expectFullSearchResult(t, rs, "Navigation")
+}
 
 func TestSearchFindsFullWords(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
