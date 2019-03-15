@@ -72,9 +72,9 @@ func NewIndexes(langs []string) (bleve.Index, bleve.Index, error) {
 func NewSearchMapping(langs []string, isWide bool) *mapping.IndexMappingImpl {
 	im := bleve.NewIndexMapping()
 
-	if len(langs) > 0 {
-		im.DefaultAnalyzer = AvailableSearchLangs[langs[0]]
-	}
+	// if len(langs) > 0 {
+	// 	im.DefaultAnalyzer = AvailableSearchLangs[langs[0]]
+	// }
 
 	sm := bleve.NewTextFieldMapping()
 	sm.Analyzer = simple.Name
@@ -89,11 +89,12 @@ func NewSearchMapping(langs []string, isWide bool) *mapping.IndexMappingImpl {
 		tms = append(tms, tm)
 	}
 	node := bleve.NewDocumentMapping()
-	node.DefaultAnalyzer = im.DefaultAnalyzer
+	// node.DefaultAnalyzer = im.DefaultAnalyzer
 
-	node.AddFieldMappingsAt("Titles", tms...)
-	node.AddFieldMappingsAt("Tags", sm, km)
+	node.AddFieldMappingsAt("Title", sm)
+	node.AddFieldMappingsAt("Tags", km)
 	if isWide {
+		node.AddFieldMappingsAt("Titles", tms...)
 		node.AddFieldMappingsAt("Authors", sm)
 		node.AddFieldMappingsAt("Description", tms...)
 		node.AddFieldMappingsAt("Docs", tms...)
@@ -140,8 +141,9 @@ type Search struct {
 	done chan bool
 }
 
-type FullSearchHit struct {
-	Node *Node
+type SearchHit struct {
+	Node      *Node
+	Fragments []string
 }
 
 // StartIndexer installs a go routine ("the indexer") that will
@@ -265,7 +267,7 @@ func (s *Search) IndexNode(n *Node, wideBatch, narrowBatch *bleve.Batch) error {
 		return err
 	}
 	for _, doc := range docs {
-		text, err := doc.Text()
+		text, err := doc.CleanText()
 		if err != nil {
 			return err
 		}
@@ -289,6 +291,7 @@ func (s *Search) IndexNode(n *Node, wideBatch, narrowBatch *bleve.Batch) error {
 		Docs        []string
 		Files       []string
 		Tags        []string
+		Title       string
 		Titles      []string
 		Version     string
 	}{
@@ -297,15 +300,16 @@ func (s *Search) IndexNode(n *Node, wideBatch, narrowBatch *bleve.Batch) error {
 		Docs:        ts,
 		Files:       fs,
 		Tags:        n.Tags(),
+		Title:       n.Title(),
 		Titles:      titles,
 		Version:     n.Version(),
 	}
 	narrowData := struct {
-		Tags   []string
-		Titles []string
+		Tags  []string
+		Title string
 	}{
-		Tags:   wideData.Tags,
-		Titles: wideData.Titles,
+		Tags:  wideData.Tags,
+		Title: wideData.Title,
 	}
 
 	s.RLock()
@@ -320,21 +324,40 @@ func (s *Search) IndexNode(n *Node, wideBatch, narrowBatch *bleve.Batch) error {
 }
 
 // FullSearch performs a full text search over all possible attributes
-// of each node using the wide index. Returns a slice of FullSearchHits.
-func (s *Search) FullSearch(q string) ([]*FullSearchHit, int, time.Duration, bool, error) {
+// of each node using the wide index. Returns a slice of SearchHits.
+func (s *Search) FullSearch(q string) ([]*SearchHit, int, time.Duration, bool, error) {
 	s.RLock()
 	defer s.RUnlock()
 
 	mq := bleve.NewMatchQuery(q)
-	mq.SetFuzziness(2)
-	req := bleve.NewSearchRequest(mq)
+	mq.SetFuzziness(1)
+
+	pq := bleve.NewPrefixQuery(q)
+
+	tmq := bleve.NewMatchQuery(q)
+	tmq.SetField("Title")
+	tmq.SetBoost(2)
+
+	tpq := bleve.NewPrefixQuery(q)
+	tpq.SetField("Title")
+	tpq.SetBoost(3)
+
+	dq := bleve.NewDisjunctionQuery(
+		mq,
+		pq,
+		tmq,
+		tpq,
+	)
+
+	req := bleve.NewSearchRequest(dq)
+	req.Highlight = bleve.NewHighlight()
 
 	res, err := s.wideIndex.Search(req)
 	if err != nil {
 		return nil, 0, time.Duration(0), s.isStale, fmt.Errorf("Query '%s' failed: %s", q, err)
 	}
 
-	hits := make([]*FullSearchHit, 0, len(res.Hits))
+	hits := make([]*SearchHit, 0, len(res.Hits))
 	for _, hit := range res.Hits {
 		ok, n, err := s.getNode(hit.ID)
 		if err != nil {
@@ -344,7 +367,19 @@ func (s *Search) FullSearch(q string) ([]*FullSearchHit, int, time.Duration, boo
 			log.Printf("Node for hit %s not found, skipping hit", hit.ID)
 			continue
 		}
-		hits = append(hits, &FullSearchHit{n})
+
+		fragments := make([]string, 0)
+
+		// We only want fragments from the description or the docs, not title or the files
+		for _, subFragment := range hit.Fragments["Description"] {
+			fragments = append(fragments, subFragment)
+		}
+
+		for _, subFragment := range hit.Fragments["Docs"] {
+			fragments = append(fragments, subFragment)
+		}
+
+		hits = append(hits, &SearchHit{n, fragments})
 	}
 	return hits, int(res.Total), res.Took, s.isStale, nil
 }
@@ -357,7 +392,8 @@ func (s *Search) FilterSearch(q string, useWideIndex bool) ([]*Node, int, time.D
 	defer s.RUnlock()
 
 	mq := bleve.NewMatchQuery(q)
-	mq.SetFuzziness(2)
+	mq.SetFuzziness(1)
+
 	dq := bleve.NewDisjunctionQuery(
 		mq,
 		bleve.NewPrefixQuery(q),

@@ -2,8 +2,9 @@ authors:
   - melisa@acme.io
 
 description: >
-  When we want users to be able to input data.
+  A classic input field.
 
 tags:
+  - Build 8
 
 version: 1
