@@ -1,0 +1,38 @@
+/*!
+ * Copyright 2018 Atelier Disko. All rights reserved.
+ *
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+
+.children-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.children-table tr {
+  border-bottom: 1px solid var(--color-gray-900);
+}
+
+.children-table tr:last-child {
+  border-bottom: none;
+}
+
+.children-table td {
+  padding: 2.5rem 3rem 2rem 0;
+  vertical-align: top;
+}
+
+.children-table td a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.children-table td:first-child {
+  min-width: 20%;
+  font-weight: bold;
+}
+
+.children-table td:nth-child(2) {
+  color: var(--color-gray-500);
+}

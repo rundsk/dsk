@@ -243,6 +243,9 @@ Outer:
 // to the path. The path must be absolute and rooted at the repository
 // path.
 func (r *Repository) Modified(path string) (time.Time, error) {
+	r.RLock()
+	defer r.RUnlock()
+
 	var modified time.Time
 
 	path, err := filepath.Rel(r.path, path)

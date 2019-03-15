@@ -24,7 +24,7 @@ export default class Nav {
 
     if (this.root.children.length) {
       this.nav.appendChild(
-        this.renderList(this.root, this.activeNode).childNodes[1],
+        this.renderList(this.root, this.activeNode).childNodes[1]
       );
     }
   }

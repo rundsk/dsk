@@ -19,7 +19,7 @@ and laying foundation by adding initial Git support.
   - slightly more immune to typos by using fuzzy matching,
   - uses analyzers as full search does,
   - supports `wide` mode, 
-  - API responses now use `nodes` key instead of `urls` to return an
+  - API responses now use keys named `nodes` instead of `urls` to return an
     array of so-called _RefNodes_ with title and URL for each node. This
     makes that part of the response uniform when compared to other API
     responses.
@@ -31,6 +31,7 @@ and laying foundation by adding initial Git support.
 - Improve transliteration when creating node slugs
 - Normalize strings when they are read from the filesystem, fixes #48.
 - Deprecate `keywords` in meta data
+- Rewrite built-in frontend
 
 Thanks to [Zach Wegrzyniak](https://github.com/wegry/) for contributing to 
 the search implementation and edge-testing the Git foundations.

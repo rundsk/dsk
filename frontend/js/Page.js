@@ -80,10 +80,36 @@ export default class Page {
 
     this.main.innerHTML = '';
 
+    // Title Container
+    let titleContainer = document.createElement('section');
+    titleContainer.classList.add('title-container');
+    this.main.appendChild(titleContainer);
+
+    // Description Container
+    let descriptionContainer = document.createElement('section');
+    descriptionContainer.classList.add('description-container');
+    this.main.appendChild(descriptionContainer);
+
+    // Tab Container
+    let tabContainer = document.createElement('section');
+    tabContainer.classList.add('tab-container');
+    this.main.appendChild(tabContainer);
+
+    // Always display the tab
+    let switches = document.createElement('section');
+    switches.classList.add('doc-switches');
+    tabContainer.appendChild(switches);
+
+    // Metadata Container
+    let metaDataContainer = document.createElement('section');
+    metaDataContainer.classList.add('meta-data-container');
+    this.main.appendChild(metaDataContainer);
+
     // Crumbs
     let crumbs = document.createElement('ul');
     crumbs.classList.add('crumbs');
-    this.main.appendChild(crumbs);
+    crumbs.classList.add('t-gamma-sans');
+    titleContainer.appendChild(crumbs);
 
     this.node.crumbs.forEach((crumb) => {
       let li = document.createElement('li');
@@ -99,22 +125,24 @@ export default class Page {
     // Title
     let title = document.createElement('h1');
     title.classList.add('title');
+    title.classList.add('t-alpha-sans-bold');
     title.innerText = this.node.title;
-    this.main.appendChild(title);
+    titleContainer.appendChild(title);
 
     // Description
     if (this.node.description) {
       let description = document.createElement('section');
       description.classList.add('description');
+      description.classList.add('t-beta-sans');
       description.innerHTML = this.node.description;
-
-      this.main.appendChild(description);
+      descriptionContainer.appendChild(description);
     }
 
     // Tags
     if (this.node.tags.length) {
       let tags = document.createElement('ul');
       tags.classList.add('tags');
+      tags.classList.add('t-delta-sans-bold');
 
       this.node.tags.forEach((tag) => {
         let li = document.createElement('li');
@@ -127,7 +155,7 @@ export default class Page {
         li.appendChild(a);
         tags.appendChild(li);
       });
-      this.main.appendChild(tags);
+      descriptionContainer.appendChild(tags);
     }
 
     // Info Area
@@ -142,11 +170,6 @@ export default class Page {
 
     // Doc Switcher
     if (this.node.docs.length > 1) {
-      // Zwitch between documents
-      let switches = document.createElement('section');
-      switches.classList.add('doc-switches');
-      docs.appendChild(switches);
-
       this.node.docs.sort((a, b) => {
         if (a.title.toLowerCase() === 'readme') {
           return -1;
@@ -160,11 +183,11 @@ export default class Page {
       this.node.docs.forEach((doc, index) => {
         let a = document.createElement('a');
         a.classList.add('doc-switch');
-
         if (index === 0) {
           a.classList.add('active');
         }
         a.href = `#doc-${index}`;
+        a.classList.add('t-gamma-sans');
         a.innerText = doc.title;
 
         a.addEventListener('click', (ev) => {
@@ -195,6 +218,31 @@ export default class Page {
         docs.appendChild(text);
       });
     } else {
+      // With no docs, Contents tab option is showed
+      let a = document.createElement('a');
+
+      a.innerText = 'Contents';
+
+      a.classList.add('doc-switch');
+      a.classList.add('active');
+      a.classList.add('t-gamma-sans');
+
+      a.href = '#table';
+      switches.appendChild(a);
+
+      a.addEventListener('click', (ev) => {
+        ev.preventDefault();
+
+        this.main.querySelector('.doc-switch.active').classList.remove('active');
+
+        a.classList.add('active');
+
+        this.main.querySelector('.children-table').classList.toggle('hide');
+        this.main.querySelectorAll('.doc').forEach((el) => {
+          el.classList.add('hide');
+        });
+      });
+
       let dir = document.createElement('table');
       dir.classList.add('children-table');
       info.appendChild(dir);
@@ -225,15 +273,67 @@ export default class Page {
       });
     }
 
+    // Meta data
+    if (this.node.authors.length !== 0) {
+      let h1 = document.createElement('h1');
+      h1.classList.add('meta-data-container__title');
+      h1.classList.add('t-delta-sans-bold');
+      h1.innerText = 'author';
+
+      if (this.node.authors.length > 1) {
+        h1.innerText += 's';
+      }
+      metaDataContainer.appendChild(h1);
+
+      this.node.authors.forEach((author) => {
+        let p = document.createElement('p');
+        p.classList.add('meta-data-container__info');
+        p.classList.add('t-gamma-sans');
+        p.innerText = author.name;
+        metaDataContainer.appendChild(p);
+      });
+    }
+
+    if (this.node.version) {
+      let h1 = document.createElement('h1');
+      h1.classList.add('meta-data-container__title');
+      h1.classList.add('t-delta-sans-bold');
+      h1.innerText = 'version';
+      metaDataContainer.appendChild(h1);
+
+      let p = document.createElement('p');
+      p.classList.add('meta-data-container__info');
+      p.classList.add('t-gamma-sans');
+      p.innerText = this.node.version;
+      metaDataContainer.appendChild(p);
+    }
+
+    if (this.node.modified) {
+      let h1 = document.createElement('h1');
+      h1.classList.add('meta-data-container__title');
+      h1.classList.add('t-delta-sans-bold');
+      h1.innerText = 'last changed';
+      metaDataContainer.appendChild(h1);
+
+      let p = document.createElement('p');
+      p.classList.add('meta-data-container__info');
+      p.classList.add('t-gamma-sans');
+
+      let modified = (new Date(this.node.modified * 1000)).toLocaleDateString();
+      p.innerText = modified;
+      metaDataContainer.appendChild(p);
+    }
+
     // Downloads
     if (this.node.downloads.length) {
       let downloads = document.createElement('aside');
       downloads.classList.add('downloads');
-      info.appendChild(downloads);
+      this.main.appendChild(downloads);
 
       let h1 = document.createElement('h1');
-      h1.classList.add('downloads__title');
-      h1.innerText = 'Downloads';
+      h1.classList.add('downloads__headline');
+      h1.classList.add('t-delta-sans-bold');
+      h1.innerText = 'assets';
       downloads.appendChild(h1);
 
       let downloadsList = document.createElement('ul');
@@ -241,29 +341,43 @@ export default class Page {
 
       this.node.downloads.forEach((c) => {
         let li = document.createElement('li');
-        li.classList.add('download');
+        li.classList.add('downloads__item');
+        li.classList.add('t-gamma-sans-bold');
         downloadsList.appendChild(li);
 
         let a = document.createElement('a');
         a.href = `/api/v1/tree/${c.url}`;
-        a.innerText = c.name;
-        a.setAttribute('download', '');
         li.appendChild(a);
+
+        let d = document.createElement('div');
+        d.innerText = c.name;
+        d.classList.add('downloads__item-title');
+        a.appendChild(d);
+
+        let modified = (new Date(c.modified * 1000)).toLocaleDateString();
+
+        let p = document.createElement('p');
+        p.classList.add('downloads__item-info');
+        p.classList.add('t-gamma-sans');
+        p.innerText = `${(c.size / 102400).toFixed(2)} MB — ${modified}`;
+        a.appendChild(p);
       });
     }
 
     // Show Source
-    let source = document.createElement('section');
-    source.classList.add('source');
-    this.main.appendChild(source);
-
     let a = document.createElement('a');
+    a.classList.add('source__item');
+    a.classList.add('doc-switch');
+    a.classList.add('doc-switch--source');
     a.innerText = 'Source';
     a.href = '#source-code';
-    source.appendChild(a);
+    switches.appendChild(a);
 
-    let wrap = document.createElement('div');
+    let source = document.createElement('div');
+    let wrap = document.createElement('article');
     wrap.classList.add('hide');
+    wrap.classList.add('doc');
+    wrap.id = 'source-code';
     source.appendChild(wrap);
 
     let pre = document.createElement('pre');
@@ -286,11 +400,23 @@ export default class Page {
     more.target = 'new';
     more.innerText = 'Build your own frontend';
     wrap.appendChild(more);
+    docs.appendChild(wrap);
 
     a.addEventListener('click', (ev) => {
       ev.preventDefault();
+
+      this.main.querySelector('.doc-switch.active').classList.remove('active');
+      a.classList.add('active');
+
+      if (this.node.docs.length) {
+        this.main.querySelectorAll('.doc').forEach((el) => {
+          el.classList.add('hide', el.id !== 'source-code');
+        });
+      } else {
+        this.main.querySelector('.children-table').classList.add('hide');
+      }
+
       wrap.classList.toggle('hide');
-      wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
 }

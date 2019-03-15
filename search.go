@@ -140,7 +140,7 @@ type Search struct {
 	done chan bool
 }
 
-type SearchHit struct {
+type FullSearchHit struct {
 	Node *Node
 }
 
@@ -320,8 +320,8 @@ func (s *Search) IndexNode(n *Node, wideBatch, narrowBatch *bleve.Batch) error {
 }
 
 // FullSearch performs a full text search over all possible attributes
-// of each node using the wide index. Returns a slice of SearchHits.
-func (s *Search) FullSearch(q string) ([]*SearchHit, int, time.Duration, bool, error) {
+// of each node using the wide index. Returns a slice of FullSearchHits.
+func (s *Search) FullSearch(q string) ([]*FullSearchHit, int, time.Duration, bool, error) {
 	s.RLock()
 	defer s.RUnlock()
 
@@ -334,7 +334,7 @@ func (s *Search) FullSearch(q string) ([]*SearchHit, int, time.Duration, bool, e
 		return nil, 0, time.Duration(0), s.isStale, fmt.Errorf("Query '%s' failed: %s", q, err)
 	}
 
-	hits := make([]*SearchHit, 0, len(res.Hits))
+	hits := make([]*FullSearchHit, 0, len(res.Hits))
 	for _, hit := range res.Hits {
 		ok, n, err := s.getNode(hit.ID)
 		if err != nil {
@@ -344,7 +344,7 @@ func (s *Search) FullSearch(q string) ([]*SearchHit, int, time.Duration, bool, e
 			log.Printf("Node for hit %s not found, skipping hit", hit.ID)
 			continue
 		}
-		hits = append(hits, &SearchHit{n})
+		hits = append(hits, &FullSearchHit{n})
 	}
 	return hits, int(res.Total), res.Took, s.isStale, nil
 }
