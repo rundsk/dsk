@@ -398,7 +398,10 @@ class Page {
     a.addEventListener('click', (ev) => {
       ev.preventDefault();
 
-      this.main.querySelector('.doc-switch.active').classList.remove('active');
+      let activeDoc = this.main.querySelector('.doc-switch.active');
+      if (activeDoc) {
+        this.main.querySelector('.doc-switch.active').classList.remove('active');
+      }
       a.classList.add('active');
 
       if (this.node.docs.length) {
