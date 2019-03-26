@@ -227,6 +227,15 @@ func (dt NodeDocTransformer) maybeAddDataNode(t html.Token, attrName string) (ht
 			return t, nil
 		}
 	}
+
+	if u.Fragment != "" {
+		dn = dn + "#" + u.Fragment
+	}
+
+	if u.RawQuery != "" {
+		dn = dn + "?" + u.RawQuery
+	}
+
 	if dn != "" {
 		t.Attr = append(t.Attr, html.Attribute{Key: "data-node", Val: dn})
 	}
