@@ -55,10 +55,12 @@ type APIv1Node struct {
 	Children    []*APIv1RefNode    `json:"children"`
 	Title       string             `json:"title"`
 	Description string             `json:"description"`
+	Term 		string             `json:"term"`
 	Authors     []*APIv1NodeAuthor `json:"authors"`
 	Modified    int64              `json:"modified"`
 	Version     string             `json:"version"`
 	Tags        []string           `json:"tags"`
+	Synonyms    []string           `json:"synonyms"`
 	Docs        []*APIv1NodeDoc    `json:"docs"`
 	Downloads   []*APIv1NodeAsset  `json:"downloads"`
 	Crumbs      []*APIv1RefNode    `json:"crumbs"`
@@ -250,7 +252,9 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		Children:    children,
 		Title:       n.Title(),
 		Tags:        n.Tags(),
+		Synonyms:    n.Synonyms(),
 		Description: n.Description(),
+		Term: 		 n.Term(),
 		Authors:     authors,
 		Modified:    modified,
 		Version:     n.Version(),

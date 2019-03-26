@@ -303,11 +303,37 @@ class Page {
       metaDataContainer.appendChild(p);
     }
 
+    if (this.node.term) {
+      let h1 = document.createElement('h1');
+      h1.classList.add('meta-data-container__title');
+      h1.classList.add('t-delta-sans-bold');
+      h1.innerText = 'term';
+      metaDataContainer.appendChild(h1);
+      let p = document.createElement('p');
+      p.classList.add('meta-data-container__info');
+      p.classList.add('t-gamma-sans');
+      p.innerText = this.node.term;
+      metaDataContainer.appendChild(p);
+    }
+
+    if (this.node.synonyms.length !== 0) {
+      let h1 = document.createElement('h1');
+      h1.classList.add('meta-data-container__title');
+      h1.classList.add('t-delta-sans-bold');
+      h1.innerText = 'Synonyme';
+      metaDataContainer.appendChild(h1);
+      let p = document.createElement('p');
+      p.classList.add('meta-data-container__info');
+      p.classList.add('t-gamma-sans');
+      p.innerText = this.node.synonyms.join(', ');
+      metaDataContainer.appendChild(p);
+    }
+
     if (this.node.modified) {
       let h1 = document.createElement('h1');
       h1.classList.add('meta-data-container__title');
       h1.classList.add('t-delta-sans-bold');
-      h1.innerText = 'last changed';
+      h1.innerText = 'letzte Änderung';
       metaDataContainer.appendChild(h1);
       let p = document.createElement('p');
       p.classList.add('meta-data-container__info');

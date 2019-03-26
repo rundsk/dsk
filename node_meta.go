@@ -23,6 +23,8 @@ type NodeMeta struct {
 	Description string   `json:"description,omitempty" yaml:"description,omitempty"`
 	Related     []string `json:"related,omitempty" yaml:"related,omitempty"`
 	Tags        []string `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Synonyms    []string `json:"synonyms,omitempty" yaml:"synonyms,omitempty"`
+	Term    	string `json:"term,omitempty" yaml:"term,omitempty"`
 	// Freeform version string.
 	Version string `json:"version,omitempty" yaml:"version,omitempty"`
 

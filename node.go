@@ -218,6 +218,11 @@ func (n *Node) Description() string {
 	return n.meta.Description
 }
 
+// Returns the term of the node.
+func (n *Node) Term() string {
+	return n.meta.Term
+}
+
 // Returns a list of related nodes.
 func (n *Node) Related(get NodeGetter) []*Node {
 	nodes := make([]*Node, 0, len(n.meta.Related))
@@ -247,6 +252,16 @@ func (n *Node) Tags() []string {
 
 	sort.Strings(tags)
 	return tags
+}
+
+func (n *Node) Synonyms() []string {
+	if n.meta.Synonyms == nil {
+		return make([]string, 0)
+	}
+	synonyms := n.meta.Synonyms
+
+	sort.Strings(synonyms)
+	return synonyms
 }
 
 // Returns a list of keywords terms.
