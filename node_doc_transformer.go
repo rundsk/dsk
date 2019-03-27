@@ -228,14 +228,6 @@ func (dt NodeDocTransformer) maybeAddDataNode(t html.Token, attrName string) (ht
 		}
 	}
 
-	if u.Fragment != "" {
-		dn = dn + "#" + u.Fragment
-	}
-
-	if u.RawQuery != "" {
-		dn = dn + "?" + u.RawQuery
-	}
-
 	if dn != "" {
 		t.Attr = append(t.Attr, html.Attribute{Key: "data-node", Val: dn})
 	}
@@ -269,6 +261,16 @@ func (dt NodeDocTransformer) maybeMakeAbsolute(t html.Token, attrName string) (h
 			t.Attr[key].Val = path.Join(dt.treePrefix, dn, dna)
 			return t, nil
 		}
+
+		// Keep fragements and queries in links
+		if u.Fragment != "" {
+			dn = dn + "#" + u.Fragment
+		}
+
+		if u.RawQuery != "" {
+			dn = dn + "?" + u.RawQuery
+		}
+
 		t.Attr[key].Val = path.Join(dt.treePrefix, dn)
 		return t, nil
 	}
