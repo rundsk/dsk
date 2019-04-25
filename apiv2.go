@@ -38,7 +38,9 @@ type APIv2FullSearchResults struct {
 }
 
 type APIv2FullSearchHit struct {
-	Node *APIv1RefNode `json:"node"`
+	APIv1RefNode
+	Description string   `json:"description"`
+	Fragments   []string `json:"fragments"`
 }
 
 type APIv2FilterResults struct {
@@ -66,7 +68,14 @@ func (api APIv2) NewNodeTreeSearchResults(hs []*FullSearchHit, total int, took t
 	hits := make([]*APIv2FullSearchHit, 0, len(hs))
 
 	for _, hit := range hs {
-		hits = append(hits, &APIv2FullSearchHit{&APIv1RefNode{hit.Node.URL(), hit.Node.Title()}})
+		hits = append(hits, &APIv2FullSearchHit{
+			APIv1RefNode: APIv1RefNode{
+				hit.Node.URL(),
+				hit.Node.Title(),
+			},
+			Description: hit.Node.Description(),
+			Fragments:   hit.Fragments,
+		})
 	}
 	return &APIv2FullSearchResults{hits, total, took.Nanoseconds()}
 }

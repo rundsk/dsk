@@ -6,6 +6,7 @@
 - `frontend/js/dsk` is now a package
 - Before we index markdown documents for search, they are now
   better cleaned up.
+- Implement search hit fragments
 
 ## 1.1.1 Unreleased
 

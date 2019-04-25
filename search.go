@@ -141,7 +141,8 @@ type Search struct {
 }
 
 type FullSearchHit struct {
-	Node *Node
+	Node      *Node
+	Fragments []string
 }
 
 // StartIndexer installs a go routine ("the indexer") that will
@@ -344,7 +345,19 @@ func (s *Search) FullSearch(q string) ([]*FullSearchHit, int, time.Duration, boo
 			log.Printf("Node for hit %s not found, skipping hit", hit.ID)
 			continue
 		}
-		hits = append(hits, &FullSearchHit{n})
+
+		fragments := make([]string, 0)
+
+		// We only want fragments from the description or the docs, not title or the files
+		for _, subFragment := range hit.Fragments["Description"] {
+			fragments = append(fragments, subFragment)
+		}
+
+		for _, subFragment := range hit.Fragments["Docs"] {
+			fragments = append(fragments, subFragment)
+		}
+
+		hits = append(hits, &FullSearchHit{n, fragments})
 	}
 	return hits, int(res.Total), res.Took, s.isStale, nil
 }
