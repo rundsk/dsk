@@ -181,22 +181,32 @@ is routed into your application in `index.html`.
 Relative asset source paths inside documents will be made absolute to allow you
 displaying a document's content wherever you like to.
 
-### Baking
+### Starting DSK with the custom frontend
 
-To _bake_ your frontend into DSK, install the the development tools as described in the _Development_ section first. 
-After doing so, you create your custom DSK build by running the following command.
+You "tell" DSK, to use your frontend by invoking it with the `frontend` flag,
+providing an absolute path or a path relative to the current working directory,
+that contains the frontend.
+
+```
+./dsk -frontend=/my/frontend example
+```
+
+To persistently _bake_ your frontend into DSK, effectively replacing the
+built-in, install the the development tools as described in the _Development_
+section first. After doing so, you create your custom DSK build by running the
+following command.
 
 ```
 $ FRONTEND=/my/frontend make dist
 ```
 
-Frontends created with [create react app](https://github.com/facebook/create-react-app) should instead follow these couple of simple steps. 
+Frontends created with [create react
+app](https://github.com/facebook/create-react-app) must be build
+before they can be started or baked into DSK:
 
 ```
 $ cd /my/frontend
 $ npm run build
-$ cd $(go env GOPATH)/src/github.com/atelierdisko/dsk
-$ FRONTEND=/my/frontend/build make dist
 ```
 
 ## Development

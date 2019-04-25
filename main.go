@@ -89,6 +89,7 @@ func main() {
 	version := flag.Bool("version", false, "print DSK version")
 	noColor := flag.Bool("no-color", false, "disables color output")
 	flang := flag.String("lang", "en", "language; separate multiple by commas, first is primary")
+	ffrontend := flag.String("frontend", "", "path to a frontend, to use instead of the built-in")
 	flag.Parse()
 
 	// Used for configuring search.
@@ -182,7 +183,17 @@ func main() {
 		}()
 	}
 
-	frontend = assets // assign to global
+	if *ffrontend != "" {
+		*ffrontend, err = filepath.Abs(*ffrontend)
+		if err != nil {
+			log.Fatal(red.Sprintf("Failed using frontend provided by path: %s", err))
+		}
+		frontend = http.Dir(*ffrontend) // assign to global
+		log.Printf("Using runtime frontend from: %s", prettyPath(*ffrontend))
+	} else {
+		frontend = assets // assign to global, using built-in
+		log.Print("Using built-in frontend")
+	}
 
 	apis := map[int]API{
 		1: NewAPIv1(tree, broker, search),
