@@ -365,6 +365,9 @@ func (n *Node) Assets() ([]*NodeAsset, error) {
 		if f.IsDir() {
 			continue
 		}
+		if strings.HasPrefix(f.Name(), ".") {
+			continue
+		}
 		if NodeMetaRegexp.MatchString(f.Name()) {
 			continue
 		}
