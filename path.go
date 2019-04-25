@@ -10,13 +10,12 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strconv"
 	"strings"
 )
 
 var (
-	PrettyPathRoot     string
+	PrettyPathRoot        string
 	ErrTreeRootNotFound   = errors.New("no tree root found")
 	ErrRepositoryNotFound = errors.New("no repository found")
 )
@@ -102,12 +101,12 @@ func detectRepository(treeRoot string, searchSubmodule bool) (string, error) {
 	return "", ErrRepositoryNotFound
 }
 
-// Checks if any of the path segments in the given path, matches regexp.
-func anyPathSegmentMatches(path string, r *regexp.Regexp) bool {
+// Checks if any of the path segments in the given path is hidden.
+func anyPathSegmentIsHidden(path string) bool {
 	for path != "." {
 		b := filepath.Base(path)
 
-		if IgnoreNodesRegexp.MatchString(b) {
+		if strings.HasPrefix(b, ".") {
 			return true
 		}
 		path = filepath.Dir(path)

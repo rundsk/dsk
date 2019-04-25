@@ -10,18 +10,12 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"regexp"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/fatih/color"
-)
-
-var (
-	// Directory basenames matching the pattern are not descending into
-	// and interpreted as a node.
-	IgnoreNodesRegexp = regexp.MustCompile(`^(x[-_].*|_.*|\..*|node_modules)$`)
 )
 
 // NewNodeTree construct and partially initializes a NodeTree. Returns
@@ -113,7 +107,7 @@ func (t *NodeTree) Sync() error {
 		if f.IsDir() {
 			isRoot := filepath.Base(t.path) == f.Name()
 
-			if IgnoreNodesRegexp.MatchString(f.Name()) && !isRoot {
+			if strings.HasPrefix(f.Name(), ".") && !isRoot {
 				return filepath.SkipDir
 			}
 			n := NewNode(path, t.path)

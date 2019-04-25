@@ -11,6 +11,9 @@
   download in the frontends: stop filtering downloads overly strict, and expose
   all files that are not node documents or meta files as assets. Add `assets` to
   API responses for nodes and deprecate `downloads`, it will be removed in APIv3.
+- Remove ignore of directories beginning with an underscore (`_`), `x-` or `x_`.
+  This clarifies a possible misunderstanding. Things you don't want to be accessed, 
+  should not be stored inside the DDT.
 
 ## 1.1.1 Unreleased
 

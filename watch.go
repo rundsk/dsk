@@ -7,7 +7,6 @@ package main
 
 import (
 	"log"
-	"regexp"
 	"strings"
 
 	"github.com/rjeczalik/notify"
@@ -38,8 +37,8 @@ type Watcher struct {
 }
 
 // Open watcher to look for changes below root. Will filter out changes
-// to paths where a segment of it matches the ignore regexp.
-func (w *Watcher) Start(ignore *regexp.Regexp) error {
+// to paths where a segment of it is hidden.
+func (w *Watcher) Start() error {
 	if err := notify.Watch(w.path+"/...", w.changes, notify.All); err != nil {
 		return err
 	}
@@ -58,7 +57,7 @@ func (w *Watcher) Start(ignore *regexp.Regexp) error {
 				// has been intentionally loaded from that directory.
 				pp := strings.TrimPrefix(p, w.path+"/")
 
-				if anyPathSegmentMatches(pp, ignore) {
+				if anyPathSegmentIsHidden(pp) {
 					continue Outer
 				}
 				log.Printf("Watcher detected change on: %s", prettyPath(p))

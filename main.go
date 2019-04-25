@@ -158,7 +158,7 @@ func main() {
 
 	broker.Start()
 
-	if err := watcher.Start(IgnoreNodesRegexp); err != nil {
+	if err := watcher.Start(); err != nil {
 		log.Fatal(red.Sprintf("Failed to start watcher: %s", err))
 	}
 	tree.StartSyncer()

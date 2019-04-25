@@ -55,7 +55,8 @@ example
 │   │   └── unmask.svg          <- asset
 ```
 
-_Note_: Directories beginning with an underscore (`_`), `x-` and `x_` or a dot (`.`) are ignored.
+_Note_: Hidden directories and files beginning with a dot (`.`) are ignored. 
+Things you don't want to be accessed should not be stored inside the DDT.
 
 ### Documenting Design Aspects
 

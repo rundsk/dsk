@@ -11,6 +11,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -169,7 +170,7 @@ func (r *Repository) BuildLookup() error {
 		if f.IsDir() {
 			isRoot := filepath.Base(r.path) == f.Name()
 
-			if IgnoreNodesRegexp.MatchString(f.Name()) && !isRoot {
+			if strings.HasPrefix(f.Name(), ".") && !isRoot {
 				return filepath.SkipDir
 			}
 			return nil // Git only knows about files
