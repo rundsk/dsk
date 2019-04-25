@@ -240,6 +240,9 @@ func (dt NodeDocTransformer) maybeAddDataNode(t html.Token, attrName string) (ht
 // "data-node-asset" attribute it will always use its information to
 // make the link absolute, even if it's already absolute.
 //
+// When query string or fragment are present in the original URL they
+// will be added to the resulting URL generated from the node URL.
+//
 // Other relative links are made absolute using the treeBase.
 func (dt NodeDocTransformer) maybeMakeAbsolute(t html.Token, attrName string) (html.Token, error) {
 	ok, key, v := dt.attr(t, attrName)
@@ -252,15 +255,27 @@ func (dt NodeDocTransformer) maybeMakeAbsolute(t html.Token, attrName string) (h
 		return t, err
 	}
 
-	// References to nodes or its assets are always made absolut.
+	// References to nodes or its assets are always made absolute.
 	ok, _, dn := dt.attr(t, "data-node")
 	if ok {
+		dnu := url.URL{
+			// Path is augmented with the asset when one is found.
+			Path: path.Join(dt.treePrefix, dn),
+
+			// Transfers query and fragment from original URL. When
+			// the original fragment or query string are empty, the
+			// resulting URL does not contain them, so we can blindly
+			// pass them here.
+			RawQuery: u.RawQuery,
+			Fragment: u.Fragment,
+		}
+
 		ok, _, dna := dt.attr(t, "data-node-asset")
 		if ok {
-			t.Attr[key].Val = path.Join(dt.treePrefix, dn, dna)
-			return t, nil
+			dnu.Path = path.Join(dnu.Path, dna)
 		}
-		t.Attr[key].Val = path.Join(dt.treePrefix, dn)
+
+		t.Attr[key].Val = dnu.String()
 		return t, nil
 	}
 
