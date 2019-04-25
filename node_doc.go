@@ -72,22 +72,22 @@ func (d NodeDoc) HTML(treePrefix string, nodeURL string, nodeGet NodeGetter) ([]
 	return nil, fmt.Errorf("Document not in a supported format: %s", prettyPath(d.path))
 }
 
-// Text converted from original file format. Mardown is considered by
-// itself plaintext.
-func (d NodeDoc) Text() ([]byte, error) {
+// Text converted from original file format.
+func (d NodeDoc) CleanText() ([]byte, error) {
 	contents, err := ioutil.ReadFile(d.path)
 	if err != nil {
 		return nil, err
 	}
+	policy := bluemonday.StrictPolicy()
 
 	switch strings.ToLower(filepath.Ext(d.path)) {
-	case ".md", ".markdown":
-		fallthrough
 	case ".txt":
 		return contents, nil
+	case ".md", ".markdown":
+		c, _ := d.parseMarkdown(contents)
+		return policy.SanitizeBytes(c), nil
 	case ".html", ".htm":
-		p := bluemonday.StrictPolicy()
-		return p.SanitizeBytes(contents), nil
+		return policy.SanitizeBytes(contents), nil
 	}
 	return nil, fmt.Errorf("Document not in a supported format: %s", prettyPath(d.path))
 }

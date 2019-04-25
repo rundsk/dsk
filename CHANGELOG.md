@@ -4,6 +4,8 @@
 
 - The frontend now uses ES modules
 - `frontend/js/dsk` is now a package
+- Before we index markdown documents for search, they are now
+  better cleaned up.
 
 ## 1.1.1 Unreleased
 

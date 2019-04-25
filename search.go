@@ -265,7 +265,7 @@ func (s *Search) IndexNode(n *Node, wideBatch, narrowBatch *bleve.Batch) error {
 		return err
 	}
 	for _, doc := range docs {
-		text, err := doc.Text()
+		text, err := doc.CleanText()
 		if err != nil {
 			return err
 		}
