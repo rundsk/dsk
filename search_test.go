@@ -146,21 +146,18 @@ func TestFilterSearchPrefixes(t *testing.T) {
 func TestFilterSearchWordPartials(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n := NewNode(filepath.Join(tmp, "Navigation"), tmp)
 	n.Create()
 	n.Load()
 
 	s := setupSearchTest(t, tmp, "en", []*Node{n})
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FilterSearch("col", false)
-	expectFilterSearchResult(t, rs, "Colors")
+	rs, _, _, _, _ := s.FilterSearch("na", false)
+	expectFilterSearchResult(t, rs, "Navigation")
 
-	rs, _, _, _, _ = s.FilterSearch("color", false)
-	expectFilterSearchResult(t, rs, "Colors")
-
-	rs, _, _, _, _ = s.FilterSearch("color", false)
-	expectFilterSearchResult(t, rs, "Colors")
+	rs, _, _, _, _ = s.FilterSearch("naviga", false)
+	expectFilterSearchResult(t, rs, "Navigation")
 }
 
 func TestFilterSearchGermanWordPartials(t *testing.T) {
@@ -183,6 +180,34 @@ func TestFilterSearchGermanWordPartials(t *testing.T) {
 // Tests for search in general, often testing only FullSearch, but
 // assumes FilterSearch behaves the same, as both use the same search
 // backend:
+func TestSearchWordPartials(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Navigation"), tmp)
+	n.Create()
+	n.Load()
+
+	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FullSearch("na")
+	expectFullSearchResult(t, rs, "Navigation")
+
+	rs, _, _, _, _ = s.FullSearch("nav")
+	expectFullSearchResult(t, rs, "Navigation")
+
+	rs, _, _, _, _ = s.FullSearch("naviga")
+	expectFullSearchResult(t, rs, "Navigation")
+
+	rs, _, _, _, _ = s.FullSearch("navigati")
+	expectFullSearchResult(t, rs, "Navigation")
+
+	rs, _, _, _, _ = s.FullSearch("navigatio")
+	expectFullSearchResult(t, rs, "Navigation")
+
+	rs, _, _, _, _ = s.FullSearch("navigation")
+	expectFullSearchResult(t, rs, "Navigation")
+}
 
 func TestSearchFindsFullWords(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
@@ -238,18 +263,9 @@ func TestGermanSearchNormalizesUmlauts(t *testing.T) {
 
 	rs, _, _, _, _ = s.FullSearch("Diversitaet")
 	expectFullSearchResult(t, rs, "Diversitat")
-
-	rs, _, _, _, _ = s.FullSearch("Diversität")
-	expectFullSearchResult(t, rs, "Diversitat")
-
-	rs, _, _, _, _ = s.FullSearch("Diversitat")
-	expectFullSearchResult(t, rs, "Diversitat")
-
-	rs, _, _, _, _ = s.FullSearch("Diversitaet")
-	expectFullSearchResult(t, rs, "Diversitat")
 }
 
-func TestExactMatchesWorkIndependentofLang(t *testing.T) {
+func TestExactMatchesWorkIndependentOfLang(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
 	n := NewNode(filepath.Join(tmp, "Diversität"), tmp)
@@ -261,13 +277,6 @@ func TestExactMatchesWorkIndependentofLang(t *testing.T) {
 
 	// Exact matches always work, independent of languages.
 	rs, _, _, _, _ := s.FullSearch("Diversität")
-	expectFullSearchResult(t, rs, "Diversitat")
-
-	rs, _, _, _, _ = s.FullSearch("Diversitat")
-	expectFullSearchResult(t, rs, "Diversitat")
-
-	// Exact matches always work, independent of languages.
-	rs, _, _, _, _ = s.FullSearch("Diversität")
 	expectFullSearchResult(t, rs, "Diversitat")
 }
 
@@ -411,6 +420,7 @@ func expectFullSearchResult(t *testing.T, hits []*FullSearchHit, url string) {
 
 	for _, hit := range hits {
 		if hit.Node.URL() == url {
+			t.Logf("Found node URL '%s' in results", url)
 			return
 		}
 	}
@@ -443,6 +453,7 @@ func expectFilterSearchResult(t *testing.T, nodes []*Node, url string) {
 
 	for _, node := range nodes {
 		if node.URL() == url {
+			t.Logf("Found node URL '%s' in results", url)
 			return
 		}
 	}
