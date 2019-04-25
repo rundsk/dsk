@@ -325,7 +325,7 @@ export default class Page {
     }
 
     // Downloads
-    if (this.node.downloads.length) {
+    if (this.node.assets.length) {
       let downloads = document.createElement('aside');
       downloads.classList.add('downloads');
       this.main.appendChild(downloads);

@@ -7,6 +7,10 @@
 - Before we index markdown documents for search, they are now
   better cleaned up.
 - Implement search hit fragments
+- Introduce unfiltered assets, that can be freely inlcuded or made available for
+  download in the frontends: stop filtering downloads overly strict, and expose
+  all files that are not node documents or meta files as assets. Add `assets` to
+  API responses for nodes and deprecate `downloads`, it will be removed in APIv3.
 
 ## 1.1.1 Unreleased
 

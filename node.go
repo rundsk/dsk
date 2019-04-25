@@ -28,12 +28,12 @@ var (
 	// Basenames matching this pattern are considered configuration files.
 	NodeMetaRegexp = regexp.MustCompile(`(?i)^(index|meta)\.(json|ya?ml)$`)
 
-	// Basenames matching the pattern will be ignored when searching
-	// for assets in the node's directory.
-	IgnoreAssetsRegexp = regexp.MustCompile(`(?i)^(.*\.(js|css|md|markdown|html?|json|ya?ml)|\..*|dsk.*|AUTHORS\.txt|empty)$`)
-
 	// Basenames matching this pattern are considered documents.
 	NodeDocsRegexp = regexp.MustCompile(`(?i)^.*\.(md|markdown|html?|txt)$`)
+
+	// Files that are not considered to be assets in addition to node
+	// meta and doc files.
+	NodeAssetsIgnoreRegexp = regexp.MustCompile(`(?i)^(dsk.*|AUTHORS\.txt|empty)$`)
 
 	// Characters that are ignored when looking up an URL,
 	// i.e. "foo/bar baz" and "foo/barbaz" are than equal.
@@ -351,9 +351,8 @@ func (n *Node) Asset(name string) (*NodeAsset, error) {
 	}, nil
 }
 
-// Assets are all files that can be either downloaded or used inside
-// documents. This may include Sketch files or other binary assets.
-// JavaScript and Stylesheets and dsk control files are excluded.
+// Assets aare all files inside the node directory excluding system
+// files, node documents and meta files.
 func (n *Node) Assets() ([]*NodeAsset, error) {
 	as := make([]*NodeAsset, 0)
 
@@ -366,7 +365,13 @@ func (n *Node) Assets() ([]*NodeAsset, error) {
 		if f.IsDir() {
 			continue
 		}
-		if IgnoreAssetsRegexp.MatchString(f.Name()) {
+		if NodeMetaRegexp.MatchString(f.Name()) {
+			continue
+		}
+		if NodeDocsRegexp.MatchString(f.Name()) {
+			continue
+		}
+		if NodeAssetsIgnoreRegexp.MatchString(f.Name()) {
 			continue
 		}
 		as = append(as, &NodeAsset{
@@ -375,21 +380,6 @@ func (n *Node) Assets() ([]*NodeAsset, error) {
 		})
 	}
 	return as, nil
-}
-
-// Downloads are all assets that are marked as being downloadable.
-func (n *Node) Downloads() ([]*NodeAsset, error) {
-	as, err := n.Assets()
-	if err != nil {
-		return as, err
-	}
-	ds := make([]*NodeAsset, 0)
-	for _, a := range as {
-		if a.IsDownloadable() {
-			ds = append(ds, a)
-		}
-	}
-	return ds, nil
 }
 
 // Returns a slice of documents for this node.

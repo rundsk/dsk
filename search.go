@@ -275,13 +275,13 @@ func (s *Search) IndexNode(n *Node, wideBatch, narrowBatch *bleve.Batch) error {
 		titles = append(titles, doc.Title())
 	}
 
-	downloads, err := n.Downloads()
+	assets, err := n.Assets()
 	if err != nil {
 		return err
 	}
-	for _, d := range downloads {
-		fs = append(fs, d.Name())
-		titles = append(titles, d.Title())
+	for _, a := range assets {
+		fs = append(fs, a.Name())
+		titles = append(titles, a.Title())
 	}
 
 	wideData := struct {

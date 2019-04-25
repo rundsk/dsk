@@ -36,11 +36,6 @@ func (a NodeAsset) Title() string {
 	return removeOrderNumber(strings.TrimSuffix(base, filepath.Ext(base)))
 }
 
-// IsDownloadable is true when the asset should be available for download.
-func (a NodeAsset) IsDownloadable() bool {
-	return true
-}
-
 func (a NodeAsset) Modified() (time.Time, error) {
 	f, err := os.Stat(a.path)
 	if err != nil {

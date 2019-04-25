@@ -60,11 +60,14 @@ type APIv1Node struct {
 	Version     string             `json:"version"`
 	Tags        []string           `json:"tags"`
 	Docs        []*APIv1NodeDoc    `json:"docs"`
-	Downloads   []*APIv1NodeAsset  `json:"downloads"`
+	Assets      []*APIv1NodeAsset  `json:"assets"`
 	Crumbs      []*APIv1RefNode    `json:"crumbs"`
 	Related     []*APIv1RefNode    `json:"related"`
 	Prev        *APIv1RefNode      `json:"prev"`
 	Next        *APIv1RefNode      `json:"next"`
+
+	// Deprecated, to be removed in APIv3, please use Assets.
+	Downloads []*APIv1NodeAsset `json:"downloads"`
 }
 
 // APIv1TreeMode is a light top down representation of a part of the DDT.
@@ -197,17 +200,17 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		})
 	}
 
-	nDownloads, err := n.Downloads()
-	downloads := make([]*APIv1NodeAsset, 0, len(nDownloads))
+	nAssets, err := n.Assets()
+	assets := make([]*APIv1NodeAsset, 0, len(nAssets))
 	if err != nil {
 		return nil, err
 	}
-	for _, v := range nDownloads {
+	for _, v := range nAssets {
 		d, err := api.NewNodeAsset(v)
 		if err != nil {
 			return nil, err
 		}
-		downloads = append(downloads, d)
+		assets = append(assets, d)
 	}
 
 	nCrumbs := n.Crumbs(api.tree.Get)
@@ -255,11 +258,14 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		Modified:    modified,
 		Version:     n.Version(),
 		Docs:        docs,
-		Downloads:   downloads,
+		Assets:      assets,
 		Crumbs:      crumbs,
 		Related:     related,
 		Prev:        prev,
 		Next:        next,
+
+		// Deprecated, to be removed in APIv3.
+		Downloads: assets,
 	}, nil
 }
 
