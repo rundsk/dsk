@@ -109,3 +109,26 @@ func TestNonNodeLinks(t *testing.T) {
 		}
 	}
 }
+
+func TestNodeLinksKeepFragmentAndQueryFromOriginal(t *testing.T) {
+	get := func(url string) (bool, *Node, error) {
+		if url == "foo/bar" {
+			return true, &Node{root: "/tmp/xyz", path: filepath.Join("/tmp/xyz", url)}, nil
+		}
+		return false, &Node{}, nil
+	}
+	dt, _ := NewNodeDocTransformer("/tree", "foo/bar", get)
+
+	expected := map[string]string{
+		"<a href=\"/foo/bar?answer=42\"></a>":      "<a href=\"/tree/foo/bar?answer=42\" data-node=\"foo/bar\"></a>",
+		"<a href=\"/foo/bar#life\"></a>":           "<a href=\"/tree/foo/bar#life\" data-node=\"foo/bar\"></a>",
+		"<a href=\"/foo/bar#life?answer=42\"></a>": "<a href=\"/tree/foo/bar#life?answer=42\" data-node=\"foo/bar\"></a>",
+	}
+	for h, e := range expected {
+		r, _ := dt.ProcessHTML([]byte(h))
+
+		if !reflect.DeepEqual(r, []byte(e)) {
+			t.Errorf("\nexpected input : %s\nto parse to    : %s\nbut got instead: %s", h, e, r)
+		}
+	}
+}
