@@ -1,6 +1,13 @@
 # Changelog
 
-## 1.1.0 Unreleased
+## 1.1.1 Unreleased
+
+- Fix possible data race in repository lookup table, #58
+- Fix issue where "Source" wasn't clickable in the built-in frontend, #66
+- Fix incorrect date shown on downloads in the built-in frontend, #57
+- Keep original query and fragment when making node URLs absolute, #65
+
+## 1.1.0
 
 The first minor release following the release of 1.0.0, featuring a 
 brandnew search build on top of the go native 
