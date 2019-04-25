@@ -69,7 +69,6 @@ func NewIndexes(lang string) (bleve.Index, bleve.Index, error) {
 
 func NewSearchMapping(lang string, isWide bool) *mapping.IndexMappingImpl {
 	im := bleve.NewIndexMapping()
-	im.DefaultAnalyzer = AvailableSearchLangs[lang]
 
 	sm := bleve.NewTextFieldMapping()
 	sm.Analyzer = simple.Name
@@ -83,9 +82,10 @@ func NewSearchMapping(lang string, isWide bool) *mapping.IndexMappingImpl {
 	node := bleve.NewDocumentMapping()
 	node.DefaultAnalyzer = im.DefaultAnalyzer
 
-	node.AddFieldMappingsAt("Titles", tm)
-	node.AddFieldMappingsAt("Tags", sm, km)
+	node.AddFieldMappingsAt("Title", sm)
+	node.AddFieldMappingsAt("Tags", km)
 	if isWide {
+		node.AddFieldMappingsAt("SecondaryTitles", tm)
 		node.AddFieldMappingsAt("Authors", sm)
 		node.AddFieldMappingsAt("Description", tm)
 		node.AddFieldMappingsAt("Docs", tm)
@@ -243,10 +243,9 @@ func (s *Search) IndexNode(n *Node, wideBatch, narrowBatch *bleve.Batch) error {
 	var as []string
 	var ts []string
 	var fs []string
-	var titles []string
+	var secondaryTitles []string // Titles of documents and assets.
 
 	fs = append(fs, n.Name())
-	titles = append(titles, n.Title())
 
 	for _, a := range n.Authors(s.getAuthors()) {
 		as = append(as, a.Name)
@@ -264,7 +263,7 @@ func (s *Search) IndexNode(n *Node, wideBatch, narrowBatch *bleve.Batch) error {
 		}
 		ts = append(ts, string(text))
 		fs = append(fs, doc.Name())
-		titles = append(titles, doc.Title())
+		secondaryTitles = append(secondaryTitles, doc.Title())
 	}
 
 	assets, err := n.Assets()
@@ -273,34 +272,36 @@ func (s *Search) IndexNode(n *Node, wideBatch, narrowBatch *bleve.Batch) error {
 	}
 	for _, a := range assets {
 		fs = append(fs, a.Name())
-		titles = append(titles, a.Title())
+		secondaryTitles = append(secondaryTitles, a.Title())
 	}
 
 	wideData := struct {
-		Authors     []string
-		Description string
-		Docs        []string
-		Files       []string
-		Tags        []string
-		Titles      []string
-		Version     string
-		Custom      interface{}
+		Authors         []string
+		Description     string
+		Docs            []string
+		Files           []string
+		Tags            []string
+		Title           string
+		SecondaryTitles []string
+		Version         string
+		Custom          interface{}
 	}{
-		Authors:     as,
-		Description: n.Description(),
-		Docs:        ts,
-		Files:       fs,
-		Tags:        n.Tags(),
-		Titles:      titles,
-		Version:     n.Version(),
-		Custom:      n.Custom(),
+		Authors:         as,
+		Description:     n.Description(),
+		Docs:            ts,
+		Files:           fs,
+		Tags:            n.Tags(),
+		Title:           n.Title(),
+		SecondaryTitles: secondaryTitles,
+		Version:         n.Version(),
+		Custom:          n.Custom(),
 	}
 	narrowData := struct {
-		Tags   []string
-		Titles []string
+		Tags  []string
+		Title string
 	}{
-		Tags:   wideData.Tags,
-		Titles: wideData.Titles,
+		Tags:  wideData.Tags,
+		Title: wideData.Title,
 	}
 
 	s.RLock()
@@ -321,8 +322,27 @@ func (s *Search) FullSearch(q string) ([]*FullSearchHit, int, time.Duration, boo
 	defer s.RUnlock()
 
 	mq := bleve.NewMatchQuery(q)
-	mq.SetFuzziness(2)
-	req := bleve.NewSearchRequest(mq)
+	mq.SetFuzziness(1)
+
+	pq := bleve.NewPrefixQuery(q)
+
+	tmq := bleve.NewMatchQuery(q)
+	tmq.SetField("Title")
+	tmq.SetBoost(2)
+
+	tpq := bleve.NewPrefixQuery(q)
+	tpq.SetField("Title")
+	tpq.SetBoost(3)
+
+	dq := bleve.NewDisjunctionQuery(
+		mq,
+		pq,
+		tmq,
+		tpq,
+	)
+
+	req := bleve.NewSearchRequest(dq)
+	req.Highlight = bleve.NewHighlight()
 
 	res, err := s.wideIndex.Search(req)
 	if err != nil {
@@ -363,13 +383,8 @@ func (s *Search) FilterSearch(q string, useWideIndex bool) ([]*Node, int, time.D
 	s.RLock()
 	defer s.RUnlock()
 
-	mq := bleve.NewMatchQuery(q)
-	mq.SetFuzziness(2)
-	dq := bleve.NewDisjunctionQuery(
-		mq,
-		bleve.NewPrefixQuery(q),
-	)
-	req := bleve.NewSearchRequest(dq)
+	pq := bleve.NewPrefixQuery(q)
+	req := bleve.NewSearchRequest(pq)
 
 	var res *bleve.SearchResult
 	var err error
