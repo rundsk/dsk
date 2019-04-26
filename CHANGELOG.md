@@ -14,6 +14,8 @@
 - Remove ignore of directories beginning with an underscore (`_`), `x-` or `x_`.
   This clarifies a possible misunderstanding. Things you don't want to be accessed, 
   should not be stored inside the DDT.
+- Introduce `frontend` flag, so the built-in fronten can be switched out without
+  compiling it in.
 
 ## 1.1.1 Unreleased
 
