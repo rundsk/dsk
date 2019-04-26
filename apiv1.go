@@ -66,7 +66,7 @@ type APIv1Node struct {
 	Prev        *APIv1RefNode      `json:"prev"`
 	Next        *APIv1RefNode      `json:"next"`
 
-	// Deprecated, to be removed in APIv3, please use Assets.
+	// Deprecated, to be removed in APIv3, please use Assets:
 	Downloads []*APIv1NodeAsset `json:"downloads"`
 }
 
@@ -264,7 +264,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		Prev:        prev,
 		Next:        next,
 
-		// Deprecated, to be removed in APIv3.
+		// Deprecated, to be removed in APIv3:
 		Downloads: assets,
 	}, nil
 }

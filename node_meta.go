@@ -23,10 +23,11 @@ type NodeMeta struct {
 	Description string   `json:"description,omitempty" yaml:"description,omitempty"`
 	Related     []string `json:"related,omitempty" yaml:"related,omitempty"`
 	Tags        []string `json:"tags,omitempty" yaml:"tags,omitempty"`
+
 	// Freeform version string.
 	Version string `json:"version,omitempty" yaml:"version,omitempty"`
 
-	// Deprecated:
+	// Deprecated, will be removed once APIv1 search support is removed.
 	Keywords []string `json:"keywords,omitempty" yaml:"keywords,omitempty"`
 }
 

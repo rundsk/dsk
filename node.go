@@ -249,7 +249,8 @@ func (n *Node) Tags() []string {
 	return tags
 }
 
-// Returns a list of keywords terms.
+// Returns a list of keywords terms. Deprecated, will be removed once
+// APIv1 search support is removed.
 func (n *Node) Keywords() []string {
 	if n.meta.Keywords == nil {
 		return make([]string, 0)
