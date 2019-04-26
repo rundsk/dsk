@@ -170,7 +170,7 @@ this project.
 
 ### Available API Endpoints
 
-Please read our [API document](API.md) for in depth information.
+Please read our [API document](docs/API.md) for in depth information.
 
 ### Designing the URL Schema
 
