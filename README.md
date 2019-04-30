@@ -55,7 +55,7 @@ example
 │   │   └── unmask.svg          <- asset
 ```
 
-Read more about [the Design Definitions Tree](https://rundsk.com/tree/The-Design-Definitions-Tree) on our website, and how to add meta data, assets and authors.
+Read more about [the design definitions tree](https://rundsk.com/tree/The-Design-Definitions-Tree), and how to add meta data, assets and authors.
 
 ## Building your own Frontend 
 
@@ -67,7 +67,7 @@ Frontends are pluggable and the decoupled design allows you to create individual
 These are entirely free in their implementation, they must adhere to only a minimal set
 of rules.
 
-Read more about [building your custom frontend](https://rundsk.com/tree/Architecture/Building-your-own-Frontend) on our website and how to use together with DSK.
+Read more about [building your own custom frontend](https://rundsk.com/tree/Architecture/Building-your-own-Frontend) and how to use with DSK.
 
 ## Development
 
