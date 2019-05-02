@@ -17,7 +17,7 @@
 - Introduce `frontend` flag, so the built-in fronten can be switched out without
   compiling it in.
 
-## 1.1.1 Unreleased
+## 1.1.1
 
 - Fix possible data race in repository lookup table, #58
 - Fix issue where "Source" wasn't clickable in the built-in frontend, #66
