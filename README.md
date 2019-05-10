@@ -73,7 +73,7 @@ Read more about [building your own custom frontend](https://rundsk.com/tree/Arch
 
 Found a bug or just like to hack on DSK? We welcome contributions in many forms
 to the DSK Open Source Project. It doesn't matter if you're a designer, Go
-fairy, React sorceress or documentation fairy. 
+fairy, React sorceress or documentation wizard. 
 
 Get in touch with us, by discussing your feature ideas, filing issues or fixing
 bugs.
