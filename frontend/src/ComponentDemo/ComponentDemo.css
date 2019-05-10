@@ -1,0 +1,65 @@
+.component-demo {
+  width: 100%;
+  padding: calc(var(--spacing-unit) * 6) calc(var(--spacing-unit) * 8);
+  min-height: calc(var(--spacing-unit) * 38);
+  background-color: var(--color-gray-1000);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-image: url(./DotGridPattern--dark.png);
+  background-size: 20px;
+  background-position: center center;
+  margin: calc((var(--spacing-unit) * 5)) 0;
+}
+
+.component-demo:first-child {
+  margin-top: 0;
+}
+
+.component-demo:last-child {
+  margin-bottom: 0;
+}
+
+/* Make sure everything is centered, even when it’s in a doc */
+.component-demo .doc {
+  width: auto;
+}
+
+.component-demo--checkerboard {
+  background-image: url(./CheckerboardPattern--light.png);
+  background-size: 140px;
+}
+
+.component-demo--pinstripes {
+  background-image: url(./PinstripesPattern.png);
+  background-size: 100px;
+}
+
+.component-demo--plain {
+  background-image: none;
+}
+
+.component-demo img {
+  width: 100%;
+  height: auto;
+}
+
+
+.component-demo .doc {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+
+/* --- Responsive Mobile --- */
+
+@media screen and (max-width : 600px) {
+  .component-demo {
+    padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 3);
+    min-height: calc(var(--spacing-unit) * 28);
+  }
+}

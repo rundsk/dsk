@@ -1,0 +1,25 @@
+{
+  "name": "@atelierdisko/dsk",
+  "version": "1.2.0-beta.2",
+  "description": "Client and utility classes to connect and work with responses from DSK.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atelierdisko/dsk.git"
+  },
+  "keywords": [
+    "design system"
+  ],
+  "contributors": [
+     "Marius Wilms <marius@atelierdisko.de>",
+     "Christop Labacher <christoph@atelierdisko.de>"
+  ],
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/atelierdisko/dsk/issues"
+  },
+  "homepage": "https://github.com/atelierdisko/dsk/frontend/js/dsk"
+}

@@ -1,0 +1,40 @@
+.code-block {
+  margin: calc((var(--spacing-unit) * 3)) 0;
+}
+
+.code-block:first-child {
+  margin-top: 0;
+}
+
+.code-block:last-child {
+  margin-bottom: 0;
+}
+
+.code-block__header {
+  font-family: var(--font-family-mono);
+  margin-bottom: 4px;
+  color: var(--color-gray-500);
+  font-size: var(--font-size-beta);
+  line-height: 1.4em;
+  display: flex;
+  justify-content: space-between;
+}
+
+.code-block__title {
+  font-weight: 700;
+}
+
+.code-block__copy {
+  cursor: pointer;
+  opacity: 0;
+  transition: all .2s .4s;
+}
+
+.code-block:hover .code-block__copy {
+  opacity: 1;
+  transition: all .4s 0s;
+}
+
+.code-block .code-block__code {
+  margin: 0;
+}

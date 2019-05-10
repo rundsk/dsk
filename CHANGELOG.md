@@ -2,8 +2,11 @@
 
 ## 1.2.0 Unreleased
 
-- The frontend now uses ES modules
+- The frontend has been rewritten as a React-App, and redesigned
+  from scratch.
 - `frontend/js/dsk` is now a package
+- Introduce `frontend` flag, so the built-in frontend can be switched out without
+  compiling it in.
 - Before we index markdown documents for search, they are now
   better cleaned up.
 - Implement search hit fragments
@@ -14,8 +17,6 @@
 - Remove ignore of directories beginning with an underscore (`_`), `x-` or `x_`.
   This clarifies a possible misunderstanding. Things you don't want to be accessed, 
   should not be stored inside the DDT.
-- Introduce `frontend` flag, so the built-in fronten can be switched out without
-  compiling it in.
 
 ## 1.1.1
 

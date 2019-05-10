@@ -6,7 +6,7 @@
 VERSION ?= head-$(shell git rev-parse --short HEAD)
 GOFLAGS = -X main.Version=$(VERSION)
 ANY_DEPS = $(wildcard *.go)
-FRONTEND ?= $(shell pwd)/frontend
+FRONTEND ?= $(shell pwd)/frontend/build
 
 .PHONY: test
 test:

@@ -1,0 +1,115 @@
+.tree-navigation {
+  background-color: var(--color-gray-1000);
+  height: 100%;
+  overflow-y: auto;
+  padding: calc(var(--spacing-unit) * 2);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tree-navigation__tree {
+  flex-grow: 1;
+}
+
+.tree-navigation__empty {
+  color: var(--color-gray-500);
+}
+
+.tree-navigation__filter {
+  z-index: 2;
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.tree-navigation__filter input {
+  width: 100%;
+  padding: calc(var(--spacing-unit) * .9) calc(var(--spacing-unit) * 1) calc(var(--spacing-unit) * .9) calc(var(--spacing-unit) * 1);
+  border-radius: 3px;
+  border: none;
+  background-color: white;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-gamma);
+  color: var(--color-black);
+  border: 1px solid var(--color-gray-800);
+  box-shadow: 0 5px 10px -5px rgba(0,0,0,.2);
+  -webkit-appearance: none;
+  transition: all .2s;
+}
+
+.tree-navigation__filter input:focus {
+  border-color: var(--color-blue);
+  box-shadow: 0 10px 20px -5px rgba(0,0,0,.5);
+}
+
+/* All ul */
+.tree-navigation__tree ul {
+  margin-left: 3rem;
+  list-style: none;
+}
+
+.tree-navigation__tree ul li a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.3s;
+  width: 100%;
+  display: inline-block;
+  line-height: 1.6em;
+  padding-bottom: calc(var(--spacing-unit) * .4);
+}
+
+.tree-navigation__tree ul li a:hover {
+  color: var(--color-blue);
+}
+
+.tree-navigation__tree ul li a.active {
+  color: var(--color-blue);
+}
+
+/* Top Level ul */
+.tree-navigation__tree > ul {
+  margin-left: 0;
+}
+
+.tree-navigation__tree > ul > li {
+  margin-bottom: calc(var(--spacing-unit) * 2);
+  font-weight: bold;
+}
+
+/* Lower Level ul */
+.tree-navigation__tree ul ul li {
+  font-weight: 400;
+}
+
+.tree-navigation__tree ul ul li::before,
+.tree-navigation__tree ul ul li a::before {
+  display: inline-block;
+  width: 1em;
+  position: absolute;
+  top: 0em;
+  left: -1.3em;
+  text-align: right;
+}
+
+.tree-navigation__tree ul ul li::before {
+  content: "—";
+  visibility: visible;
+}
+
+.tree-navigation__tree ul ul li:hover::before,
+.tree-navigation__tree ul ul li.is-active::before {
+  visibility: hidden;
+}
+
+.tree-navigation__tree ul ul li a::before {
+  content: "→";
+  visibility: hidden;
+}
+
+.tree-navigation__tree ul ul li:hover > a::before,
+.tree-navigation__tree ul ul li.is-active > a::before {
+  visibility: visible;
+}

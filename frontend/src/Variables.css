@@ -1,0 +1,36 @@
+:root {
+  --color-white: #ffffff;
+  --color-black: hsl(0, 0%, 0%);
+  --color-blue: #001dff; /* Electric Blue */
+  --color-green: #52d0af; /* Toothpaste Green */
+  --color-teal: #33CEDC;
+  --color-teal--dark: #00838F;
+  --color-yellow--light: rgb(255, 242, 180);
+  --color-yellow: #FFE874;
+  --color-yellow--dark: #866E00;
+  --color-orange: #FED28C;
+  --color-red: #EE645D;
+
+  --color-gray-200: #333B40; /* Gray-200 25% */
+  --color-gray-300: #4F5559; /* Gray-300 35% */
+  --color-gray-500: #697980; /* Gray-500 50% */
+  --color-gray-600: #829199; /* Gray-600 60% */
+  --color-gray-700: #ADB0B3; /* Gray-600 60% */
+  --color-gray-800: #D2D6D9; /* Gray-800 85% */
+  --color-gray-900: #E1E4E6; /* Gray-900 90% */
+  --color-gray-1000: #F2F6F7; /* Gray-1000 97% */
+
+  /* Font Families */
+  --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-family-mono: "SF Mono", Menlo, monospace;
+
+  --font-size-alpha: 10px;
+  --font-size-beta: 12px;
+  --font-size-gamma: 15px;
+  --font-size-delta: 24px;
+  --font-size-epsilon: 32px;
+  --font-size-zeta: 48px;
+
+  /* Spacing */
+  --spacing-unit: 8px;
+}

@@ -1,0 +1,26 @@
+.tags {
+  user-select: none;
+  list-style: none;
+  padding-top: calc(2px * var(--spacing-base-unit));
+}
+
+.tags li.tags__tag {
+  display: inline-block;
+  user-select: none;
+  margin-right: 8px;
+  background-color: var(--color-green);
+  /* border: 2px solid var(--color-cyan); */
+  /* color: var(--color-black); */
+  color: rgba(0,0,0,.7);
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: var(--font-size-alpha);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1em;
+  white-space: nowrap;
+  padding: 0.5em 0.7em 0.5em 0.7em;
+  border-radius: 3px;
+  cursor: pointer;
+}

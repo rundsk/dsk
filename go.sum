@@ -12,6 +12,7 @@ github.com/blevesearch/blevex v0.0.0-20180227211930-4b158bb555a3 h1:U6vnxZrTfItf
 github.com/blevesearch/blevex v0.0.0-20180227211930-4b158bb555a3/go.mod h1:WH+MU2F4T0VmSdaPX+Wu5GYoZBrYWdOZWSjzvYcDmqQ=
 github.com/blevesearch/go-porterstemmer v0.0.0-20141125113124-9ac2252909b4 h1:CR/W6V/u3GBJvFUnaNxe9cNW2ic0OU0QZ0TgNbH6PoY=
 github.com/blevesearch/go-porterstemmer v0.0.0-20141125113124-9ac2252909b4/go.mod h1:haWQqFT3RdOGz7PJuM3or/pWNJS1pKkoZJWCkWu0DVA=
+github.com/blevesearch/go-porterstemmer v1.0.2-0.20141230013033-23a2c8e5cf1f h1:BDKXcDySt6Wa4oVJtN6C0Zlj5KyZY5t+jV64gxiF6NQ=
 github.com/blevesearch/go-porterstemmer v1.0.2-0.20141230013033-23a2c8e5cf1f/go.mod h1:haWQqFT3RdOGz7PJuM3or/pWNJS1pKkoZJWCkWu0DVA=
 github.com/blevesearch/segment v0.0.0-20160915185041-762005e7a34f h1:kqbi9lqXLLs+zfWlgo1PIiRQ86n33K1JKotjj4rSYOg=
 github.com/blevesearch/segment v0.0.0-20160915185041-762005e7a34f/go.mod h1:IInt5XRvpiGE09KOk9mmCMLjHhydIhNPKPPFLFBB7L8=

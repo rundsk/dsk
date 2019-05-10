@@ -1,0 +1,32 @@
+.asset-list__asset + .asset-list__asset {
+  padding-top: calc(var(--spacing-unit) * 7);
+  border-top: 1px dotted var(--color-gray-800);
+  margin-top: calc(var(--spacing-unit) * 7);
+}
+
+.asset-list__asset-image {
+  max-width: calc(var(--spacing-unit) * 75);
+  margin-bottom: calc(var(--spacing-unit) * 2);
+}
+
+
+.asset-list__asset-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.asset-list__asset-download::before {
+  display: inline-block;
+  margin-right: .2em;
+  margin-left: -1.1em;
+  content: "↓ ";
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--color-gray-800);
+  transition: color .3s;
+}
+
+.asset-list__asset-download:hover::before {
+  color: var(--color-blue);
+}

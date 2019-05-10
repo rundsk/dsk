@@ -7,9 +7,10 @@
 dist
 !empty
 _*
-node_modules
-package-lock.json
 cpu.prof
 mem.prof
 dsk.test
 .DS_Store
+node_modules
+frontend/build
+

@@ -1,0 +1,32 @@
+.error-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.error-page__content {
+  width: 100%;
+  max-width: calc(var(--spacing-unit) * 140);
+  padding: 0 calc(var(--spacing-unit) * 8);
+  padding-top: calc(var(--spacing-unit) * 9);
+  margin: 0 auto;
+}
+
+.error-page__error-message {
+  color: var(--color-gray-500);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-zeta);
+  line-height: 1.2em;
+  font-weight: 400;
+}
+
+
+/* --- Responsive Mobile --- */
+
+@media screen and (max-width : 600px) {
+  .error-page__content {
+    padding: 0 calc(var(--spacing-unit) * 3);  
+    padding-top: calc(var(--spacing-unit) * 9);
+  }
+}

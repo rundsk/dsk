@@ -17,7 +17,7 @@ var assets http.FileSystem
 func init() {
 	env, ok := os.LookupEnv("FRONTEND")
 	if !ok {
-		assets = http.Dir("./frontend")
+		assets = http.Dir("./frontend/build")
 	} else {
 		assets = http.Dir(env)
 	}

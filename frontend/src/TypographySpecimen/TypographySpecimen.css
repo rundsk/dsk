@@ -1,0 +1,71 @@
+.typography-specimen {
+  width: 100%;
+  margin: calc((var(--spacing-unit) * 5)) 0;
+}
+
+.typography-specimen:first-child {
+  margin-top: 0;
+}
+
+.typography-specimen:last-child {
+  margin-bottom: 0;
+}
+
+.type-sample {
+  display: grid;
+  width: 100%;
+  grid-template-areas: "name demo"
+    "spec demo"
+    "comment demo";
+  grid-template-columns: calc(var(--spacing-unit) * 24) 1fr;
+  grid-column-gap: calc(var(--spacing-unit) * 5);
+  grid-template-rows: auto auto 1fr;
+}
+
+.type-sample + .type-sample {
+  padding-top: calc(var(--spacing-unit) * 4);
+  border-top: 1px dotted var(--color-gray-800);
+  margin-top: calc(var(--spacing-unit) * 4);
+}
+
+.type-sample__name {
+  grid-area: name;
+  font-size: var(--font-size-gamma);
+  line-height: 1.4em;
+  font-weight: 700;
+  margin-bottom: calc(var(--spacing-unit) * .5);
+}
+
+.type-sample__id {
+  color: var(--color-gray-700);
+  font-weight: 500;
+  opacity: 0;
+  transition: all .4s .2s;
+}
+
+.type-sample:hover .type-sample__id {
+  opacity: 1;
+  transition: all .3s 0s;
+}
+
+.type-sample__comment {
+  grid-area: comment;
+  font-size: var(--font-size-beta);
+  line-height: 1.5em;
+}
+
+.type-sample__spec {
+  grid-area: spec;
+  font-size: var(--font-size-beta);
+  line-height: 1.5em;
+  color: var(--color-gray-300);
+  margin-bottom: calc(var(--spacing-unit) * 1);
+}
+
+.type-sample__demo {
+  grid-area: demo;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  align-self: center;
+}

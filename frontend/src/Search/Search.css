@@ -1,0 +1,193 @@
+.search {
+  background-color: transparent;
+  padding-left: calc(var(--spacing-unit) * 40);
+  height: 100vh;
+  transition: background-color .3s;
+}
+
+.search--is-focused {
+  background-color: rgba(0,0,0,.5);
+  pointer-events: all;
+}
+
+.search__content-container {
+  max-width: 100%;
+  padding: 0 calc(var(--spacing-unit) * 8);
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  transition: all .3s;
+}
+
+.search--is-focused .search__content-container {
+  max-width: calc(var(--spacing-unit) * 140);
+}
+
+.search__content {
+  pointer-events: all;
+  z-index: 3;
+  width: 100%;
+  max-width: calc(var(--spacing-unit) * 35);
+  padding-top: calc(var(--spacing-unit) * 2);
+  transition: all .3s;
+}
+
+.search--is-focused .search__content {
+  max-width: 100%;
+  padding-top: 10vh;
+}
+
+.search input {
+  z-index: 3;
+  width: 100%;
+  padding: calc(var(--spacing-unit) * .9) calc(var(--spacing-unit) * 1);
+  border-radius: 3px;
+  border: none;
+  background-color: white;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-gamma);
+  color: var(--color-blue);
+  border: 1px solid var(--color-gray-800);
+  box-shadow: 0 5px 10px -5px rgba(0,0,0,.2);
+  -webkit-appearance: none;
+  transition: all .3s;
+}
+
+.search.search--is-focused input {
+  border-color: var(--color-blue);
+  box-shadow: 0 10px 20px -5px rgba(0,0,0,.5);
+  padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 2);
+}
+
+.search__results-container {
+  height: 0;
+  overflow: hidden;
+  transition: all .3s;
+  position: relative;
+  transform: translateY(calc(var(--spacing-unit) * -2));
+  background-color: white;
+  box-shadow: 0 5px 10px -5px rgba(0,0,0,.2);
+  z-index: 1;
+  border: 1px solid  var(--color-gray-800);
+  border-radius: 3px;
+  opacity: 0;
+}
+
+.search__results-container--is-visible {
+  height: calc((var(--spacing-unit) * 2) + 70vh);
+  opacity: 1;
+  width: 100%;
+}
+
+.search__results {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70vh;
+  overflow-y: auto;
+  z-index: 2;
+  pointer-events: all;
+  padding: calc(var(--spacing-unit) * 4) calc(var(--spacing-unit) * 8);
+  -webkit-overflow-scrolling: touch;
+}
+
+.search-result {
+  padding-bottom: calc(var(--spacing-unit) * 4);
+  padding-top: calc(var(--spacing-unit) * 4);
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  cursor: pointer;
+}
+
+.search-result + .search-result {
+  border-top: 1px dotted var(--color-gray-800);
+}
+
+.search-result::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--spacing-unit) * -3);
+  top: calc(var(--spacing-unit) * 4);
+  bottom: calc(var(--spacing-unit) * 4);
+  width: 2px;
+  background-color: transparent;
+  border-radius: 1px;
+  transition: background-color .2s;
+}
+
+.search-result--is-focused::before {
+  background-color: var(--color-blue);
+}
+
+.search-result:not(.search-result--is-focused):hover::before {
+  background-color: var(--color-gray-800);
+}
+
+.search-result__title {
+  font-weight: 700;
+}
+
+.search-result__snippet {
+  color: var(--color-gray-300);
+  max-width: calc(var(--spacing-unit) * 75);
+  margin-top: calc(var(--spacing-unit) * 1);
+}
+
+.search-result__snippet mark {
+  color: black;
+  background-color: var(--color-yellow--light);
+  display: inline-block;
+  padding: 0 .3em;
+  border-radius: 3px;
+}
+
+.search-result__path {
+  color: var(--color-gray-600);
+  font-size: var(--font-size-beta);
+  line-height: 1.2em;
+  margin-top: calc(var(--spacing-unit) * 1);
+}
+
+.search__no-dice {
+  font-size: var(--font-size-delta);
+  color: var(--color-gray-600);
+  padding: calc(var(--spacing-unit) * 4) 0;
+}
+
+/* --- Responsive Mobile --- */
+/* FIXME: Search should be posible in mobile */
+
+@media screen and (max-width : 600px) {
+  .search {
+    padding-left: 0;
+    display: none;
+  }
+
+  .search--is-focused .search__content-container {
+    max-width: 100%;
+  }
+
+  .search__content-container {
+    padding: 0 calc(var(--spacing-unit) * 3);
+  }
+
+  .search__content { 
+    max-width: 100%;
+  }
+
+  .search--is-focused .search__content {
+    padding-top: calc(var(--spacing-unit) * 2);
+  }
+
+  .search__results {
+    padding: calc(var(--spacing-unit) * 1) calc(var(--spacing-unit) * 3);
+  }
+
+  .search-result::before {
+    display: none;
+  }
+}

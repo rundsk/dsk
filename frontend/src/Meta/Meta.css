@@ -1,0 +1,16 @@
+.meta {
+
+}
+
+.meta__key {
+  color: var(--color-gray-500);
+  font-size: var(--font-size-beta);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.2em;
+}
+
+.meta + .meta {
+  margin-left: calc(var(--spacing-unit) * 5);
+}

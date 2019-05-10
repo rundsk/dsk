@@ -1,0 +1,54 @@
+.figma-embed {
+  margin: calc((var(--spacing-unit) * 5)) 0;
+}
+
+.figma-embed:first-child {
+  margin-top: 0;
+}
+
+.figma-embed:last-child {
+  margin-bottom: 0;
+}
+
+.figma-embed img {
+  display: block;
+}
+
+.figma-embed__loader {
+  color: var(--color-gray-500);
+  animation-name: pulse;
+  animation-duration: 2.5s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes pulse {
+  0% { color: var(--color-gray-700); }
+  50% { color: var(--color-gray-300); }
+  100% { color: var(--color-gray-700); }
+}
+
+.figma-embed__error {
+  border-bottom: 2px solid var(--color-red);
+}
+
+.figma-embed__via {
+  font-size: var(--font-size-beta);
+  text-align: right;
+  width: 100%;
+  opacity: 0;
+  transition: all .3s .4s;
+  display: block;
+  position: absolute;
+  bottom: 0;
+  transform: translateY(100%);
+}
+
+.figma-embed:hover .figma-embed__via  {
+  opacity: 1;
+  transition: all .4s 0s;
+}
+
+.figma-embed__via:focus  {
+  opacity: 1;
+  transition: all .0s;
+}

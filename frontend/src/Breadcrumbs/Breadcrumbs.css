@@ -1,0 +1,21 @@
+.breadcrumbs {
+  list-style: none;
+}
+
+.breadcrumbs__crumb {
+  display: inline;
+}
+
+.breadcrumbs__crumb:after {
+  color: var(--color-gray-600);
+  content: " / ";
+}
+
+.breadcrumbs__crumb a {
+  color: var(--color-gray-600);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.breadcrumbs__crumb a:hover {
+  color: var(--color-blue);
+}
