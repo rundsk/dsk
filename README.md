@@ -69,7 +69,25 @@ of rules.
 
 Read more about [building your own custom frontend](https://rundsk.com/tree/Architecture/Building-your-own-Frontend) and how to use with DSK.
 
-## Development
+## Contributing
+
+Found a bug or just like to hack on DSK? We welcome contributions in many forms
+to the DSK Open Source Project. It doesn't matter if you're a designer, Go
+fairy, React sorceress or documentation fairy. 
+
+Get in touch with us, by discussing your feature ideas, filing issues or fixing
+bugs.
+
+After following the _Setup_ procedure as outlined below a single command will
+start DSK in development mode, ready for you to improve it.
+
+```
+$ make dev
+```
+
+The `make dev` command assumes your test design system definitions are
+below the `example` directory. It also uses the built-in frontend from 
+the `frontend/build` directory by default.
 
 ### Prerequisites
 
@@ -109,26 +127,6 @@ checkout you can create it, using the following command.
 ```
 $ make -C frontend build
 ```
-
-### Contributing
-
-Found a bug or just like to hack on DSK? We welcome contributions in many forms
-to the DSK Open Source Project. It doesn't matter if you're a designer, Go
-fairy, React sorceress or documentation fairy. 
-
-Get in touch with us, by discussing your feature ideas, filing issues or fixing
-bugs.
-
-After following the _Setup_ procedure as outlined above this one command will start
-DSK in development mode, ready for you to improve it.
-
-```
-$ make dev
-```
-
-The `make dev` command assumes your test design system definitions are
-below the `example` directory. It also uses the built-in frontend from 
-the `frontend/build` directory by default.
 
 ### Improving the frontend
 
