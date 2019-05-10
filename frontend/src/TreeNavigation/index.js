@@ -64,14 +64,20 @@ function TreeNavigation(props) {
 
     const filter = Client.filter(filterTerm);
     filter.then((data) => {
-      if (!data.urls) {
+      if (!data.nodes) {
         // Filtering yielded no results, we save us iterating over the
         // existing tree, as we already know what it should look like.
         setFilteredTree(null);
         return;
       }
       let tree = new Tree(props.tree);
-      setFilteredTree(tree.filteredBy(data.urls).root);
+
+      let urls = data.nodes.reduce((carry, node) => {
+        carry.push(node.url);
+        return carry
+      }, []);
+
+      setFilteredTree(tree.filteredBy(urls).root);
     });
   }
 
