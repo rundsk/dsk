@@ -1,0 +1,47 @@
+{
+  "defaultStyleName": "h2",
+  "styles": [
+    {
+      "id": "huge",
+      "name": "Huge",
+      "fontFamily": "Rosart",
+      "fontWeight": "Book",
+      "fontSize": 60,
+      "lineHeight": 85,
+      "letterSpacing": 0.37
+    }, {
+      "id": "h1",
+      "name": "Heading 1",
+      "fontFamily": "'Neuzeit S LT Std'",
+      "fontWeight": "Book",
+      "fontSize": 34,
+      "lineHeight": 45,
+      "letterSpacing": 0.19
+    }, {
+      "id": "tl",
+      "name": "Text L",
+      "fontFamily": "'Neuzeit S LT Std'",
+      "fontWeight": "Book",
+      "fontSize": 24,
+      "lineHeight": 38,
+      "letterSpacing": 0.19
+    }, {
+      "id": "ts",
+      "name": "Text S",
+      "fontFamily": "'Neuzeit S LT Std'",
+      "fontWeight": "Book",
+      "fontSize": 16,
+      "lineHeight": 28,
+      "letterSpacing": 0.25,
+      "comment": "Both Text L and Text S are used for long text – we prefer Text S for longread formats."
+    }, {
+      "id": "meta",
+      "name": "Meta",
+      "fontFamily": "'Neuzeit S LT Std'",
+      "fontWeight": "Bold",
+      "fontSize": 12,
+      "lineHeight": 24,
+      "letterSpacing": 0.69
+    }
+  ]
+}
