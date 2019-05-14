@@ -1,7 +1,7 @@
 # Docker
 
 We make official prebuilt docker container images
-[available on docker hub](https://cloud.docker.com/u/atelierdisko/repository/registry-1.docker.io/atelierdisko/dsk).
+[available on docker hub](https://hub.docker.com/r/atelierdisko/dsk/tags).
 
 The [Design Definitions Tree](/The-Design-Definitions-Tree), that is
 the directory containing your design system documents, is not part of the container

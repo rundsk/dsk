@@ -5,15 +5,15 @@ Usually all you need is, to download the right binary for your platform from
 The packaging documentation below gives you an in depth view into the DSK build process,
 which matters most when creating a customized DSK build.
 
-One on the main benefits of using Go is that we can
+One of the main benefits of using Go is that we can
 bundle everything except the DDT into one binary.
 
 The build process is driven by GNU Make using the targets
-defined in the `Makefile`. When executed directly on your system it requires you to have some tools preinstalled.
+defined in the `Makefile`. When executed directly on your system it requires to have some tools preinstalled.
 Alternatively you can use [Docker to create a container image](Packaging?t=container-image).
 
 Before continuing, we recommend making yourself familiar with the
-general [Architecture](/Architecture).
+[general architecture of DSK](/Architecture).
 
 ## Prerequisites
 
