@@ -17,6 +17,8 @@
 - Remove ignore of directories beginning with an underscore (`_`), `x-` or `x_`.
   This clarifies a possible misunderstanding. Things you don't want to be accessed, 
   should not be stored inside the DDT.
+- Official prebuilt docker container images are now available
+  [on docker hub](https://cloud.docker.com/u/atelierdisko/repository/registry-1.docker.io/atelierdisko/dsk).
 
 ## 1.1.1
 

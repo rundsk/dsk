@@ -6,7 +6,10 @@
 VERSION ?= head-$(shell git rev-parse --short HEAD)
 GOFLAGS = -X main.Version=$(VERSION)
 ANY_DEPS = $(wildcard *.go)
+
 FRONTEND ?= $(shell pwd)/frontend/build
+DDT ?= $(shell pwd)/example
+DDT_LANG ?= en
 
 .PHONY: test
 test:
@@ -24,7 +27,7 @@ profile:
 .PHONY: dev
 dev:
 	go build -tags=dev -race -ldflags "$(GOFLAGS)"
-	./dsk example
+	./dsk -lang $(DDT_LANG) -frontend $(FRONTEND) $(DDT)
 
 .PHONY: clean
 clean:
@@ -37,7 +40,16 @@ clean:
 .PHONY: dist
 dist: dist/dsk-darwin-amd64 dist/dsk-linux-amd64 dist/dsk-windows-386.exe 
 dist: dist/dsk-darwin-amd64.zip dist/dsk-linux-amd64.tar.gz dist/dsk-windows-386.zip
+dist: container-image
 	ls -lh dist
+
+.PHONY: container-image
+container-image:
+	docker build --tag atelierdisko/dsk:$(VERSION) --build-arg VERSION=$(VERSION) .
+
+.PHONY: container-push
+push: container-image
+	docker push atelierdisko/dsk:$(VERSION)
 
 dist/%.zip: dist/%
 	cd dist && zip $(notdir $@) $(notdir $<)
