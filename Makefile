@@ -48,7 +48,7 @@ container-image:
 	docker build --tag atelierdisko/dsk:$(VERSION) --build-arg VERSION=$(VERSION) .
 
 .PHONY: container-push
-push: container-image
+container-push: container-image
 	docker push atelierdisko/dsk:$(VERSION)
 
 dist/%.zip: dist/%
