@@ -64,4 +64,4 @@ dist/%-windows-386.exe: $(ANY_DEPS) frontend_vfsdata.go
 	GOOS=windows GOARCH=386 go build -mod=vendor -ldflags "$(GOFLAGS) -s -w" -o $@
 
 frontend_vfsdata.go: $(shell find $(FRONTEND) -type f) 
-	FRONTEND=$(FRONTEND) go run frontend_generate.go
+	FRONTEND=$(FRONTEND) go run -mod=vendor frontend_generate.go
