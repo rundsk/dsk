@@ -30,6 +30,6 @@ that contains the frontend.
 
 ## Replacing the built-in frontend
 
-Please see our documentation on [Packaging](Running-DSK/Packaging),
+Please see our documentation on [Packaging](/DSK-in-Production/Packaging),
 to persistently _bake_  the custom frontend into the DSK binary. You either
 use the default way for doing this or use docker to create a container image.
