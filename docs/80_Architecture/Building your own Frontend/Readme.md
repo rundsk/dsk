@@ -1,4 +1,4 @@
-# Building your own Frontend 
+# Building your own Frontend
 
 The following sections describe everything you need to know when building your own frontend
 and bundle it with the `dsk` binary. By default DSK uses a built-in minimal frontend. The default frontend
@@ -13,7 +13,7 @@ Please read our [API document](Architecture/API) for in depth information.
 
 Your frontend and its subdirectories will be mounted directly at the root path
 `/`. Requests to anything under `/api` are routed to the backend, anything else
-is routed into your application in `index.html`. 
+is routed into your application in `index.html`.
 
 Relative asset source paths inside documents will be made absolute to allow you
 displaying a document's content wherever you like to.
@@ -30,11 +30,6 @@ that contains the frontend.
 
 ## Replacing the built-in frontend
 
-To persistently _bake_ your frontend into DSK, effectively replacing the
-built-in one, install the the development tools as described in the _Development_
-section first. After doing so, you create your custom DSK build by running the
-following command.
-
-```
-$ FRONTEND=/my/frontend make dist
-```
+Please see our documentation on [Packaging](Running-DSK/Packaging),
+to persistently _bake_  the custom frontend into the DSK binary. You either
+use the default way for doing this or use docker to create a container image.
