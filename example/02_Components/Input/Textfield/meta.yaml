@@ -8,3 +8,8 @@ tags:
   - Build 8
 
 version: 1
+
+custom:
+  synonyms:
+    - Inputfield
+    - Entryfield

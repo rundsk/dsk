@@ -8,4 +8,9 @@ tags:
   - Progress/Draft
   - Release/0.6
 
+custom:
+  synonyms:
+    - Listing
+    - Index
+  
 version: 1

@@ -59,6 +59,7 @@ type APIv1Node struct {
 	Modified    int64              `json:"modified"`
 	Version     string             `json:"version"`
 	Tags        []string           `json:"tags"`
+	Custom      interface{}        `json:"custom"`
 	Docs        []*APIv1NodeDoc    `json:"docs"`
 	Assets      []*APIv1NodeAsset  `json:"assets"`
 	Crumbs      []*APIv1RefNode    `json:"crumbs"`
@@ -263,6 +264,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		Related:     related,
 		Prev:        prev,
 		Next:        next,
+		Custom:      n.Custom(),
 
 		// Deprecated, to be removed in APIv3:
 		Downloads: assets,

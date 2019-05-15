@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 
 	"github.com/go-yaml/yaml"
+	"github.com/icza/dyno"
 )
 
 // Metadata parsed from node configuration.
@@ -19,10 +20,11 @@ type NodeMeta struct {
 	path string
 
 	// Email addresses of node authors.
-	Authors     []string `json:"authors,omitempty" yaml:"authors,omitempty"`
-	Description string   `json:"description,omitempty" yaml:"description,omitempty"`
-	Related     []string `json:"related,omitempty" yaml:"related,omitempty"`
-	Tags        []string `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Authors     []string    `json:"authors,omitempty" yaml:"authors,omitempty"`
+	Description string      `json:"description,omitempty" yaml:"description,omitempty"`
+	Related     []string    `json:"related,omitempty" yaml:"related,omitempty"`
+	Tags        []string    `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Custom      interface{} `json:"custom,omitempty" yaml:"custom,omitempty"`
 
 	// Freeform version string.
 	Version string `json:"version,omitempty" yaml:"version,omitempty"`
@@ -59,7 +61,11 @@ func (m *NodeMeta) Load() error {
 	case ".json":
 		return json.Unmarshal(contents, &m)
 	case ".yaml", ".yml":
-		return yaml.Unmarshal(contents, &m)
+		if err := yaml.Unmarshal(contents, &m); err != nil {
+			return err
+		}
+		m.Custom = dyno.ConvertMapI2MapS(m.Custom)
+		return nil
 	default:
 		return fmt.Errorf("Unsupported format: %s", prettyPath(m.path))
 	}
