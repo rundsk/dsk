@@ -23,6 +23,7 @@ type NodeMeta struct {
 	Description string   `json:"description,omitempty" yaml:"description,omitempty"`
 	Related     []string `json:"related,omitempty" yaml:"related,omitempty"`
 	Tags        []string `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Custom      interface{} `json:"custom,omitempty" yaml:"custom,omitempty"`
 
 	// Freeform version string.
 	Version string `json:"version,omitempty" yaml:"version,omitempty"`
