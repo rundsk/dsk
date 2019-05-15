@@ -18,7 +18,7 @@ our example we map it to port `80` on the docker host.
 
 ```
 docker run --rm -it \
-	--expose :80:8080 \
+	-p 80:8080 \
 	--mount type=bind,source="/path/to/ddt",target=/ddt \
 	--env DDT_LANG=en \
 	atelierdisko/dsk:1.2.0
