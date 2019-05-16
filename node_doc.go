@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/microcosm-cc/bluemonday"
@@ -97,8 +98,11 @@ func (d NodeDoc) Raw() ([]byte, error) {
 	return ioutil.ReadFile(d.path)
 }
 
-// Parses markdown into HTML.
+// Parses Markdown into HTML. Adds support for JSX in Markdown similar
+// to MDX does but in a very limited way.
 func (d NodeDoc) parseMarkdown(contents []byte) ([]byte, error) {
+	contents, _ = implyScriptTags(contents)
+
 	renderer := blackfriday.NewHTMLRenderer(blackfriday.HTMLRendererParameters{
 		Flags: blackfriday.CommonHTMLFlags &^ blackfriday.UseXHTML,
 	})
@@ -111,4 +115,74 @@ func (d NodeDoc) parseMarkdown(contents []byte) ([]byte, error) {
 		blackfriday.WithRenderer(renderer),
 		blackfriday.WithExtensions(extensions),
 	), nil
+}
+
+// Similar how Go automatically adds semicolons, implying them, we do
+// the same but for JSX and <script>-Tags. Other alternatives though of were:
+//
+// a) Adding JSX support to the Markdown parser, but this means
+//    touching the quite complex parser and maintaining a for that has
+//    little chance to be merged back into upstream.
+//
+// b) Writing our own MDX-Parser, ambitious task, especially as we
+//    still consider MDX a moving target. We better wait for a HAST
+//    library in Go.
+func implyScriptTags(contents []byte) ([]byte, error) {
+	c := string(contents)
+
+	var found []string
+
+	var isConsuming bool
+	var isLookingForTag bool
+	var html strings.Builder
+	var openingTag string
+	var closingTag string
+
+	for i := 0; i < len(c); i++ {
+		if isConsuming {
+			html.WriteByte(c[i])
+
+			// Decide whether we are ending consumption all together,
+			// or just found the initial tag, which we'll later
+			// need to check if we need to end consumption.
+			if c[i] == '>' {
+				if isLookingForTag {
+					re := regexp.MustCompile(`^<[a-zA-Z0-9]+`)
+
+					openingTag = html.String()
+					closingTag = fmt.Sprintf("%s>", strings.Replace(re.FindString(openingTag), "<", "</", 1))
+
+					isLookingForTag = false
+					continue
+				}
+
+				if strings.Contains(html.String(), closingTag) {
+					found = append(found, html.String())
+
+					html.Reset()
+					openingTag = ""
+					closingTag = ""
+
+					isConsuming = false
+					continue
+				}
+			}
+			continue
+		}
+
+		// Start consumption on anything that remotely doesn't look
+		// like Markdown.
+		if c[i] == '<' {
+			html.WriteByte(c[i])
+
+			isConsuming = true
+			isLookingForTag = true
+			continue
+		}
+	}
+
+	for _, f := range found {
+		c = strings.Replace(c, f, fmt.Sprintf("<script>%s</script>", f), 1)
+	}
+	return []byte(c), nil
 }
