@@ -22,7 +22,16 @@
 - We now support freeform data under the `custom` key in `meta.yaml` (or `meta.json`). It 
   is made available through the API. The built-in frontend has been enhanced to display 
   the freeform meta data nicely. #62, #71, #72
-
+- Document components, i.e. `<Warning>`, `<CodeBlock>`, or `<DoDont>` to help you creating
+  top class design documentation.
+- We now officially support using components inside Markdown and HTML documents.
+  Currently component code is limited to a Simple-JSX-style: it must be parsable
+  by a HTML-parser and cannot contain self-closing component tags. The components
+  can be used similar to MDX, without any additional markup like code fences.
+- Each document now also makes an array of top-level components available
+  through the API. As this is a non-breaking addition it is also
+  available through v1 of the API.
+    
 ## 1.1.1
 
 - Fix possible data race in repository lookup table, #58

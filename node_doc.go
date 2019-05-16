@@ -6,15 +6,23 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
 	"golang.org/x/net/html"
 	"golang.org/x/text/unicode/norm"
+)
+
+const (
+	protectOpeningScriptTag = "<script>'|dsk|'"
+	protectClosingScriptTag = "'|dsk|'</script>"
 )
 
 // NodeDoc is a document file.
@@ -47,6 +55,9 @@ func (d NodeDoc) Title() string {
 // and node URL will be used to resolve relative source and node URLs
 // inside the documents, to i.e. make them absolute.
 func (d NodeDoc) HTML(treePrefix string, nodeURL string, nodeGet NodeGetter) ([]byte, error) {
+	start := time.Now()
+	defer log.Printf("Rendered document %s in %s", prettyPath(d.path), time.Since(start))
+
 	contents, err := ioutil.ReadFile(d.path)
 	if err != nil {
 		return nil, err
@@ -58,13 +69,20 @@ func (d NodeDoc) HTML(treePrefix string, nodeURL string, nodeGet NodeGetter) ([]
 
 	switch strings.ToLower(filepath.Ext(d.path)) {
 	case ".md", ".markdown":
+		contents = addComponentProtection(contents, findComponentsInMarkdown(contents))
+
 		parsed, err := d.parseMarkdown(contents)
 		if err != nil {
 			return parsed, err
 		}
-		return dt.ProcessHTML(parsed)
+
+		contents, err := dt.ProcessHTML(parsed)
+		return removeComponentProtection(contents), err
 	case ".html", ".htm":
-		return dt.ProcessHTML(contents)
+		contents = addComponentProtection(contents, findComponentsInHTML(contents))
+
+		contents, err := dt.ProcessHTML(contents)
+		return removeComponentProtection(contents), err
 	case ".txt":
 		html := fmt.Sprintf("<pre>%s</pre>", html.EscapeString(string(contents)))
 		return []byte(html), nil
@@ -97,7 +115,14 @@ func (d NodeDoc) Raw() ([]byte, error) {
 	return ioutil.ReadFile(d.path)
 }
 
-// Parses markdown into HTML.
+// Components as found in the raw document.
+func (d NodeDoc) Components() ([]*NodeDocComponent, error) {
+	components := make([]*NodeDocComponent, 0)
+
+	return components, nil
+}
+
+// Parses Markdown into HTML.
 func (d NodeDoc) parseMarkdown(contents []byte) ([]byte, error) {
 	renderer := blackfriday.NewHTMLRenderer(blackfriday.HTMLRendererParameters{
 		Flags: blackfriday.CommonHTMLFlags &^ blackfriday.UseXHTML,
@@ -111,4 +136,39 @@ func (d NodeDoc) parseMarkdown(contents []byte) ([]byte, error) {
 		blackfriday.WithRenderer(renderer),
 		blackfriday.WithExtensions(extensions),
 	), nil
+}
+
+// Used to protect component code from the Markdown parser. The
+// implied script tags can be removed once the Markdown has been
+// transformed into HTML. Similar to how Go automatically implies
+// semicolons.
+func addComponentProtection(contents []byte, components []*NodeDocComponent) []byte {
+	var c string
+	var r strings.Builder
+	var offset int
+
+	c = string(contents)
+
+	for _, component := range components {
+		for i := 0; i < len(c); i++ {
+			if i == component.Position+offset {
+				r.WriteString(protectOpeningScriptTag)
+
+			} else if i == component.Position+component.Length+offset {
+				r.WriteString(protectClosingScriptTag)
+			}
+			r.WriteByte(c[i])
+		}
+		c = r.String()
+		r.Reset()
+		offset += len(protectOpeningScriptTag) + len(protectClosingScriptTag)
+	}
+	return []byte(c)
+}
+
+func removeComponentProtection(contents []byte) []byte {
+	contents = bytes.ReplaceAll(contents, []byte(protectOpeningScriptTag), []byte{})
+	contents = bytes.ReplaceAll(contents, []byte(protectClosingScriptTag), []byte{})
+
+	return contents
 }

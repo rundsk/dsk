@@ -72,55 +72,35 @@ function Doc(props) {
   // Finds all code section that have been tagged Component,
   // parse them and mount react components
   function renderComponents() {
-    if (ref.current) {
-      let doc = ref.current;
-
-      // Find retina images and set them to display at half
-      // their size. The information about their width and height
-      // is added by the dsk back-end.
-      let code = doc.querySelectorAll("code[class='language-Component']");
-      if (code.length === 0) { return; }
-
-      const transforms = {
-        Banner: props => { return <Banner {...props} />},
-        Warning: props => <Banner type="warning" {...props} />,
-        ComponentDemo: props => <ComponentDemo {...props} />,
-        TypographySpecimen: props => <TypographySpecimen {...props} />,
-        ColorSpecimen: props => <ColorSpecimen {...props} />,
-        FigmaEmbed: props => <FigmaEmbed {...props} />,
-        CodeBlock: props => <CodeBlock {...props} />,
-        DoDont: props => <DoDont {...props} />,
-        Do: props => <Do {...props} />,
-        Dont: props => <Dont {...props} />,
-        AnnotatedImage: props => <AnnotatedImage {...props} />,
-      };
-
-      code.forEach(c => {
-        let content = c.textContent;
-
-        // console.log(jsx`${content}`);
-
-        // We want to replace the <pre> tag with our component
-        let parentNode = c.parentNode;
-        let newNode = document.createElement("div");
-        parentNode.parentNode.replaceChild(newNode, parentNode);
-
-        let transformedContent = transform(content, transforms, {
-          noTransform: (type, props) => {
-            return React.createElement(type, props, props.children);
-          }
-        });
-
-        ReactDOM.render(transformedContent, newNode, () => {
-          // After rendering we want to unwrap the children we just
-          // created from the div around them so they are placed
-          // directly in the flow of the document
-          if (newNode.childNodes.length > 0) {
-            newNode.replaceWith(...newNode.childNodes);
-          }
-        });
-      });
+    if (!ref.current) {
+      return;
     }
+    let doc = ref.current;
+
+    // Find retina images and set them to display at half
+    // their size. The information about their width and height
+    // is added by the dsk back-end.
+
+    const transforms = {
+      Banner: props => { return <Banner {...props} />},
+      Warning: props => <Banner type="warning" {...props} />,
+      ComponentDemo: props => <ComponentDemo {...props} />,
+      TypographySpecimen: props => <TypographySpecimen {...props} />,
+      ColorSpecimen: props => <ColorSpecimen {...props} />,
+      FigmaEmbed: props => <FigmaEmbed {...props} />,
+      CodeBlock: props => <CodeBlock {...props} />,
+      DoDont: props => <DoDont {...props} />,
+      Do: props => <Do {...props} />,
+      Dont: props => <Dont {...props} />,
+      AnnotatedImage: props => <AnnotatedImage {...props} />,
+    };
+
+    let transformedContent = transform(doc.innerHTML, transforms, {
+      noTransform: (type, props) => {
+        return React.createElement(type, props, props.children);
+      }
+    });
+    ReactDOM.render(transformedContent, doc);
   }
 
   // Replace links to internal node with links from the router

@@ -98,9 +98,17 @@ type APIv1NodeAuthor struct {
 }
 
 type APIv1NodeDoc struct {
-	Title string `json:"title"`
-	HTML  string `json:"html"`
-	Raw   string `json:"raw"`
+	Title      string                   `json:"title"`
+	HTML       string                   `json:"html"`
+	Raw        string                   `json:"raw"`
+	Components []*APIv1NodeDocComponent `json:"components"`
+}
+
+type APIv1NodeDocComponent struct {
+	Level    int    `json:"level"`
+	Raw      string `json:"raw"`
+	Position int    `json:"position"`
+	Length   int    `json:"length"`
 }
 
 type APIv1NodeAsset struct {
@@ -194,10 +202,23 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		nComponents, _ := v.Components()
+		components := make([]*APIv1NodeDocComponent, 0, len(nComponents))
+		for _, n := range nComponents {
+			components = append(components, &APIv1NodeDocComponent{
+				Level:    n.Level,
+				Raw:      n.Raw,
+				Position: n.Position,
+				Length:   n.Length,
+			})
+		}
+
 		docs = append(docs, &APIv1NodeDoc{
-			Title: v.Title(),
-			HTML:  string(html[:]),
-			Raw:   string(raw[:]),
+			Title:      v.Title(),
+			HTML:       string(html[:]),
+			Raw:        string(raw[:]),
+			Components: components,
 		})
 	}
 
