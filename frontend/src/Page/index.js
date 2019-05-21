@@ -145,7 +145,7 @@ function Page(props) {
     }
 
     // Fill custom Array with XML
-    custom.push(<Meta title={title}>{listContent}</Meta>)
+    custom.push(<Meta key={title} title={title}>{listContent}</Meta>)
   }
 
   return (
