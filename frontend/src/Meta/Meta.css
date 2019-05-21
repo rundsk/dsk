@@ -9,8 +9,5 @@
   text-transform: uppercase;
   letter-spacing: 0.03em;
   line-height: 1.2em;
-}
-
-.meta + .meta {
-  margin-left: calc(var(--spacing-unit) * 5);
+  margin-bottom: 4px;
 }

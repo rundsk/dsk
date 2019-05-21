@@ -133,10 +133,24 @@ function Page(props) {
     authors = <Meta title={title}>{authorLinks}</Meta>;
   }
 
-  let synonyms;
-  if (props.custom && props.custom.synonyms) {
-    let synonymText = Array.isArray(props.custom.synonyms) ? props.custom.synonyms.join(", ") : props.custom.synonyms
-    synonyms = <Meta title="Synonyms">{synonymText}</Meta>;
+  // Custom meta data
+  let custom;
+
+  if (props.custom) {
+    // Turn props.custom object into array to be able to iterate with map()
+    custom = Object.entries(props.custom).map(data => {
+      let title = data[0];
+
+      // Display value list or single value
+      let value;
+      if (Array.isArray(data[1])) {
+        value = data[1].join(", ");
+      } else {
+        value = data[1];
+      }
+
+      return <Meta key={title} title={title}>{value}</Meta>
+    });
   }
 
   return (
@@ -156,7 +170,7 @@ function Page(props) {
           <div className="page__meta">
             <Meta title="Last Changed">{new Date(props.modified * 1000).toLocaleDateString()}</Meta>
             {authors}
-            {synonyms}
+            {custom}
           </div>
         </div>
       </div>
