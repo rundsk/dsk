@@ -133,10 +133,19 @@ function Page(props) {
     authors = <Meta title={title}>{authorLinks}</Meta>;
   }
 
-  let synonyms;
-  if (props.custom && props.custom.synonyms) {
-    let synonymText = Array.isArray(props.custom.synonyms) ? props.custom.synonyms.join(", ") : props.custom.synonyms
-    synonyms = <Meta title="Synonyms">{synonymText}</Meta>;
+  let custom = [];
+
+  for (let title in props.custom) {
+    // Display only one list item
+    let listContent = props.custom[title];
+
+    // Display more than one list item
+    if (typeof(listContent) == 'object') {
+      listContent = listContent.join(", ");
+    }
+
+    // Fill custom Array with XML
+    custom.push(<Meta title={title}>{listContent}</Meta>)
   }
 
   return (
@@ -156,7 +165,7 @@ function Page(props) {
           <div className="page__meta">
             <Meta title="Last Changed">{new Date(props.modified * 1000).toLocaleDateString()}</Meta>
             {authors}
-            {synonyms}
+            {custom}
           </div>
         </div>
       </div>
