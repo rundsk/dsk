@@ -43,7 +43,12 @@
 }
 
 .page__meta {
-  display: flex;
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: repeat(
+    auto-fit, minmax(min-content, calc(var(--spacing-unit) * 32)));
+  grid-row-gap: calc(var(--spacing-unit) * 4);
+  grid-column-gap: calc(var(--spacing-unit) * 4);
   margin-top: calc(var(--spacing-unit) * 4);
   padding: calc(var(--spacing-unit) * 2) 0;
   border-top: 1px dotted var(--color-gray-800);
