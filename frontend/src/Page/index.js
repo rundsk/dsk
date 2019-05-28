@@ -133,23 +133,23 @@ function Page(props) {
     authors = <Meta title={title}>{authorLinks}</Meta>;
   }
 
-  // Display custom meta data
+  // Custom meta data
+  let custom;
+
   if (props.custom) {
     // Turn props.custom object into array to be able to iterate with map()
-    let customMetaData = Object.entries(props.custom);
-
-    var custom = customMetaData.map(data => {
+    custom = Object.entries(props.custom).map(data => {
       let title = data[0];
 
-      // Display one list item
-      let listItems = data[1];
-
-      // Display more than one list item
-      if (Array.isArray(listItems)) {
-        listItems = listItems.join(", ");
+      // Display value list or single value
+      let value;
+      if (Array.isArray(data[1])) {
+        value = data[1].join(", ");
+      } else {
+        value = data[1];
       }
 
-      return <Meta key={title} title={title}>{listItems}</Meta>
+      return <Meta key={title} title={title}>{value}</Meta>
     });
   }
 
