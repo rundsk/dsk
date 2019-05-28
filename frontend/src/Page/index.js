@@ -133,19 +133,24 @@ function Page(props) {
     authors = <Meta title={title}>{authorLinks}</Meta>;
   }
 
-  let custom = [];
+  // Display custom meta data
+  if (props.custom) {
+    // Turn props.custom object into array to be able to iterate with map()
+    let customMetaData = Object.entries(props.custom);
 
-  for (let title in props.custom) {
-    // Display only one list item
-    let listContent = props.custom[title];
+    var custom = customMetaData.map(data => {
+      let title = data[0];
 
-    // Display more than one list item
-    if (typeof(listContent) == 'object') {
-      listContent = listContent.join(", ");
-    }
+      // Display one list item
+      let listItems = data[1];
 
-    // Fill custom Array with XML
-    custom.push(<Meta key={title} title={title}>{listContent}</Meta>)
+      // Display more than one list item
+      if (Array.isArray(listItems)) {
+        listItems = listItems.join(", ");
+      }
+
+      return <Meta key={title} title={title}>{listItems}</Meta>
+    });
   }
 
   return (
