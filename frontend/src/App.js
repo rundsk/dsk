@@ -41,7 +41,7 @@ function App(props) {
       console.log(err);
     });
 
-    Client.get("/frontendConfig.some").then((data) => {
+    Client.get("/frontendConfig.json").then((data) => {
       setFrontendConfig(data);
     }).catch((err) => {
       console.log("No config found" + err);
