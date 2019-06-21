@@ -43,8 +43,8 @@ ENV CGO_ENABLED=0
 
 # Force make to re-generate the to-be-embedded assets file. After a fresh
 # checkout of the source code all files have the same timestamp and the target
-# will not be made, as it appears to be up to date, but in fact contains
-# entirely new file when a custom frontend is used.
+# will not be made, as it appears to be up to date. But in fact it contains
+# entirely new files, especially when a custom frontend is used.
 RUN touch /frontend/index.html
 
 # Build through Makefile, as it i.e. ensures the frontend embed happens
