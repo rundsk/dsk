@@ -7,7 +7,10 @@ installed and running.
 A container image can be created using `docker build`.
 
 ```
-docker build --tag atelierdisko/dsk:1.2.3 --build-arg VERSION=1.2.3 .
+docker build \
+	--tag atelierdisko/dsk:1.2.3 \
+	--build-arg VERSION=1.2.3 \
+	. # <- Note the dot.
 ```
 
 ## Supported build `ARG`s
