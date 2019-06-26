@@ -1,4 +1,5 @@
 import React from 'react';
+import { BaseLink, withRoute } from 'react-router5';
 import './Breadcrumbs.css';
 
 function Breadcrumbs(props) {
@@ -6,7 +7,10 @@ function Breadcrumbs(props) {
 
   if (props.crumbs) {
     crumbs = props.crumbs.map((c) => {
-      return <li className="breadcrumbs__crumb" key={c.title}><a href={`/tree/${c.url}`}>{c.title}</a></li>;
+      return <li className="breadcrumbs__crumb" key={c.title}>
+        <BaseLink router={props.router} routeName='node' routeParams={{ node: `${c.url}` }} key={"link"}>{c.title}</BaseLink>
+        {/* <a href={`/tree/${c.url}`}>{c.title}</a> */}
+      </li>;
     })
 
     crumbs.pop();
@@ -18,4 +22,4 @@ function Breadcrumbs(props) {
   );
 }
 
-export default Breadcrumbs;
+export default withRoute(Breadcrumbs);
