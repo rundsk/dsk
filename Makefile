@@ -26,7 +26,7 @@ profile:
 
 .PHONY: dev
 dev:
-	go build -tags=dev -race -ldflags "$(GOFLAGS)"
+	go build -mod=vendor -tags=dev -race -ldflags "$(GOFLAGS)"
 	./dsk -lang $(DDT_LANG) -frontend $(FRONTEND) $(DDT)
 
 .PHONY: clean
