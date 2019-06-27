@@ -153,7 +153,7 @@ function Page(props) {
         value = data[1];
       }
 
-      return <Meta key={title} title={title}>{value}</Meta>
+      return <div className="page__meta-item"><Meta key={title} title={title}>{value}</Meta></div>
     });
   }
 
@@ -172,9 +172,11 @@ function Page(props) {
           <Tags tags={props.tags} />
 
           <div className="page__meta">
-            <Meta title="Last Changed">{new Date(props.modified * 1000).toLocaleDateString()}</Meta>
-            {authors}
-            {custom}
+            <div className="page__meta-items-container">
+              <div className="page__meta-item"><Meta title="Last Changed">{new Date(props.modified * 1000).toLocaleDateString()}</Meta></div>
+              <div className="page__meta-item">{authors}</div>
+              {custom}
+            </div>
           </div>
         </div>
       </div>

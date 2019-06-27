@@ -43,15 +43,26 @@
 }
 
 .page__meta {
-  display: grid;
-  grid-template-rows: auto;
-  grid-template-columns: repeat(
-    auto-fit, minmax(min-content, calc(var(--spacing-unit) * 32)));
-  grid-row-gap: calc(var(--spacing-unit) * 4);
-  grid-column-gap: calc(var(--spacing-unit) * 4);
   margin-top: calc(var(--spacing-unit) * 4);
   padding: calc(var(--spacing-unit) * 2) 0;
   border-top: 1px dotted var(--color-gray-800);
+}
+
+.page__meta-items-container {
+  display: flex;
+  flex-wrap: wrap;
+
+  /* The negative margin makes sure that the margin-left of the
+   * first meta item of every row, as well as the margin-bottom
+   * of all meta items is the last row, are "ignored"
+   */
+  margin-bottom: calc(var(--spacing-unit) * -4);
+  margin-left: calc(var(--spacing-unit) * -4);
+}
+
+.page__meta-item {
+  margin-left: calc(var(--spacing-unit) * 4);
+  margin-bottom: calc(var(--spacing-unit) * 4);
 }
 
 .page__author a {
@@ -159,7 +170,7 @@
   .page__header-content {
     padding: 0 calc(var(--spacing-unit) * 3);
   }
-  
+
   .page__title {
     margin-bottom: calc(var(--spacing-unit) * 6);
   }
@@ -176,7 +187,7 @@
 
   .page__footer-content {
     padding: 0 calc(var(--spacing-unit) * 3);
-  }  
+  }
 
   .page__node-nav {
     padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 2);
@@ -185,10 +196,10 @@
   .page__node-nav--prev {
     margin-left: calc(var(--spacing-unit) * -2);
   }
-  
+
   .page__node-nav--next {
     margin-right: calc(var(--spacing-unit) * -2);
-  }  
+  }
 
   .page__node-nav--prev:hover {
     transform: translateX(0);
