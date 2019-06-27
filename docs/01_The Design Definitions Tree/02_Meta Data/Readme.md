@@ -30,6 +30,11 @@ tags:
   - progress/empty
 
 version: 1.2.3
+
+custom:
+  synonyms:
+    - EntryField
+    - InputField
 ```
 
 Possible meta data keys are:
@@ -39,5 +44,5 @@ Possible meta data keys are:
 - `related`: An array of related aspect URLs within DSK.
 - `tags`: An array of tags to group related aspects together.
 - `version`: A freeform version string.
-
+- `custom`: A key under which arbitrary data can be put. If you find something in here should have official support, feel free to [open an issue](https://github.com/atelierdisko/dsk/issues/new).
 
