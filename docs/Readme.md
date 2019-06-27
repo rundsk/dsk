@@ -8,3 +8,17 @@ simple directories. Creating documentation is as easy as adding a
 file to a directory inside the _design definitions tree_.
 
 ![screenshot](https://atelierdisko.de/assets/app/img/github_dsk.png?v=3)
+
+## Sponsors
+
+<a href="https://fielmann.com">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/160506_Fielmann_LogoNEU_pos_wiki.svg/1920px-160506_Fielmann_LogoNEU_pos_wiki.svg.png" height="40" alt="fielmann">
+</a>
+
+<br>
+
+<a href="https://dpa.com">
+  <img src="https://www.dpa.com/typo3conf/ext/dpa/Resources/Public/assets/images/logo.svg" height="40" alt="dpa">
+</a>
+
+
