@@ -20,10 +20,10 @@ type NodeMeta struct {
 	path string
 
 	// Email addresses of node authors.
-	Authors     []string `json:"authors,omitempty" yaml:"authors,omitempty"`
-	Description string   `json:"description,omitempty" yaml:"description,omitempty"`
-	Related     []string `json:"related,omitempty" yaml:"related,omitempty"`
-	Tags        []string `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Authors     []string    `json:"authors,omitempty" yaml:"authors,omitempty"`
+	Description string      `json:"description,omitempty" yaml:"description,omitempty"`
+	Related     []string    `json:"related,omitempty" yaml:"related,omitempty"`
+	Tags        []string    `json:"tags,omitempty" yaml:"tags,omitempty"`
 	Custom      interface{} `json:"custom,omitempty" yaml:"custom,omitempty"`
 
 	// Freeform version string.
