@@ -265,6 +265,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		Prev:        prev,
 		Next:        next,
 		Custom:		 n.Custom(),
+
 		// Deprecated, to be removed in APIv3:
 		Downloads: assets,
 	}, nil
