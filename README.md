@@ -20,6 +20,7 @@ file to a directory inside the _design definitions tree_.
 </a>
 
 <br>
+<br>
 
 <a href="https://dpa.com">
   <img src="https://www.dpa.com/typo3conf/ext/dpa/Resources/Public/assets/images/logo.svg" height="40" alt="dpa">
