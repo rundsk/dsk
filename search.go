@@ -99,6 +99,7 @@ func NewSearchMapping(langs []string, isWide bool) *mapping.IndexMappingImpl {
 		node.AddFieldMappingsAt("Docs", tms...)
 		node.AddFieldMappingsAt("Files", sm)
 		node.AddFieldMappingsAt("Version", sm, km)
+		node.AddFieldMappingsAt("Custom", sm)
 	}
 
 	im.AddDocumentMapping("article", node)
@@ -292,6 +293,7 @@ func (s *Search) IndexNode(n *Node, wideBatch, narrowBatch *bleve.Batch) error {
 		Tags        []string
 		Titles      []string
 		Version     string
+		Custom      interface{}
 	}{
 		Authors:     as,
 		Description: n.Description(),
@@ -300,6 +302,7 @@ func (s *Search) IndexNode(n *Node, wideBatch, narrowBatch *bleve.Batch) error {
 		Tags:        n.Tags(),
 		Titles:      titles,
 		Version:     n.Version(),
+		Custom:      n.Custom(),
 	}
 	narrowData := struct {
 		Tags   []string

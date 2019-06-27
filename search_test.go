@@ -81,6 +81,32 @@ func TestFullSearchDescription(t *testing.T) {
 	expectFullSearchResult(t, rs, "Colors")
 }
 
+func TestFullSearchCustom(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n.Create()
+
+	n.CreateMeta("meta.yaml", &NodeMeta{
+		Custom: map[string][]string{
+			"Synomyms": []string{
+				"foo",
+				"bar",
+			},
+		},
+	})
+	n.Load()
+
+	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FullSearch("foo")
+	expectFullSearchResult(t, rs, "Colors")
+
+	rs, _, _, _, _ = s.FullSearch("bar")
+	expectFullSearchResult(t, rs, "Colors")
+}
+
 func TestFullSearchDocumentContents(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
