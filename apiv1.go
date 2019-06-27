@@ -264,7 +264,7 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		Related:     related,
 		Prev:        prev,
 		Next:        next,
-		Custom:		 n.Custom(),
+		Custom:      n.Custom(),
 
 		// Deprecated, to be removed in APIv3:
 		Downloads: assets,
