@@ -11,6 +11,9 @@ import Page from './Page';
 import ErrorPage from './ErrorPage';
 import Search from './Search';
 
+import HamburgerIcon from './HamburgerIcon.svg'
+import CloseIcon from './CloseIcon.svg'
+
 function App(props) {
   const [tree, setTree] = useState(null);
   const [title, setTitle] = useState("Design System");
@@ -18,6 +21,7 @@ function App(props) {
   const [currentNode, setCurrentNode] = useState(null);
   const [error, setError] = useState(null);
   const [frontendConfig, setFrontendConfig] = useGlobal("frontendConfig");
+  const [mobileSidebarIsActive, setMobileSidebarIsActive] = useState(false);
 
   function getNode() {
     let nodeToGet = currentNode;
@@ -41,7 +45,7 @@ function App(props) {
       console.log(err);
     });
 
-    Client.get("/frontendConfig.some").then((data) => {
+    Client.get("/frontendConfig.json").then((data) => {
       setFrontendConfig(data);
     }).catch((err) => {
       console.log("No config found" + err);
@@ -81,18 +85,30 @@ function App(props) {
     <div className="app">
       <button className="app_skip-to-content" onClick={() => { if (refToMain.current) { console.log(refToMain); refToMain.current.focus() } }}>Skip to Content (Press Enter)</button>
 
-      <div className="app__sidebar">
+      <div className={`app__sidebar ${mobileSidebarIsActive ? "app__sidebar--is-visible" : ""}`}>
         <div className="app__header">
           <div>{frontendConfig.organisation || "DSK"} / <BaseLink router={props.router} routeName="home" className="app__title">{title}</BaseLink></div>
         </div>
         <div className="app__nav">
-          <TreeNavigation tree={tree} />
+          <TreeNavigation tree={tree} hideMobileSidebar={() => {setMobileSidebarIsActive(false)}} />
         </div>
         <div className="app__shoutout">
           Powered by <a href="https://github.com/atelierdisko/dsk">DSK</a> · <a href="mailto:designsystems@atelierdisko.de">Get in Touch</a>
         </div>
       </div>
       <main className="app__main" ref={refToMain} tabIndex="0">
+        <div className="app__mobile-header">
+          <div className="app__mobile-header-icon" onClick={() => {setMobileSidebarIsActive(!mobileSidebarIsActive)}}>
+
+            { mobileSidebarIsActive ?
+              <img src={CloseIcon} alt="Toggle Menu"/>
+            :
+              <img src={HamburgerIcon} alt="Toggle Menu"/>
+            }
+          </div>
+          <div>{frontendConfig.organisation || "DSK"} / <BaseLink router={props.router} routeName="home" className="app__title">{title}</BaseLink></div>
+        </div>
+
         {content}
       </main>
       <div className="app__search"><Search title={title} /></div>

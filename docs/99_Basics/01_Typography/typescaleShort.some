@@ -1,0 +1,21 @@
+{
+  "defaultStyleName": "h2",
+  "styles": [
+    {
+      "id": "huge",
+      "name": "Huge",
+      "fontFamily": "Helvetica Neue",
+      "fontWeight": "300",
+      "fontSize": 60,
+      "lineHeight": 85,
+      "letterSpacing": 0.37
+    }, {
+      "id": "h1",
+      "name": "Heading 1",
+      "fontWeight": "Bold",
+      "fontSize": 34,
+      "lineHeight": 45,
+      "extends": "huge"
+    }
+  ]
+}

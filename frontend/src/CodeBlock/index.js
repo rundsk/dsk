@@ -6,10 +6,19 @@ import { copyTextToClipboard } from '../utils';
 // https://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
 // https://www.npmjs.com/package/escape-html
 function CodeBlock(props) {
+  let content = props.children;
+
+  // Sometimes a codeblock start with a empty line, because of the way
+  // codeblocks have to be formated in Markdown. We consider this
+  // undesirable and remove the first line, if it is empty.
+  if (content.length === 1 && content[0].charAt(0) === "\n") {
+    content = content[0].substring(1);
+  }
+
   const [copyText, setCopyText] = useState("Copy");
   function copyCode() {
     setCopyText("Copied!");
-    copyTextToClipboard(props.children);
+    copyTextToClipboard(content);
 
     setTimeout(() => {
       setCopyText("Copy");
@@ -24,7 +33,7 @@ function CodeBlock(props) {
       </div>
       <pre className="code-block__code">
         <code className="code-block__code-content">
-          {props.children}
+          {content}
         </code>
       </pre>
     </div>

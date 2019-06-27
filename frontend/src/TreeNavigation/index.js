@@ -90,7 +90,7 @@ function TreeNavigation(props) {
     }
 
     // let content = [<a href={`/tree/${node.url}`} key={"link"}>{node.title}</a>]
-    let content = [<BaseLink router={props.router} routeName='node' routeParams={{ node: `${node.url}` }} key={"link"}>{node.title}</BaseLink>]
+    let content = [<BaseLink router={props.router} routeName='node' routeParams={{ node: `${node.url}` }} key={"link"} onClick={props.hideMobileSidebar}>{node.title}</BaseLink>]
 
     let children = node.children.map((c) => {
       return renderList(c, activeNode);

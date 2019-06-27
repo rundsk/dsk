@@ -14,6 +14,7 @@ import ColorSpecimen from '../ColorSpecimen';
 import CodeBlock from '../CodeBlock';
 import FigmaEmbed from '../FigmaEmbed';
 import DoDont, { Do, Dont } from '../DoDont';
+import AnnotatedImage from '../AnnotatedImage';
 
 // import MDX from '@mdx-js/runtime';
 
@@ -91,6 +92,7 @@ function Doc(props) {
         DoDont: props => <DoDont {...props} />,
         Do: props => <Do {...props} />,
         Dont: props => <Dont {...props} />,
+        AnnotatedImage: props => <AnnotatedImage {...props} />,
       };
 
       code.forEach(c => {
@@ -273,6 +275,8 @@ function Doc(props) {
   }
 
   return (
+    // We want to be able to fill docs straigt with HTML or with react
+    // components, depending on which props are passed.
     <div className="doc" ref={ref} dangerouslySetInnerHTML={props.content && { __html: props.content }}>
       {props.children}
     </div>

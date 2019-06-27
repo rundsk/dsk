@@ -26,7 +26,6 @@
 }
 
 .search__content {
-  pointer-events: all;
   z-index: 3;
   width: 100%;
   max-width: calc(var(--spacing-unit) * 35);
@@ -40,6 +39,7 @@
 }
 
 .search input {
+  pointer-events: all;
   z-index: 3;
   width: 100%;
   padding: calc(var(--spacing-unit) * .9) calc(var(--spacing-unit) * 1);
@@ -159,9 +159,9 @@
 }
 
 /* --- Responsive Mobile --- */
-/* FIXME: Search should be posible in mobile */
+/* FIXME: Search should be possible in mobile */
 
-@media screen and (max-width : 600px) {
+@media screen and (max-width : 900px) {
   .search {
     padding-left: 0;
     display: none;
@@ -175,7 +175,7 @@
     padding: 0 calc(var(--spacing-unit) * 3);
   }
 
-  .search__content { 
+  .search__content {
     max-width: 100%;
   }
 

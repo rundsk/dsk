@@ -165,17 +165,17 @@ function Search(props) {
   }
 
   return (
-    <div className={classes.join(" ")} onClick={() => { if (searchIsFocused) { hideSearch(); } }}>
+    <div className={classes.join(" ")} onClick={(ev) => { if (searchIsFocused) { hideSearch(); } }}>
       <div className="search__content-container">
-        <div className="search__content">
+        <div className="search__content" onClick={(ev) => { ev.stopPropagation(); }}>
           <input
             type="search"
             placeholder={`Search ${props.title}…`}
             value={searchTerm}
             onChange={onSearchTermChange}
-            onFocus={showSearch}
+            onFocus={(ev) => { ev.preventDefault(); ev.stopPropagation(); showSearch(); }}
             ref={searchInputRef}
-            onClick={(ev) => { ev.stopPropagation(); }}
+            onClick={(ev) => { ev.stopPropagation();  ev.preventDefault(); }}
           />
 
           <div className={`search__results-container${(shouldShowResults) ? " search__results-container--is-visible" : ""}`}>

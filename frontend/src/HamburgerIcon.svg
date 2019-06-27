@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>HamburgerIcon</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="square">
+        <g id="HamburgerIcon" fill-rule="nonzero" stroke="#FFFFFF">
+            <path d="M0.5,6.5 L27.5,6.5" id="Line"></path>
+            <path d="M0.5,14.5 L27.5,14.5" id="Line-Copy"></path>
+            <path d="M0.5,22.5 L27.5,22.5" id="Line-Copy-2"></path>
+        </g>
+    </g>
+</svg>

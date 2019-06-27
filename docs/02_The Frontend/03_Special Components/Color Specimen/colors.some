@@ -1,0 +1,25 @@
+{
+  "colors": [
+    {
+      "name": "Blue",
+      "id": "blue",
+      "value": "#001dff",
+      "comment": "Our primary color"
+    },
+    {
+      "name": "White",
+      "id": "white",
+      "value": "#ffffff"
+    },
+    {
+      "name": "Green",
+      "id": "green",
+      "value": "#52d0af"
+    },
+    {
+      "name": "Teal",
+      "id": "teal",
+      "value": "#0091ab"
+    }
+  ]
+}

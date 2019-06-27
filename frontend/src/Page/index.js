@@ -17,6 +17,7 @@ import NodeList from '../NodeList';
 function Page(props) {
   const docRef = useRef(null);
 
+  // Scroll to top on navigation
   useEffect(() => {
     window.scrollTo({
       top: 0,
@@ -25,6 +26,7 @@ function Page(props) {
     });
   }, [props.url]);
 
+  // Update the sites title when the node changes
   useEffect(() => {
     let title = `${props.designSystemTitle}: ${props.title}`;
 
@@ -35,20 +37,12 @@ function Page(props) {
     document.title = title;
   }, [props.title, props.designSystemTitle]);
 
-  function navigateToActiveTab(t) {
-    // We handle tab selection completly via the URL
-    let currentRouterState = props.router.getState();
-
-    // On root there is no node parameter
-    let currentNode = currentRouterState.params.node || "";
-    t = slugify(t);
-    props.router.navigate("node", { ...currentRouterState.params, node: currentNode, t: t }, { replace: true });
-  }
-
+  // Check if there is a section marker in the URL, and if their is
+  // scroll there
   useEffect(() => {
     // FIXME: We delay this, because we hope by the time
     // we call the function all the children have loaded
-    // their async content and have reached their final 
+    // their async content and have reached their final
     // size. There is probably a better way to do this.
     setTimeout(() => {
       let currentRouterState = props.router.getState();
@@ -59,6 +53,16 @@ function Page(props) {
       }
     }, 300);
   });
+
+  function navigateToActiveTab(t) {
+    // We handle tab selection completly via the URL
+    let currentRouterState = props.router.getState();
+
+    // On root there is no node parameter
+    let currentNode = currentRouterState.params.node || "";
+    t = slugify(t);
+    props.router.navigate("node", { ...currentRouterState.params, node: currentNode, t: t }, { replace: true });
+  }
 
   let componentDemo;
   let tabBar;
