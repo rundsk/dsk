@@ -76,6 +76,8 @@ github.com/golang/protobuf/proto
 github.com/golang/snappy
 # github.com/gorilla/websocket v1.4.0
 github.com/gorilla/websocket
+# github.com/icza/dyno v0.0.0-20180601094105-0c96289f9585
+github.com/icza/dyno
 # github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99
 github.com/jbenet/go-context/io
 # github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e
