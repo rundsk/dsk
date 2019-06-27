@@ -19,6 +19,9 @@
   should not be stored inside the DDT.
 - Official prebuilt docker container images are now available
   [on docker hub](https://cloud.docker.com/u/atelierdisko/repository/registry-1.docker.io/atelierdisko/dsk).
+- We now support freeform data under the `custom` key in `meta.yaml` (or `meta.json`). It 
+  is made available through the API. The built-in frontend has been enhanced to display 
+  the freeform meta data nicely. #62, #71, #72
 
 ## 1.1.1
 
