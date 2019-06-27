@@ -218,7 +218,6 @@ func (n *Node) Description() string {
 	return n.meta.Description
 }
 
-// Returns the full description of the node.
 func (n *Node) Custom() interface{} {
 	return n.meta.Custom
 }
