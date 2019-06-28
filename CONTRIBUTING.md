@@ -84,11 +84,10 @@ $ make dev
 ```
 
 Second, start the frontend using a development server. It will be
-reachable over port 3000 and proxy request through to the backend.
+reachable over port 3000 and proxy requests through to the backend.
 
 ```
-$ cd frontend
-$ yarn start
+$ make -C frontend dev
 ```
 
 Now open http://127.0.0.1:3000 in your browser.
