@@ -41,7 +41,6 @@ The Typography Specimen component expects a file according to the [Lona Text Sty
     }
   ]
 }</CodeBlock>
-```
 
 # Properties
 
