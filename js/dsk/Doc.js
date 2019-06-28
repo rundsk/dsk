@@ -87,25 +87,6 @@ export default class DocTransformer {
     return root.innerHTML;
   }
 
-  // If node is a <div>, we infer its type from its first attribute. This
-  // means a Markdown doc can contain something like <div FullColorPlane> and
-  // the transform will treat it as <FullColorPlane>.
-  //
-  // Please note, that the resulting element will have a lowercased tag name.
-  isCustomElementCompat(node) {
-    if (node.tagName !== 'DIV') {
-      return false;
-    }
-    if (!node.attributes[0]) {
-      return false;
-    }
-    if (!this.transforms[node.attributes[0].name.toLowerCase()]) {
-      console.log(`Unknown custom element ${node.attributes[0].name}`);
-      return false;
-    }
-    return true;
-  }
-
   // Removes any elements, that may have become empty due to other
   // processing steps.
   clean(root) {
@@ -131,11 +112,6 @@ export default class DocTransformer {
 
     // Where at the attributes should we begin parsing into props.
     let startProps = 0;
-
-    if (this.isCustomElementCompat(node)) {
-      type = node.attributes[0].name;
-      startProps = 1;
-    }
 
     let apply = this.transforms[type];
 
