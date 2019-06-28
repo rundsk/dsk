@@ -1,27 +1,21 @@
 <!-- # Examples
 
-```Component
 <TypographySpecimen src="./typography.some"></TypographySpecimen>
-```
 
 ## Compact
-```Component
 <TypographySpecimen src="./typography.some" compact="true"></TypographySpecimen>
-``` -->
+ -->
 
 # Usage
 
-~~~
-```Component
+```
 <TypographySpecimen src="./typography.json"></TypographySpecimen>
 <TypographySpecimen src="./typography.json" compact="true"></TypographySpecimen>
 ```
-~~~
 
 # File format
 The Typography Specimen component expects a file according to the [Lona Text Style Spec](https://github.com/airbnb/Lona/blob/master/docs/file-formats/text-styles.md).
 
-```Component
 <CodeBlock title="typography.json">{
   "colors": [
     {

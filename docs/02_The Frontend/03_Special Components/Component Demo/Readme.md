@@ -1,18 +1,14 @@
 # Examples
 
-```Component
 <ComponentDemo>{Component}</ComponentDemo>
 <ComponentDemo background="pinstripes" backgroundColor="#FED28C">{component}</ComponentDemo>
-```
 
 # Usage
 
-~~~
-```Component
+```
 <ComponentDemo>{Component}</ComponentDemo>
 <ComponentDemo background="pinstripes" backgroundColor="#FED28C">{component}</ComponentDemo>
 ```
-~~~
 
 # Properties
 

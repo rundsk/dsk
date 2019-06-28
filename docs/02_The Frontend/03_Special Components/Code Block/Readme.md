@@ -1,20 +1,14 @@
 # Examples
 
-```Component
 <CodeBlock title="colors.json">{code from colors.json}</CodeBlock>
 <CodeBlock title="Example">{code}</CodeBlock>
-```
 
 # Usage
 
-
-~~~
-```Component
+```
 <CodeBlock src="./colors.json"></CodeBlock>
 <CodeBlock title="Example">{code}</CodeBlock>
 ```
-~~~
-
 
 # Properties
 

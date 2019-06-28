@@ -1,27 +1,21 @@
 <!-- # Examples
 
-```Component
 <ColorSpecimen src="./colors.some"></ColorSpecimen>
-```
 
 ## Compact
-```Component
 <ColorSpecimen src="./colors.some" compact="true"></ColorSpecimen>
-``` -->
+ -->
 
 # Usage
 
-~~~
-```Component
+```
 <ColorSpecimen src="./colors.json"></ColorSpecimen>
 <ColorSpecimen src="./colors.json" compact="true"></ColorSpecimen>
 ```
-~~~
 
 # File format
 The Color Specimen component expects a file according to the [Lona Color Defintions Spec](https://github.com/airbnb/Lona/blob/master/docs/file-formats/colors.md).
 
-```Component
 <CodeBlock title="colors.json">{
   "colors": [
     {

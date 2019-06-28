@@ -2,9 +2,7 @@
 
 Gibt es viele Auswahlmöglichkeiten, wird das Menü im ausgeklappten Zustand zu lang. In diesem Fall sollte die Höhe begrenzt werden, wobei die letzte sichtbare Auswahlmöglichkeit teilweise abgeschnitten sein sollte. So wird deutlich, dass es noch weiteren Inhalt gibt. Die restlichen Auswahlmöglichkeiten können dann durch Scrollen erreicht werden.
 
-```Component
 <Banner type="warning" title="Banner">The component is not to be used yet.</Banner>
-```
 
 ## Sichtbare Auswahlmöglichkeiten
 
@@ -18,9 +16,7 @@ Als Richtwert gelten fünf sichtbare Auswahlmöglichkeiten – ab der sechsten s
 > * Zwei
 > * Drei
 
-```Component
 <Banner title="Banner">The component is not to be used yet.</Banner>
-```
 
 In Precision-Anwendungen ist es möglich, zusätzlich zu den Auswahlmöglichkeiten als letzes Element einen [Button](/Blocks/Data Entry/Button) im Dropdown zu platzieren. In der Regel öffnet der Button ein [Modal](/Blocks/Content Display/Modal), mit dem der Nutzer eine genauere Auswahl treffen kann, als es im Dropdown möglich ist.
 
@@ -32,9 +28,7 @@ In *Precision-Anwendungen* ist es möglich, zusätzlich zu den Auswahlmöglichke
 
 In Precision-Anwendungen ist es möglich, zusätzlich zu den **Auswahlmöglichkeiten** als letzes Element einen [Button](/Blocks/Data Entry/Button) im Dropdown zu platzieren. In der Regel öffnet der Button ein [Modal](/Blocks/Content Display/Modal), mit dem der Nutzer eine genauere Auswahl treffen kann, als es im Dropdown möglich ist.
 
-```Component
 <Banner type="important" title="Banner">The component is not to be used yet.</Banner>
-```
 
 # Blockvariante: Mit Button
 
@@ -46,6 +40,4 @@ In Precision-Anwendungen ist es möglich, zusätzlich zu den Auswahlmöglichkeit
 
 In Precision-Anwendungen ist es möglich, zusätzlich zu den Auswahlmöglichkeiten als letzes Element einen [Button](/Blocks/Data Entry/Button) im Dropdown zu platzieren. In der Regel öffnet der Button ein [Modal](/Blocks/Content Display/Modal), mit dem der Nutzer eine genauere Auswahl treffen kann, als es im Dropdown möglich ist.
 
-```Component
 <Banner type="error" title="Banner">The component is not to be used yet.</Banner>
-```

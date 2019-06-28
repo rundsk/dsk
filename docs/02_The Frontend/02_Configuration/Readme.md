@@ -2,7 +2,6 @@ You can configure the frontend by placing a file called `frontendConfiguration.j
 
 This configuration file could look like this:
 
-```Component
 <CodeBlock title="frontendConfiguration.json">{
   "organisation": "ACME Crop",
   "tags": [
@@ -20,7 +19,6 @@ This configuration file could look like this:
     }
   ]
 }</CodeBlock>
-```
 
 Property | Type | Description
 ---|---|---|
@@ -41,6 +39,4 @@ Property | Type | Description
 `name` | `String` | The color will be used if a tag **contains** this string.
 `color` | `CSS Color String (hex, rgba)` | The color to use for the tag.
 
-```Component
 <Banner title="Tip">If you want to use colors that blend in with the DSK frontend you can also use one of the following values: <code>"var(--color-teal)"</code>, <code>"var(--color-yellow)"</code>, <code>"var(--color-orange)"</code>, <code>"var(--color-red)"</code>.</Banner>
-```

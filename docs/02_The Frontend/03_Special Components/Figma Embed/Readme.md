@@ -1,10 +1,8 @@
 # Usage
 
-~~~
-```Component
+```
 <FigmaEmbed token="<API access token>" document="Ppu4fKoeiDXCGMB5XgvZefHc" frame="TagComponent"></FigmaEmbed>
 ```
-~~~
 
 # Properties
 
