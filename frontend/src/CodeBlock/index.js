@@ -11,9 +11,10 @@ function CodeBlock(props) {
   // Sometimes a codeblock start with a empty line, because of the way
   // codeblocks have to be formated in Markdown. We consider this
   // undesirable and remove the first line, if it is empty.
-  if (content.length === 1 && content[0].charAt(0) === "\n") {
-    content = content[0].substring(1);
-  }
+  // TODO: Reactivate, getting 'TypeError: content is null'
+  // if (content.length === 1 && content[0].charAt(0) === "\n") {
+  //  content = content[0].substring(1);
+  // }
 
   const [copyText, setCopyText] = useState("Copy");
   function copyCode() {
