@@ -34,12 +34,14 @@ The following visual design has been agreed upon by our team:
 func TestFindInMarkdownExcludeCode(t *testing.T) {
 	raw0 := "`<h1>code</h1>`"
 	result0 := findComponentsInMarkdown([]byte(raw0))
+
 	if len(result0) != 0 {
 		t.Errorf("Failed to skip over code, got: %#v", result0)
 	}
 
 	raw1 := "above\n`<h1>and</h1>`\nbelow"
 	result1 := findComponentsInMarkdown([]byte(raw1))
+
 	if len(result1) != 0 {
 		t.Errorf("Failed to skip over code, got: %#v", result1)
 	}
@@ -47,8 +49,8 @@ func TestFindInMarkdownExcludeCode(t *testing.T) {
 
 func TestFindInMarkdownExcludeFencedCode(t *testing.T) {
 	raw0 := "```\n<h1>hello</h1>\n```"
-
 	result0 := findComponentsInMarkdown([]byte(raw0))
+
 	if len(result0) != 0 {
 		t.Errorf("Failed to skip over fenced code, got: %#v", result0)
 	}
