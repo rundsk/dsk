@@ -72,6 +72,10 @@ function Doc(props) {
   // Finds all code section that have been tagged Component,
   // parse them and mount react components
   function renderComponents() {
+    if (!props.mountComponents) {
+      return;
+    }
+
     if (!ref.current) {
       return;
     }
@@ -250,14 +254,14 @@ function Doc(props) {
   // }
 
   // if there is a doc but it is empty we cannot risk calling dangerouslySetInnerHTML
-  if (props.content === "") {
+  if (props.htmlContent === "") {
     return <div className="doc" ref={ref}>{props.children}</div>;
   }
 
   return (
     // We want to be able to fill docs straigt with HTML or with react
     // components, depending on which props are passed.
-    <div className="doc" ref={ref} dangerouslySetInnerHTML={props.content && { __html: props.content }}>
+    <div className="doc" ref={ref} dangerouslySetInnerHTML={props.htmlContent && { __html: props.htmlContent }}>
       {props.children}
     </div>
   );

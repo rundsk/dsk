@@ -125,8 +125,11 @@ function Page(props) {
       activeDoc = docs[0];
     }
 
+    // If this is not an overview/asset/source doc, its content comes
+    // from the API in the form of HTML, rather than React elements
     if (activeDoc && activeDoc.html) {
-      doc = <Doc title={activeDoc.title} content={activeDoc.html} />
+      console.log(activeDoc.html)
+      doc = <Doc title={activeDoc.title} htmlContent={activeDoc.html} mountComponents={true} />
     }
 
     if (activeDoc && activeDoc.content) {
