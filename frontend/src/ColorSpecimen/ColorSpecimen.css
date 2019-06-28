@@ -6,7 +6,7 @@
   grid-row-gap: calc(var(--spacing-unit) * 4);
   /* display: flex;
   flex-wrap: wrap; */
-  margin: calc((var(--spacing-unit) * 3)) 0;
+  margin: var(--documentation-component-spacing) 0;
 }
 
 .color-specimen:first-child {

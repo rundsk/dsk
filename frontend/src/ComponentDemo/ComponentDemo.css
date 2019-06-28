@@ -10,7 +10,7 @@
   background-image: url(./DotGridPattern--dark.png);
   background-size: 20px;
   background-position: center center;
-  margin: calc((var(--spacing-unit) * 5)) 0;
+  margin: var(--documentation-component-spacing) 0;
 }
 
 .component-demo:first-child {

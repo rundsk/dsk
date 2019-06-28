@@ -86,7 +86,7 @@
 
 .doc figure {
   width: 100%;
-  margin: calc((var(--spacing-unit) * 3)) 0;
+  margin: var(--documentation-component-spacing) 0;
 }
 
 .doc figcaption {
@@ -107,7 +107,12 @@
 
 .doc > img {
   width: 100%;
-  margin: calc((var(--spacing-unit) * 3)) 0;
+  margin: var(--documentation-component-spacing) 0;
+}
+
+.doc > video {
+  width: 100%;
+  margin: var(--documentation-component-spacing) 0;
 }
 
 /* Paragraphs */
@@ -156,7 +161,7 @@
 .doc table {
   border-collapse: collapse;
   width: 100%;
-  margin: 4rem 0;
+  margin: var(--documentation-component-spacing) 0;
 }
 
 .doc table:last-child {
@@ -209,7 +214,7 @@
 }
 
 .doc pre {
-  margin: calc((var(--spacing-unit) * 3)) 0;
+  margin: var(--documentation-component-spacing) 0;
   background-color: var(--color-gray-1000);
   /* border: 1px solid var(--color-gray-900); */
   padding: calc((var(--spacing-unit) * 2));
@@ -254,7 +259,7 @@
 /* Horizontal Rule */
 
 .doc hr {
-  margin: calc(var(--spacing-unit) * 3) 0;
+  margin: var(--documentation-component-spacing) 0;
   padding: 0;
   border: none;
   border-bottom: 1px dotted var(--color-gray-800);

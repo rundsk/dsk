@@ -33,4 +33,5 @@
 
   /* Spacing */
   --spacing-unit: 8px;
+  --documentation-component-spacing: calc((var(--spacing-unit) * 5));
 }

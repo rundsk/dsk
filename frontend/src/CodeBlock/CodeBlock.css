@@ -1,5 +1,5 @@
 .code-block {
-  margin: calc((var(--spacing-unit) * 3)) 0;
+  margin: var(--documentation-component-spacing) 0;
 }
 
 .code-block:first-child {

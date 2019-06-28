@@ -1,5 +1,5 @@
 .banner {
-  margin: calc((var(--spacing-unit) * 5)) 0;
+  margin: var(--documentation-component-spacing) 0;
   width: 100%;
 }
 

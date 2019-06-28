@@ -1,6 +1,6 @@
 .typography-specimen {
   width: 100%;
-  margin: calc((var(--spacing-unit) * 5)) 0;
+  margin: var(--documentation-component-spacing) 0;
 }
 
 .typography-specimen:first-child {
