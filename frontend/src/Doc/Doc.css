@@ -107,6 +107,7 @@
 
 .doc > img {
   width: 100%;
+  height: auto;
   margin: var(--documentation-component-spacing) 0;
 }
 
