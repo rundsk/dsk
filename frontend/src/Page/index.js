@@ -86,21 +86,29 @@ function Page(props) {
     if ((docs.length === 0 || props.url === "") && props.children.length > 0) {
       docs.unshift({
         title: "Overview",
-        content: <Doc title="Overview"><NodeList nodes={props.children} /></Doc>
+        content: <NodeList nodes={props.children} />
       });
     }
 
     if (props.downloads && props.downloads.length > 0) {
       rightSideTabs.push({
         title: "Assets",
-        content: <Doc title="Assets"><AssetList assets={props.downloads} /></Doc>
+        content: <AssetList assets={props.downloads} />
       });
     }
 
-    rightSideTabs.push({
-      title: "Source",
-      content: <Doc title="Source"><SourceView url={props.url} /></Doc>
-    });
+    if (props.url === "") {
+      // On the root node we also want to display the DSK version
+      rightSideTabs.push({
+        title: "Source",
+        content: <><SourceView url={"hello"} /><SourceView url={props.url} /></>
+      });
+    } else {
+      rightSideTabs.push({
+        title: "Source",
+        content: <SourceView url={props.url} />
+      });
+    }
 
     // We find the active tab by removing the section part from the prop
     let activeTab = props.activeTab;

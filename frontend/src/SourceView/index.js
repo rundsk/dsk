@@ -7,6 +7,12 @@ function SourceView(props) {
   const [source, setSource] = useState(null);
 
   useEffect(() => {
+    if (props.url === "hello") {
+      Client.hello().then((data) => {
+        setSource(data);
+      });
+      return;
+    }
     getSource();
   }, [props.url]);
 
@@ -18,8 +24,14 @@ function SourceView(props) {
     }
   }
 
+  let title = `API Response for /api/v2/tree/${props.url}`;
+
+  if (props.url === "hello") {
+    title = `API Response for /api/v2/hello`;
+  }
+
   return (
-    <CodeBlock title={`API Response for /api/v1/tree/${props.url}`}>
+    <CodeBlock title={title}>
       {source && JSON.stringify(source, null, 4)}
     </CodeBlock>
   );
