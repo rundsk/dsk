@@ -22,12 +22,17 @@ function Doc(props) {
   const ref = React.createRef();
 
   useEffect(() => {
+    // Clean up from the previous doc
+    if (ref.current) {
+      ReactDOM.unmountComponentAtNode(ref.current);
+    }
+
     renderComponents();
     setupImages();
     replaceInternalLinks();
     replaceHeadings();
     makeCodeCopyable();
-  });
+  }, [props.title]);
 
   // Find all images whose src includes '@2x' and set
   // their height and width so they are displayed @2x
@@ -66,9 +71,6 @@ function Doc(props) {
     }
   }
 
-  // FIXME: We need to unmount the components properly,
-  // otherwise there might be trouble when switchting between
-  // documents
   // Finds all code section that have been tagged Component,
   // parse them and mount react components
   function renderComponents() {
@@ -101,7 +103,17 @@ function Doc(props) {
 
     let transformedContent = transform(doc.innerHTML, transforms, {
       noTransform: (type, props) => {
-        return React.createElement(type, props, props.children);
+        // This gets called on HTML elements that do not need
+        // to be transformed to special React components.
+        // There are differences between the attributes of
+        // HTML elements and React that we have to take care
+        // of: https://reactjs.org/docs/dom-elements.html#differences-in-attributes
+        let myProps = {
+          ...props,
+          className: props.class
+        }
+
+        return React.createElement(type, myProps, props.children);
       }
     });
     ReactDOM.render(transformedContent, doc);
@@ -146,9 +158,6 @@ function Doc(props) {
     if (ref.current) {
       let doc = ref.current;
 
-      // Find retina images and set them to display at half
-      // their size. The information about their width and height
-      // is added by the dsk back-end.
       let heading = doc.querySelectorAll("h1, h2, h3, h4, h5");
       if (heading.length === 0) { return; }
 
