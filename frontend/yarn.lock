@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@atelierdisko/dsk@^1.2.0-beta.3":
-  version "1.2.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@atelierdisko/dsk/-/dsk-1.2.0-beta.3.tgz#e7e855550c46d1c89d36f465c780f328c789aec8"
-  integrity sha512-G7JnEgRIZcVgl46EoyWSmwrV+jKr0RvDZ7KOUHUntQrjk00bukg/jyyGdWzimBX9fvYDOWp7NRh0OXeY10541w==
+"@atelierdisko/dsk@^1.2.0-beta.4":
+  version "1.2.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@atelierdisko/dsk/-/dsk-1.2.0-beta.4.tgz#c85a11bc5957643bd2635c9b5e9808c08ae50205"
+  integrity sha512-MO/MEGmoOJ4AHkjr5mD0B5Jd9rbVEa59k14l7TxsYsL+SkM+PmCZHrFutigiRHscmEGUkeYoOByxpArZXPKbBw==
 
 "@babel/code-frame@7.0.0", "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.0.0-beta.35":
   version "7.0.0"

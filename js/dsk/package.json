@@ -1,7 +1,7 @@
 {
   "name": "@atelierdisko/dsk",
-  "version": "1.2.0-beta.3",
-  "description": "Client and utility classes to connect and work with responses from DSK.",
+  "version": "1.2.0-beta.4",
+  "description": "DSK SDK: client and utility classes to connect and work with responses from DSK.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,7 +11,8 @@
     "url": "git+https://github.com/atelierdisko/dsk.git"
   },
   "keywords": [
-    "design system"
+    "design system",
+    "SDK"
   ],
   "contributors": [
      "Marius Wilms <marius@atelierdisko.de>",
