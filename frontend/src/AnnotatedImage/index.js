@@ -29,7 +29,7 @@ function AnnotatedImage(props) {
     <div className="annotated-image">
       <ComponentDemo>
       <div className="annotated-image__stage">
-        <img className="annotated-image__image" src={p.src}/>
+        <img className="annotated-image__image" src={p.src} alt=""/>
 
         {p.annotations.annnotations.map((a, i) => {
           let x = `calc(${a.x} + ${a.offsetX ? a.offsetX : "0px"})`;
