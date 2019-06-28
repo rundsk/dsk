@@ -44,6 +44,8 @@ export default class DocTransformer {
   }
 
   compile() {
+    let start = performance.now();
+
     // Use the browsers machinery to parse HTML and allow us to iterate
     // over it easily. Later child nodes are unwrapped from body again.
     let body = document.createElement('body');
@@ -59,6 +61,8 @@ export default class DocTransformer {
         children.push(t);
       }
     });
+
+    console.log(`Document compilation with ${children.length} node/s took ${performance.now() - start}ms`)
     return children;
   }
 
