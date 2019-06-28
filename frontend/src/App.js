@@ -32,8 +32,8 @@ function App(props) {
       setNode(data);
       setError(null)
     }).catch((err)  =>{
-      console.log(err);
-      setError("Node not found.");
+      console.log(`Failed to retrieve data for node '${nodeToGet}': ${err}`);
+      setError("Design aspect not found.");
     });
   }
 
@@ -42,13 +42,13 @@ function App(props) {
       setTree(data.root);
       setTitle(data.root.title)
     }).catch((err) => {
-      console.log(err);
+      console.log(`Failed to retrieve tree data: ${err}`);
     });
 
     Client.get("/frontendConfig.json").then((data) => {
       setFrontendConfig(data);
     }).catch((err) => {
-      console.log("No config found" + err);
+      console.log(`Failed to retrieve frontend configuration: ${err}`);
     });
   }, []);
 
