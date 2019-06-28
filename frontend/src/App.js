@@ -29,8 +29,12 @@ function App(props) {
     if (currentNode === "root") { nodeToGet = "" };
 
     Client.get(nodeToGet).then((data) => {
-      setNode(data);
-      setError(null)
+      try {
+        setNode(data);
+        setError(null)
+      } catch(e) {
+        console.log(`Failed to set node: ${e}`);
+      }
     }).catch((err)  =>{
       console.log(`Failed to retrieve data for node '${nodeToGet}': ${err}`);
       setError("Design aspect not found.");
@@ -39,8 +43,12 @@ function App(props) {
 
   useEffect(() => {
     Client.tree().then((data) => {
-      setTree(data.root);
-      setTitle(data.root.title)
+      try {
+        setTree(data.root);
+        setTitle(data.root.title)
+      } catch(e) {
+        console.log(`Failed to set tree or title for node: ${e}`);
+      }
     }).catch((err) => {
       console.log(`Failed to retrieve tree data: ${err}`);
     });
