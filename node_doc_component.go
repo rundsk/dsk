@@ -43,7 +43,7 @@ func findComponentsInMarkdown(contents []byte) []*NodeDocComponent {
 
 	for i := 0; i < len(c); i++ {
 		if c[i] == '`' {
-			if c[i+1] == '`' && c[i+2] == '`' {
+			if i+2 < len(c) && c[i+1] == '`' && c[i+2] == '`' {
 				i += 2
 			}
 			// Set to false and end code, when we've been inside code.
