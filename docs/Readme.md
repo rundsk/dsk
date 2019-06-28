@@ -18,7 +18,5 @@ file to a directory inside the _design definitions tree_.
 <br>
 
 <a href="https://dpa.com">
-  <img src="https://www.dpa.com/typo3conf/ext/dpa/Resources/Public/assets/images/logo.svg" height="40" alt="dpa">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Logo_DPA_neu.svg" height="50" alt="dpa">
 </a>
-
-
