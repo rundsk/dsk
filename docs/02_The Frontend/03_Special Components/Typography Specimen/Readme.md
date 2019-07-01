@@ -1,10 +1,8 @@
-<!-- # Examples
-
 <TypographySpecimen src="./typography.some"></TypographySpecimen>
 
 ## Compact
+
 <TypographySpecimen src="./typography.some" compact="true"></TypographySpecimen>
- -->
 
 # Usage
 

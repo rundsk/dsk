@@ -1,10 +1,10 @@
-<!-- # Examples
+# Examples
 
 <ColorSpecimen src="./colors.some"></ColorSpecimen>
 
 ## Compact
+
 <ColorSpecimen src="./colors.some" compact="true"></ColorSpecimen>
- -->
 
 # Usage
 
