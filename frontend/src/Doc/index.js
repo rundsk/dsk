@@ -108,12 +108,10 @@ function Doc(props) {
         // There are differences between the attributes of
         // HTML elements and React that we have to take care
         // of: https://reactjs.org/docs/dom-elements.html#differences-in-attributes
-        let myProps = {
-          ...props,
-          className: props.class
-        }
+        props.className = props.class;
+        delete(props.class);
 
-        return React.createElement(type, myProps, props.children);
+        return React.createElement(type, props, props.children);
       }
     });
     ReactDOM.render(transformedContent, doc);
