@@ -1,1 +1,0 @@
-<TypographySpecimen src="./typescaleShort.some">

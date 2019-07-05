@@ -1,17 +1,5 @@
-# Documenting Design Aspects
+# Aspects
 
-Aspects are documented by adding
-[Markdown](https://guides.github.com/features/mastering-markdown/) formatted
-documentation files to their directory. A `readme.md` file may describe
-an aspect or give clues how to use a certain component. You can split documentation
-over several files when you like to. We usually use `api.md`, `explain.md` or
-`comments.md`.
+An aspect documents a specific part of your Design System. This might be an actual component, when you are documenting the user interface, or a chapter of your company’s guide into its design culture – this very page is actually an aspect in the DSK documentation structure.
 
-_Note_: `readme.md` is in no ways treated specially by DSK, but is usually displayed by
-GitHub as the primary document in the web interface. 
-
-_Another note_: If you prefer plain HTML documents over Markdown, these are
-supported too. For this use `.html` instead of `.md` as the file
-extension.
-
-
+You set up an aspect by creating a new directory in your design definitions tree and filling it with content: The directory may hold several files to document this design aspects, like [documents](/The-Design-Definitions-Tree/Documents), [assets](/The-Design-Definitions-Tree/Assets) and a [configuration file to add meta data](/The-Design-Definitions-Tree/Meta-Data). The name of the directory is considered to be the title of the aspect.
