@@ -8,13 +8,14 @@ import { copyTextToClipboard } from '../utils';
 import Banner from '../Banner'
 
 import './Doc.css';
-import ComponentDemo from '../ComponentDemo';
-import TypographySpecimen from '../TypographySpecimen';
-import ColorSpecimen from '../ColorSpecimen';
-import CodeBlock from '../CodeBlock';
-import FigmaEmbed from '../FigmaEmbed';
-import DoDont, { Do, Dont } from '../DoDont';
 import AnnotatedImage from '../AnnotatedImage';
+import CodeBlock from '../CodeBlock';
+import ColorSpecimen from '../ColorSpecimen';
+import ComponentDemo from '../ComponentDemo';
+import DoDont, { Do, Dont } from '../DoDont';
+import FigmaEmbed from '../FigmaEmbed';
+import Image from '../Image';
+import TypographySpecimen from '../TypographySpecimen';
 
 const transforms = {
   Banner: props => { return <Banner {...props} />},
@@ -28,54 +29,23 @@ const transforms = {
   Do: props => <Do {...props} />,
   Dont: props => <Dont {...props} />,
   AnnotatedImage: props => <AnnotatedImage {...props} />,
+  img: props => <Image {...props} />,
 };
+
+const orphans = [
+    "p > img",
+    "p > video"
+];
 
 function Doc(props) {
   const ref = React.createRef();
 
   useEffect(() => {
-    setupImages();
-    replaceInternalLinks();
-    replaceHeadings();
-    makeCodeCopyable();
-  }, [props.title]);
+    // replaceInternalLinks();
+    // replaceHeadings();
+    // makeCodeCopyable();
+  });
 
-  // Find all images whose src includes '@2x' and set
-  // their height and width so they are displayed @2x
-  function setupImages() {
-    if (ref.current) {
-      let node = ref.current;
-
-      // Find all images inside p’s and unwrap them
-      let orphans = ref.current.querySelectorAll("p > img, p > video");
-      orphans.forEach((o) => {
-        // > If the given child is a reference to an existing node in the
-        //   document, insertBefore() moves it from its current position to the new
-        //   position (there is no requirement to remove the node from its parent
-        //   node before appending it to some other node).
-        //   - https://developer.mozilla.org/en-US/docs/Web/API/Node/insertBefore
-        o.parentNode.parentNode.insertBefore(o, o.parentNode);
-      });
-
-      // Find retina images and set them to display at half
-      // their size. The information about their width and height
-      // is added by the dsk back-end.
-      let imgs = node.querySelectorAll("img");
-      imgs.forEach(img => {
-        let src = img.getAttribute("src");
-
-        if (src.includes("@2x")) {
-          let width = img.getAttribute("width");
-          let height = img.getAttribute("height");
-
-          if (!width || !height) { return; }
-
-          img.style.maxWidth = `${width / 2}px`;
-          img.style.maxHeight = `${height / 2}px`;
-        }
-      });
-    }
-  }
 
   // Replace links to internal node with links from the router
   function replaceInternalLinks() {
