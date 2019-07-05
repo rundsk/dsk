@@ -1,1 +1,0 @@
-<ColorSpecimen src="./colorsShort.some">
