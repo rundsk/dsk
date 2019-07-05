@@ -16,8 +16,6 @@ import FigmaEmbed from '../FigmaEmbed';
 import DoDont, { Do, Dont } from '../DoDont';
 import AnnotatedImage from '../AnnotatedImage';
 
-// import MDX from '@mdx-js/runtime';
-
 function Doc(props) {
   const ref = React.createRef();
 
@@ -231,34 +229,6 @@ function Doc(props) {
       });
     }
   }
-
-  // This does nor work currently, because of issues with MDX-runtime and
-  // create-react-app: https://spectrum.chat/mdx/general/unable-to-run-mdx-js-runtime-example-using-webpack~65dccf86-1226-4c9a-9af5-0ed9ef338ffb
-  // renderComponentsWithMDX() {
-  //   if (this.ref.current) {
-  //     let node = this.ref.current;
-
-  //     const components = {
-  //       h1: props => <h1 style={{ color: 'tomato' }} {...props} />
-  //     }
-
-  //     const scope = {
-  //       Warning: props => <Warning {...props} />
-  //     }
-
-  //     // Find retina images and set them to display at half
-  //     // their size. The information about their width and height
-  //     // is added by the dsk back-end.
-  //     let code = node.querySelectorAll("code[class='language-Component']");
-  //     code.forEach(c => {
-  //       let content = c.textContent;
-  //       // We want to replace the <pre> tag with our component
-  //       let parentNode = c.parentNode.parentNode;
-
-  //       ReactDOM.render(<MDX components={components} scope={scope}>{content}</MDX>, parentNode);
-  //     });
-  //   }
-  // }
 
   // if there is a doc but it is empty we cannot risk calling dangerouslySetInnerHTML
   if (props.htmlContent === "") {
