@@ -73,7 +73,7 @@ function Page(props) {
     let rightSideTabs = [];
 
     docs = props.docs.filter((d) => {
-      if (d.title.toLowerCase() === "componentdemo") {
+      if (d.title.toLowerCase() === "playground") {
         componentDemo = d;
         return false;
       }
@@ -163,7 +163,7 @@ function Page(props) {
         value = data[1];
       }
 
-      return <div className="page__meta-item"><Meta key={title} title={title}>{value}</Meta></div>
+      return <div className="page__meta-item" key={title}><Meta key={title} title={title}>{value}</Meta></div>
     });
   }
 

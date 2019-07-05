@@ -1,23 +1,18 @@
-.color-specimen {
+.color-card {
   width: 100%;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(calc(var(--spacing-unit) * 18), 1fr));
-  grid-column-gap: calc(var(--spacing-unit) * 4);
-  grid-row-gap: calc(var(--spacing-unit) * 4);
-  /* display: flex;
-  flex-wrap: wrap; */
+  max-width: calc(var(--spacing-unit) * 18);
   margin: var(--documentation-component-spacing) 0;
 }
 
-.color-specimen:first-child {
+.color-card:first-child {
   margin-top: 0;
 }
 
-.color-specimen:last-child {
+.color-card:last-child {
   margin-bottom: 0;
 }
 
-.color-sample__demo {
+.color-card__demo {
   width: 100%;
   height: calc(var(--spacing-unit) * 15);
   border-radius: 3px;
@@ -27,11 +22,11 @@
   border: 1px solid rgba(0,0,0,.05);
 }
 
-.color-sample--is-ultra-light .color-sample__demo {
+.color-card--is-ultra-light .color-card__demo {
   border: 1px solid rgba(0,0,0,.1);
 }
 
-.color-sample__demo::before {
+.color-card__demo::before {
   content: "";
   position: absolute;
   top: 0;
@@ -42,7 +37,7 @@
   background-color: inherit;
 }
 
-.color-sample__demo::after {
+.color-card__demo::after {
   content: "";
   position: absolute;
   top: 0;
@@ -54,7 +49,7 @@
   z-index: 0;
 }
 
-.color-sample__score {
+.color-card__score {
   z-index: 2;
   padding: calc(var(--spacing-unit) * 1);
   display: flex;
@@ -67,26 +62,26 @@
   text-align: center
 }
 
-.color-sample__score :first-child {
+.color-card__score :first-child {
   color: white;
 }
 
-.color-sample__score :last-child {
+.color-card__score :last-child {
   color: black;
 }
 
-.color-sample__demo:hover .color-sample__score {
+.color-card__demo:hover .color-card__score {
   opacity: 1;
   transition: all .3s .4s;
 }
 
-.color-sample__name {
+.color-card__name {
   font-size: var(--font-size-gamma);
   line-height: 1.4em;
   font-weight: 700;
 }
 
-.color-sample__id {
+.color-card__id {
   color: var(--color-gray-700);
   font-weight: 500;
   opacity: 0;
@@ -94,33 +89,31 @@
   display: none;
 }
 
-.color-sample:hover .color-sample__id {
+.color-card:hover .color-card__id {
   opacity: 1;
 }
 
-.color-sample__spec {
+.color-card__spec {
   font-size: var(--font-size-beta);
   line-height: 1.5em;
   color: var(--color-gray-600);
   margin-bottom: calc(var(--spacing-unit) * .5);
 }
 
-.color-sample__comment {
+.color-card__comment {
   font-size: var(--font-size-beta);
   line-height: 1.5em;
 }
 
-.color-specimen--is-compact {
-  grid-template-columns: repeat(auto-fill, minmax(calc(var(--spacing-unit) * 10), 1fr));
-  grid-column-gap: calc(var(--spacing-unit) * 2);
-  grid-row-gap: calc(var(--spacing-unit) * 2);
+.color-card--is-compact {
+  max-width: calc(var(--spacing-unit) * 10);
 }
 
-.color-specimen--is-compact .color-sample__demo {
+.color-card--is-compact .color-card__demo {
   height: calc(var(--spacing-unit) * 10);
 }
 
-.color-specimen--is-compact .color-sample__name {
+.color-card--is-compact .color-card__name {
   font-size: var(--font-size-beta);
   line-height: 1.4em;
 }

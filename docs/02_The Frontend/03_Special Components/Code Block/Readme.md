@@ -1,7 +1,23 @@
 # Examples
 
 <CodeBlock title="colors.json">{code from colors.json}</CodeBlock>
-<CodeBlock title="Example">{code}</CodeBlock>
+
+<CodeBlock title="Example">
+{code}
+</CodeBlock>
+
+<CodeBlock title="Example">
+  <Color color="#FF0000">Red</Color>
+</CodeBlock>
+
+<CodeBlock title="Example">
+  <div>test</div>
+</CodeBlock>
+
+<Playground>
+  <Color color="#FF0000">Red</Color>
+</Playground>
+
 
 # Usage
 

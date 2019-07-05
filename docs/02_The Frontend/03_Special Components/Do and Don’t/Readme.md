@@ -1,24 +1,24 @@
 # Example
 
-<DoDont>
+<DoDontGroup>
   <Do caption="Do this, it is good!">{do}</Do>
   <Dont caption="Don’t do this, it is not good!">{don’t}</Dont>
-  <Dont caption="Don’t do this either, it is definitely not good!" strikethrough="true">{don’t}</Dont>
-</DoDont>
+  <Dont caption="Don’t do this either, it is absolutely aweful!" strikethrough="true">{don’t}</Dont>
+</DoDontGroup>
 
 # Usage
 
 ```
-<DoDont>
+<DoDontGroup>
   <Do caption="Do this, it is good!">{do}</Do>
   <Dont caption="Don’t do this, it is not good!">{don’t}</Dont>
   <Dont caption="Don’t do this either, it is definitely not good!" strikethrough="true">{don’t}</Dont>
-</DoDont>
+</DoDontGroup>
 ```
 
 # Properties
 
-A `DoDont` component can contain any number of `Do`s or `Dont`s as children. They are however all displayed in one line, so more than three is probably a bad idea.
+A `DoDontGroup` component can contain any number of `Do`s or `Dont`s as children. They are however all displayed in one line, so more than three is probably a bad idea.
 
 ## Do
 

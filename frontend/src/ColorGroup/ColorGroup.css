@@ -1,0 +1,29 @@
+.color-group {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(calc(var(--spacing-unit) * 18), 1fr));
+  grid-column-gap: calc(var(--spacing-unit) * 4);
+  grid-row-gap: calc(var(--spacing-unit) * 4);
+  /* display: flex;
+  flex-wrap: wrap; */
+  margin: var(--documentation-component-spacing) 0;
+}
+
+.color-group:first-child {
+  margin-top: 0;
+}
+
+.color-group:last-child {
+  margin-bottom: 0;
+}
+
+.color-group--is-compact {
+  grid-template-columns: repeat(auto-fill, minmax(calc(var(--spacing-unit) * 10), 1fr));
+  grid-column-gap: calc(var(--spacing-unit) * 2);
+  grid-row-gap: calc(var(--spacing-unit) * 2);
+}
+
+.color-group > .color-card {
+  margin: 0;
+  max-width: 100%;
+}

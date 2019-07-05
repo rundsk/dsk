@@ -10,11 +10,11 @@ import Banner from '../Banner'
 import './Doc.css';
 import ComponentDemo from '../ComponentDemo';
 import TypographySpecimen from '../TypographySpecimen';
-import ColorSpecimen from '../ColorSpecimen';
 import CodeBlock from '../CodeBlock';
 import FigmaEmbed from '../FigmaEmbed';
 import DoDont, { Do, Dont } from '../DoDont';
-import AnnotatedImage from '../AnnotatedImage';
+import ColorGroup from '../ColorGroup';
+import ColorCard from '../ColorCard';
 
 // import MDX from '@mdx-js/runtime';
 
@@ -90,15 +90,15 @@ function Doc(props) {
     const transforms = {
       Banner: props => { return <Banner {...props} />},
       Warning: props => <Banner type="warning" {...props} />,
-      ComponentDemo: props => <ComponentDemo {...props} />,
+      Playground: props => <ComponentDemo {...props} />,
       TypographySpecimen: props => <TypographySpecimen {...props} />,
-      ColorSpecimen: props => <ColorSpecimen {...props} />,
       FigmaEmbed: props => <FigmaEmbed {...props} />,
       CodeBlock: props => <CodeBlock {...props} />,
-      DoDont: props => <DoDont {...props} />,
+      DoDontGroup: props => <DoDont {...props} />,
       Do: props => <Do {...props} />,
       Dont: props => <Dont {...props} />,
-      AnnotatedImage: props => <AnnotatedImage {...props} />,
+      ColorGroup: props => <ColorGroup {...props} />,
+      Color: props => <ColorCard {...props} />
     };
 
     let transformedContent = transform(doc.innerHTML, transforms, {
