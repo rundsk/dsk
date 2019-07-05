@@ -26,7 +26,7 @@ export default class DocTransformer {
   //     }
   //   });
   //   ```
-  constructor(html, transforms, options = {}) {
+  constructor(html, transforms = {}, orphans = [], options = {}) {
     this.html = html;
 
     // Turn all the keys of our transforms into lowercase, because that’s how
@@ -40,18 +40,18 @@ export default class DocTransformer {
       this.transforms[key.toLowerCase()] = transforms[key];
     }
 
+    this.orphans = orphans;
+
     this.options = options;
   }
 
   compile() {
-    let start = performance.now();
-
     // Use the browsers machinery to parse HTML and allow us to iterate
     // over it easily. Later child nodes are unwrapped from body again.
     let body = document.createElement('body');
     body.innerHTML = this.html;
 
-    body.innerHTML = this.orphans(body);
+    body.innerHTML = this.orphan(body);
     this.clean(body);
 
     let children = [];
@@ -71,12 +71,12 @@ export default class DocTransformer {
   //
   // This modifies the tree above the current node. Thus breaks our
   // tree walk and must be executed in a separate step.
-  orphans(root) {
-    if (!this.transforms.orphans) {
+  orphan(root) {
+    if (!this.orphans) {
       return root.innerHTML;
     }
 
-    let orphans = root.querySelectorAll(this.transforms.orphans.join(','));
+    let orphans = root.querySelectorAll(this.orphans.join(','));
 
     orphans.forEach((c) => {
       console.log(`Unwrapping ${c} from ${c.parentNode}`);
@@ -161,6 +161,6 @@ export default class DocTransformer {
   }
 }
 
-export function transform(html, transforms, options = {}) {
-  return (new DocTransformer(html, transforms, options)).compile();
+export function transform(html, transforms = {}, orphans = [], options = {}) {
+  return (new DocTransformer(html, transforms, orphans, options)).compile();
 }
