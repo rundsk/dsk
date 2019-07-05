@@ -114,13 +114,10 @@ export default class DocTransformer {
     let type = node.tagName.toLowerCase();
     let props = { children: [] };
 
-    // Where at the attributes should we begin parsing into props.
-    let startProps = 0;
-
     let apply = this.transforms[type];
 
     // Turn node attributes into props object.
-    for (let i = startProps; i < node.attributes.length; i++) {
+    for (let i = 0; i < node.attributes.length; i++) {
       props[node.attributes[i].name] = node.attributes[i].value;
     }
 
