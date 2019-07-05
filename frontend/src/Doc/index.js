@@ -166,7 +166,7 @@ function Doc(props) {
   if (props.htmlContent === "") {
     return <div className="doc" ref={ref}>{props.children}</div>;
   }
-  let transformedContent = transform(props.htmlContent, transforms, {
+  let transformedContent = transform(props.htmlContent, transforms, orphans, {
     noTransform: (type, props) => {
       // This gets called on HTML elements that do not need
       // to be transformed to special React components.
