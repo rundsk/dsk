@@ -16,16 +16,24 @@ import FigmaEmbed from '../FigmaEmbed';
 import DoDont, { Do, Dont } from '../DoDont';
 import AnnotatedImage from '../AnnotatedImage';
 
+const transforms = {
+  Banner: props => { return <Banner {...props} />},
+  Warning: props => <Banner type="warning" {...props} />,
+  ComponentDemo: props => <ComponentDemo {...props} />,
+  TypographySpecimen: props => <TypographySpecimen {...props} />,
+  ColorSpecimen: props => <ColorSpecimen {...props} />,
+  FigmaEmbed: props => <FigmaEmbed {...props} />,
+  CodeBlock: props => <CodeBlock {...props} />,
+  DoDont: props => <DoDont {...props} />,
+  Do: props => <Do {...props} />,
+  Dont: props => <Dont {...props} />,
+  AnnotatedImage: props => <AnnotatedImage {...props} />,
+};
+
 function Doc(props) {
   const ref = React.createRef();
 
   useEffect(() => {
-    // Clean up from the previous doc
-    if (ref.current) {
-      ReactDOM.unmountComponentAtNode(ref.current);
-    }
-
-    renderComponents();
     setupImages();
     replaceInternalLinks();
     replaceHeadings();
@@ -67,52 +75,6 @@ function Doc(props) {
         }
       });
     }
-  }
-
-  // Finds all code section that have been tagged Component,
-  // parse them and mount react components
-  function renderComponents() {
-    if (!props.mountComponents) {
-      return;
-    }
-
-    if (!ref.current) {
-      return;
-    }
-    let doc = ref.current;
-
-    // Find retina images and set them to display at half
-    // their size. The information about their width and height
-    // is added by the dsk back-end.
-
-    const transforms = {
-      Banner: props => { return <Banner {...props} />},
-      Warning: props => <Banner type="warning" {...props} />,
-      ComponentDemo: props => <ComponentDemo {...props} />,
-      TypographySpecimen: props => <TypographySpecimen {...props} />,
-      ColorSpecimen: props => <ColorSpecimen {...props} />,
-      FigmaEmbed: props => <FigmaEmbed {...props} />,
-      CodeBlock: props => <CodeBlock {...props} />,
-      DoDont: props => <DoDont {...props} />,
-      Do: props => <Do {...props} />,
-      Dont: props => <Dont {...props} />,
-      AnnotatedImage: props => <AnnotatedImage {...props} />,
-    };
-
-    let transformedContent = transform(doc.innerHTML, transforms, {
-      noTransform: (type, props) => {
-        // This gets called on HTML elements that do not need
-        // to be transformed to special React components.
-        // There are differences between the attributes of
-        // HTML elements and React that we have to take care
-        // of: https://reactjs.org/docs/dom-elements.html#differences-in-attributes
-        props.className = props.class;
-        delete(props.class);
-
-        return React.createElement(type, props, props.children);
-      }
-    });
-    ReactDOM.render(transformedContent, doc);
   }
 
   // Replace links to internal node with links from the router
@@ -234,14 +196,20 @@ function Doc(props) {
   if (props.htmlContent === "") {
     return <div className="doc" ref={ref}>{props.children}</div>;
   }
+  let transformedContent = transform(props.htmlContent, transforms, {
+    noTransform: (type, props) => {
+      // This gets called on HTML elements that do not need
+      // to be transformed to special React components.
+      // There are differences between the attributes of
+      // HTML elements and React that we have to take care
+      // of: https://reactjs.org/docs/dom-elements.html#differences-in-attributes
+      props.className = props.class;
+      delete(props.class);
 
-  return (
-    // We want to be able to fill docs straigt with HTML or with react
-    // components, depending on which props are passed.
-    <div className="doc" ref={ref} dangerouslySetInnerHTML={props.htmlContent && { __html: props.htmlContent }}>
-      {props.children}
-    </div>
-  );
+      return React.createElement(type, props, props.children);
+    }
+  });
+  return <div className="doc" ref={ref}>{transformedContent}</div>
 }
 
 export default withRoute(Doc);
