@@ -1,3 +1,7 @@
+/**
+ * Copyright 2019 Atelier Disko. All rights reserved. This source
+ * code is distributed under the terms of the BSD 3-Clause License.
+ */
 
 // via https://gist.github.com/hagemann/382adfc57adbd5af078dc93feef01fe1
 export function slugify(string) {

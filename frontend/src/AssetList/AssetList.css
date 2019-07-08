@@ -1,3 +1,8 @@
+/**
+ * Copyright 2019 Atelier Disko. All rights reserved. This source
+ * code is distributed under the terms of the BSD 3-Clause License.
+ */
+
 .asset-list__asset + .asset-list__asset {
   padding-top: calc(var(--spacing-unit) * 7);
   border-top: 1px dotted var(--color-gray-800);
