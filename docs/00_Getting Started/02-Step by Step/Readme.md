@@ -1,8 +1,6 @@
 # Step by Step
 
-```Component
 <Banner type="important">This guide shows you <strong>how to use</strong> DSK. If you want to read about how DSK can help you in your design process and why you should use it, check out [[Using DSK as a Designer]].</Banner>
-```
 
 ## ⬇️ — Step 1: Download DSK
 Visit our downloads page [github.com/atelierdisko/dsk/releases](https://github.com/atelierdisko/dsk/releases) and find the green label “latest release”. Next to it you will see a bunch of download links. If you are using a Mac, click on “dsk-darwin-amd64.zip”. For Linux, click on “dsk-linux-amd64.tar.gz”. This will start the download of the DSK quickstart package for your operating system.
