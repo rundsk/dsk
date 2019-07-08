@@ -23,7 +23,7 @@ import FigmaEmbed from '../FigmaEmbed';
 import TypographySpecimen from '../TypographySpecimen';
 
 function Doc(props) {
-  if (props.htmlContent === "") {
+  if (!props.htmlContent) {
     return <div className="doc">{props.children}</div>;
   }
 
