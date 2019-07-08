@@ -46,6 +46,8 @@ export default class DocTransformer {
   }
 
   compile() {
+    let start = performance.now();
+
     // Use the browsers machinery to parse HTML and allow us to iterate
     // over it easily. Later child nodes are unwrapped from body again.
     let body = document.createElement('body');
