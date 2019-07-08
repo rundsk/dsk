@@ -29,10 +29,21 @@
   font-weight: 700;
 }
 
+.code-block__stage {
+  position: relative;
+}
+
 .code-block__copy {
+  font-family: var(--font-family-mono);
+  color: var(--color-gray-500);
+  font-size: var(--font-size-beta);
+  line-height: 1.4em;
   cursor: pointer;
   opacity: 0;
   transition: all 0.2s 0.4s;
+  position: absolute;
+  right: 0;
+  top: calc(-1.4em - 4px);
 }
 
 .code-block:hover .code-block__copy {
@@ -40,6 +51,22 @@
   transition: all 0.4s 0s;
 }
 
-.code-block .code-block__code {
-  margin: 0;
+.code-block__code {
+  background-color: var(--color-gray-1000);
+  padding: calc((var(--spacing-unit) * 2));
+  border-radius: 3px;
+  overflow-y: auto;
+  max-width: 100%;
+  font-family: var(--font-family-mono);
+  font-size: 0.85em;
+  letter-spacing: 0.03em;
+  line-height: 1.8em;
+  font-weight: normal;
+}
+
+.code-block__code code {
+  background-color: transparent;
+  border: none;
+  white-space: pre;
+  font-size: unset;
 }

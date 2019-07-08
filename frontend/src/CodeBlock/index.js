@@ -45,15 +45,19 @@ function CodeBlock(props) {
 
   return (
     <div className="code-block">
-      <div className="code-block__header">
-        <div className="code-block__title">{props.title}</div>
+      {props.title &&
+        <div className="code-block__header">
+          <div className="code-block__title">{props.title}</div>
+        </div>
+      }
+      <div className="code-block__stage">
         <div className="code-block__copy" onClick={copyCode}>
           {copyText}
         </div>
+        <pre className="code-block__code">
+          <code className="code-block__code-content">{content}</code>
+        </pre>
       </div>
-      <pre className="code-block__code">
-        <code className="code-block__code-content">{content}</code>
-      </pre>
     </div>
   );
 }
