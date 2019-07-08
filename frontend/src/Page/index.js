@@ -81,10 +81,16 @@ function Page(props) {
       return true;
     });
 
-    // Pages without docs and root show an overview
-    // of their children
-    if ((docs.length === 0 || props.url === "") && props.children.length > 0) {
-      docs.unshift({
+    // Pages without `docs` show an overview of their children. Most DDTs will
+    // have an `AUTHORS.txt` (which is included in `docs`), but some may lack
+    // any "real" document that can be presented to the user. In this case we
+    // also want to show an overview.
+    const showOverview = props.children.length > 0 && docs.filter((doc) => {
+      return doc.title.toLowerCase() !== "authors";
+    }).length === 0;
+
+    if (showOverview) {
+      docs.push({
         title: "Overview",
         content: <NodeList nodes={props.children} />
       });
