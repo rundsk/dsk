@@ -3,8 +3,8 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React from 'react';
-import './Meta.css';
+import React from "react";
+import "./Meta.css";
 
 function Meta(props) {
   return (

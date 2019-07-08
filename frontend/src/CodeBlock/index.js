@@ -3,9 +3,9 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React, { useState } from 'react';
-import './CodeBlock.css';
-import { copyTextToClipboard } from '../utils';
+import React, { useState } from "react";
+import "./CodeBlock.css";
+import { copyTextToClipboard } from "../utils";
 
 // TODO: If child is <code> unwrap and turn into string.
 // TODO: HTML-escape inner content, probably using
@@ -36,12 +36,12 @@ function CodeBlock(props) {
     <div className="code-block">
       <div className="code-block__header">
         <div className="code-block__title">{props.title}</div>
-        <div className="code-block__copy" onClick={copyCode}>{copyText}</div>
+        <div className="code-block__copy" onClick={copyCode}>
+          {copyText}
+        </div>
       </div>
       <pre className="code-block__code">
-        <code className="code-block__code-content">
-          {content}
-        </code>
+        <code className="code-block__code-content">{content}</code>
       </pre>
     </div>
   );

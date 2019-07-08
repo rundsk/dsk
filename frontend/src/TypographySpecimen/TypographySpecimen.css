@@ -19,7 +19,8 @@
 .type-sample {
   display: grid;
   width: 100%;
-  grid-template-areas: "name demo"
+  grid-template-areas:
+    "name demo"
     "spec demo"
     "comment demo";
   grid-template-columns: calc(var(--spacing-unit) * 24) 1fr;
@@ -38,19 +39,19 @@
   font-size: var(--font-size-gamma);
   line-height: 1.4em;
   font-weight: 700;
-  margin-bottom: calc(var(--spacing-unit) * .5);
+  margin-bottom: calc(var(--spacing-unit) * 0.5);
 }
 
 .type-sample__id {
   color: var(--color-gray-700);
   font-weight: 500;
   opacity: 0;
-  transition: all .4s .2s;
+  transition: all 0.4s 0.2s;
 }
 
 .type-sample:hover .type-sample__id {
   opacity: 1;
-  transition: all .3s 0s;
+  transition: all 0.3s 0s;
 }
 
 .type-sample__comment {

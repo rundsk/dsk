@@ -3,9 +3,9 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React from 'react';
+import React from "react";
 
-import './Image.css';
+import "./Image.css";
 
 // Images whose `src` attribute includes `@2x` will get their height and width
 // set via CSS, so they are displayed half their size. Information about the
@@ -15,11 +15,11 @@ function Image(props) {
     if (props.width && props.height) {
       props.style = {
         maxWidth: `${props.width / 2}px`,
-        maxHeight: `${props.height / 2}px`,
+        maxHeight: `${props.height / 2}px`
       };
     }
   }
-  return <img className="image" alt={props.alt} src={props.src} style={props.style} />
+  return <img className="image" alt={props.alt} src={props.src} style={props.style} />;
 }
 
 export default Image;

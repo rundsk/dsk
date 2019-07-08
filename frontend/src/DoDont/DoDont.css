@@ -81,7 +81,7 @@
   margin-top: calc((var(--spacing-unit) * 1));
 }
 
-.dodont-card__caption--do .dodont-card__title  {
+.dodont-card__caption--do .dodont-card__title {
   color: var(--color-green);
 }
 

@@ -32,7 +32,8 @@
 
 .tree-navigation__filter input {
   width: 100%;
-  padding: calc(var(--spacing-unit) * .9) calc(var(--spacing-unit) * 1) calc(var(--spacing-unit) * .9) calc(var(--spacing-unit) * 1);
+  padding: calc(var(--spacing-unit) * 0.9) calc(var(--spacing-unit) * 1) calc(var(--spacing-unit) * 0.9)
+    calc(var(--spacing-unit) * 1);
   border-radius: 3px;
   border: none;
   background-color: white;
@@ -40,14 +41,14 @@
   font-size: var(--font-size-gamma);
   color: var(--color-black);
   border: 1px solid var(--color-gray-800);
-  box-shadow: 0 5px 10px -5px rgba(0,0,0,.2);
+  box-shadow: 0 5px 10px -5px rgba(0, 0, 0, 0.2);
   -webkit-appearance: none;
-  transition: all .2s;
+  transition: all 0.2s;
 }
 
 .tree-navigation__filter input:focus {
   border-color: var(--color-blue);
-  box-shadow: 0 10px 20px -5px rgba(0,0,0,.5);
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.5);
 }
 
 /* All ul */
@@ -63,7 +64,7 @@
   width: 100%;
   display: inline-block;
   line-height: 1.6em;
-  padding-bottom: calc(var(--spacing-unit) * .4);
+  padding-bottom: calc(var(--spacing-unit) * 0.4);
 }
 
 .tree-navigation__tree ul li a:hover {

@@ -3,21 +3,21 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React, { useEffect, useRef } from 'react';
-import { BaseLink, withRoute } from 'react-router5';
-import { slugify } from '../utils';
+import React, { useEffect, useRef } from "react";
+import { BaseLink, withRoute } from "react-router5";
+import { slugify } from "../utils";
 
-import './Page.css';
+import "./Page.css";
 
-import Breadcrumbs from '../Breadcrumbs';
-import Tags from '../Tags';
-import ComponentDemo from '../ComponentDemo';
-import Doc from '../Doc';
-import Meta from '../Meta';
-import TabBar from '../TabBar';
-import AssetList from '../AssetList';
-import SourceView from '../SourceView';
-import NodeList from '../NodeList';
+import Breadcrumbs from "../Breadcrumbs";
+import Tags from "../Tags";
+import ComponentDemo from "../ComponentDemo";
+import Doc from "../Doc";
+import Meta from "../Meta";
+import TabBar from "../TabBar";
+import AssetList from "../AssetList";
+import SourceView from "../SourceView";
+import NodeList from "../NodeList";
 
 function Page(props) {
   const docRef = useRef(null);
@@ -27,7 +27,7 @@ function Page(props) {
     window.scrollTo({
       top: 0,
       left: 0,
-      behavior: 'auto'
+      behavior: "auto"
     });
   }, [props.url]);
 
@@ -77,7 +77,7 @@ function Page(props) {
     let docs = [];
     let rightSideTabs = [];
 
-    docs = props.docs.filter((d) => {
+    docs = props.docs.filter(d => {
       if (d.title.toLowerCase() === "componentdemo") {
         componentDemo = d;
         return false;
@@ -90,9 +90,11 @@ function Page(props) {
     // have an `AUTHORS.txt` (which is included in `docs`), but some may lack
     // any "real" document that can be presented to the user. In this case we
     // also want to show an overview.
-    const showOverview = props.children.length > 0 && docs.filter((doc) => {
-      return doc.title.toLowerCase() !== "authors";
-    }).length === 0;
+    const showOverview =
+      props.children.length > 0 &&
+      docs.filter(doc => {
+        return doc.title.toLowerCase() !== "authors";
+      }).length === 0;
 
     if (showOverview) {
       docs.push({
@@ -112,7 +114,12 @@ function Page(props) {
       // On the root node we also want to display the DSK version
       rightSideTabs.push({
         title: "Source",
-        content: <><SourceView url={"hello"} /><SourceView url={props.url} /></>
+        content: (
+          <>
+            <SourceView url={"hello"} />
+            <SourceView url={props.url} />
+          </>
+        )
       });
     } else {
       rightSideTabs.push({
@@ -123,12 +130,23 @@ function Page(props) {
 
     // We find the active tab by removing the section part from the prop
     let activeTab = props.activeTab;
-    if (activeTab) { activeTab = activeTab.split("§")[0] }
-    if (activeTab === "") { activeTab = undefined; }
+    if (activeTab) {
+      activeTab = activeTab.split("§")[0];
+    }
+    if (activeTab === "") {
+      activeTab = undefined;
+    }
 
-    tabBar = <TabBar onSetActiveTab={navigateToActiveTab} activeTab={activeTab} tabs={docs.map(d => d.title)} rightSideTabs={rightSideTabs.map(d => d.title)} />
+    tabBar = (
+      <TabBar
+        onSetActiveTab={navigateToActiveTab}
+        activeTab={activeTab}
+        tabs={docs.map(d => d.title)}
+        rightSideTabs={rightSideTabs.map(d => d.title)}
+      />
+    );
 
-    let activeDoc = [...docs, ...rightSideTabs].find((d) => {
+    let activeDoc = [...docs, ...rightSideTabs].find(d => {
       return slugify(d.title) === activeTab;
     });
 
@@ -139,7 +157,7 @@ function Page(props) {
     // If this is not an overview/asset/source doc, its content comes
     // from the API in the form of HTML, rather than React elements
     if (activeDoc && activeDoc.html) {
-      doc = <Doc title={activeDoc.title} htmlContent={activeDoc.html} />
+      doc = <Doc title={activeDoc.title} htmlContent={activeDoc.html} />;
     }
 
     if (activeDoc && activeDoc.content) {
@@ -152,8 +170,13 @@ function Page(props) {
   if (props.authors && props.authors.length > 0) {
     let title = props.authors.length > 1 ? "Authors" : "Author";
     let authorLinks = props.authors.map((a, i) => {
-      return <span className="page__author" key={a.email}>{i > 0 ? ", " : ""}<a href={`mailto:${a.email}`}>{a.name !== "" ? a.name : a.email}</a></span>;
-    })
+      return (
+        <span className="page__author" key={a.email}>
+          {i > 0 ? ", " : ""}
+          <a href={`mailto:${a.email}`}>{a.name !== "" ? a.name : a.email}</a>
+        </span>
+      );
+    });
 
     authors = <Meta title={title}>{authorLinks}</Meta>;
   }
@@ -174,7 +197,13 @@ function Page(props) {
         value = data[1];
       }
 
-      return <div className="page__meta-item"><Meta key={title} title={title}>{value}</Meta></div>
+      return (
+        <div className="page__meta-item">
+          <Meta key={title} title={title}>
+            {value}
+          </Meta>
+        </div>
+      );
     });
   }
 
@@ -187,14 +216,18 @@ function Page(props) {
           <h1 className="page__title">{props.title}</h1>
           <p className="page__description">
             {props.description}
-            <span className="page__children-count">{props.children.length > 0 && ` (${props.children.length} aspects)`}</span>
+            <span className="page__children-count">
+              {props.children.length > 0 && ` (${props.children.length} aspects)`}
+            </span>
           </p>
 
           <Tags tags={props.tags} />
 
           <div className="page__meta">
             <div className="page__meta-items-container">
-              <div className="page__meta-item"><Meta title="Last Changed">{new Date(props.modified * 1000).toLocaleDateString()}</Meta></div>
+              <div className="page__meta-item">
+                <Meta title="Last Changed">{new Date(props.modified * 1000).toLocaleDateString()}</Meta>
+              </div>
               <div className="page__meta-item">{authors}</div>
               {custom}
             </div>
@@ -202,21 +235,19 @@ function Page(props) {
         </div>
       </div>
 
-      {componentDemo &&
+      {componentDemo && (
         <div className="page__component-demo">
           <ComponentDemo>
             <Doc content={componentDemo.html} />
           </ComponentDemo>
         </div>
-      }
+      )}
 
-      {tabBar &&
+      {tabBar && (
         <div className="page__tabs">
-          <div className="page__tabs-content">
-            {tabBar}
-          </div>
+          <div className="page__tabs-content">{tabBar}</div>
         </div>
-      }
+      )}
 
       <div className="page__docs" ref={docRef}>
         {doc}
@@ -224,17 +255,27 @@ function Page(props) {
 
       <div className="page__footer">
         <div className="page__footer-content">
-          {props.prev &&
-            <BaseLink router={props.router} routeName='node' routeParams={{ node: `${props.prev.url}` }} className="page__node-nav page__node-nav--prev">
+          {props.prev && (
+            <BaseLink
+              router={props.router}
+              routeName="node"
+              routeParams={{ node: `${props.prev.url}` }}
+              className="page__node-nav page__node-nav--prev"
+            >
               <Meta title="Previous">{props.prev.title}</Meta>
             </BaseLink>
-          }
+          )}
 
-          {props.next &&
-            <BaseLink router={props.router} routeName='node' routeParams={{ node: `${props.next.url}` }} className="page__node-nav page__node-nav--next">
+          {props.next && (
+            <BaseLink
+              router={props.router}
+              routeName="node"
+              routeParams={{ node: `${props.next.url}` }}
+              className="page__node-nav page__node-nav--next"
+            >
               <Meta title="Next">{props.next.title}</Meta>
             </BaseLink>
-          }
+          )}
         </div>
       </div>
     </div>

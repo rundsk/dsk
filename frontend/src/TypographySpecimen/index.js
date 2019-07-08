@@ -3,9 +3,9 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React, { useState, useEffect } from 'react';
-import './TypographySpecimen.css';
-import { Client } from '@atelierdisko/dsk';
+import React, { useState, useEffect } from "react";
+import "./TypographySpecimen.css";
+import { Client } from "@atelierdisko/dsk";
 
 function TypographySpecimen(props) {
   const [styles, setStyles] = useState([]);
@@ -86,11 +86,10 @@ function TypographySpecimen(props) {
     getData();
   }, [props.src]);
 
-
   function getData() {
     if (props.src) {
       // FIXME: This should obviously be derived from the src attribute
-      Client.get(`/Basics/Typography${props.src.slice(1)}`).then((data) => {
+      Client.get(`/Basics/Typography${props.src.slice(1)}`).then(data => {
         setStyles(data.styles);
       });
     }
@@ -98,15 +97,14 @@ function TypographySpecimen(props) {
 
   return (
     <div className="typography-specimen">
-      {styles.map((s) => {
-
+      {styles.map(s => {
         if (s.extends) {
           let extending = styles.find(style => style.id === s.extends);
 
           s = {
             ...extending,
             ...s
-          }
+          };
         }
 
         let style = {
@@ -117,28 +115,35 @@ function TypographySpecimen(props) {
           letterSpacing: s.letterSpacing + "px",
           color: s.color,
           textTransform: s.textTransform
-        }
-
+        };
 
         let demoSentence = props.sentence;
         if (!demoSentence) {
-          demoSentence = sentences[Math.floor((Math.random() * (sentences.length)))];
+          demoSentence = sentences[Math.floor(Math.random() * sentences.length)];
         }
 
-        return <div className="type-sample" key={s.id}>
-          <div className="type-sample__name">{s.name} <span className="type-sample__id">({s.id})</span></div>
-          <div className="type-sample__comment">{s.comment}</div>
-          <div className="type-sample__demo" style={style}>{demoSentence}</div>
-          <div className="type-sample__spec">
-            {s.fontFamily ? s.fontFamily : ""}
-            {s.fontWeight ? " (" + s.fontWeight + ")" : ""}<br />
-            {s.fontSize ? " " + s.fontSize + "px" : ""}
-            {s.lineHeight ? " / " + s.lineHeight + "px" : ""}
-            {s.letterSpacing ? " / " + s.letterSpacing + "px" : ""}<br />
-            {s.color ? s.color : ""}
-            {s.extends ? " Extends " + s.extends : ""}
+        return (
+          <div className="type-sample" key={s.id}>
+            <div className="type-sample__name">
+              {s.name} <span className="type-sample__id">({s.id})</span>
+            </div>
+            <div className="type-sample__comment">{s.comment}</div>
+            <div className="type-sample__demo" style={style}>
+              {demoSentence}
+            </div>
+            <div className="type-sample__spec">
+              {s.fontFamily ? s.fontFamily : ""}
+              {s.fontWeight ? " (" + s.fontWeight + ")" : ""}
+              <br />
+              {s.fontSize ? " " + s.fontSize + "px" : ""}
+              {s.lineHeight ? " / " + s.lineHeight + "px" : ""}
+              {s.letterSpacing ? " / " + s.letterSpacing + "px" : ""}
+              <br />
+              {s.color ? s.color : ""}
+              {s.extends ? " Extends " + s.extends : ""}
+            </div>
           </div>
-        </div>;
+        );
       })}
     </div>
   );

@@ -50,7 +50,6 @@
   height: auto;
 }
 
-
 .component-demo .doc {
   width: 100%;
   display: flex;
@@ -59,10 +58,9 @@
   align-items: center;
 }
 
-
 /* --- Responsive Mobile --- */
 
-@media screen and (max-width : 600px) {
+@media screen and (max-width: 600px) {
   .component-demo {
     padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 3);
     min-height: calc(var(--spacing-unit) * 28);

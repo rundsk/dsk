@@ -3,16 +3,18 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React from 'react';
-import './DoDont.css';
-import ComponentDemo from '../ComponentDemo';
+import React from "react";
+import "./DoDont.css";
+import ComponentDemo from "../ComponentDemo";
 
 export function Do(props) {
   return (
     <>
       <div className="dodont-card__content">
         <div className="dodont-card__demo">
-          <ComponentDemo background={props.background} backgroundcolor={props.backgroundcolor}>{props.children}</ComponentDemo>
+          <ComponentDemo background={props.background} backgroundcolor={props.backgroundcolor}>
+            {props.children}
+          </ComponentDemo>
         </div>
       </div>
 
@@ -21,21 +23,23 @@ export function Do(props) {
         {props.caption}
       </div>
     </>
-  )
+  );
 }
 
 export function Dont(props) {
   return (
     <>
       <div className="dodont-card__content">
-        {props.strikethrough &&
+        {props.strikethrough && (
           <svg>
-            <line x1='-5%' y1='-5%' x2='105%' y2='105%' />
-            <line x1='-5%' y1='105%' x2='105%' y2='-5%' />
+            <line x1="-5%" y1="-5%" x2="105%" y2="105%" />
+            <line x1="-5%" y1="105%" x2="105%" y2="-5%" />
           </svg>
-        }
+        )}
         <div className="dodont-card__demo">
-          <ComponentDemo background={props.background} backgroundcolor={props.backgroundcolor}>{props.children}</ComponentDemo>
+          <ComponentDemo background={props.background} backgroundcolor={props.backgroundcolor}>
+            {props.children}
+          </ComponentDemo>
         </div>
       </div>
 
@@ -44,15 +48,13 @@ export function Dont(props) {
         {props.caption}
       </div>
     </>
-  )
+  );
 }
 
 function DoDont(props) {
   return (
     <div className="dodont">
-      <div className="dodont__card-wrapper">
-        {props.children}
-      </div>
+      <div className="dodont__card-wrapper">{props.children}</div>
     </div>
   );
 }

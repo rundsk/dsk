@@ -34,7 +34,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  transition: all .3s;
+  transition: all 0.3s;
   font-variant-numeric: tabular-nums;
 }
 
@@ -46,7 +46,7 @@
 .annotated-image__marker {
   position: absolute;
   transform: translate(-50%, -50%);
-  transition: all .3s;
+  transition: all 0.3s;
 }
 
 .annotated-image__marker--highlight {
@@ -65,6 +65,6 @@
   margin-bottom: 0;
 }
 
-.annotated-image__annotation .annotated-image__badge  {
+.annotated-image__annotation .annotated-image__badge {
   margin-right: calc(var(--spacing-unit) * 1);
 }

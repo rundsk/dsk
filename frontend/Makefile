@@ -20,3 +20,7 @@ build: node_modules $(shell find src)
 
 node_modules: yarn.lock
 	yarn install
+
+.PHONY: prettier
+prettier: node_modules
+	node_modules/.bin/prettier --print-width=120 --write src/**/*.{css,js}

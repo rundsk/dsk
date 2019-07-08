@@ -3,10 +3,10 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React, { useState, useEffect } from 'react';
-import { Client } from '@atelierdisko/dsk';
-import './Search.css';
-import { withRoute } from 'react-router5';
+import React, { useState, useEffect } from "react";
+import { Client } from "@atelierdisko/dsk";
+import "./Search.css";
+import { withRoute } from "react-router5";
 
 function SearchResult(props) {
   const ref = React.createRef();
@@ -40,7 +40,7 @@ function SearchResult(props) {
       {snippet && <div className="search-result__snippet" dangerouslySetInnerHTML={{ __html: snippet }} />}
       <div className="search-result__path">/{props.url}</div>
     </div>
-  )
+  );
 }
 
 function Search(props) {
@@ -52,8 +52,8 @@ function Search(props) {
 
   const searchInputRef = React.createRef();
 
-  const shortcutHandler = (event) => {
-    if (event.key === 'ArrowDown' && searchResults.length > 0) {
+  const shortcutHandler = event => {
+    if (event.key === "ArrowDown" && searchResults.length > 0) {
       event.preventDefault();
 
       if (focusedResult < searchResults.length - 1) {
@@ -61,7 +61,7 @@ function Search(props) {
       }
     }
 
-    if (event.key === 'ArrowUp' && searchResults.length > 0) {
+    if (event.key === "ArrowUp" && searchResults.length > 0) {
       event.preventDefault();
 
       if (focusedResult > 0) {
@@ -69,7 +69,7 @@ function Search(props) {
       }
     }
 
-    if (event.key === 'Enter' && searchResults.length > 0) {
+    if (event.key === "Enter" && searchResults.length > 0) {
       if (searchResults.length > 0 && searchResults.length >= focusedResult - 1) {
         blur();
         setSearchTerm("");
@@ -79,37 +79,37 @@ function Search(props) {
       }
     }
 
-    if (event.key === 'Escape' && searchIsFocused) {
+    if (event.key === "Escape" && searchIsFocused) {
       event.preventDefault();
       blur();
       hideSearch();
     }
 
-    if (event.key === 's' && !searchIsFocused) {
+    if (event.key === "s" && !searchIsFocused) {
       event.preventDefault();
       focus();
     }
   };
 
-  const localShortcutHandler = (event) => {
-    if (event.key === 'f' && searchIsFocused) {
+  const localShortcutHandler = event => {
+    if (event.key === "f" && searchIsFocused) {
       event.stopPropagation();
     }
-  }
+  };
 
   useEffect(() => {
-    document.addEventListener('keydown', shortcutHandler);
+    document.addEventListener("keydown", shortcutHandler);
 
     // We do this so we can type "f" in the search, even though it is
     // the global shortcut to focus filter
-    searchInputRef.current.addEventListener('keydown', localShortcutHandler);
+    searchInputRef.current.addEventListener("keydown", localShortcutHandler);
 
     return () => {
-      document.removeEventListener('keydown', shortcutHandler);
+      document.removeEventListener("keydown", shortcutHandler);
       if (searchInputRef.current) {
-        searchInputRef.current.removeEventListener('keydown', localShortcutHandler);
+        searchInputRef.current.removeEventListener("keydown", localShortcutHandler);
       }
-    }
+    };
   });
 
   useEffect(() => {
@@ -130,7 +130,7 @@ function Search(props) {
     }
 
     const search = Client.search(term.toLowerCase());
-    search.then((data) => {
+    search.then(data => {
       if (!data.hits) {
         // Filtering yielded no results, we save us iterating over the
         // existing tree, as we already know what it should look like.
@@ -170,32 +170,63 @@ function Search(props) {
   }
 
   return (
-    <div className={classes.join(" ")} onClick={(ev) => { if (searchIsFocused) { hideSearch(); } }}>
+    <div
+      className={classes.join(" ")}
+      onClick={ev => {
+        if (searchIsFocused) {
+          hideSearch();
+        }
+      }}
+    >
       <div className="search__content-container">
-        <div className="search__content" onClick={(ev) => { ev.stopPropagation(); }}>
+        <div
+          className="search__content"
+          onClick={ev => {
+            ev.stopPropagation();
+          }}
+        >
           <input
             type="search"
             placeholder={`Search ${props.title}…`}
             value={searchTerm}
             onChange={onSearchTermChange}
-            onFocus={(ev) => { ev.preventDefault(); ev.stopPropagation(); showSearch(); }}
+            onFocus={ev => {
+              ev.preventDefault();
+              ev.stopPropagation();
+              showSearch();
+            }}
             ref={searchInputRef}
-            onClick={(ev) => { ev.stopPropagation();  ev.preventDefault(); }}
+            onClick={ev => {
+              ev.stopPropagation();
+              ev.preventDefault();
+            }}
           />
 
-          <div className={`search__results-container${(shouldShowResults) ? " search__results-container--is-visible" : ""}`}>
+          <div
+            className={`search__results-container${shouldShowResults ? " search__results-container--is-visible" : ""}`}
+          >
             <div className="search__results">
               {searchResults.map((r, i) => {
-                return <SearchResult {...r} isFocused={focusedResult === i} router={props.router} key={r.url} onSelect={() => { blur(); setSearchTerm(""); hideSearch(); }} />;
+                return (
+                  <SearchResult
+                    {...r}
+                    isFocused={focusedResult === i}
+                    router={props.router}
+                    key={r.url}
+                    onSelect={() => {
+                      blur();
+                      setSearchTerm("");
+                      hideSearch();
+                    }}
+                  />
+                );
               })}
 
-              {searchResults.length === 0 && searchTerm !== "" &&
+              {searchResults.length === 0 && searchTerm !== "" && (
                 <div className="search__no-dice">No aspects found :(</div>
-              }
+              )}
 
-              {searchTerm === "" &&
-                <div className="search__no-dice">Start typing to search {props.title}…</div>
-              }
+              {searchTerm === "" && <div className="search__no-dice">Start typing to search {props.title}…</div>}
             </div>
           </div>
         </div>

@@ -3,8 +3,8 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React from 'react';
-import './Banner.css';
+import React from "react";
+import "./Banner.css";
 
 function Banner(props) {
   let classes = ["banner"];
@@ -25,12 +25,8 @@ function Banner(props) {
 
   return (
     <div className={classes.join(" ")}>
-      {props.title &&
-        <div className="banner__header">{props.title}</div>
-      }
-      <div className="banner__content">
-        {props.children}
-      </div>
+      {props.title && <div className="banner__header">{props.title}</div>}
+      <div className="banner__content">{props.children}</div>
     </div>
   );
 }

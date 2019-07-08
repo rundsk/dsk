@@ -14,7 +14,6 @@
   margin-bottom: calc(var(--spacing-unit) * 2);
 }
 
-
 .asset-list__asset-meta {
   display: flex;
   flex-wrap: wrap;
@@ -23,13 +22,13 @@
 
 .asset-list__asset-download::before {
   display: inline-block;
-  margin-right: .2em;
+  margin-right: 0.2em;
   margin-left: -1.1em;
   content: "↓ ";
   font-weight: 700;
   text-decoration: none;
   color: var(--color-gray-800);
-  transition: color .3s;
+  transition: color 0.3s;
 }
 
 .asset-list__asset-download:hover::before {

@@ -11,7 +11,10 @@
   margin-bottom: 0;
 }
 
-.doc h1:first-child, .doc h2:first-child, .doc h3:first-child, .doc h4:first-child {
+.doc h1:first-child,
+.doc h2:first-child,
+.doc h3:first-child,
+.doc h4:first-child {
   margin-top: 0;
 }
 
@@ -21,11 +24,17 @@
 
 /* Limiter */
 
-.doc h1, .doc h2 {
+.doc h1,
+.doc h2 {
   max-width: calc(var(--spacing-unit) * 85);
 }
 
-.doc h3,  .doc h4, .doc p, .doc blockquote, .doc ul, .doc ol {
+.doc h3,
+.doc h4,
+.doc p,
+.doc blockquote,
+.doc ul,
+.doc ol {
   max-width: calc(var(--spacing-unit) * 75);
 }
 
@@ -75,21 +84,25 @@
   margin-bottom: calc(var(--spacing-unit) * 3);
 }
 
-
 /* List */
 
-.doc ul, .doc ol {
+.doc ul,
+.doc ol {
   margin-left: -4rem;
   margin-bottom: 2rem;
 }
 
-.doc ul ul, .doc ol ol, .doc ul ol, .doc ol ul {
+.doc ul ul,
+.doc ol ol,
+.doc ul ol,
+.doc ol ul {
   margin-left: 0;
   margin-top: 0;
   margin-bottom: 0;
 }
 
-.doc ul li, .doc ol li {
+.doc ul li,
+.doc ol li {
   margin: 0.5rem 0 0.5rem 4rem;
 }
 
@@ -146,7 +159,7 @@
   font-family: var(--font-family-mono);
   font-size: 0.85em;
   letter-spacing: 0.03em;
-  font-weight:500;
+  font-weight: 500;
   white-space: nowrap;
 }
 
@@ -179,7 +192,7 @@
   font-size: var(--font-size-beta);
   line-height: 1.4em;
   opacity: 0;
-  transition: all .2s .4s;
+  transition: all 0.2s 0.4s;
   padding-bottom: 4px;
 
   position: absolute;
@@ -190,7 +203,7 @@
 
 .doc .code:hover .code__copyLink {
   opacity: 1;
-  transition: all .4s 0s;
+  transition: all 0.4s 0s;
 }
 
 /* Horizontal Rule */

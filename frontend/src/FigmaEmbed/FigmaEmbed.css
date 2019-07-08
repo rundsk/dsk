@@ -27,9 +27,15 @@
 }
 
 @keyframes pulse {
-  0% { color: var(--color-gray-700); }
-  50% { color: var(--color-gray-300); }
-  100% { color: var(--color-gray-700); }
+  0% {
+    color: var(--color-gray-700);
+  }
+  50% {
+    color: var(--color-gray-300);
+  }
+  100% {
+    color: var(--color-gray-700);
+  }
 }
 
 .figma-embed__error {
@@ -41,19 +47,19 @@
   text-align: right;
   width: 100%;
   opacity: 0;
-  transition: all .3s .4s;
+  transition: all 0.3s 0.4s;
   display: block;
   position: absolute;
   bottom: 0;
   transform: translateY(100%);
 }
 
-.figma-embed:hover .figma-embed__via  {
+.figma-embed:hover .figma-embed__via {
   opacity: 1;
-  transition: all .4s 0s;
+  transition: all 0.4s 0s;
 }
 
-.figma-embed__via:focus  {
+.figma-embed__via:focus {
   opacity: 1;
-  transition: all .0s;
+  transition: all 0s;
 }

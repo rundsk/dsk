@@ -32,12 +32,12 @@
 .code-block__copy {
   cursor: pointer;
   opacity: 0;
-  transition: all .2s .4s;
+  transition: all 0.2s 0.4s;
 }
 
 .code-block:hover .code-block__copy {
   opacity: 1;
-  transition: all .4s 0s;
+  transition: all 0.4s 0s;
 }
 
 .code-block .code-block__code {

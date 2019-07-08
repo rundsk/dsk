@@ -3,6 +3,7 @@
   "version": "1.2.0-beta",
   "private": true,
   "dependencies": {
+    "@atelierdisko/dsk": "^1.2.0-beta.4",
     "get-contrast": "^2.0.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -10,11 +11,11 @@
     "react-scripts": "2.1.8",
     "reactn": "^1.0.0",
     "router5": "^7.0.2",
-    "router5-plugin-browser": "^7.0.2",
-    "@atelierdisko/dsk": "^1.2.0-beta.4"
+    "router5-plugin-browser": "^7.0.2"
   },
   "devDependencies": {
-    "http-proxy-middleware": "^0.19.1"
+    "http-proxy-middleware": "^0.19.1",
+    "prettier": "1.18.2"
   },
   "scripts": {
     "start": "react-scripts start",

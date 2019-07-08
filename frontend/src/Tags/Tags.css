@@ -16,7 +16,7 @@
   background-color: var(--color-green);
   /* border: 2px solid var(--color-cyan); */
   /* color: var(--color-black); */
-  color: rgba(0,0,0,.7);
+  color: rgba(0, 0, 0, 0.7);
   text-decoration: none;
   text-transform: uppercase;
   font-size: var(--font-size-alpha);

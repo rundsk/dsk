@@ -3,11 +3,11 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React, { useState, useEffect } from 'react';
-import { useGlobal } from 'reactn';
-import contrast from 'get-contrast';
+import React, { useState, useEffect } from "react";
+import { useGlobal } from "reactn";
+import contrast from "get-contrast";
 
-import './Tags.css';
+import "./Tags.css";
 
 function Tags(props) {
   const [style, setStyle] = useState("");
@@ -16,8 +16,7 @@ function Tags(props) {
 
   useEffect(() => {
     if (frontendConfig.tags) {
-      let styles = frontendConfig.tags.map((t) => {
-
+      let styles = frontendConfig.tags.map(t => {
         let textColor = "rgba(0,0,0,.7)";
 
         if (!t.color.includes("var") && contrast.ratio(t.color, "black") < contrast.ratio(t.color, "white")) {
@@ -25,7 +24,7 @@ function Tags(props) {
         }
 
         if (t.color.includes("--color-red") || t.color.includes("--color-blue")) {
-          textColor ="white";
+          textColor = "white";
         }
 
         return `.tags li.tags__tag[tag*='${t.name}'] { background-color: ${t.color}; color: ${textColor}; }`;
@@ -37,22 +36,28 @@ function Tags(props) {
   let tags;
 
   if (props.tags) {
-    tags = props.tags.map((t) => {
-      return <li
-        className="tags__tag"
-        key={t}
-        tag={t}
-        onClick={(ev) => {
-          if (props.isClickable === false) { return; }
+    tags = props.tags.map(t => {
+      return (
+        <li
+          className="tags__tag"
+          key={t}
+          tag={t}
+          onClick={ev => {
+            if (props.isClickable === false) {
+              return;
+            }
 
-          if (ev.metaKey) {
-            setFilterTerm(`${filterTerm} ${t}`);
-          } else {
-            setFilterTerm(t);
-          }
-        }}
-      >{t}</li>;
-    })
+            if (ev.metaKey) {
+              setFilterTerm(`${filterTerm} ${t}`);
+            } else {
+              setFilterTerm(t);
+            }
+          }}
+        >
+          {t}
+        </li>
+      );
+    });
   }
 
   return (

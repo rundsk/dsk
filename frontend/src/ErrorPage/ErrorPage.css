@@ -26,12 +26,11 @@
   font-weight: 400;
 }
 
-
 /* --- Responsive Mobile --- */
 
-@media screen and (max-width : 600px) {
+@media screen and (max-width: 600px) {
   .error-page__content {
-    padding: 0 calc(var(--spacing-unit) * 3);  
+    padding: 0 calc(var(--spacing-unit) * 3);
     padding-top: calc(var(--spacing-unit) * 9);
   }
 }

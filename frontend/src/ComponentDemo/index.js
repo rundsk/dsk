@@ -3,8 +3,8 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React, { useEffect } from 'react';
-import './ComponentDemo.css';
+import React, { useEffect } from "react";
+import "./ComponentDemo.css";
 
 function ComponentDemo(props) {
   const ref = React.createRef();
@@ -28,39 +28,38 @@ function ComponentDemo(props) {
           let width = img.getAttribute("width");
           let height = img.getAttribute("height");
 
-          img.style.maxWidth = `${width/2}px`;
-          img.style.maxHeight = `${height/2}px`;
+          img.style.maxWidth = `${width / 2}px`;
+          img.style.maxHeight = `${height / 2}px`;
         }
       });
     }
   }
 
+  let classes = ["component-demo"];
 
-    let classes = ['component-demo'];
+  if (props.background === "checkerboard") {
+    classes.push("component-demo--checkerboard");
+  }
 
-    if (props.background === "checkerboard") {
-      classes.push('component-demo--checkerboard');
-    }
+  if (props.background === "pinstripes") {
+    classes.push("component-demo--pinstripes");
+  }
 
-    if (props.background === "pinstripes") {
-      classes.push('component-demo--pinstripes');
-    }
+  if (props.background === "plain") {
+    classes.push("component-demo--plain");
+  }
 
-    if (props.background === "plain") {
-      classes.push('component-demo--plain');
-    }
+  let style = {};
 
-    let style = {};
+  if (props.backgroundcolor) {
+    style.backgroundColor = props.backgroundcolor;
+  }
 
-    if (props.backgroundcolor) {
-      style.backgroundColor = props.backgroundcolor;
-    }
-
-    return (
-      <div className={classes.join(' ')} ref={ref} style={style}>
-        {props.children}
-      </div>
-    );
+  return (
+    <div className={classes.join(" ")} ref={ref} style={style}>
+      {props.children}
+    </div>
+  );
 }
 
 export default ComponentDemo;

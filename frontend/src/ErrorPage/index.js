@@ -3,8 +3,8 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React from 'react';
-import './ErrorPage.css';
+import React from "react";
+import "./ErrorPage.css";
 
 function ErrorPage(props) {
   return (

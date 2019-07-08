@@ -35,7 +35,7 @@
 } */
 
 h2.node-list__node-title {
-  margin-bottom: calc(var(--spacing-unit) * .5);
+  margin-bottom: calc(var(--spacing-unit) * 0.5);
 }
 
 .node-list__node-tags ul {
@@ -53,7 +53,7 @@ h2.node-list__node-title {
 
 .node-list__node-children-count {
   color: var(--color-gray-700);
-  transition: all .4s .2s;
+  transition: all 0.4s 0.2s;
   opacity: 1;
 }
 
@@ -70,5 +70,5 @@ h2.node-list__node-title {
   display: inline-block;
   content: "›";
   text-decoration: none;
-  margin-left: .3em;
+  margin-left: 0.3em;
 }

@@ -3,24 +3,24 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React from 'react';
-import { transform } from '@atelierdisko/dsk';
-import { withRoute } from 'react-router5';
+import React from "react";
+import { transform } from "@atelierdisko/dsk";
+import { withRoute } from "react-router5";
 
-import './Doc.css';
+import "./Doc.css";
 
-import Heading from '../Heading';
-import Image from '../Image';
-import Link from '../Link';
+import Heading from "../Heading";
+import Image from "../Image";
+import Link from "../Link";
 
-import AnnotatedImage from '../AnnotatedImage';
-import Banner from '../Banner'
-import CodeBlock from '../CodeBlock';
-import ColorSpecimen from '../ColorSpecimen';
-import ComponentDemo from '../ComponentDemo';
-import DoDont, { Do, Dont } from '../DoDont';
-import FigmaEmbed from '../FigmaEmbed';
-import TypographySpecimen from '../TypographySpecimen';
+import AnnotatedImage from "../AnnotatedImage";
+import Banner from "../Banner";
+import CodeBlock from "../CodeBlock";
+import ColorSpecimen from "../ColorSpecimen";
+import ComponentDemo from "../ComponentDemo";
+import DoDont, { Do, Dont } from "../DoDont";
+import FigmaEmbed from "../FigmaEmbed";
+import TypographySpecimen from "../TypographySpecimen";
 
 function Doc(props) {
   if (!props.htmlContent) {
@@ -48,17 +48,14 @@ function Doc(props) {
 
     a: props => <Link {...props} />,
     h1: props => <Heading {...props} level="alpha" docTitle={docTitle} isJumptarget={true} />,
-    h2: props => <Heading {...props} level="beta"  docTitle={docTitle} isJumptarget={true} />,
+    h2: props => <Heading {...props} level="beta" docTitle={docTitle} isJumptarget={true} />,
     h3: props => <Heading {...props} level="gamma" docTitle={docTitle} isJumptarget={true} />,
     h4: props => <Heading {...props} level="delta" docTitle={docTitle} isJumptarget={true} />,
     img: props => <Image {...props} />,
-    pre: props => <CodeBlock {...props} />,
+    pre: props => <CodeBlock {...props} />
   };
 
-  const orphans = [
-    "p > img",
-    "p > video"
-  ];
+  const orphans = ["p > img", "p > video"];
 
   let transformedContent = transform(props.htmlContent, transforms, orphans, {
     noTransform: (type, props) => {
@@ -68,12 +65,12 @@ function Doc(props) {
       // HTML elements and React that we have to take care
       // of: https://reactjs.org/docs/dom-elements.html#differences-in-attributes
       props.className = props.class;
-      delete(props.class);
+      delete props.class;
 
       return React.createElement(type, props, props.children);
     }
   });
-  return <div className="doc">{transformedContent}</div>
+  return <div className="doc">{transformedContent}</div>;
 }
 
 export default withRoute(Doc);
