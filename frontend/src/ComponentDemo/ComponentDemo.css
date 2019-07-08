@@ -45,7 +45,6 @@
   height: auto;
 }
 
-.component-demo .doc {
 /* Make sure everything is centered, even when it’s in a doc */
 .component-demo__stage .doc {
   width: 100%;
@@ -128,8 +127,6 @@
   margin-right: calc(var(--spacing-unit) * 1);
 }
 
-
->>>>>>> 1.2
 /* --- Responsive Mobile --- */
 
 @media screen and (max-width: 600px) {
