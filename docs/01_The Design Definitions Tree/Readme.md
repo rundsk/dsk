@@ -10,7 +10,6 @@ The _design definitions tree_ (DDT for short), is a tree of directories and subd
 
 → [Read on about Aspects](./Aspects)
 
-```Component
 <CodeBlock title="Scheme of a design definitions tree">
 example-ddt
 ├── AUTHORS.txt                 <- authors database, see "Authors" below
@@ -26,9 +25,8 @@ example-ddt
 │   │   ├── explain.md          <- document
 │   │   └── unmask.svg          <- asset
 </CodeBlock>
-```
 
-By default, DSK displays aspects in alphabetic order. You can manually change this order be prepending a number, separated by a dash or underscore to the title of the aspect. 
+By default, DSK displays aspects in alphabetic order. You can manually change this order be prepending a number, separated by a dash or underscore to the title of the aspect.
 
 ```
 example-ddt
@@ -36,6 +34,4 @@ example-ddt
 ├── 02-Components
 ```
 
-```Component
 <Banner title="Note" type="warning">Hidden directories and files beginning with a dot (.) are ignored. Things you don’t want to be accessed should not be stored inside the DDT.</Banner>
-```

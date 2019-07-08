@@ -2,19 +2,16 @@
 
 You can add meta data about an aspect by placing  a special file called `meta.yaml` into the directory of the aspect. This file holds meta data, like a short description, tags and authors, about an aspect. The file uses the easy to write  [YAML](https://www.youtube.com/watch?v=W3tQPk8DNbk)  format.
 
-```Component
 <Banner title="Note" type="important">If you prefer to use  <a href="https://www.json.org/">JSON</a> as a format, that is supported too. Just exchange <code>.yaml</code> for <code>.json</code> as the extension.</Banner>
-```
 
 An example of a full meta data file looks like this:
 
-```Component
 <CodeBlock title="meta.yaml">
-authors: 
+authors:
   - christoph@atelierdisko.de
   - marius@atelierdisko.de
 
-description: > 
+description: >
   This is a very very very fancy component. Lorem ipsum dolor sit amet,
   sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
   magna aliquyam erat, sed diam voluptua.
@@ -29,14 +26,12 @@ tags:
 
 version: 1.2.3
 
-custom: 
+custom:
   - synonyms:
     - Input
     - Text Field
   - platform: iOS
 </CodeBlock>
-```
-
 
 Possible meta data keys are:
 * `authors`: An array of email addresses of the document authors. See _Authors_ for more information.
