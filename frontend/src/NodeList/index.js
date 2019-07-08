@@ -22,7 +22,7 @@ function Node(props) {
 
   return (
     <BaseLink router={props.router} routeName="node" routeParams={{ node: `${props.url}` }} className="node-list__node" >
-      <Heading className="node-list__node-title" level={2} isJumptarget={false}>{props.title}</Heading>
+      <Heading className="node-list__node-title" level="beta" isJumptarget={false}>{props.title}</Heading>
       <div className="node-list__node-tags"><Tags tags={data && data.tags} isClickable={false} /></div>
       <div className="node-list__node-description">
         {data && data.description}
