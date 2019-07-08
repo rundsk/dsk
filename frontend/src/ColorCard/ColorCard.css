@@ -70,6 +70,24 @@
   color: black;
 }
 
+.color-card__copied-indicator {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  right: 0;
+  z-index: 2;
+  text-align: center;
+  padding: calc(var(--spacing-unit) * 1);
+  opacity: 0;
+  transition: opacity .7s;
+}
+
+.color-card__copied-indicator--is-visible {
+  opacity: 1;
+  transition: opacity .1s;
+}
+
 .color-card__demo:hover .color-card__score {
   opacity: 1;
   transition: all .3s .4s;
