@@ -36,11 +36,11 @@ function Doc(props) {
   const transforms = {
     Banner: props => <Banner {...props} />,
     CodeBlock: props => <CodeBlock {...props} />,
-    ColorCard: props => <ColorCard {...props} />,
+    Color: props => <ColorCard {...props} />,
     ColorGroup: props => <ColorGroup {...props} />,
     Playground: props => <ComponentDemo {...props} />,
     Do: props => <Do {...props} />,
-    DoDont: props => <DoDont {...props} />,
+    DoDontGroup: props => <DoDont {...props} />,
     Dont: props => <Dont {...props} />,
     FigmaEmbed: props => <FigmaEmbed {...props} />,
     TypographySpecimen: props => <TypographySpecimen {...props} />,
