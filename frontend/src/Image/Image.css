@@ -1,0 +1,17 @@
+/**
+ * Copyright 2019 Atelier Disko. All rights reserved. This source
+ * code is distributed under the terms of the BSD 3-Clause License.
+ */
+
+.image {
+  max-width: 100%;
+  display: block;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  margin: var(--documentation-component-spacing) 0;
+}
+
+

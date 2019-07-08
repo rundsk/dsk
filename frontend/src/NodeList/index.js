@@ -21,7 +21,7 @@ function Node(props) {
 
   return (
     <BaseLink router={props.router} routeName="node" routeParams={{ node: `${props.url}` }} className="node-list__node" >
-      <h2 className="node-list__node-title" nojumplink="true">{props.title}</h2>
+      <h2 className="node-list__node-title" nojump={true}>{props.title}</h2>
       <div className="node-list__node-tags"><Tags tags={data && data.tags} isClickable={false} /></div>
       <div className="node-list__node-description">
         {data && data.description}

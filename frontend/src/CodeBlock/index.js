@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './CodeBlock.css';
 import { copyTextToClipboard } from '../utils';
 
+// TODO: If child is <code> unwrap and turn into string.
 // TODO: HTML-escape inner content, probably using
 // https://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
 // https://www.npmjs.com/package/escape-html
