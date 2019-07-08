@@ -11,15 +11,14 @@ import "./Image.css";
 // set via CSS, so they are displayed half their size. Information about the
 // natural dimensions is set by the DSK backend.
 function Image(props) {
+  let width = props.width;
+  let height = props.height;
+
   if (props.src.includes("@2x")) {
-    if (props.width && props.height) {
-      props.style = {
-        maxWidth: `${props.width / 2}px`,
-        maxHeight: `${props.height / 2}px`
-      };
-    }
+    width /= 2;
+    height /= 2;
   }
-  return <img className="image" alt={props.alt} src={props.src} style={props.style} />;
+  return <img className="image" alt={props.alt} src={props.src} width={width} height={height} />
 }
 
 export default Image;
