@@ -76,13 +76,10 @@ func (d NodeDoc) HTML(treePrefix string, nodeURL string, nodeGet NodeGetter) ([]
 			return parsed, err
 		}
 
-		contents, err := dt.ProcessHTML(parsed)
-		return removeComponentProtection(contents), err
+		parsed = removeComponentProtection(parsed)
+		return dt.ProcessHTML(parsed)
 	case ".html", ".htm":
-		contents = addComponentProtection(contents, findComponentsInHTML(contents))
-
-		contents, err := dt.ProcessHTML(contents)
-		return removeComponentProtection(contents), err
+		return dt.ProcessHTML(contents)
 	case ".txt":
 		html := fmt.Sprintf("<pre>%s</pre>", html.EscapeString(string(contents)))
 		return []byte(html), nil

@@ -77,9 +77,11 @@ func TestTransformNodeAssets(t *testing.T) {
 	dt, _ := NewNodeDocTransformer("/tree", "foo", get)
 
 	expected := map[string]string{
-		"<a href=\"/foo/asset0.txt\">":  "<a href=\"/tree/foo/asset0.txt\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
-		"<a href=\"foo/asset0.txt\">":   "<a href=\"/tree/foo/asset0.txt\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
-		"<img src=\"/foo/asset0.txt\">": "<img src=\"/tree/foo/asset0.txt\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
+		"<a href=\"/foo/asset0.txt\">":                  "<a href=\"/tree/foo/asset0.txt\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
+		"<a href=\"foo/asset0.txt\">":                   "<a href=\"/tree/foo/asset0.txt\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
+		"<img src=\"/foo/asset0.txt\">":                 "<img src=\"/tree/foo/asset0.txt\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
+		"<img src=\"foo/asset0.txt\">":                  "<img src=\"/tree/foo/asset0.txt\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
+		"<figure><img src=\"foo/asset0.txt\"></figure>": "<figure><img src=\"/tree/foo/asset0.txt\" data-node=\"foo\" data-node-asset=\"asset0.txt\"></figure>",
 	}
 	for h, e := range expected {
 		r, _ := dt.ProcessHTML([]byte(h))
