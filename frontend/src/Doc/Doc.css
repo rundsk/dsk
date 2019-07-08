@@ -185,27 +185,6 @@
   font-size: unset;
 }
 
-.doc .code .code__copyLink {
-  cursor: pointer;
-  font-family: var(--font-family-mono);
-  color: var(--color-gray-500);
-  font-size: var(--font-size-beta);
-  line-height: 1.4em;
-  opacity: 0;
-  transition: all 0.2s 0.4s;
-  padding-bottom: 4px;
-
-  position: absolute;
-  right: 0;
-  top: 0;
-  transform: translateY(-100%);
-}
-
-.doc .code:hover .code__copyLink {
-  opacity: 1;
-  transition: all 0.4s 0s;
-}
-
 /* Horizontal Rule */
 
 .doc hr {

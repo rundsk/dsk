@@ -4,14 +4,6 @@ Authors are a special kind of meta data, because DSK offers name resolution: Eac
 
 To enable automatic full names for each author, create a file called `AUTHORS.txt`  inside the root of the [DDT](/The-Design-Definitions-Tree). Each line of the file lists an author’s full name and her/his email address in angle brackets.
 
-<!-- ```Component
-<Banner type="error">The following example is wrong, because CodeBlock can’t display <></Banner>
-<CodeBlock title="AUTHORS.txt">
-Christoph Labacher christoph@atelierdisko.de
-Marius Wilms marius@atelierdisko.de
-</CodeBlock>
-``` -->
-
 ```
 Christoph Labacher <christoph@atelierdisko.de>
 Marius Wilms <marius@atelierdisko.de>

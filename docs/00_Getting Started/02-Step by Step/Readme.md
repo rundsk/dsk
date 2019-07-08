@@ -35,7 +35,7 @@ Create two new folders in the “my-design-system” folder and call them “Sty
 ## 🗒 – Step 7: Add documentation  
 Your aspects are still empty, so let’s add some documentation!
 
-For documentation we use a special format, which is called “Markdown”. Every Markdown file has to end with `.md`. In Markdown you write text as usual, but you can use special symbols in your text. For example, a line that starts with `#is treated as a headline, and words that are surrounded by two asterisks ` (`*`) are shown in bold (`you use it **like this**`). This way, you can style your document, without having to use a programming language. You can find a list of which symbols you can use to format your text [here](https://guides.github.com/features/mastering-markdown/). On [www.markdownguide.org/getting-started](https://www.markdownguide.org/getting-started/) you can read more about Markdown.
+For documentation we use a special format, which is called “Markdown”. Every Markdown file has to end with `.md`. In Markdown you write text as usual, but you can use special symbols in your text. For example, a line that starts with `#` is treated as a headline, and words that are surrounded by two asterisks (`*`) are shown in bold (`you use it **like this**`). This way, you can style your document, without having to use a programming language. You can find a list of which symbols you can use to format your text [here](https://guides.github.com/features/mastering-markdown/). On [www.markdownguide.org/getting-started](https://www.markdownguide.org/getting-started/) you can read more about Markdown.
 
 This is an example of what a document might look like:
 

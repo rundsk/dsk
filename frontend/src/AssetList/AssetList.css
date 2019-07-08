@@ -15,9 +15,10 @@
 }
 
 .asset-list__asset-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
+  display: grid;
+  grid-auto-flow: column;
+  grid-column-gap: calc(var(--spacing-unit) * 4);
+  grid-auto-columns: max-content;
 }
 
 .asset-list__asset-download::before {

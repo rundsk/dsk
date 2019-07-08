@@ -6,6 +6,7 @@
 import React from "react";
 import "./AssetList.css";
 import Meta from "../Meta";
+import Heading from "../Heading";
 
 function AssetList(props) {
   const imageFileTypes = ["png", "jpg", "jpeg"];
@@ -16,7 +17,9 @@ function AssetList(props) {
         props.assets.map(a => {
           return (
             <div className="asset-list__asset" key={a.name}>
-              <h2>{a.name}</h2>
+              <Heading level="beta" isJumptarget={true}>
+                {a.name}
+              </Heading>
 
               {imageFileTypes.some(v => {
                 return a.url.indexOf(v) >= 0;
