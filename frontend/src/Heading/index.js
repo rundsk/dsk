@@ -11,8 +11,16 @@ import './Heading.css';
 
 // props.children[0] has the textContent.
 function Heading(props) {
+  const levels = {
+    "alpha": 1,
+    "beta":  2,
+    "gamma": 3,
+    "delta": 4,
+  };
+  const Tag = `h${levels[props.level]}`;
+
   if (!props.isJumptarget) {
-    return <div className={`heading heading--${props.level}`}>{props.children}</div>
+    return <Tag className={`heading heading--${props.level}`}>{props.children}</Tag>
   }
 
   let id = slugify(props.children[0]);
@@ -36,10 +44,10 @@ function Heading(props) {
   };
 
   // We can’t use just id, because it doesn’t work for number-only headings.
-  return <div id={id} heading-id={id} className={`heading heading--${props.level}`}>
+  return <Tag id={id} heading-id={id} className={`heading heading--${props.level}`}>
     <span className="heading__jumplink" onClick={handleClick}>§</span>
       {props.children}
-    </div>
+    </Tag>
 }
 
 export default withRoute(Heading);
