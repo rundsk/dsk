@@ -27,6 +27,10 @@ function Doc(props) {
     return <div className="doc">{props.children}</div>;
   }
 
+  // Allow to use this inside the `transforms` constant. We cannot use
+  // `props.title` there as that refers to the component/element that is being
+  // transformed. The title is needed as to calculate the `Heading`'s jump
+  // anchor.
   let docTitle = props.title;
 
   const transforms = {
