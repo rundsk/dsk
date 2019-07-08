@@ -11,7 +11,7 @@ function Link(props) {
   let node = props["data-node"];
 
   if (!node) {
-    return <a {...props}>{props.children}</a>
+    return <a href={props.href}>{props.children}</a>
   }
   let hash = props.href.split("?t=")[1] || undefined
 
