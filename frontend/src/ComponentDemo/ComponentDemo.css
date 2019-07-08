@@ -5,16 +5,6 @@
 
 .component-demo {
   width: 100%;
-  padding: calc(var(--spacing-unit) * 6) calc(var(--spacing-unit) * 8);
-  min-height: calc(var(--spacing-unit) * 38);
-  background-color: var(--color-gray-1000);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background-image: url(./DotGridPattern--dark.png);
-  background-size: 20px;
-  background-position: center center;
   margin: var(--documentation-component-spacing) 0;
 }
 
@@ -26,31 +16,38 @@
   margin-bottom: 0;
 }
 
-/* Make sure everything is centered, even when it’s in a doc */
-.component-demo .doc {
-  width: auto;
+.component-demo__stage {
+  width: 100%;
+  padding: calc(var(--spacing-unit) * 6) calc(var(--spacing-unit) * 8);
+  background-color: var(--color-gray-1000);
+
+  background-image: url(./DotGridPattern--dark.png);
+  background-size: 20px;
+  background-position: center center;
 }
 
-.component-demo--checkerboard {
+.component-demo--checkerboard .component-demo__stage {
   background-image: url(./CheckerboardPattern--light.png);
   background-size: 140px;
 }
 
-.component-demo--pinstripes {
+.component-demo--pinstripes .component-demo__stage {
   background-image: url(./PinstripesPattern.png);
   background-size: 100px;
 }
 
-.component-demo--plain {
+.component-demo--plain .component-demo__stage {
   background-image: none;
 }
 
-.component-demo img {
+.component-demo__stage img {
   width: 100%;
   height: auto;
 }
 
 .component-demo .doc {
+/* Make sure everything is centered, even when it’s in a doc */
+.component-demo__stage .doc {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -58,6 +55,81 @@
   align-items: center;
 }
 
+.component-demo__stage-content {
+  width: 100%;
+  min-height: calc(var(--spacing-unit) * 22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* --- Annotations --- */
+
+
+.component-demo__annotation-badge {
+  cursor: default;
+  display: inline-block;
+  height: calc(var(--spacing-unit) * 3);
+  min-width: calc(var(--spacing-unit) * 3);
+  border-radius: calc(var(--spacing-unit) * 2);
+  background-color: var(--color-gray-600);
+  color: white;
+
+  font-size: var(--font-size-beta);
+  line-height: calc(var(--spacing-unit) * 3);
+  text-align: center;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  transition: all .2s;
+  font-variant-numeric: tabular-nums;
+}
+
+.component-demo__annotation-badge--highlight {
+  background-color: var(--color-blue);
+  color: white;
+}
+
+.component-demo__annotation-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  transition: all .3s;
+  z-index: 5;
+}
+
+.component-demo__annotation-marker--highlight {
+  transform: translate(-50%, -50%) scale(1.5);
+}
+
+.component-demo__annotation-marker-stage {
+  position: absolute;
+  top: calc(var(--spacing-unit) * 6);
+  right: calc(var(--spacing-unit) * 8);
+  bottom: calc(var(--spacing-unit) * 6);
+  left: calc(var(--spacing-unit) * 8);
+}
+
+.component-demo__annotations {
+  padding: calc(var(--spacing-unit) * 2);
+  background-color: var(--color-gray-900);
+  border-radius: 0 0 3px 3px;
+}
+
+.component-demo__annotation {
+  margin-bottom: calc(var(--spacing-unit) * 1.5);
+}
+
+.component-demo__annotation:last-child {
+  margin-bottom: 0;
+}
+
+.component-demo__annotation .component-demo__annotation-badge  {
+  margin-right: calc(var(--spacing-unit) * 1);
+}
+
+
+>>>>>>> 1.2
 /* --- Responsive Mobile --- */
 
 @media screen and (max-width: 600px) {

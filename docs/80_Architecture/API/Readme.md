@@ -1,9 +1,5 @@
 # API
 
-The API exposed by DSK is a key element in its architecture. It decouples the
-frontend from the backend and allows to build custom frontends and other tools
-that access the information stored inside the design system.
-
 ## Versioned API
 
 The API version is a single integer that gets incremented with each version

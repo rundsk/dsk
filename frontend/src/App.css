@@ -165,6 +165,7 @@ html {
     transform: translateX(-100%);
     transition: transform .5s;
     padding-top: calc(var(--spacing-unit) * 5);
+    z-index: 3;
   }
 
   .app__sidebar--is-visible {

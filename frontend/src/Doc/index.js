@@ -13,10 +13,10 @@ import Heading from "../Heading";
 import Image from "../Image";
 import Link from "../Link";
 
-import AnnotatedImage from "../AnnotatedImage";
 import Banner from "../Banner";
 import CodeBlock from "../CodeBlock";
-import ColorSpecimen from "../ColorSpecimen";
+import ColorCard from "../ColorCard";
+import ColorGroup from "../ColorGroup";
 import ComponentDemo from "../ComponentDemo";
 import DoDont, { Do, Dont } from "../DoDont";
 import FigmaEmbed from "../FigmaEmbed";
@@ -34,11 +34,11 @@ function Doc(props) {
   let docTitle = props.title;
 
   const transforms = {
-    AnnotatedImage: props => <AnnotatedImage {...props} />,
     Banner: props => <Banner {...props} />,
     CodeBlock: props => <CodeBlock {...props} />,
-    ColorSpecimen: props => <ColorSpecimen {...props} />,
-    ComponentDemo: props => <ComponentDemo {...props} />,
+    ColorCard: props => <ColorCard {...props} />,
+    ColorGroup: props => <ColorGroup {...props} />,
+    Playground: props => <ComponentDemo {...props} />,
     Do: props => <Do {...props} />,
     DoDont: props => <DoDont {...props} />,
     Dont: props => <Dont {...props} />,

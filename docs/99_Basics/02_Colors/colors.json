@@ -1,48 +1,25 @@
 {
   "colors": [
-    { "name": "White", "id": "white", "value": "#ffffff" },
-{ "name": "Black", "id": "black", "value": "#000000" },
-{ "name": "Blue", "id": "blue", "value": "#001dff" }, 
-{ "name": "Green", "id": "green", "value": "#52d0af" },
-{ "name": "Teal", "id": "teal", "value": "#0091AB" },
-{ "name": "Yellow Light", "id": "yellow--light", "value": "rgb(255, 242, 180)" },
-{ "name": "Yellow", "id": "yellow", "value": "#FFE874" },
-{ "name": "Yellow Dark", "id": "yellow--dark", "value": "#866E00" },
-{ "name": "Orange", "id": "orange", "value": "#FED28C" },
-{ "name": "Orange Dark", "id": "orange--dark", "value": "#A06100" },
-{ "name": "Red", "id": "red", "value": "#EE645D" },
-{
-  "id": "gray-200",
-   "value": "#333B40",
-   "name": "Gray-200"
-   }, {
-  "id": "gray-300",
-   "value": "#4F5559",
-   "name": "Gray-300"
-   }, {
-  "id": "gray-500",
-   "value": "#697980",
-   "name": "Gray-500"
-   }, {
-  "id": "gray-600",
-   "value": "#829199",
-   "name": "Gray-600"
-   }, {
-  "id": "gray-700",
-   "value": "#ADB0B3",
-   "name": "Gray-600"
-   }, {
-  "id": "gray-800",
-   "value": "#D2D6D9",
-   "name": "Gray-800"
-   }, {
-  "id": "gray-900",
-   "value": "#E1E4E6",
-   "name": "Gray-900"
-   }, {
-  "id": "gray-1000",
-   "value": "#F2F6F7",
-   "name": "Gray-1000"
-   }
+    {
+      "name": "Blue",
+      "id": "blue",
+      "value": "#001dff",
+      "comment": "Our primary color"
+    },
+    {
+      "name": "White",
+      "id": "white",
+      "value": "#ffffff"
+    },
+    {
+      "name": "Green",
+      "id": "green",
+      "value": "#52d0af"
+    },
+    {
+      "name": "Teal",
+      "id": "teal",
+      "value": "#0091ab"
+    }
   ]
 }

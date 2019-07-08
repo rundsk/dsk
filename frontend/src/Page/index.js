@@ -78,7 +78,7 @@ function Page(props) {
     let rightSideTabs = [];
 
     docs = props.docs.filter(d => {
-      if (d.title.toLowerCase() === "componentdemo") {
+      if (d.title.toLowerCase() === "playground") {
         componentDemo = d;
         return false;
       }
