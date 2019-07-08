@@ -48,10 +48,10 @@ function Doc(props) {
     img: props => <Image {...props} />,
     a: props => <Link {...props} />,
     pre: props => <CodeBlock {...props} />,
-    h1: props => <Heading level="alpha" {...props} docTitle={docTitle} />,
-    h2: props => <Heading level="beta"  {...props} docTitle={docTitle} />,
-    h3: props => <Heading level="gamma" {...props} docTitle={docTitle} />,
-    h4: props => <Heading level="delta" {...props} docTitle={docTitle} />,
+    h1: props => <Heading {...props} level="alpha" docTitle={docTitle} isJumptarget={true} />,
+    h2: props => <Heading {...props} level="beta"  docTitle={docTitle} isJumptarget={true} />,
+    h3: props => <Heading {...props} level="gamma" docTitle={docTitle} isJumptarget={true} />,
+    h4: props => <Heading {...props} level="delta" docTitle={docTitle} isJumptarget={true} />,
   };
 
   const orphans = [

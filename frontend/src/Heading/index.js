@@ -11,7 +11,7 @@ import './Heading.css';
 
 // props.children[0] has the textContent.
 function Heading(props) {
-  if (props.nojump) {
+  if (!props.isJumptarget) {
     return <div className={`heading heading--${props.level}`}>{props.children[0]}</div>
   }
 
