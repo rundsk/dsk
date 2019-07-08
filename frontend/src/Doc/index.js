@@ -35,7 +35,7 @@ function Doc(props) {
 
   const transforms = {
     AnnotatedImage: props => <AnnotatedImage {...props} />,
-    Banner: props => { return <Banner {...props} />},
+    Banner: props => <Banner {...props} />,
     CodeBlock: props => <CodeBlock {...props} />,
     ColorSpecimen: props => <ColorSpecimen {...props} />,
     ComponentDemo: props => <ComponentDemo {...props} />,
@@ -45,13 +45,14 @@ function Doc(props) {
     FigmaEmbed: props => <FigmaEmbed {...props} />,
     TypographySpecimen: props => <TypographySpecimen {...props} />,
     Warning: props => <Banner type="warning" {...props} />,
-    img: props => <Image {...props} />,
+
     a: props => <Link {...props} />,
-    pre: props => <CodeBlock {...props} />,
     h1: props => <Heading {...props} level="alpha" docTitle={docTitle} isJumptarget={true} />,
     h2: props => <Heading {...props} level="beta"  docTitle={docTitle} isJumptarget={true} />,
     h3: props => <Heading {...props} level="gamma" docTitle={docTitle} isJumptarget={true} />,
     h4: props => <Heading {...props} level="delta" docTitle={docTitle} isJumptarget={true} />,
+    img: props => <Image {...props} />,
+    pre: props => <CodeBlock {...props} />,
   };
 
   const orphans = [
