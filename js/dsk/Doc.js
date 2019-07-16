@@ -4,7 +4,6 @@
  */
 
 export default class DocTransformer {
-
   // Constructor.
   //
   // Available options are:
@@ -30,7 +29,9 @@ export default class DocTransformer {
     // HTML is parsed.
     this.transforms = {};
 
-    let key, keys = Object.keys(transforms);
+    let key;
+    let keys = Object.keys(transforms);
+
     let n = keys.length;
     while (n--) {
       key = keys[n];
@@ -64,7 +65,7 @@ export default class DocTransformer {
       }
     });
 
-    console.log(`Document compilation with ${children.length} node/s took ${performance.now() - start}ms`)
+    console.log(`Document compilation with ${children.length} node/s took ${performance.now() - start}ms`);
     return children;
   }
 
@@ -155,5 +156,5 @@ export default class DocTransformer {
 }
 
 export function transform(html, transforms = {}, orphans = [], options = {}) {
-  return (new DocTransformer(html, transforms, orphans, options)).compile();
+  return new DocTransformer(html, transforms, orphans, options).compile();
 }

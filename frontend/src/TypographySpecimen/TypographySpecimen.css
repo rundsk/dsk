@@ -20,9 +20,9 @@
   display: grid;
   width: 100%;
   grid-template-areas:
-    "name demo"
-    "spec demo"
-    "comment demo";
+    'name demo'
+    'spec demo'
+    'comment demo';
   grid-template-columns: calc(var(--spacing-unit) * 24) 1fr;
   grid-column-gap: calc(var(--spacing-unit) * 5);
   grid-template-rows: auto auto 1fr;

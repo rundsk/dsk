@@ -3,17 +3,17 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React, { useState, useEffect } from "react";
-import "./SourceView.css";
-import { Client } from "@atelierdisko/dsk";
-import CodeBlock from "../CodeBlock";
+import React, { useState, useEffect } from 'react';
+import './SourceView.css';
+import { Client } from '@atelierdisko/dsk';
+import CodeBlock from '../CodeBlock';
 
 function SourceView(props) {
   const [source, setSource] = useState(null);
 
   useEffect(() => {
-    if (props.url === "hello") {
-      Client.hello().then(data => {
+    if (props.url === 'hello') {
+      Client.hello().then((data) => {
         setSource(data);
       });
       return;
@@ -23,7 +23,7 @@ function SourceView(props) {
 
   function getSource() {
     if (props.url !== undefined) {
-      Client.get(props.url).then(data => {
+      Client.get(props.url).then((data) => {
         setSource(data);
       });
     }
@@ -31,7 +31,7 @@ function SourceView(props) {
 
   let title = `API Response for /api/v2/tree/${props.url}`;
 
-  if (props.url === "hello") {
+  if (props.url === 'hello') {
     title = `API Response for /api/v2/hello`;
   }
 

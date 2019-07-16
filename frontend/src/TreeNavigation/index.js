@@ -3,28 +3,28 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React, { useState, useEffect } from "react";
-import { useGlobal } from "reactn";
+import React, { useState, useEffect } from 'react';
+import { useGlobal } from 'reactn';
 
-import { Client } from "@atelierdisko/dsk";
-import { Tree } from "@atelierdisko/dsk";
-import { BaseLink, withRoute } from "react-router5";
+import { Client } from '@atelierdisko/dsk';
+import { Tree } from '@atelierdisko/dsk';
+import { BaseLink, withRoute } from 'react-router5';
 
-import "./TreeNavigation.css";
+import './TreeNavigation.css';
 
 function TreeNavigation(props) {
-  const [filterTerm, setFilterTerm] = useGlobal("filterTerm");
+  const [filterTerm, setFilterTerm] = useGlobal('filterTerm');
   const [filteredTree, setFilteredTree] = useState(null);
   const [filterIsFocused, setFilterIsFocused] = useState(false);
 
   const filterInputRef = React.createRef();
 
-  const shortcutHandler = event => {
-    if (event.key === "Escape") {
+  const shortcutHandler = (event) => {
+    if (event.key === 'Escape') {
       blurFilter();
     }
 
-    if (event.key === "f" && !filterIsFocused) {
+    if (event.key === 'f' && !filterIsFocused) {
       event.preventDefault();
       focusFilter();
     }
@@ -32,21 +32,21 @@ function TreeNavigation(props) {
 
   // We do this so we can type "s" in the filter, even though it is
   // the global shortcut to focus search
-  const localShortcutHandler = event => {
-    if (event.key === "s" && filterIsFocused) {
+  const localShortcutHandler = (event) => {
+    if (event.key === 's' && filterIsFocused) {
       event.stopPropagation();
     }
   };
 
   useEffect(() => {
-    document.addEventListener("keydown", shortcutHandler);
-    filterInputRef.current.addEventListener("keydown", localShortcutHandler);
+    document.addEventListener('keydown', shortcutHandler);
+    filterInputRef.current.addEventListener('keydown', localShortcutHandler);
 
     return () => {
-      document.removeEventListener("keydown", shortcutHandler);
+      document.removeEventListener('keydown', shortcutHandler);
 
       if (filterInputRef.current) {
-        filterInputRef.current.removeEventListener("keydown", localShortcutHandler);
+        filterInputRef.current.removeEventListener('keydown', localShortcutHandler);
       }
     };
   });
@@ -68,7 +68,7 @@ function TreeNavigation(props) {
     }
 
     const filter = Client.filter(filterTerm);
-    filter.then(data => {
+    filter.then((data) => {
       if (!data.nodes) {
         // Filtering yielded no results, we save us iterating over the
         // existing tree, as we already know what it should look like.
@@ -91,9 +91,9 @@ function TreeNavigation(props) {
       return;
     }
 
-    let classList = ["node"];
+    let classList = ['node'];
     if (activeNode && node.url === activeNode.url) {
-      classList.push("node--is-active");
+      classList.push('node--is-active');
     }
 
     // let content = [<a href={`/tree/${node.url}`} key={"link"}>{node.title}</a>]
@@ -102,19 +102,19 @@ function TreeNavigation(props) {
         router={props.router}
         routeName="node"
         routeParams={{ node: `${node.url}` }}
-        key={"link"}
+        key={'link'}
         onClick={props.hideMobileSidebar}
       >
         {node.title}
-      </BaseLink>
+      </BaseLink>,
     ];
 
-    let children = node.children.map(c => {
+    let children = node.children.map((c) => {
       return renderList(c, activeNode);
     });
 
     if (children) {
-      content.push(<ul key={"children"}>{children}</ul>);
+      content.push(<ul key={'children'}>{children}</ul>);
     }
 
     return <li key={node.title}>{content}</li>;

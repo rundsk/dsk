@@ -3,8 +3,8 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React, { useState, useEffect } from "react";
-import "./FigmaEmbed.css";
+import React, { useState, useEffect } from 'react';
+import './FigmaEmbed.css';
 
 // FIXME: This component should not use my persolan
 // access token
@@ -21,27 +21,27 @@ function FigmaEmbed(props) {
   function getDocument() {
     if (props.document && props.token) {
       const myHeaders = new Headers();
-      myHeaders.append("X-Figma-Token", props.token);
+      myHeaders.append('X-Figma-Token', props.token);
 
-      setLoadingMessage("Loading document …");
+      setLoadingMessage('Loading document …');
 
       fetch(`https://api.figma.com/v1/files/${props.document}`, {
-        method: "GET",
-        headers: myHeaders
+        method: 'GET',
+        headers: myHeaders,
       })
-        .then(response => {
+        .then((response) => {
           if (response.status === 200) {
             return response.json();
           } else {
-            setErrorMessage("Something went wrong.");
+            setErrorMessage('Something went wrong.');
           }
         })
-        .then(data => {
+        .then((data) => {
           findId(data);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
-          setErrorMessage("Something went wrong.");
+          setErrorMessage('Something went wrong.');
         });
 
       // fetch(`https://api.figma.com/v1/teams/669136806690498635/styles`, {
@@ -65,7 +65,7 @@ function FigmaEmbed(props) {
     let nameWeAreLookingFor = props.frame;
     let nodeId = undefined;
 
-    let filter = node => {
+    let filter = (node) => {
       if (node.name === nameWeAreLookingFor) {
         nodeId = node.id;
       } else {
@@ -78,7 +78,7 @@ function FigmaEmbed(props) {
     filter(data.document);
 
     if (nodeId === undefined) {
-      setErrorMessage("No frame with the specified title was found in your document.");
+      setErrorMessage('No frame with the specified title was found in your document.');
       return;
     }
 
@@ -90,25 +90,25 @@ function FigmaEmbed(props) {
       setLoadingMessage(`Loading image for “${props.frame}” …`);
 
       const myHeaders = new Headers();
-      myHeaders.append("X-Figma-Token", props.token);
+      myHeaders.append('X-Figma-Token', props.token);
       return fetch(`https://api.figma.com/v1/images/${props.document}?ids=${nodeId}`, {
-        method: "GET",
-        headers: myHeaders
+        method: 'GET',
+        headers: myHeaders,
       })
-        .then(response => {
+        .then((response) => {
           if (response.status === 200) {
             return response.json();
           } else {
-            setErrorMessage("Something went wrong.");
+            setErrorMessage('Something went wrong.');
           }
         })
-        .then(data => {
+        .then((data) => {
           setImage(data.images[nodeId]);
           setFrameId(nodeId);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
-          setErrorMessage("Something went wrong.");
+          setErrorMessage('Something went wrong.');
         });
     }
   }
@@ -125,7 +125,7 @@ function FigmaEmbed(props) {
 
       <a
         className="figma-embed__via"
-        href={`https://www.figma.com/file/${props.document}${frameId ? `?node-id=${frameId}` : ""}`}
+        href={`https://www.figma.com/file/${props.document}${frameId ? `?node-id=${frameId}` : ''}`}
         target="_blank"
         rel="noopener noreferrer"
       >

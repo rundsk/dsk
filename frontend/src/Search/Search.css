@@ -113,7 +113,7 @@
 }
 
 .search-result::before {
-  content: "";
+  content: '';
   position: absolute;
   left: calc(var(--spacing-unit) * -3);
   top: calc(var(--spacing-unit) * 4);

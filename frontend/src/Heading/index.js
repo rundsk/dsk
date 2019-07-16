@@ -3,11 +3,11 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React from "react";
-import { slugify } from "../utils";
-import { withRoute } from "react-router5";
+import React from 'react';
+import { slugify } from '../utils';
+import { withRoute } from 'react-router5';
 
-import "./Heading.css";
+import './Heading.css';
 
 // props.children[0] has the textContent.
 function Heading(props) {
@@ -15,7 +15,7 @@ function Heading(props) {
     alpha: 1,
     beta: 2,
     gamma: 3,
-    delta: 4
+    delta: 4,
   };
   const Tag = `h${levels[props.level]}`;
 
@@ -25,19 +25,19 @@ function Heading(props) {
 
   let id = slugify(props.children[0]);
 
-  let handleClick = ev => {
+  let handleClick = (ev) => {
     ev.preventDefault();
 
     let currentRouterState = props.router.getState();
-    let currentNode = currentRouterState.params.node || "";
-    let t = slugify(props.docTitle) + "§" + id;
+    let currentNode = currentRouterState.params.node || '';
+    let t = slugify(props.docTitle) + '§' + id;
 
     props.router.navigate(
-      "node",
+      'node',
       {
         ...currentRouterState.params,
         node: currentNode,
-        t
+        t,
       },
       { replace: true }
     );

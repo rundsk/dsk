@@ -25,7 +25,7 @@
   display: inline-block;
   margin-right: 0.2em;
   margin-left: -1.1em;
-  content: "↓ ";
+  content: '↓ ';
   font-weight: 700;
   text-decoration: none;
   color: var(--color-gray-800);

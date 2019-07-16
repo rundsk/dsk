@@ -65,7 +65,6 @@
 
 /* --- Annotations --- */
 
-
 .component-demo__annotation-badge {
   cursor: default;
   display: inline-block;
@@ -81,7 +80,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  transition: all .2s;
+  transition: all 0.2s;
   font-variant-numeric: tabular-nums;
 }
 
@@ -93,7 +92,7 @@
 .component-demo__annotation-marker {
   position: absolute;
   transform: translate(-50%, -50%);
-  transition: all .3s;
+  transition: all 0.3s;
   z-index: 5;
 }
 
@@ -123,7 +122,7 @@
   margin-bottom: 0;
 }
 
-.component-demo__annotation .component-demo__annotation-badge  {
+.component-demo__annotation .component-demo__annotation-badge {
   margin-right: calc(var(--spacing-unit) * 1);
 }
 

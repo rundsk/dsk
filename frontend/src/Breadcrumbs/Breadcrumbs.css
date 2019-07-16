@@ -13,7 +13,7 @@
 
 .breadcrumbs__crumb:after {
   color: var(--color-gray-600);
-  content: " / ";
+  content: ' / ';
 }
 
 .breadcrumbs__crumb a {

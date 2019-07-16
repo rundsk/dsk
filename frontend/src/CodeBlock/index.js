@@ -3,9 +3,9 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React, { useState } from "react";
-import "./CodeBlock.css";
-import { copyTextToClipboard } from "../utils";
+import React, { useState } from 'react';
+import './CodeBlock.css';
+import { copyTextToClipboard } from '../utils';
 
 // TODO: If child is <code> unwrap and turn into string.
 // TODO: HTML-escape inner content, probably using
@@ -19,37 +19,41 @@ function CodeBlock(props) {
   // Sometimes a codeblock start with a empty line, because of the way
   // codeblocks have to be formated in Markdown. We consider this
   // undesirable and remove the first line, if it is empty.
-  if (React.Children.count(props.children) === 1 && typeof props.children[0] === "string" && props.children[0].charAt(0) === "\n") {
+  if (
+    React.Children.count(props.children) === 1 &&
+    typeof props.children[0] === 'string' &&
+    props.children[0].charAt(0) === '\n'
+  ) {
     content = props.children[0].substring(1);
   }
 
-  const [copyText, setCopyText] = useState("Copy");
+  const [copyText, setCopyText] = useState('Copy');
 
   function copyCode() {
-    setCopyText("Copied!");
+    setCopyText('Copied!');
     copyTextToClipboard(content);
 
     setTimeout(() => {
-      setCopyText("Copy");
+      setCopyText('Copy');
     }, 2000);
   }
 
   function escapeHtml(unsafe) {
     return unsafe
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 
   return (
     <div className="code-block">
-      {props.title &&
+      {props.title && (
         <div className="code-block__header">
           <div className="code-block__title">{props.title}</div>
         </div>
-      }
+      )}
       <div className="code-block__stage">
         <div className="code-block__copy" onClick={copyCode}>
           {copyText}

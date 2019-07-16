@@ -3,9 +3,9 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React, { useState, useEffect } from "react";
-import "./TypographySpecimen.css";
-import { Client } from "@atelierdisko/dsk";
+import React, { useState, useEffect } from 'react';
+import './TypographySpecimen.css';
+import { Client } from '@atelierdisko/dsk';
 
 function TypographySpecimen(props) {
   const [styles, setStyles] = useState([]);
@@ -13,38 +13,38 @@ function TypographySpecimen(props) {
   // https://forums.appleinsider.com/discussion/57707/a-better-font-sentence
   // https://www.answers.com/Q/What_are_some_examples_of_pangram_sentences_besides_The_quick_brown_fox_jumps_over_the_lazy_dog
   const sentences = [
-    "Jelly-like above the high wire, six quaking pachyderms kept the climax of the extravaganza in a dazzling state of flux.",
-    "Ebenezer unexpectedly bagged two tranquil aardvarks with his jiffy vacuum cleaner.",
-    "Six javelins thrown by the quick savages whizzed forty paces beyond the mark.",
-    "The explorer was frozen in his big kayak just after making queer discoveries.",
-    "The July sun caused a fragment of black pine wax to ooze on the velvet quilt.",
-    "The public was amazed to view the quickness and dexterity of the juggler.",
-    "While Suez sailors wax parquet decks, Afghan jews vomit jauntily abaft.",
-    "We quickly seized the black axle and just saved it from going past him.",
-    "Six big juicy steaks sizzled in a pan as five workmen left the quarry.",
-    "While making deep excavations we found some quaint bronze jewelry.",
-    "Jaded zombies acted quaintly but kept driving their oxen forward.",
-    "A mad boxer shot a quick, gloved jab to the jaw of his dizzy opponent.",
-    "The job requires extra pluck and zeal from every young wage earner.",
-    "A quart jar of oil mixed with zinc oxide makes a very bright paint.",
-    "Whenever the black fox jumped the squirrel gazed suspiciously.",
-    "We promptly judged antique ivory buckles for the next prize.",
-    "How razorback-jumping frogs can level six piqued gymnasts!",
-    "Crazy Fredericka bought many very exquisite opal jewels.",
-    "Sixty zippers were quickly picked from the woven jute bag.",
-    "Cozy lummox gives smart squid who asks for job pen.",
-    "Adjusting quiver and bow, Zompyc killed the fox.",
-    "My faxed joke won a pager in the cable TV quiz show.",
-    "The quick brown fox jumps over the lazy dog.",
-    "Pack my box with five dozen liquor jugs.",
-    "Jackdaws love my big sphinx of quartz.",
-    "The five boxing wizards jump quickly.",
-    "How quickly daft jumping zebras vex.",
-    "Bright vixens jump; dozy fowl quack.",
-    "Quick wafting zephyrs vex bold Jim.",
-    "Quick zephyrs blow, vexing daft Jim.",
-    "Sphinx of black quartz, judge my vow.",
-    "Waltz, nymph, for quick jigs vex Bud."
+    'Jelly-like above the high wire, six quaking pachyderms kept the climax of the extravaganza in a dazzling state of flux.',
+    'Ebenezer unexpectedly bagged two tranquil aardvarks with his jiffy vacuum cleaner.',
+    'Six javelins thrown by the quick savages whizzed forty paces beyond the mark.',
+    'The explorer was frozen in his big kayak just after making queer discoveries.',
+    'The July sun caused a fragment of black pine wax to ooze on the velvet quilt.',
+    'The public was amazed to view the quickness and dexterity of the juggler.',
+    'While Suez sailors wax parquet decks, Afghan jews vomit jauntily abaft.',
+    'We quickly seized the black axle and just saved it from going past him.',
+    'Six big juicy steaks sizzled in a pan as five workmen left the quarry.',
+    'While making deep excavations we found some quaint bronze jewelry.',
+    'Jaded zombies acted quaintly but kept driving their oxen forward.',
+    'A mad boxer shot a quick, gloved jab to the jaw of his dizzy opponent.',
+    'The job requires extra pluck and zeal from every young wage earner.',
+    'A quart jar of oil mixed with zinc oxide makes a very bright paint.',
+    'Whenever the black fox jumped the squirrel gazed suspiciously.',
+    'We promptly judged antique ivory buckles for the next prize.',
+    'How razorback-jumping frogs can level six piqued gymnasts!',
+    'Crazy Fredericka bought many very exquisite opal jewels.',
+    'Sixty zippers were quickly picked from the woven jute bag.',
+    'Cozy lummox gives smart squid who asks for job pen.',
+    'Adjusting quiver and bow, Zompyc killed the fox.',
+    'My faxed joke won a pager in the cable TV quiz show.',
+    'The quick brown fox jumps over the lazy dog.',
+    'Pack my box with five dozen liquor jugs.',
+    'Jackdaws love my big sphinx of quartz.',
+    'The five boxing wizards jump quickly.',
+    'How quickly daft jumping zebras vex.',
+    'Bright vixens jump; dozy fowl quack.',
+    'Quick wafting zephyrs vex bold Jim.',
+    'Quick zephyrs blow, vexing daft Jim.',
+    'Sphinx of black quartz, judge my vow.',
+    'Waltz, nymph, for quick jigs vex Bud.',
   ];
 
   // const sentencesShort = [
@@ -89,7 +89,7 @@ function TypographySpecimen(props) {
   function getData() {
     if (props.src) {
       // FIXME: This should obviously be derived from the src attribute
-      Client.get(`/Basics/Typography${props.src.slice(1)}`).then(data => {
+      Client.get(`/Basics/Typography${props.src.slice(1)}`).then((data) => {
         setStyles(data.styles);
       });
     }
@@ -97,24 +97,24 @@ function TypographySpecimen(props) {
 
   return (
     <div className="typography-specimen">
-      {styles.map(s => {
+      {styles.map((s) => {
         if (s.extends) {
-          let extending = styles.find(style => style.id === s.extends);
+          let extending = styles.find((style) => style.id === s.extends);
 
           s = {
             ...extending,
-            ...s
+            ...s,
           };
         }
 
         let style = {
           fontFamily: s.fontFamily,
-          fontSize: s.fontSize + "px",
+          fontSize: s.fontSize + 'px',
           fontWeight: s.fontWeight,
-          lineHeight: s.lineHeight + "px",
-          letterSpacing: s.letterSpacing + "px",
+          lineHeight: s.lineHeight + 'px',
+          letterSpacing: s.letterSpacing + 'px',
           color: s.color,
-          textTransform: s.textTransform
+          textTransform: s.textTransform,
         };
 
         let demoSentence = props.sentence;
@@ -132,15 +132,15 @@ function TypographySpecimen(props) {
               {demoSentence}
             </div>
             <div className="type-sample__spec">
-              {s.fontFamily ? s.fontFamily : ""}
-              {s.fontWeight ? " (" + s.fontWeight + ")" : ""}
+              {s.fontFamily ? s.fontFamily : ''}
+              {s.fontWeight ? ' (' + s.fontWeight + ')' : ''}
               <br />
-              {s.fontSize ? " " + s.fontSize + "px" : ""}
-              {s.lineHeight ? " / " + s.lineHeight + "px" : ""}
-              {s.letterSpacing ? " / " + s.letterSpacing + "px" : ""}
+              {s.fontSize ? ' ' + s.fontSize + 'px' : ''}
+              {s.lineHeight ? ' / ' + s.lineHeight + 'px' : ''}
+              {s.letterSpacing ? ' / ' + s.letterSpacing + 'px' : ''}
               <br />
-              {s.color ? s.color : ""}
-              {s.extends ? " Extends " + s.extends : ""}
+              {s.color ? s.color : ''}
+              {s.extends ? ' Extends ' + s.extends : ''}
             </div>
           </div>
         );

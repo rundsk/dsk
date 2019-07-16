@@ -3,9 +3,9 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React from "react";
-import "./Tabs.css";
-import { slugify } from "../utils";
+import React from 'react';
+import './Tabs.css';
+import { slugify } from '../utils';
 
 export function Tab() {
   return <div></div>;
@@ -17,23 +17,23 @@ function TabBar(props) {
   tabs =
     props.tabs &&
     props.tabs.map((t, i) => {
-      let classes = ["tab-bar__tab"];
+      let classes = ['tab-bar__tab'];
 
       // If no active tab is set, the first on is considered active
       if (props.activeTab === undefined && i === 0) {
-        classes.push("tab-bar__tab--is-active");
+        classes.push('tab-bar__tab--is-active');
       }
 
       if (props.activeTab === slugify(t)) {
-        classes.push("tab-bar__tab--is-active");
+        classes.push('tab-bar__tab--is-active');
       }
 
       return (
         <a
           href={`#${t}`}
-          className={classes.join(" ")}
+          className={classes.join(' ')}
           key={t}
-          onClick={ev => {
+          onClick={(ev) => {
             ev.preventDefault();
             props.onSetActiveTab(t);
           }}
@@ -48,18 +48,18 @@ function TabBar(props) {
   rightSideTabs =
     props.rightSideTabs &&
     props.rightSideTabs.map((t, i) => {
-      let classes = ["tab-bar__tab"];
+      let classes = ['tab-bar__tab'];
 
       if (props.activeTab === slugify(t)) {
-        classes.push("tab-bar__tab--is-active");
+        classes.push('tab-bar__tab--is-active');
       }
 
       return (
         <a
           href={`#${t}`}
-          className={classes.join(" ")}
+          className={classes.join(' ')}
           key={t}
-          onClick={ev => {
+          onClick={(ev) => {
             ev.preventDefault();
             props.onSetActiveTab(t);
           }}

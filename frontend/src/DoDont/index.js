@@ -3,9 +3,9 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React from "react";
-import "./DoDont.css";
-import ComponentDemo from "../ComponentDemo";
+import React from 'react';
+import './DoDont.css';
+import ComponentDemo from '../ComponentDemo';
 
 export function Do(props) {
   return (

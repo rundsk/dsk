@@ -3,12 +3,12 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React, { useState, useEffect } from "react";
-import { BaseLink, withRoute } from "react-router5";
-import { Client } from "@atelierdisko/dsk";
-import "./NodeList.css";
-import Tags from "../Tags";
-import Heading from "../Heading";
+import React, { useState, useEffect } from 'react';
+import { BaseLink, withRoute } from 'react-router5';
+import { Client } from '@atelierdisko/dsk';
+import './NodeList.css';
+import Tags from '../Tags';
+import Heading from '../Heading';
 
 function Node(props) {
   const [data, setData] = useState(null);
@@ -19,7 +19,7 @@ function Node(props) {
 
   function getData() {
     if (props.url) {
-      Client.get(props.url).then(data => {
+      Client.get(props.url).then((data) => {
         setData(data);
       });
     }
@@ -48,7 +48,7 @@ function NodeList(props) {
   return (
     <>
       {props.nodes &&
-        props.nodes.map(n => {
+        props.nodes.map((n) => {
           return <Node {...n} key={n.url} router={props.router} />;
         })}
     </>

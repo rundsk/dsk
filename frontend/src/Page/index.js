@@ -3,21 +3,21 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React, { useEffect, useRef } from "react";
-import { BaseLink, withRoute } from "react-router5";
-import { slugify } from "../utils";
+import React, { useEffect, useRef } from 'react';
+import { BaseLink, withRoute } from 'react-router5';
+import { slugify } from '../utils';
 
-import "./Page.css";
+import './Page.css';
 
-import Breadcrumbs from "../Breadcrumbs";
-import Tags from "../Tags";
-import ComponentDemo from "../ComponentDemo";
-import Doc from "../Doc";
-import Meta from "../Meta";
-import TabBar from "../TabBar";
-import AssetList from "../AssetList";
-import SourceView from "../SourceView";
-import NodeList from "../NodeList";
+import Breadcrumbs from '../Breadcrumbs';
+import Tags from '../Tags';
+import ComponentDemo from '../ComponentDemo';
+import Doc from '../Doc';
+import Meta from '../Meta';
+import TabBar from '../TabBar';
+import AssetList from '../AssetList';
+import SourceView from '../SourceView';
+import NodeList from '../NodeList';
 
 function Page(props) {
   const docRef = useRef(null);
@@ -27,7 +27,7 @@ function Page(props) {
     window.scrollTo({
       top: 0,
       left: 0,
-      behavior: "auto"
+      behavior: 'auto',
     });
   }, [props.url]);
 
@@ -35,7 +35,7 @@ function Page(props) {
   useEffect(() => {
     let title = `${props.designSystemTitle}: ${props.title}`;
 
-    if (props.url === "") {
+    if (props.url === '') {
       title = `${props.designSystemTitle}`;
     }
 
@@ -51,10 +51,10 @@ function Page(props) {
     // size. There is probably a better way to do this.
     setTimeout(() => {
       let currentRouterState = props.router.getState();
-      let h = currentRouterState.params.t || "";
-      h = h.split("§")[1] || "";
-      if (h !== "" && docRef.current) {
-        docRef.current.querySelector(`[heading-id='${h}']`).scrollIntoView({ behavior: "smooth", block: "start" });
+      let h = currentRouterState.params.t || '';
+      h = h.split('§')[1] || '';
+      if (h !== '' && docRef.current) {
+        docRef.current.querySelector(`[heading-id='${h}']`).scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }, 300);
   });
@@ -64,9 +64,9 @@ function Page(props) {
     let currentRouterState = props.router.getState();
 
     // On root there is no node parameter
-    let currentNode = currentRouterState.params.node || "";
+    let currentNode = currentRouterState.params.node || '';
     t = slugify(t);
-    props.router.navigate("node", { ...currentRouterState.params, node: currentNode, t: t }, { replace: true });
+    props.router.navigate('node', { ...currentRouterState.params, node: currentNode, t: t }, { replace: true });
   }
 
   let componentDemo;
@@ -77,8 +77,8 @@ function Page(props) {
     let docs = [];
     let rightSideTabs = [];
 
-    docs = props.docs.filter(d => {
-      if (d.title.toLowerCase() === "playground") {
+    docs = props.docs.filter((d) => {
+      if (d.title.toLowerCase() === 'playground') {
         componentDemo = d;
         return false;
       }
@@ -92,48 +92,48 @@ function Page(props) {
     // also want to show an overview.
     const showOverview =
       props.children.length > 0 &&
-      docs.filter(doc => {
-        return doc.title.toLowerCase() !== "authors";
+      docs.filter((doc) => {
+        return doc.title.toLowerCase() !== 'authors';
       }).length === 0;
 
     if (showOverview) {
       docs.push({
-        title: "Overview",
-        content: <NodeList nodes={props.children} />
+        title: 'Overview',
+        content: <NodeList nodes={props.children} />,
       });
     }
 
     if (props.downloads && props.downloads.length > 0) {
       rightSideTabs.push({
-        title: "Assets",
-        content: <AssetList assets={props.downloads} />
+        title: 'Assets',
+        content: <AssetList assets={props.downloads} />,
       });
     }
 
-    if (props.url === "") {
+    if (props.url === '') {
       // On the root node we also want to display the DSK version
       rightSideTabs.push({
-        title: "Source",
+        title: 'Source',
         content: (
           <>
-            <SourceView url={"hello"} />
+            <SourceView url={'hello'} />
             <SourceView url={props.url} />
           </>
-        )
+        ),
       });
     } else {
       rightSideTabs.push({
-        title: "Source",
-        content: <SourceView url={props.url} />
+        title: 'Source',
+        content: <SourceView url={props.url} />,
       });
     }
 
     // We find the active tab by removing the section part from the prop
     let activeTab = props.activeTab;
     if (activeTab) {
-      activeTab = activeTab.split("§")[0];
+      activeTab = activeTab.split('§')[0];
     }
-    if (activeTab === "") {
+    if (activeTab === '') {
       activeTab = undefined;
     }
 
@@ -141,12 +141,12 @@ function Page(props) {
       <TabBar
         onSetActiveTab={navigateToActiveTab}
         activeTab={activeTab}
-        tabs={docs.map(d => d.title)}
-        rightSideTabs={rightSideTabs.map(d => d.title)}
+        tabs={docs.map((d) => d.title)}
+        rightSideTabs={rightSideTabs.map((d) => d.title)}
       />
     );
 
-    let activeDoc = [...docs, ...rightSideTabs].find(d => {
+    let activeDoc = [...docs, ...rightSideTabs].find((d) => {
       return slugify(d.title) === activeTab;
     });
 
@@ -168,12 +168,12 @@ function Page(props) {
   let authors;
 
   if (props.authors && props.authors.length > 0) {
-    let title = props.authors.length > 1 ? "Authors" : "Author";
+    let title = props.authors.length > 1 ? 'Authors' : 'Author';
     let authorLinks = props.authors.map((a, i) => {
       return (
         <span className="page__author" key={a.email}>
-          {i > 0 ? ", " : ""}
-          <a href={`mailto:${a.email}`}>{a.name !== "" ? a.name : a.email}</a>
+          {i > 0 ? ', ' : ''}
+          <a href={`mailto:${a.email}`}>{a.name !== '' ? a.name : a.email}</a>
         </span>
       );
     });
@@ -186,13 +186,13 @@ function Page(props) {
 
   if (props.custom) {
     // Turn props.custom object into array to be able to iterate with map()
-    custom = Object.entries(props.custom).map(data => {
+    custom = Object.entries(props.custom).map((data) => {
       let title = data[0];
 
       // Display value list or single value
       let value;
       if (Array.isArray(data[1])) {
-        value = data[1].join(", ");
+        value = data[1].join(', ');
       } else {
         value = data[1];
       }

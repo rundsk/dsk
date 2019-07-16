@@ -14,7 +14,7 @@ export default class Client {
   static messages() {
     let protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     let host = window.location.hostname;
-    let port = (window.location.port ? `:${window.location.port}` : '');
+    let port = window.location.port ? `:${window.location.port}` : '';
 
     return new WebSocket(`${protocol}://${host}${port}/api/v2/messages`);
   }

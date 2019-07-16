@@ -101,7 +101,7 @@
 }
 
 .tree-navigation__tree ul ul li::before {
-  content: "—";
+  content: '—';
   visibility: visible;
 }
 
@@ -111,7 +111,7 @@
 }
 
 .tree-navigation__tree ul ul li a::before {
-  content: "→";
+  content: '→';
   visibility: hidden;
 }
 

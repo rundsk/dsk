@@ -59,7 +59,7 @@ export default class Tree {
     let tree = new Tree(JSON.parse(JSON.stringify(this.root))); // deep clone
 
     if (selectedURLs) {
-      let check = n => selectedURLs.includes(n.url) || n.children.some(check);
+      let check = (n) => selectedURLs.includes(n.url) || n.children.some(check);
 
       let select = (n) => {
         if (selectedURLs.includes(n.url)) {

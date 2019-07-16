@@ -3,28 +3,28 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React from "react";
-import "./Banner.css";
+import React from 'react';
+import './Banner.css';
 
 function Banner(props) {
-  let classes = ["banner"];
+  let classes = ['banner'];
 
   switch (props.type) {
-    case "warning":
-      classes.push("banner--warning");
+    case 'warning':
+      classes.push('banner--warning');
       break;
-    case "error":
-      classes.push("banner--error");
+    case 'error':
+      classes.push('banner--error');
       break;
-    case "important":
-      classes.push("banner--important");
+    case 'important':
+      classes.push('banner--important');
       break;
     default:
       break;
   }
 
   return (
-    <div className={classes.join(" ")}>
+    <div className={classes.join(' ')}>
       {props.title && <div className="banner__header">{props.title}</div>}
       <div className="banner__content">{props.children}</div>
     </div>

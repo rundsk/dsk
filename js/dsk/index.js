@@ -8,4 +8,3 @@ import { transform } from './Doc.js';
 import Tree from './Tree.js';
 
 export { Client, transform, Tree };
-

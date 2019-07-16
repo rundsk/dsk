@@ -147,7 +147,7 @@
 }
 
 .page__node-nav--prev::before {
-  content: "←";
+  content: '←';
   left: calc(var(--spacing-unit) * -1);
   text-align: right;
 }
@@ -162,7 +162,7 @@
 }
 
 .page__node-nav--next::after {
-  content: "→";
+  content: '→';
   right: calc(var(--spacing-unit) * -1);
 }
 

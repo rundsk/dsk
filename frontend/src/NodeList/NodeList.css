@@ -68,7 +68,7 @@ h2.node-list__node-title {
 
 .node-list__cta::after {
   display: inline-block;
-  content: "›";
+  content: '›';
   text-decoration: none;
   margin-left: 0.3em;
 }
