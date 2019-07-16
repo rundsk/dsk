@@ -8,9 +8,6 @@ export default class DocTransformer {
   // Constructor.
   //
   // Available options are:
-  // - `modifier`, a function that receives the current node and prods and must
-  //   return an object with the possibly modified `node` and `props` properties.
-  //
   // - `noTransform`, a function that receives the type and props and
   //   must return a DOM node. The function is called whenever there is no
   //   transformation found for a node.
@@ -138,12 +135,6 @@ export default class DocTransformer {
     // If the node has no key, we create a random one.
     if (!props.key) {
       props.key = Math.random();
-    }
-
-    if (this.options.modifier) {
-      let modification = this.options.modifier(node, props);
-      node = modification.node;
-      props = modification.props;
     }
 
     // If there is no transform for the node, ignore it but still do include the
