@@ -58,6 +58,7 @@ function Doc(props) {
   const orphans = ['p > img', 'p > video'];
 
   let transformedContent = transform(props.htmlContent, transforms, orphans, {
+    isPreformatted: type => type === 'pre' || type === 'CodeBlock'.toLowerCase(),
     noTransform: (type, props) => {
       // This gets called on HTML elements that do not need
       // to be transformed to special React components.

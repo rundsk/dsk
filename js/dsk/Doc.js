@@ -7,6 +7,15 @@ export default class DocTransformer {
   // Constructor.
   //
   // Available options are:
+  // - `isPreformatted`, a function that receives the node type and must return
+  //   a boolen which indicates that the children of the node are preformatted.
+  //
+  //   ```
+  //   new Doc(..., ..., ..., {
+  //     isPreformatted: type => type === 'pre'
+  //   });
+  //   ```
+  //
   // - `noTransform`, a function that receives the type and props and
   //   must return a DOM node. The function is called whenever there is no
   //   transformation found for a node.
@@ -16,7 +25,7 @@ export default class DocTransformer {
   //   nodes in props.children.
   //
   //   ```
-  //   new Doc(..., ..., {
+  //   new Doc(..., ..., ..., {
   //     noTransform: function(type, props) {
   //       return React.createElement(type, props, props.children);
   //     }
@@ -41,7 +50,8 @@ export default class DocTransformer {
     this.orphans = orphans;
 
     let defaults = {
-      noTransform: null,
+      isPreformatted: type => type === 'pre',
+      noTransform: (/* type, props */) => null,
     };
     this.options = Object.assign({}, defaults, options);
   }
@@ -124,16 +134,22 @@ export default class DocTransformer {
       props[node.attributes[i].name] = node.attributes[i].value;
     }
 
-    node.childNodes.forEach(c => {
-      let t = this.transform(c);
-      if (t) {
-        props.children.push(t);
-      }
-    });
+    // Do not descend and transform children, when the node is considered to
+    // have preformatted contents.
+    if (this.options.isPreformatted(type)) {
+      props.children = node.innerHTML;
+    } else {
+      node.childNodes.forEach((c) => {
+        let t = this.transform(c);
+        if (t) {
+          props.children.push(t);
+        }
+      });
 
-    // If the node has no children, insert the text content as children.
-    if (!props.children.length) {
-      props.children = node.textContent || undefined;
+      // If the node has no children, insert the text content as children.
+      if (!props.children.length) {
+        props.children = node.textContent || undefined;
+      }
     }
 
     // If the node has no key, we create a random one.

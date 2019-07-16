@@ -38,15 +38,6 @@ function CodeBlock(props) {
     }, 2000);
   }
 
-  function escapeHtml(unsafe) {
-    return unsafe
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  }
-
   return (
     <div className="code-block">
       {props.title && (
