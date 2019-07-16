@@ -94,7 +94,7 @@ export default class Client {
           }
         }
       });
-      xhr.addEventListener('error', (ev) => {
+      xhr.addEventListener('error', ev => {
         reject(new Error(`API request for '${url}' failed :-S: ${ev}`));
       });
       xhr.open('GET', url);

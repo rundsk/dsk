@@ -34,25 +34,25 @@ function Doc(props) {
   let docTitle = props.title;
 
   const transforms = {
-    Banner: (props) => <Banner {...props} />,
-    CodeBlock: (props) => <CodeBlock {...props} />,
-    Color: (props) => <ColorCard {...props} />,
-    ColorGroup: (props) => <ColorGroup {...props} />,
-    Playground: (props) => <ComponentDemo {...props} />,
-    Do: (props) => <Do {...props} />,
-    DoDontGroup: (props) => <DoDont {...props} />,
-    Dont: (props) => <Dont {...props} />,
-    FigmaEmbed: (props) => <FigmaEmbed {...props} />,
-    TypographySpecimen: (props) => <TypographySpecimen {...props} />,
-    Warning: (props) => <Banner type="warning" {...props} />,
+    Banner: props => <Banner {...props} />,
+    CodeBlock: props => <CodeBlock {...props} />,
+    Color: props => <ColorCard {...props} />,
+    ColorGroup: props => <ColorGroup {...props} />,
+    Playground: props => <ComponentDemo {...props} />,
+    Do: props => <Do {...props} />,
+    DoDontGroup: props => <DoDont {...props} />,
+    Dont: props => <Dont {...props} />,
+    FigmaEmbed: props => <FigmaEmbed {...props} />,
+    TypographySpecimen: props => <TypographySpecimen {...props} />,
+    Warning: props => <Banner type="warning" {...props} />,
 
-    a: (props) => <Link {...props} />,
-    h1: (props) => <Heading {...props} level="alpha" docTitle={docTitle} isJumptarget={true} />,
-    h2: (props) => <Heading {...props} level="beta" docTitle={docTitle} isJumptarget={true} />,
-    h3: (props) => <Heading {...props} level="gamma" docTitle={docTitle} isJumptarget={true} />,
-    h4: (props) => <Heading {...props} level="delta" docTitle={docTitle} isJumptarget={true} />,
-    img: (props) => <Image {...props} />,
-    pre: (props) => <CodeBlock {...props} />,
+    a: props => <Link {...props} />,
+    h1: props => <Heading {...props} level="alpha" docTitle={docTitle} isJumptarget={true} />,
+    h2: props => <Heading {...props} level="beta" docTitle={docTitle} isJumptarget={true} />,
+    h3: props => <Heading {...props} level="gamma" docTitle={docTitle} isJumptarget={true} />,
+    h4: props => <Heading {...props} level="delta" docTitle={docTitle} isJumptarget={true} />,
+    img: props => <Image {...props} />,
+    pre: props => <CodeBlock {...props} />,
   };
 
   const orphans = ['p > img', 'p > video'];

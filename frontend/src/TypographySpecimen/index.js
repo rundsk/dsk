@@ -89,7 +89,7 @@ function TypographySpecimen(props) {
   function getData() {
     if (props.src) {
       // FIXME: This should obviously be derived from the src attribute
-      Client.get(`/Basics/Typography${props.src.slice(1)}`).then((data) => {
+      Client.get(`/Basics/Typography${props.src.slice(1)}`).then(data => {
         setStyles(data.styles);
       });
     }
@@ -97,9 +97,9 @@ function TypographySpecimen(props) {
 
   return (
     <div className="typography-specimen">
-      {styles.map((s) => {
+      {styles.map(s => {
         if (s.extends) {
-          let extending = styles.find((style) => style.id === s.extends);
+          let extending = styles.find(style => style.id === s.extends);
 
           s = {
             ...extending,

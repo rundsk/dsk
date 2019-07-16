@@ -13,7 +13,7 @@ function SourceView(props) {
 
   useEffect(() => {
     if (props.url === 'hello') {
-      Client.hello().then((data) => {
+      Client.hello().then(data => {
         setSource(data);
       });
       return;
@@ -23,7 +23,7 @@ function SourceView(props) {
 
   function getSource() {
     if (props.url !== undefined) {
-      Client.get(props.url).then((data) => {
+      Client.get(props.url).then(data => {
         setSource(data);
       });
     }

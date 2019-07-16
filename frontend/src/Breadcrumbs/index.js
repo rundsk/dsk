@@ -11,7 +11,7 @@ function Breadcrumbs(props) {
   let crumbs;
 
   if (props.crumbs) {
-    crumbs = props.crumbs.map((c) => {
+    crumbs = props.crumbs.map(c => {
       return (
         <li className="breadcrumbs__crumb" key={c.title}>
           <BaseLink router={props.router} routeName="node" routeParams={{ node: `${c.url}` }} key={'link'}>

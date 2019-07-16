@@ -58,7 +58,7 @@ export default class DocTransformer {
     this.clean(body);
 
     let children = [];
-    body.childNodes.forEach((c) => {
+    body.childNodes.forEach(c => {
       let t = this.transform(c);
       if (t) {
         children.push(t);
@@ -81,7 +81,7 @@ export default class DocTransformer {
 
     let orphans = root.querySelectorAll(this.orphans.join(','));
 
-    orphans.forEach((c) => {
+    orphans.forEach(c => {
       console.log(`Unwrapping ${c} from ${c.parentNode}`);
 
       // > If the given child is a reference to an existing node in the
@@ -97,7 +97,7 @@ export default class DocTransformer {
   // Removes any elements, that may have become empty due to other
   // processing steps.
   clean(root) {
-    root.querySelectorAll('p:empty').forEach((el) => {
+    root.querySelectorAll('p:empty').forEach(el => {
       el.remove();
     });
   }
@@ -124,7 +124,7 @@ export default class DocTransformer {
       props[node.attributes[i].name] = node.attributes[i].value;
     }
 
-    node.childNodes.forEach((c) => {
+    node.childNodes.forEach(c => {
       let t = this.transform(c);
       if (t) {
         props.children.push(t);

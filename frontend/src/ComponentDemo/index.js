@@ -22,7 +22,7 @@ function ComponentDemo(props) {
       // their size. The information about their width and height
       // is added by the dsk back-end.
       let imgs = node.querySelectorAll('img');
-      imgs.forEach((img) => {
+      imgs.forEach(img => {
         let src = img.getAttribute('src');
 
         if (src.includes('@2x')) {

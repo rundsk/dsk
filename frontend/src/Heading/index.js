@@ -25,7 +25,7 @@ function Heading(props) {
 
   let id = slugify(props.children[0]);
 
-  let handleClick = (ev) => {
+  let handleClick = ev => {
     ev.preventDefault();
 
     let currentRouterState = props.router.getState();

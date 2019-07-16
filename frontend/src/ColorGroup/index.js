@@ -13,7 +13,7 @@ function ColorGroup(props) {
   function getData() {
     if (props.src) {
       // FIXME: This should obviously be derived from the src attribute
-      Client.get(`/Basics/Colors${props.src.slice(1)}`).then((data) => {
+      Client.get(`/Basics/Colors${props.src.slice(1)}`).then(data => {
         setColors(data.colors);
       });
     }
@@ -28,7 +28,7 @@ function ColorGroup(props) {
 
     // We have to make sure the compact property is set on all
     // children as well
-    content = React.Children.map(props.children, (c) => {
+    content = React.Children.map(props.children, c => {
       return React.cloneElement(c, { compact: true });
     });
   }
@@ -36,7 +36,7 @@ function ColorGroup(props) {
   // If the src prop is set, the information about the colors should
   // be loaded via the API
   if (props.src) {
-    content = colors.map((c) => {
+    content = colors.map(c => {
       return (
         <ColorCard key={c.value} color={c.value} comment={c.comment} id={c.id} compact={props.compact}>
           {c.name}

@@ -29,17 +29,17 @@ function FigmaEmbed(props) {
         method: 'GET',
         headers: myHeaders,
       })
-        .then((response) => {
+        .then(response => {
           if (response.status === 200) {
             return response.json();
           } else {
             setErrorMessage('Something went wrong.');
           }
         })
-        .then((data) => {
+        .then(data => {
           findId(data);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
           setErrorMessage('Something went wrong.');
         });
@@ -65,7 +65,7 @@ function FigmaEmbed(props) {
     let nameWeAreLookingFor = props.frame;
     let nodeId = undefined;
 
-    let filter = (node) => {
+    let filter = node => {
       if (node.name === nameWeAreLookingFor) {
         nodeId = node.id;
       } else {
@@ -95,18 +95,18 @@ function FigmaEmbed(props) {
         method: 'GET',
         headers: myHeaders,
       })
-        .then((response) => {
+        .then(response => {
           if (response.status === 200) {
             return response.json();
           } else {
             setErrorMessage('Something went wrong.');
           }
         })
-        .then((data) => {
+        .then(data => {
           setImage(data.images[nodeId]);
           setFrameId(nodeId);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
           setErrorMessage('Something went wrong.');
         });

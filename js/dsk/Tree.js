@@ -15,7 +15,7 @@ export default class Tree {
 
   // One way sync: updates the data from backend source.
   sync() {
-    return Client.tree().then((data) => {
+    return Client.tree().then(data => {
       this.root = data.root;
     });
   }
@@ -25,7 +25,7 @@ export default class Tree {
   flatten(node = null) {
     let list = [];
 
-    ((node || this.root).children || []).each((child) => {
+    ((node || this.root).children || []).each(child => {
       list.push(child);
       list = list.concat(this.flatten(child));
     });
@@ -59,9 +59,9 @@ export default class Tree {
     let tree = new Tree(JSON.parse(JSON.stringify(this.root))); // deep clone
 
     if (selectedURLs) {
-      let check = (n) => selectedURLs.includes(n.url) || n.children.some(check);
+      let check = n => selectedURLs.includes(n.url) || n.children.some(check);
 
-      let select = (n) => {
+      let select = n => {
         if (selectedURLs.includes(n.url)) {
           return true;
         }

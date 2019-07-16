@@ -19,7 +19,7 @@ function Node(props) {
 
   function getData() {
     if (props.url) {
-      Client.get(props.url).then((data) => {
+      Client.get(props.url).then(data => {
         setData(data);
       });
     }
@@ -48,7 +48,7 @@ function NodeList(props) {
   return (
     <>
       {props.nodes &&
-        props.nodes.map((n) => {
+        props.nodes.map(n => {
           return <Node {...n} key={n.url} router={props.router} />;
         })}
     </>

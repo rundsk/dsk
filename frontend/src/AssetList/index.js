@@ -14,14 +14,14 @@ function AssetList(props) {
   return (
     <>
       {props.assets &&
-        props.assets.map((a) => {
+        props.assets.map(a => {
           return (
             <div className="asset-list__asset" key={a.name}>
               <Heading level="beta" isJumptarget={true}>
                 {a.name}
               </Heading>
 
-              {imageFileTypes.some((v) => {
+              {imageFileTypes.some(v => {
                 return a.url.indexOf(v) >= 0;
               }) && <img className="asset-list__asset-image" src={`/api/v1/tree/${a.url}`} alt={a.name} />}
 

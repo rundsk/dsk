@@ -19,7 +19,7 @@ function TreeNavigation(props) {
 
   const filterInputRef = React.createRef();
 
-  const shortcutHandler = (event) => {
+  const shortcutHandler = event => {
     if (event.key === 'Escape') {
       blurFilter();
     }
@@ -32,7 +32,7 @@ function TreeNavigation(props) {
 
   // We do this so we can type "s" in the filter, even though it is
   // the global shortcut to focus search
-  const localShortcutHandler = (event) => {
+  const localShortcutHandler = event => {
     if (event.key === 's' && filterIsFocused) {
       event.stopPropagation();
     }
@@ -68,7 +68,7 @@ function TreeNavigation(props) {
     }
 
     const filter = Client.filter(filterTerm);
-    filter.then((data) => {
+    filter.then(data => {
       if (!data.nodes) {
         // Filtering yielded no results, we save us iterating over the
         // existing tree, as we already know what it should look like.
@@ -109,7 +109,7 @@ function TreeNavigation(props) {
       </BaseLink>,
     ];
 
-    let children = node.children.map((c) => {
+    let children = node.children.map(c => {
       return renderList(c, activeNode);
     });
 

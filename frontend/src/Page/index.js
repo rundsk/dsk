@@ -77,7 +77,7 @@ function Page(props) {
     let docs = [];
     let rightSideTabs = [];
 
-    docs = props.docs.filter((d) => {
+    docs = props.docs.filter(d => {
       if (d.title.toLowerCase() === 'playground') {
         componentDemo = d;
         return false;
@@ -92,7 +92,7 @@ function Page(props) {
     // also want to show an overview.
     const showOverview =
       props.children.length > 0 &&
-      docs.filter((doc) => {
+      docs.filter(doc => {
         return doc.title.toLowerCase() !== 'authors';
       }).length === 0;
 
@@ -141,12 +141,12 @@ function Page(props) {
       <TabBar
         onSetActiveTab={navigateToActiveTab}
         activeTab={activeTab}
-        tabs={docs.map((d) => d.title)}
-        rightSideTabs={rightSideTabs.map((d) => d.title)}
+        tabs={docs.map(d => d.title)}
+        rightSideTabs={rightSideTabs.map(d => d.title)}
       />
     );
 
-    let activeDoc = [...docs, ...rightSideTabs].find((d) => {
+    let activeDoc = [...docs, ...rightSideTabs].find(d => {
       return slugify(d.title) === activeTab;
     });
 
@@ -186,7 +186,7 @@ function Page(props) {
 
   if (props.custom) {
     // Turn props.custom object into array to be able to iterate with map()
-    custom = Object.entries(props.custom).map((data) => {
+    custom = Object.entries(props.custom).map(data => {
       let title = data[0];
 
       // Display value list or single value
