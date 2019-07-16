@@ -39,7 +39,10 @@ export default class DocTransformer {
 
     this.orphans = orphans;
 
-    this.options = options;
+    let defaults = {
+      noTransform: null,
+    };
+    this.options = Object.assign({}, defaults, options);
   }
 
   compile() {
