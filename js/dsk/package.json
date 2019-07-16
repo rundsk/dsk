@@ -15,12 +15,15 @@
     "SDK"
   ],
   "contributors": [
-     "Marius Wilms <marius@atelierdisko.de>",
-     "Christoph Labacher <christoph@atelierdisko.de>"
+    "Marius Wilms <marius@atelierdisko.de>",
+    "Christoph Labacher <christoph@atelierdisko.de>"
   ],
   "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/atelierdisko/dsk/issues"
   },
-  "homepage": "https://github.com/atelierdisko/dsk/js/dsk"
+  "homepage": "https://github.com/atelierdisko/dsk/js/dsk",
+  "devDependencies": {
+    "prettier": "^1.18.2"
+  }
 }
