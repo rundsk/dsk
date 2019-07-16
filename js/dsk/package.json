@@ -16,11 +16,11 @@
   ],
   "contributors": [
      "Marius Wilms <marius@atelierdisko.de>",
-     "Christop Labacher <christoph@atelierdisko.de>"
+     "Christoph Labacher <christoph@atelierdisko.de>"
   ],
   "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/atelierdisko/dsk/issues"
   },
-  "homepage": "https://github.com/atelierdisko/dsk/frontend/js/dsk"
+  "homepage": "https://github.com/atelierdisko/dsk/js/dsk"
 }
