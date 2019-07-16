@@ -23,4 +23,4 @@ node_modules: yarn.lock
 
 .PHONY: prettier
 prettier: node_modules
-	node_modules/.bin/prettier --print-width=120 --write src/**/*.{css,js}
+	node_modules/.bin/prettier --write src/**/*.{css,js}

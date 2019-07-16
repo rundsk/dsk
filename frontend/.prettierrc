@@ -1,0 +1,6 @@
+{
+  "singleQuote": false,
+  "arrowParens": "always",
+  "printWidth": 120,
+  "bracketSpacing": true,
+}

@@ -8,4 +8,4 @@ node_modules: yarn.lock
 
 .PHONY: prettier
 prettier: node_modules
-	node_modules/.bin/prettier --print-width=120 --single-quote --write **/*.js
+	node_modules/.bin/prettier --write **/*.js
