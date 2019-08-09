@@ -106,7 +106,7 @@ function App(props) {
           <TreeNavigation tree={tree} hideMobileSidebar={() => {setMobileSidebarIsActive(false)}} />
         </div>
         <div className="app__shoutout">
-          Powered by <a href="https://github.com/atelierdisko/dsk">DSK</a> · <a href="mailto:designsystems@atelierdisko.de">Get in Touch</a>
+          Powered by <a href="https://github.com/atelierdisko/dsk">DSK</a> · <a href="mailto:thankyou@rundsk.com">Get in Touch</a>
         </div>
       </div>
       <main className="app__main" ref={refToMain} tabIndex="0">
