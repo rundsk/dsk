@@ -36,6 +36,8 @@ file to a directory inside the _design definitions tree_.
 
 4. You should now see DSK starting in a small terminal window, [open the web application in your browser](http://localhost:8080), to browse through the design system.
 
+Too quick? Follow the alternative [Step by Step guide](https://rundsk.com/tree/Getting-Started/Step-by-Step) to get started.
+
 ## The Design Definitions Tree
 
 One of the fundamental ideas in DSK was to use the filesystem as the interface for content creation. This enables _direct manipulation_ of the content and frees us from tedious administration interfaces.
