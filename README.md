@@ -72,18 +72,6 @@ example
 
 Read more about [the design definitions tree](https://rundsk.com/tree/The-Design-Definitions-Tree), and how to add meta data, assets and authors.
 
-## Building your own Frontend 
-
-Architecture-wise DSK is split into a backend and frontend. The backend implemented 
-in Go takes care of understanding the definitions tree and provides a REST API for the
-frontend, usually implemented in JavaScript. 
-
-Frontends are pluggable and the decoupled design allows you to create individually branded frontends. 
-These are entirely free in their implementation, they must adhere to only a minimal set
-of rules.
-
-Read more about [building your own custom frontend](https://rundsk.com/tree/Architecture/Building-your-own-Frontend) and how to use with DSK.
-
 ## Help
 
 Just want to say "Thank you"? [Send us a mail](mailto:thankyou@rundsk.com).
