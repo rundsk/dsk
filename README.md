@@ -74,8 +74,6 @@ Read more about [the design definitions tree](https://rundsk.com/tree/The-Design
 
 ## Help
 
-Just want to say "Thank you"? [Send us a mail](mailto:thankyou@rundsk.com).
-
 Combining great new ideas with experience will help us create the best possible
 features for DSK. Likewise, talking through a bug with a team member will help
 us ensure the best possible fix. We're striving to maintain a lean, clean core
@@ -88,6 +86,8 @@ _bug_.
 Have an idea for a new killer feature? [Open an issue in our
 tracker](https://github.com/atelierdisko/dsk/issues/new) and use the
 _enhancement_ label.
+
+Just want to say "Thank you"? [Send us a mail](mailto:thankyou@rundsk.com).
 
 ## Copyright & License
 
