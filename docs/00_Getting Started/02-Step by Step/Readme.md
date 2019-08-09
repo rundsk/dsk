@@ -35,7 +35,7 @@ Create two new folders in the “my-design-system” folder and call them “Sty
 ## 🗒 – Step 7: Add documentation  
 Your aspects are still empty, so let’s add some documentation!
 
-For documentation we use a special format, which is called “Markdown”. Every Markdown file has to end with `.md`. In Markdown you write text as usual, but you can use special symbols in your text. For example, a line that starts with `#` is treated as a headline, and words that are surrounded by two asterisks (`*`) are shown in bold (`you use it **like this**`). This way, you can style your document, without having to use a programming language. You can find a list of which symbols you can use to format your text [here](https://guides.github.com/features/mastering-markdown/). On [www.markdownguide.org/getting-started](https://www.markdownguide.org/getting-started/) you can read more about Markdown.
+For documentation we use a special format, which is called “Markdown”. Every Markdown file has to end with `.md`. In Markdown you write text as usual, but you can use special symbols in your text. For example, a line that starts with `#` is treated as a headline, and words that are surrounded by two asterisks (`*`) are shown in bold (`you use it **like this**`). This way, you can style your document, without having to use a programming language. You can find a list of which symbols you can use to format your text [here](https://guides.github.com/features/mastering-markdown/). On [www.markdownguide.org/getting-started](https://www.markdownguide.org/getting-started/) you can read more about Markdown in general.
 
 This is an example of what a document might look like:
 
@@ -51,7 +51,7 @@ This is a list of the colors we use:
 * White: `#FFFFFF`
 ```
 
-You can create a Markdown file like this: Go to your programs folder and search for “TextEdit”. Click the “Format” menu and select “Make Plain Text”.  Save the file and give it a name ending with `.md`, e.g.. “documentation.md”. Place it in the “Styles” folder that you created. Voilà, you created your first _document_!
+You can create a Markdown file like this: Go to your programs folder and search for “TextEdit”. Click the “Format” menu and select “Make Plain Text”.  Save the file and give it a name ending with `.md`, e.g. “documentation.md”. Place it in the “Styles” folder that you created. Voilà, you created your first _document_!
 
 Open your browser and refresh the page – you will see the content of your document. If you add more than one Markdown file in the same folder, they will be displayed as tabs on the page.
 
@@ -62,7 +62,7 @@ You can add as many aspects as you like and even nest them. Open the “Componen
 You can add files of any type to DSK. If you want to add a quick drawing or a Sketch file or even a video of a prototype to one of your aspects, place any file you like into the "01-Text Field" folder and refresh your browser. You will see an “Assets” tab that displays the file and some information about it. You can also download the file there. Any file that is not directly used by DSK is called an _asset_.
 
 ## 🏷 — Step 10: Add meta data 
-Additionally to documenting you design aspects, you can also add some meta data about them. This makes it easier to organize your Design System and improves search results.
+Additionally to documenting your design aspects, you can also add some meta data about them. This makes it easier to organize your Design System and improves search results.
 
 Meta information are saved as “YAML”-files, which are easily readable and understandable. This video gives a great introduction into how to write a YAML: [YAML: syntax basics - YouTube](https://www.youtube.com/watch?v=W3tQPk8DNbk).
 
