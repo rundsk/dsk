@@ -8,33 +8,6 @@ import './ComponentDemo.css';
 
 function ComponentDemo(props) {
   const [highlightedAnnotation, setHighlightedAnnotation] = useState(null);
-  const ref = React.createRef();
-
-  useEffect(() => {
-    setRetinaImageSize();
-  });
-
-  function setRetinaImageSize() {
-    if (ref.current) {
-      let node = ref.current;
-
-      // Find retina images and set them to display at half
-      // their size. The information about their width and height
-      // is added by the dsk back-end.
-      let imgs = node.querySelectorAll('img');
-      imgs.forEach(img => {
-        let src = img.getAttribute('src');
-
-        if (src.includes('@2x')) {
-          let width = img.getAttribute('width');
-          let height = img.getAttribute('height');
-
-          img.style.maxWidth = `${width / 2}px`;
-          img.style.maxHeight = `${height / 2}px`;
-        }
-      });
-    }
-  }
 
   let classes = ['component-demo'];
 
@@ -134,8 +107,8 @@ function ComponentDemo(props) {
 
   return (
     <div className={classes.join(' ')}>
-      <div className="component-demo__stage" ref={ref} style={style}>
-        <div className="component-demo__stage-content">{props.children}</div>
+      <div className="component-demo__stage" style={style}>
+      <div className="component-demo__stage-content">{props.children}</div>
         <div className="component-demo__annotation-marker-stage">{annotationMarkers}</div>
       </div>
       {annotations.length > 0 && <div className="component-demo__annotations">{annotations}</div>}

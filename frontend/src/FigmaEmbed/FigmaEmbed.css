@@ -17,6 +17,7 @@
 
 .figma-embed img {
   display: block;
+  max-width: 100%;
 }
 
 .figma-embed__loader {

@@ -238,7 +238,7 @@ function Page(props) {
       {componentDemo && (
         <div className="page__component-demo">
           <ComponentDemo>
-            <Doc content={componentDemo.html} />
+            <Doc htmlContent={componentDemo.html} />
           </ComponentDemo>
         </div>
       )}

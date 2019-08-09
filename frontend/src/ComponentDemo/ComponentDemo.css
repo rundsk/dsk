@@ -40,11 +40,6 @@
   background-image: none;
 }
 
-.component-demo__stage img {
-  width: 100%;
-  height: auto;
-}
-
 /* Make sure everything is centered, even when it’s in a doc */
 .component-demo__stage .doc {
   width: 100%;

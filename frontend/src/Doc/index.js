@@ -55,7 +55,7 @@ function Doc(props) {
     pre: props => <CodeBlock {...props} />,
   };
 
-  const orphans = ['p > img', 'p > video'];
+  const orphans = ["p > img", "p > video", "p > figmaembed", "p > typographyspecimen"];
 
   let transformedContent = transform(props.htmlContent, transforms, orphans, {
     isPreformatted: type => type === 'pre' || type === 'CodeBlock'.toLowerCase(),
