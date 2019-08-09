@@ -1,6 +1,7 @@
 # Help
 
-Just want to say "Thank you"? [Send us a mail](mailto:thankyou@rundsk.com).
+Just want to say "Thank you" or need help getting started? [Send us a
+mail](mailto:thankyou@rundsk.com).
 
 ## Bugs and Enhancements
 

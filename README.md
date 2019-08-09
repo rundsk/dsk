@@ -87,7 +87,7 @@ Have an idea for a new killer feature? [Open an issue in our
 tracker](https://github.com/atelierdisko/dsk/issues/new) and use the
 _enhancement_ label.
 
-Just want to say "Thank you"? [Send us a mail](mailto:thankyou@rundsk.com).
+Just want to say "Thank you" or need help getting started? [Send us a mail](mailto:thankyou@rundsk.com).
 
 ## Copyright & License
 
