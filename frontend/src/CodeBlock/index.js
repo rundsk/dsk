@@ -12,7 +12,7 @@ import { copyTextToClipboard } from '../utils';
 // https://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
 // https://www.npmjs.com/package/escape-html
 function CodeBlock(props) {
-  let content = props.children;
+  let content = {__html: props.children};
 
   // console.log(content)
 
@@ -24,7 +24,7 @@ function CodeBlock(props) {
     typeof props.children[0] === 'string' &&
     props.children[0].charAt(0) === '\n'
   ) {
-    content = props.children[0].substring(1);
+    content = {__html: props.children[0].substring(1)};
   }
 
   const [copyText, setCopyText] = useState('Copy');
@@ -50,7 +50,7 @@ function CodeBlock(props) {
           {copyText}
         </div>
         <pre className="code-block__code">
-          <code className="code-block__code-content">{content}</code>
+          <code className="code-block__code-content" dangerouslySetInnerHTML={content} />
         </pre>
       </div>
     </div>
