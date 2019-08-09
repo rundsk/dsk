@@ -1,3 +1,5 @@
+<Banner title="Experimental Feature" type="warning">This is a feature of the redesigned frontend and will be introduced with version 1.2, which is currently in alpha.</Banner>
+
 You can configure the frontend by placing a file called `frontendConfiguration.json` in the root of your Design Definiftions Tree.
 
 This configuration file could look like this:

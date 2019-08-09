@@ -1,3 +1,5 @@
+<Banner title="Experimental Feature" type="warning">Documentation Components are a new feature and will be introduced with version 1.2, which is currently in alpha.</Banner>
+
 # Examples
 
 <CodeBlock title="colors.json">{code from colors.json}</CodeBlock>

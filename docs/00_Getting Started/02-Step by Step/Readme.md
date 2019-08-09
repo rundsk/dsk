@@ -32,7 +32,7 @@ The site looks pretty empty right now – that’s because there is nothing to d
 ## 📁 — Step 6: Create your first aspect  
 Create two new folders in the “my-design-system” folder and call them “Styles” and “Components” (or any other name you like – with DSK the structure and content of you documentation is entirely up to you). If you now open your browser and refresh the page you will see your first _aspects_ in the tree navigation on the left side!
 
-## 🗒 – Step 7: Add documentation  
+## 🗒 — Step 7: Add documentation  
 Your aspects are still empty, so let’s add some documentation!
 
 For documentation we use a special format, which is called “Markdown”. Every Markdown file has to end with `.md`. In Markdown you write text as usual, but you can use special symbols in your text. For example, a line that starts with `#` is treated as a headline, and words that are surrounded by two asterisks (`*`) are shown in bold (`you use it **like this**`). This way, you can style your document, without having to use a programming language. You can find a list of which symbols you can use to format your text [here](https://guides.github.com/features/mastering-markdown/). On [www.markdownguide.org/getting-started](https://www.markdownguide.org/getting-started/) you can read more about Markdown in general.

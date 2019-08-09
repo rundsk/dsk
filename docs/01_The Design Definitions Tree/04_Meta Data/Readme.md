@@ -40,4 +40,4 @@ Possible meta data keys are:
 * `tags`: An array of tags to group related aspects together.
 * `version`: A freeform version string.
 
-You can also add custom meta data, under the key `custom`. These items will be displayed alongside the general meta data of the aspect.
+Starting with DSK version 1.2 (currently in alpha) you can also add custom meta data, under the key `custom`. These items will be displayed alongside the general meta data of the aspect.
