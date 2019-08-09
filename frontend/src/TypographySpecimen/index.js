@@ -89,7 +89,7 @@ function TypographySpecimen(props) {
   function getData() {
     if (props.src) {
       // FIXME: This should obviously be derived from the src attribute
-      Client.get(`/Basics/Typography${props.src.slice(1)}`).then(data => {
+      Client.get(`/The-Frontend/Documentation-Components/Typography-Specimen${props.src.slice(1)}`).then(data => {
         setStyles(data.styles);
       });
     }

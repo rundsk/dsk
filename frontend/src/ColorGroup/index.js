@@ -13,7 +13,7 @@ function ColorGroup(props) {
   function getData() {
     if (props.src) {
       // FIXME: This should obviously be derived from the src attribute
-      Client.get(`/Basics/Colors${props.src.slice(1)}`).then(data => {
+      Client.get(`/The-Frontend/Documentation-Components/Color-Card-and-Color-Group${props.src.slice(1)}`).then(data => {
         setColors(data.colors);
       });
     }
