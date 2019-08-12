@@ -23,7 +23,13 @@ function Heading(props) {
     return <Tag className={`heading heading--${props.level}`}>{props.children}</Tag>;
   }
 
-  let id = slugify(props.children[0]);
+  let id;
+
+  if (typeof props.children === "object") {
+    id = slugify(props.children[0]);
+  } else {
+    id = slugify(props.children);
+  }
 
   let handleClick = ev => {
     ev.preventDefault();

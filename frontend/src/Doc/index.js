@@ -3,7 +3,7 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { transform } from '@atelierdisko/dsk';
 import { withRoute } from 'react-router5';
 
@@ -26,6 +26,14 @@ function Doc(props) {
   if (!props.htmlContent) {
     return <div className="doc">{props.children}</div>;
   }
+
+  useEffect(() => {
+    // window.requestAnimationFrame should ensure that the rendering
+    // has finished
+    window.requestAnimationFrame(() => {
+      if (props.onRender) { props.onRender() };
+    });
+  });
 
   // Allow to use this inside the `transforms` constant. We cannot use
   // `props.title` there as that refers to the component/element that is being

@@ -42,22 +42,16 @@ function Page(props) {
     document.title = title;
   }, [props.title, props.designSystemTitle]);
 
-  // Check if there is a section marker in the URL, and if their is
-  // scroll there
-  useEffect(() => {
-    // FIXME: We delay this, because we hope by the time
-    // we call the function all the children have loaded
-    // their async content and have reached their final
-    // size. There is probably a better way to do this.
-    setTimeout(() => {
-      let currentRouterState = props.router.getState();
-      let h = currentRouterState.params.t || '';
-      h = h.split('§')[1] || '';
-      if (h !== '' && docRef.current) {
-        docRef.current.querySelector(`[heading-id='${h}']`).scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 300);
-  });
+  function docDidRender() {
+    // Check if there is a section marker in the URL, and if their is
+    // scroll there
+    let currentRouterState = props.router.getState();
+    let h = currentRouterState.params.t || '';
+    h = h.split('§')[1] || '';
+    if (h !== '' && docRef.current) {
+      docRef.current.querySelector(`[heading-id='${h}']`).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
 
   function navigateToActiveTab(t) {
     // We handle tab selection completly via the URL
@@ -157,11 +151,11 @@ function Page(props) {
     // If this is not an overview/asset/source doc, its content comes
     // from the API in the form of HTML, rather than React elements
     if (activeDoc && activeDoc.html) {
-      doc = <Doc title={activeDoc.title} htmlContent={activeDoc.html} />;
+      doc = <Doc title={activeDoc.title} htmlContent={activeDoc.html} onRender={docDidRender} />;
     }
 
     if (activeDoc && activeDoc.content) {
-      doc = <Doc title={activeDoc.title}>{activeDoc.content}</Doc>;
+      doc = <Doc title={activeDoc.title} onRender={docDidRender}>{activeDoc.content}</Doc>;
     }
   }
 

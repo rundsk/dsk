@@ -17,7 +17,7 @@ function AssetList(props) {
         props.assets.map(a => {
           return (
             <div className="asset-list__asset" key={a.name}>
-              <Heading level="beta" isJumptarget={true}>
+              <Heading level="beta" isJumptarget={true} docTitle="Assets">
                 {a.name}
               </Heading>
 
