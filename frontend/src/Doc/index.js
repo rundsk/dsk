@@ -35,7 +35,7 @@ function Doc(props) {
 
   const transforms = {
     Banner: props => <Banner {...props} />,
-    CodeBlock: props => <CodeBlock {...props} />,
+    CodeBlock: props => <CodeBlock escaped {...props} />,
     Color: props => <ColorCard {...props} />,
     ColorGroup: props => <ColorGroup {...props} />,
     Playground: props => <ComponentDemo {...props} />,
@@ -52,7 +52,7 @@ function Doc(props) {
     h3: props => <Heading {...props} level="gamma" docTitle={docTitle} isJumptarget={true} />,
     h4: props => <Heading {...props} level="delta" docTitle={docTitle} isJumptarget={true} />,
     img: props => <Image {...props} />,
-    pre: props => <CodeBlock {...props} />,
+    pre: props => <CodeBlock escaped {...props} />,
   };
 
   const orphans = ["p > img", "p > video", "p > figmaembed", "p > typographyspecimen"];

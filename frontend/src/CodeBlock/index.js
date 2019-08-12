@@ -8,13 +8,8 @@ import './CodeBlock.css';
 import { copyTextToClipboard } from '../utils';
 
 // TODO: If child is <code> unwrap and turn into string.
-// TODO: HTML-escape inner content, probably using
-// https://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
-// https://www.npmjs.com/package/escape-html
 function CodeBlock(props) {
-  let content = {__html: props.children};
-
-  // console.log(content)
+  let content = props.children;
 
   // Sometimes a codeblock start with a empty line, because of the way
   // codeblocks have to be formated in Markdown. We consider this
@@ -24,7 +19,7 @@ function CodeBlock(props) {
     typeof props.children[0] === 'string' &&
     props.children[0].charAt(0) === '\n'
   ) {
-    content = {__html: props.children[0].substring(1)};
+    content = props.children[0].substring(1);
   }
 
   const [copyText, setCopyText] = useState('Copy');
@@ -36,6 +31,13 @@ function CodeBlock(props) {
     setTimeout(() => {
       setCopyText('Copy');
     }, 2000);
+  }
+
+  let code;
+  if (props.escaped) {
+    code = <code className="code-block__code-content" dangerouslySetInnerHTML={{__html: content}} />;
+  } else {
+    code = <code className="code-block__code-content">{content}</code>
   }
 
   return (
@@ -50,7 +52,7 @@ function CodeBlock(props) {
           {copyText}
         </div>
         <pre className="code-block__code">
-          <code className="code-block__code-content" dangerouslySetInnerHTML={content} />
+          {code}
         </pre>
       </div>
     </div>
