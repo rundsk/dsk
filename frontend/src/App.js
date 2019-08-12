@@ -23,73 +23,84 @@ function App(props) {
   const [tree, setTree] = useState(null);
   const [title, setTitle] = useState("Design System");
   const [node, setNode] = useState(null);
-  const [currentNode, setCurrentNode] = useState(null);
   const [error, setError] = useState(null);
   const [frontendConfig, setFrontendConfig] = useGlobal("frontendConfig");
   const [mobileSidebarIsActive, setMobileSidebarIsActive] = useState(false);
 
-  function getNode() {
-    let nodeToGet = currentNode;
-    if (currentNode === null) { return; }
-    if (currentNode === "root") { nodeToGet = "" };
-
-    Client.get(nodeToGet).then((data) => {
-      try {
-        setNode(data);
-        setError(null)
-      } catch(e) {
-        console.log(`Failed to set node: ${e}`);
-      }
-    }).catch((err)  =>{
-      console.log(`Failed to retrieve data for node '${nodeToGet}': ${err}`);
-      setError("Design aspect not found.");
-    });
-  }
-
+  // Establish WebSocket connection, once. By appending to the sync messages
+  // (state), we're triggering a full re-render of the App. We're intentionally
+  // not displaying notifications, as we consider them to be too intrusive.
   useEffect(() => {
-    Client.tree().then((data) => {
-      try {
-        setTree(data.root);
-        setTitle(data.root.title)
-      } catch(e) {
-        console.log(`Failed to set tree or title for node: ${e}`);
-      }
-    }).catch((err) => {
-      console.log(`Failed to retrieve tree data: ${err}`);
-    });
+    let socket = Client.messages();
+    console.log('Connected to messages WebSocket', socket);
 
-    Client.get("/frontendConfig.json").then((data) => {
-      setFrontendConfig(data);
-    }).catch((err) => {
-      console.log(`Failed to retrieve frontend configuration: ${err}`);
+    socket.addEventListener('message', (ev) => {
+      let m = JSON.parse(ev.data);
+
+      if (m.type === 'tree-synced') {
+        loadTree();
+        loadNode();
+      }
     });
   }, []);
 
-  useEffect(() => {
+  function loadTree() {
+    Client.tree().then((data) => {
+      setTree(data.root);
+      setTitle(data.root.title);
+    }).catch((err) => {
+      console.log(`Failed to retrieve tree data: ${err}`);
+    });
+  }
+
+  function loadNode() {
+    let url = null;
+
     switch (props.route.name) {
-      case "home":
-        setCurrentNode("root");
+      case 'home':
+        url = '';
         break;
-      case "node":
-        setCurrentNode(props.route.params.node);
+      case 'node':
+        url = props.route.params.node;
         break;
       default:
         break;
     }
-  }, [props.route]);
+    if (!url === null) {
+      return;
+    }
 
-  useEffect(() => {
-    getNode();
-  }, [currentNode]);
-
-  let content;
-  if (node) {
-    let activeTab = props.route.params.t || undefined;
-    content = <Page {...node} activeTab={activeTab} designSystemTitle={title} />;
+    Client.get(url).then((data) => {
+      setNode(data);
+      setError(null);
+    }).catch((err)  =>{
+      console.log(`Failed to retrieve data for node '${url}': ${err}`);
+      setError("Design aspect not found.");
+    });
   }
 
+  // Use frontend configuration to configure app, if present.
+  useEffect(() => {
+    Client.get("/frontendConfig.json").then((data) => {
+      setFrontendConfig(data);
+    }).catch((err) => {
+      console.log(`No frontend configuration found.`);
+    });
+  }, []);
+
+  // Initialize tree navigation and title.
+  useEffect(loadTree, []);
+
+  // Load the current node being displayed. Reload it whenever the route changes.
+  useEffect(() => {
+    loadNode();
+  }, [props.route]);
+
+  let content;
   if (error) {
     content = <ErrorPage>{error}</ErrorPage>;
+  } else if (node) {
+    content = <Page {...node} activeTab={props.route.params.t || undefined} designSystemTitle={title} />;
   }
 
   let refToMain = React.createRef();
