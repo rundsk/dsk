@@ -1,1 +1,0 @@
-This is only used until Documentation Components can parse their src attribute. Until then the frontend just looks in this exact folder.
