@@ -1,6 +1,6 @@
 # Assets
 
-You can add files of any filetype to an aspect in DSK – just place them in the directory. These files are treated as assets, and are displayed for download in the “Assets”-tab of the aspect (check out the [“Assets”-tab on this page](/The-Design-Definitions-Tree/Assets?t=assets)!). You can also link to those assets in your [documents](/The-Design-Definitions-Tree/Documents), and embed some, like images and videos.
+You can add files of any filetype to an aspect in DSK – just place them in the directory. These files are treated as assets, and are displayed for download in the “Assets”-tab of the aspect (check out the [“Assets”-tab on this page](?t=assets)!). You can also link to those assets in your [documents](/The-Design-Definitions-Tree/Documents), and embed some, like images and videos.
 
 ## Embedding images and videos in documents
 

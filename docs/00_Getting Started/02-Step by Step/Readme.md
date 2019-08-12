@@ -13,7 +13,7 @@ First, we want to set up a folder that you can document you Design System in. Cr
 Next, find the package that you just downloaded and double click it to unzip the files. You will now see a folder that contains some other folders and files. Take the content of the unzipped folder and copy it over into your “my-design-system” folder.
 
 ## 🌲 — Step 3: Set up the design definitions tree
-The folder “my-design-system” is the root of your “_design definitions tree_”. It will contain the entire documentation of your Design System.
+The folder “my-design-system” is the root of your “[design definitions tree](/The-Design-Definitions-Tree)”. It will contain the entire documentation of your Design System.
 
 You can now take a look at the example Design System from the package if you like – these are the folders you just copied over, like “Styleguide” and ”Components”. For this tutorial we want to start from scratch, so please delete everything in “my-design-system”, except for the file that is called “dsk-darwin-amd64”.
 
@@ -25,12 +25,12 @@ The first time you do this, a warning may pop up. To skip it, follow [these inst
 A black Terminal window will open. Don’t worry, you won’t have to do anything in the command line, just keep the window open in the background. DSK is running until you close this window.
 
 ## 🌍 — Step 5: Open DSK in the browser  
-Open your favorite browser and navigate to `http://localhost:8080` (you can just click _here_ to get there!). You can see your Design System at this address, as long as DSK is running on your computer.
+Open your favorite browser and navigate to `http://localhost:8080` (you can just click [here](http://localhost:8080) to get there!). You can see your Design System at this address, as long as DSK is running on your computer.
 
 The site looks pretty empty right now – that’s because there is nothing to display in your design definitions tree yet. Let’s change that!
 
 ## 📁 — Step 6: Create your first aspect  
-Create two new folders in the “my-design-system” folder and call them “Styles” and “Components” (or any other name you like – with DSK the structure and content of you documentation is entirely up to you). If you now open your browser and refresh the page you will see your first _aspects_ in the tree navigation on the left side!
+Create two new folders in the “my-design-system” folder and call them “Styles” and “Components” (or any other name you like – with DSK the structure and content of you documentation is entirely up to you). If you now open your browser and refresh the page you will see your first [aspects](/The-Design-Definitions-Tree/Aspects) in the tree navigation on the left side!
 
 ## 🗒 — Step 7: Add documentation  
 Your aspects are still empty, so let’s add some documentation!
@@ -51,7 +51,7 @@ This is a list of the colors we use:
 * White: `#FFFFFF`
 ```
 
-You can create a Markdown file like this: Go to your programs folder and search for “TextEdit”. Click the “Format” menu and select “Make Plain Text”.  Save the file and give it a name ending with `.md`, e.g. “documentation.md”. Place it in the “Styles” folder that you created. Voilà, you created your first _document_!
+You can create a Markdown file like this: Go to your programs folder and search for “TextEdit”. Click the “Format” menu and select “Make Plain Text”.  Save the file and give it a name ending with `.md`, e.g. “documentation.md”. Place it in the “Styles” folder that you created. Voilà, you created your first [document](/The-Design-Definitions-Tree/Documents)!
 
 Open your browser and refresh the page – you will see the content of your document. If you add more than one Markdown file in the same folder, they will be displayed as tabs on the page.
 
@@ -59,7 +59,7 @@ Open your browser and refresh the page – you will see the content of your docu
 You can add as many aspects as you like and even nest them. Open the “Components” folder and create a few new folders, like “01-Text Field” and “02-Button” in it. The numbers in the front tell DSK in what order to display the aspects, but they get removed from the title that is displayed in the browser.
 
 ## 🌁 — Step 9: Add assets 
-You can add files of any type to DSK. If you want to add a quick drawing or a Sketch file or even a video of a prototype to one of your aspects, place any file you like into the "01-Text Field" folder and refresh your browser. You will see an “Assets” tab that displays the file and some information about it. You can also download the file there. Any file that is not directly used by DSK is called an _asset_.
+You can add files of any type to DSK. If you want to add a quick drawing or a Sketch file or even a video of a prototype to one of your aspects, place any file you like into the "01-Text Field" folder and refresh your browser. You will see an “Assets” tab that displays the file and some information about it. You can also download the file there. Any file that is not directly used by DSK is called an [asset](/The-Design-Definitions-Tree/Assets).
 
 ## 🏷 — Step 10: Add meta data 
 Additionally to documenting your design aspects, you can also add some meta data about them. This makes it easier to organize your Design System and improves search results.
@@ -86,7 +86,7 @@ For DSK to find and understand the meta data, it is important that the file is c
 
 Even without knowing YAML, you can already see that this file contains a description of the aspects, tags and authors. The description is a short text that will be display on the top of the aspect’s page. Tags let you filter your components and make it easier to group aspects together. Authors let you assign responsibility for an aspect and help users quickly find someone to talk to when they have questions.
 
-These are just the most commonly used types of meta data that you can add. You can find more types and how to add custom types in the in depth _meta data documentation_.
+These are just the most commonly used types of meta data that you can add. You can find more types and how to add custom types in the in depth [meta data documentation](/The-Design-Definitions-Tree/Meta-Data).
 
 ## 🖋 — Step 11: Add information about the authors  
 When we just added the meta data to the aspect, we used an email address to describe the authors. But sometimes it is nicer to display a persons full name. DSK lets you create a special file, where you can compile a list of all people and their email addresses. Whenever you use someone’s email address in a meta data file, DSK will look up their full name and display it alongside their address in the browser.
@@ -103,4 +103,4 @@ Click the “Format” menu and select “Make Plain Text”.  Save the file and
 If you now refresh the page for the aspect that you added the meta data to you will see that instead of the authors email address, their name is displayed. When you click on it, a window to compose an email addressed to this person opens.
 
 ## 💙 — Step 12: Good to go! 
-**This completes the step-by-step guide to DSK** – you used all its basic features and can now get started with documenting your Design Systems! On this website you find a detailed documentation of all features and some more advanced tricks, like more information about _using Markdown_ (including how to use images and videos in your documents), about using _special components_ to improve your documentation, or ways to _configure the frontend_. If there are any questions left, feel free to reach out and [we are happy to help you get started](/Help).
+**This completes the step-by-step guide to DSK** – you used all its basic features and can now get started with documenting your Design Systems! On this website you find a detailed documentation of all features and some more advanced tricks, like more information about [using Markdown](/The-Design-Definitions-Tree/Documents) (including how to use images and videos in your documents), about using [special components](/The-Frontend/Documentation-Components) to improve your documentation, or ways to [configure the frontend](/The-Frontend/Configuration). If there are any questions left, feel free to reach out and [we are happy to help you get started](/Help).

@@ -18,7 +18,7 @@
 <Playground background="pinstripes" backgroundColor="#FED28C">{Component}</Playground>
 ```
 
-For all configruation options see [Properties](#).
+For all configruation options see [Properties](?t=properties).
 
 ## Annotations
 
@@ -47,11 +47,3 @@ The annotations specification file has to be formated like this (`annotationColo
   ],
   "annotationColor": "#EE645D"
 }</CodeBlock>
-
-# Properties
-
-Property | Type | Description | Default
----|---|---|---
-`background` | `"dotgrid"`, `"checkerboard"`, `"pinstripes"`, `"plain"` | The pattern to use for the background of the playground. | `"dotgrid"`
-`backgroundColor` | `CSS Color String (hex, rgba)` | The background color of the playground. | `#F2F6F7`
-`annotations` | `string` | Path to an annotations specification file. | `""`

@@ -1,35 +1,35 @@
 {
-  "defaultStyleName": "h2",
+  "defaultStyleName": "tl",
   "styles": [
     {
       "id": "huge",
       "name": "Huge",
-      "fontFamily": "Rosart",
-      "fontWeight": "Book",
-      "fontSize": 60,
-      "lineHeight": 85,
+      "fontFamily": "Helvetica",
+      "fontWeight": "Regular",
+      "fontSize": 80,
+      "lineHeight": 96,
       "letterSpacing": 0.37
     }, {
       "id": "h1",
       "name": "Heading 1",
-      "fontFamily": "'Neuzeit S LT Std'",
-      "fontWeight": "Book",
-      "fontSize": 34,
-      "lineHeight": 45,
+      "fontFamily": "'Helvetica'",
+      "fontWeight": "Bold",
+      "fontSize": 48,
+      "lineHeight": 56,
       "letterSpacing": 0.19
     }, {
       "id": "tl",
       "name": "Text L",
-      "fontFamily": "'Neuzeit S LT Std'",
-      "fontWeight": "Book",
+      "fontFamily": "'Helvetica'",
+      "fontWeight": "Regular",
       "fontSize": 24,
       "lineHeight": 38,
       "letterSpacing": 0.19
     }, {
       "id": "ts",
       "name": "Text S",
-      "fontFamily": "'Neuzeit S LT Std'",
-      "fontWeight": "Book",
+      "fontFamily": "'Helvetica'",
+      "fontWeight": "Regular",
       "fontSize": 16,
       "lineHeight": 28,
       "letterSpacing": 0.25,
@@ -37,11 +37,12 @@
     }, {
       "id": "meta",
       "name": "Meta",
-      "fontFamily": "'Neuzeit S LT Std'",
+      "fontFamily": "'Helvetica'",
       "fontWeight": "Bold",
       "fontSize": 12,
       "lineHeight": 24,
-      "letterSpacing": 0.69
+      "letterSpacing": 0.69,
+      "textTransform": "uppercase"
     }
   ]
 }

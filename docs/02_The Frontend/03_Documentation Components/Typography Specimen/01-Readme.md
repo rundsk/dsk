@@ -1,5 +1,7 @@
 <Banner title="Experimental Feature" type="warning">Documentation Components are a new feature and will be introduced with version 1.2, which is currently in alpha.</Banner>
 
+# Example
+
 <TypographySpecimen src="./typography.json"></TypographySpecimen>
 
 # Usage
@@ -37,10 +39,3 @@ The Typography Specimen component expects a file according to the [Lona Text Sty
     }
   ]
 }</CodeBlock>
-
-# Properties
-
-Property | Type | Description | Default
----|---|---|---
-`src` | `String` | Path to a color specification file. | [Required]
-`compact` | `Bool` | Whether the color specimen should be displayed in a compact way. | `false`
