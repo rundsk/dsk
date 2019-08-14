@@ -81,11 +81,7 @@ function App(props) {
 
   // Use frontend configuration to configure app, if present.
   useEffect(() => {
-    Client.get("/frontendConfig.json").then((data) => {
-      setFrontendConfig(data);
-    }).catch((err) => {
-      console.log(`No frontend configuration found.`);
-    });
+    Client.configuration().then(setFrontendConfig, () => null)
   }, []);
 
   // Initialize tree navigation and title.

@@ -5,6 +5,19 @@
 
 // Client for accessing the DSK APIv2.
 export default class Client {
+
+  // Try to retrieve configuration, returns a promise, that is resolved
+  // only when configuration has been found.
+  static configuration() {
+    return this.ping('/api/v2/frontendConfig.json')
+      .then((isExisting) => {
+        if (isExisting) {
+          return this.fetch('/api/v2/frontendConfig.json');
+        }
+        return Promise.reject(new Error('No configuration available.'));
+      });
+  }
+
   static hello() {
     return this.fetch('/api/v2/hello');
   }
@@ -23,17 +36,27 @@ export default class Client {
     return this.fetch('/api/v2/tree');
   }
 
-  // Returns node for given relative URL path. Will automatically strip leading
-  // and trailing slashes from the given node URL to turn it into a valid node
-  // URL for lookup.
+  // Check if a node is present. Returns a promise that resolves to a boolean
+  // indicating whether a node exists under the given URL.
+  static has(url) {
+    return this.ping(`/api/v2/tree/${this.nodeURL(url)}`);
+  }
+
+  // Returns node for given relative URL path.
   static get(url) {
+    return this.fetch(`/api/v2/tree/${this.nodeURL(url)}`);
+  }
+
+  // Will automatically strip leading and trailing slashes from the given node
+  // URL to turn it into a valid node URL for lookup.
+  static nodeURL(url) {
     if (url.charAt(0) === '/') {
       url = url.substring(1);
     }
     if (url.charAt(url.length - 1) === '/') {
       url = url.slice(0, -1);
     }
-    return this.fetch(`/api/v2/tree/${url}`);
+    return url;
   }
 
   // Performs a full text search against the tree and returns the response
@@ -69,9 +92,10 @@ export default class Client {
     return this.fetch(`/api/v2/filter?${params.toString()}`);
   }
 
-  // Performs API requests. Fail promise when there is a network issue (catch)
-  // as well as when we a HTTP response status indicating an error. Using plain
-  // XHR for better browser support and easier basic auth handling.
+  // Performs HTTP GET requests, returns a promise. Fail promise when there
+  // is a network issue (catch) as well as when we a HTTP response status
+  // indicating an error. Using plain XHR for better browser support and easier
+  // basic auth handling.
   static fetch(url) {
     return new Promise((resolve, reject) => {
       let xhr = new XMLHttpRequest();
@@ -79,26 +103,52 @@ export default class Client {
       xhr.addEventListener('readystatechange', () => {
         if (xhr.readyState === 4) {
           let first = xhr.status.toString().charAt(0);
+
           if (first !== '2' && first !== '3') {
             try {
-              reject(new Error(`API request for '${url}' failed :-S: ${JSON.parse(xhr.responseText).message}`));
+              reject(new Error(`Fetching '${url}' failed :-S: ${JSON.parse(xhr.responseText).message}`));
             } catch (e) {
-              reject(new Error(`API request for '${url}' failed :-S: ${xhr.statusText}`));
+              reject(new Error(`Fetching '${url}' failed :-S: ${xhr.statusText}`));
             }
             return;
           }
           try {
             resolve(JSON.parse(xhr.responseText));
           } catch (e) {
-            reject(new Error(`API request for '${url}' succeeded, but failed to parse response :-S: ${e}`));
+            reject(new Error(`Fetching '${url}' succeeded, but failed to parse response :-S: ${e}`));
           }
         }
       });
-      xhr.addEventListener('error', ev => {
-        reject(new Error(`API request for '${url}' failed :-S: ${ev}`));
+      xhr.addEventListener('error', (ev) => {
+        reject(new Error(`Fetching '${url}' failed :-S: ${ev}`));
       });
       xhr.open('GET', url);
       xhr.setRequestHeader('Accept', 'application/json');
+      xhr.send();
+    });
+  }
+
+  // Performs HTTP HEAD requests, returns a promise that resolves to a
+  // boolean, indicating whether the resource under the given URL is existent.
+  static ping(url) {
+    return new Promise((resolve, reject) => {
+      let xhr = new XMLHttpRequest();
+
+      xhr.addEventListener('readystatechange', () => {
+        if (xhr.readyState === 4) {
+          let first = xhr.status.toString().charAt(0);
+
+          if (first !== '2' && first !== '3' && first !== '4') {
+            reject(new Error(`Pinging '${url}' failed :-S: ${xhr.statusText}`));
+          } else {
+            resolve(first === '2' || first === '3');
+          }
+        }
+      });
+      xhr.addEventListener('error', (ev) => {
+        reject(new Error(`Pinging '${url}' failed :-S: ${ev}`));
+      });
+      xhr.open('HEAD', url);
       xhr.send();
     });
   }
