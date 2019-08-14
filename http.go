@@ -15,6 +15,7 @@ import (
 var (
 	HTTPErr            = &HTTPError{http.StatusInternalServerError, "Techniker ist informiert"}
 	HTTPErrUnsafePath  = &HTTPError{http.StatusBadRequest, "Directory traversal attempt detected!"}
+	HTTPErrNotFound    = &HTTPError{http.StatusNotFound, "Not found"}
 	HTTPErrNoSuchNode  = &HTTPError{http.StatusNotFound, "No such node"}
 	HTTPErrNoSuchAsset = &HTTPError{http.StatusNotFound, "No such asset"}
 )
