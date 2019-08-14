@@ -116,6 +116,17 @@ func (d NodeDoc) Raw() ([]byte, error) {
 func (d NodeDoc) Components() ([]*NodeDocComponent, error) {
 	components := make([]*NodeDocComponent, 0)
 
+	contents, err := ioutil.ReadFile(d.path)
+	if err != nil {
+		return components, err
+	}
+
+	switch strings.ToLower(filepath.Ext(d.path)) {
+	case ".md", ".markdown":
+		return findComponentsInMarkdown(contents), nil
+	case ".html", ".htm":
+		return findComponentsInHTML(contents), nil
+	}
 	return components, nil
 }
 
