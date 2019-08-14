@@ -3,7 +3,7 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './ComponentDemo.css';
 
 function ComponentDemo(props) {
