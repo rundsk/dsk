@@ -39,7 +39,16 @@ function App(props) {
 
       if (m.type === 'tree-synced') {
         loadTree();
-        loadNode();
+
+        // The node might have gone away.
+        checkNode().then((isExistent) => {
+          if (isExistent) {
+            loadNode();
+          } else {
+            console.log('Current node has gone away after tree sync.');
+            props.router.navigate('home');
+          }
+        })
       }
     });
   }, []);
@@ -49,34 +58,33 @@ function App(props) {
       setTree(data.root);
       setTitle(data.root.title);
     }).catch((err) => {
-      console.log(`Failed to retrieve tree data: ${err}`);
+      console.log(`Failed to load tree: ${err}`);
     });
   }
 
   function loadNode() {
-    let url = null;
-
-    switch (props.route.name) {
-      case 'home':
-        url = '';
-        break;
-      case 'node':
-        url = props.route.params.node;
-        break;
-      default:
-        break;
-    }
-    if (!url === null) {
-      return;
-    }
-
-    Client.get(url).then((data) => {
+    Client.get(nodeURLFromRouter(props.route)).then((data) => {
       setNode(data);
       setError(null);
     }).catch((err)  =>{
-      console.log(`Failed to retrieve data for node '${url}': ${err}`);
+      console.log(`Failed to set node data: ${err}`);
       setError("Design aspect not found.");
     });
+  }
+
+  function checkNode() {
+    return Client.has(nodeURLFromRouter(props.route));
+  }
+
+  function nodeURLFromRouter(route) {
+    switch (route.name) {
+      case 'home':
+        return ''; // Is a valid node URL.
+      case 'node':
+        return route.params.node;
+      default:
+        return null;
+    }
   }
 
   // Use frontend configuration to configure app, if present.
