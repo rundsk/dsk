@@ -5,7 +5,6 @@
 
 FRONTEND ?= $(shell pwd)/frontend/build
 DDT ?= $(shell pwd)/example
-DDT_LANG ?= en
 
 VERSION ?= head-$(shell git rev-parse --short HEAD)
 LDFLAGS = -X main.Version=$(VERSION)
@@ -27,7 +26,7 @@ profile:
 .PHONY: dev
 dev:
 	go build -mod=vendor -tags=dev -race -ldflags "$(LDFLAGS)"
-	./dsk -lang $(DDT_LANG) -frontend $(FRONTEND) "$(DDT)"
+	./dsk -frontend $(FRONTEND) "$(DDT)"
 
 .PHONY: clean
 clean:

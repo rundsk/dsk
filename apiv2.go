@@ -14,9 +14,10 @@ import (
 	"time"
 )
 
-func NewAPIv2(t *NodeTree, hub *MessageBroker, s *Search) *APIv2 {
+func NewAPIv2(c *Config, t *NodeTree, hub *MessageBroker, s *Search) *APIv2 {
 	return &APIv2{
-		v1:     NewAPIv1(t, hub, s),
+		v1:     NewAPIv1(c, t, hub, s),
+		config: c,
 		tree:   t,
 		search: s,
 	}
@@ -24,6 +25,7 @@ func NewAPIv2(t *NodeTree, hub *MessageBroker, s *Search) *APIv2 {
 
 type APIv2 struct {
 	v1     *APIv1
+	config *Config
 	tree   *NodeTree
 	search *Search
 }
@@ -51,6 +53,7 @@ type APIv2FilterResults struct {
 
 func (api APIv2) MountHTTPHandlers() {
 	http.HandleFunc("/api/v2/hello", api.v1.HelloHandler)
+	http.HandleFunc("/api/v2/config", api.v1.ConfigHandler)
 	http.HandleFunc("/api/v2/tree", api.v1.TreeHandler)
 	http.HandleFunc("/api/v2/tree/", func(w http.ResponseWriter, r *http.Request) {
 		if filepath.Ext(r.URL.Path) != "" {

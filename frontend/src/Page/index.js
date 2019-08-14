@@ -33,14 +33,14 @@ function Page(props) {
 
   // Update the sites title when the node changes
   useEffect(() => {
-    let title = `${props.designSystemTitle}: ${props.title}`;
+    let title = `${props.title} – ${props.baseTitle}`;
 
     if (props.url === '') {
-      title = `${props.designSystemTitle}`;
+      title = `${props.baseTitle}`;
     }
 
     document.title = title;
-  }, [props.title, props.designSystemTitle, props.url]);
+  }, [props.title, props.baseTitle, props.url]);
 
   function docDidRender() {
     // Check if there is a section marker in the URL, and if their is

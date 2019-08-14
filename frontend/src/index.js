@@ -32,7 +32,9 @@ router.start();
 
 setGlobal({
   filterTerm: "",
-  frontendConfig: {}
+  config: {
+    _populated: false
+  }
 });
 
 ReactDOM.render(<RouterProvider router={router}><App /></RouterProvider>, document.getElementById('root'));

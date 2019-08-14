@@ -21,10 +21,9 @@ import CloseIcon from './CloseIcon.svg'
 
 function App(props) {
   const [tree, setTree] = useState(null);
-  const [title, setTitle] = useState("Design System");
   const [node, setNode] = useState(null);
   const [error, setError] = useState(null);
-  const [frontendConfig, setFrontendConfig] = useGlobal("frontendConfig");
+  const [config, setConfig] = useGlobal("config");
   const [mobileSidebarIsActive, setMobileSidebarIsActive] = useState(false);
 
   // Establish WebSocket connection, once. By appending to the sync messages
@@ -56,7 +55,6 @@ function App(props) {
   function loadTree() {
     Client.tree().then((data) => {
       setTree(data.root);
-      setTitle(data.root.title);
     }).catch((err) => {
       console.log(`Failed to load tree: ${err}`);
     });
@@ -87,25 +85,23 @@ function App(props) {
     }
   }
 
-  // Use frontend configuration to configure app, if present. The hook may run
-  // several times, which will cause to load the configuration again and again.
-  // To prevent this we set the state to `false`, to indicate a previous load
-  // already happened and wasn't successful, so it doesn't need to be tried
-  // again.
+  // This hook may run several times. We might receive an empty configuration
+  // object from the API. We must differentiate between this case and initially
+  // empty object.
   useEffect(() => {
-    if (frontendConfig === false) {
+    if (config._populated) {
       return;
     }
-    Client.configuration()
+    Client.config()
       .then((data) => {
-        setFrontendConfig(data);
-      })
-      .catch(() => {
-        setFrontendConfig(false);
+        setConfig({
+          ...data,
+          _populated: true,
+        });
       });
-  }, [frontendConfig, setFrontendConfig]);
+  }, [config, setConfig]);
 
-  // Initialize tree navigation and title.
+  // Initialize tree navigation.
   useEffect(loadTree, []);
 
   // Load the current node being displayed. Reload it whenever the route changes.
@@ -115,7 +111,7 @@ function App(props) {
   if (error) {
     content = <ErrorPage>{error}</ErrorPage>;
   } else if (node) {
-    content = <Page {...node} activeTab={props.route.params.t || undefined} designSystemTitle={title} />;
+    content = <Page {...node} activeTab={props.route.params.t || undefined} baseTitle={config.org + " / " + config.project} />;
   }
 
   let refToMain = React.createRef();
@@ -126,7 +122,7 @@ function App(props) {
 
       <div className={`app__sidebar ${mobileSidebarIsActive ? "app__sidebar--is-visible" : ""}`}>
         <div className="app__header">
-          <div>{frontendConfig.organisation || "DSK"} / <BaseLink router={props.router} routeName="home" className="app__title">{title}</BaseLink></div>
+          <div>{config.org || "DSK"} / <BaseLink router={props.router} routeName="home" className="app__title">{config.project}</BaseLink></div>
         </div>
         <div className="app__nav">
           <TreeNavigation tree={tree} hideMobileSidebar={() => {setMobileSidebarIsActive(false)}} />
@@ -145,12 +141,12 @@ function App(props) {
               <img src={HamburgerIcon} alt="Toggle Menu"/>
             }
           </div>
-          <div>{frontendConfig.organisation || "DSK"} / <BaseLink router={props.router} routeName="home" className="app__title">{title}</BaseLink></div>
+          <div>{config.org || "DSK"} / <BaseLink router={props.router} routeName="home" className="app__title">{config.project}</BaseLink></div>
         </div>
 
         {content}
       </main>
-      <div className="app__search"><Search title={title} /></div>
+      <div className="app__search"><Search title={config.project} /></div>
     </div>
   );
 }

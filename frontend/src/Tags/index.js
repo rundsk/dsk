@@ -12,11 +12,11 @@ import './Tags.css';
 function Tags(props) {
   const [style, setStyle] = useState('');
   const [filterTerm, setFilterTerm] = useGlobal('filterTerm');
-  const [frontendConfig] = useGlobal('frontendConfig');
+  const [config] = useGlobal('config');
 
   useEffect(() => {
-    if (frontendConfig.tags) {
-      let styles = frontendConfig.tags.map(t => {
+    if (config.tags) {
+      let styles = config.tags.map(t => {
         let textColor = 'rgba(0,0,0,.7)';
 
         if (!t.color.includes('var') && contrast.ratio(t.color, 'black') < contrast.ratio(t.color, 'white')) {
@@ -31,7 +31,7 @@ function Tags(props) {
       });
       setStyle(styles.join('\n'));
     }
-  }, [frontendConfig]);
+  }, [config]);
 
   let tags;
 

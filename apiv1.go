@@ -18,8 +18,9 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func NewAPIv1(t *NodeTree, hub *MessageBroker, s *Search) *APIv1 {
+func NewAPIv1(c *Config, t *NodeTree, hub *MessageBroker, s *Search) *APIv1 {
 	return &APIv1{
+		config:   c,
 		tree:     t,
 		search:   s,
 		messages: hub,
@@ -31,6 +32,8 @@ func NewAPIv1(t *NodeTree, hub *MessageBroker, s *Search) *APIv1 {
 }
 
 type APIv1 struct {
+	config *Config
+
 	tree *NodeTree
 
 	search *Search
@@ -46,6 +49,10 @@ type APIv1Hello struct {
 	Hello   string `json:"hello"`
 	Project string `json:"project"`
 	Version string `json:"version"`
+}
+
+type APIv1Config struct {
+	*Config
 }
 
 type APIv1Node struct {
@@ -131,6 +138,7 @@ type APIv1Message struct {
 
 func (api APIv1) MountHTTPHandlers() {
 	http.HandleFunc("/api/v1/hello", api.HelloHandler)
+	http.HandleFunc("/api/v1/config", api.ConfigHandler)
 	http.HandleFunc("/api/v1/tree", api.TreeHandler)
 	http.HandleFunc("/api/v1/tree/", func(w http.ResponseWriter, r *http.Request) {
 		if filepath.Ext(r.URL.Path) != "" {
@@ -375,6 +383,11 @@ func (api APIv1) NewNodeTreeSearchResults(nodes []*Node, total int, took time.Du
 // Says hello :)
 func (api APIv1) HelloHandler(w http.ResponseWriter, r *http.Request) {
 	(&HTTPResponder{w, r, "application/json"}).OK(api.NewHello())
+}
+
+func (api APIv1) ConfigHandler(w http.ResponseWriter, r *http.Request) {
+	wr := &HTTPResponder{w, r, "application/json"}
+	wr.OK(&APIv1Config{Config: api.config})
 }
 
 // WebSocket endpoint for receiving notifications.

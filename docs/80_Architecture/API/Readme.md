@@ -19,6 +19,7 @@ Version 2 of the API first appeared with DSK Version 1.1.
 | URL                             | Response  | Description                       |
 |---------------------------------|-----------|-----------------------------------|
 | `/hello`                        | JSON      | Returns the version and a friendly greeting |
+| `/config`                       | JSON      | Returns configuration. |
 | `/tree`                         | JSON      | Get the full design definitions tree as a nested tree of nodes |
 | `/tree/{path}`                  | JSON      | Get information about a single node specified by `{path}` |
 | `/tree/{path}/{asset}`          | data      | Requests a node's asset, `{asset}` is a single filename |
@@ -64,6 +65,7 @@ Version 1 of the API first appeared with DSK Version 1.0.
 | URL                             | Response  | Description                       |
 |---------------------------------|-----------|-----------------------------------|
 | `/hello`                        | JSON      | Returns the version and a friendly greeting. |
+| `/config`                       | JSON      | Returns configuration. |
 | `/tree`                         | JSON      | Get the full design definitions tree as a nested tree of nodes. |
 | `/tree/{path}`                  | JSON      | Get information about a single node specified by `{path}`. |
 | `/tree/{path}/{asset}`          | data      | Requests a node's asset, `{asset}` is a single filename. |

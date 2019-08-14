@@ -1,0 +1,10 @@
+org: ACME Corp.
+project: Example
+lang: en
+tags:
+  - name: production
+    color: "#8DE381"
+  - name: deprecated
+    color: "#ED6666"
+  - name: progress
+    color: "#0091AB"

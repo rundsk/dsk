@@ -33,7 +33,7 @@ var (
 
 	// Files that are not considered to be assets in addition to node
 	// meta and doc files.
-	NodeAssetsIgnoreRegexp = regexp.MustCompile(`(?i)^(dsk.*|AUTHORS\.txt|empty)$`)
+	NodeAssetsIgnoreRegexp = regexp.MustCompile(`(?i)^(dsk|dsk\.(json|ya?ml)|AUTHORS\.txt|empty)$`)
 
 	// Characters that are ignored when looking up an URL,
 	// i.e. "foo/bar baz" and "foo/barbaz" are than equal.

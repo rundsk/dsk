@@ -87,7 +87,6 @@ func main() {
 	port := flag.String("port", "8080", "port to bind to")
 	version := flag.Bool("version", false, "print DSK version")
 	noColor := flag.Bool("no-color", false, "disables color output")
-	flang := flag.String("lang", "en", "language the documents are authored in")
 	ffrontend := flag.String("frontend", "", "path to a frontend, to use instead of the built-in")
 	flag.Parse()
 
@@ -125,6 +124,14 @@ func main() {
 	log.Printf("Tree root found: %s", here)
 	PrettyPathRoot = here
 
+	config := NewConfig(here)
+	configFile, err := config.Load()
+	if err != nil {
+		log.Fatal(red.Sprintf("Failed loading configuration from %s: %s", prettyPath(configFile), err))
+	} else if configFile != "" {
+		log.Printf("Loaded configuration from: %s", prettyPath(configFile))
+	}
+
 	authors := NewAuthors(here)
 	broker = NewMessageBroker() // assign to global
 	watcher = NewWatcher(here)  // assign to global
@@ -151,7 +158,7 @@ func main() {
 	}
 	tree = NewNodeTree(here, authors, repository, watcher, broker) // assign to global
 
-	search, err = NewSearch("", tree, broker, *flang, false) // assign to global
+	search, err = NewSearch("", tree, broker, config.Lang, false) // assign to global
 	if err != nil {
 		log.Fatal(red.Sprintf("Failed to open search index: %s", err))
 	}
@@ -195,8 +202,8 @@ func main() {
 	}
 
 	apis := map[int]API{
-		1: NewAPIv1(tree, broker, search),
-		2: NewAPIv2(tree, broker, search),
+		1: NewAPIv1(config, tree, broker, search),
+		2: NewAPIv2(config, tree, broker, search),
 	}
 	for v, api := range apis {
 		log.Printf("Mounting APIv%d...", v)
@@ -256,7 +263,6 @@ func frontendRootHandler(w http.ResponseWriter, r *http.Request) {
 		wr.Error(HTTPErr, err)
 		return
 	}
-
 	http.ServeContent(w, r, info.Name(), info.ModTime(), asset)
 }
 

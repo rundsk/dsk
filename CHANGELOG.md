@@ -36,6 +36,10 @@
 - Remove support for multiple languages in documents of design aspects.
 - Remove support for using wide index with filter search, all filter queries 
   will use the narrow index.
+- Certain aspects can now be configured through an optional configuration file,
+  which sits in the DDT.
+- Removed support for providing the DDT lang through a command line flag,
+  please use the configuration file to configure the language of the DDT.
 
 ## 1.1.1
 

@@ -6,20 +6,12 @@
 // Client for accessing the DSK APIv2.
 export default class Client {
 
-  // Try to retrieve configuration, returns a promise, that is resolved
-  // only when configuration has been found.
-  static configuration() {
-    return this.ping('/api/v2/frontendConfig.json')
-      .then((isExisting) => {
-        if (isExisting) {
-          return this.fetch('/api/v2/frontendConfig.json');
-        }
-        return Promise.reject(new Error('No configuration available.'));
-      });
-  }
-
   static hello() {
     return this.fetch('/api/v2/hello');
+  }
+
+  static config() {
+    return this.fetch('/api/v2/config');
   }
 
   // Returns a WebSocket connection to the messages endpoint. Asummes it

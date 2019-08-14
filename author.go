@@ -44,7 +44,15 @@ type Author struct {
 	Name  string
 }
 
+// Sync refreshes the internal data. It parses data from a
+// configuration file. This file is allowed to appear or disappear
+// between syncs.
 func (as *Authors) Sync() error {
+	// Ensure the internal data is empty, when the file disappears.
+	as.Lock()
+	as.data = make([]*Author, 0)
+	as.Unlock()
+
 	if _, err := os.Stat(as.path); os.IsNotExist(err) {
 		return nil
 	}
@@ -54,10 +62,6 @@ func (as *Authors) Sync() error {
 	if err != nil {
 		return err
 	}
-
-	as.Lock()
-	as.data = make([]*Author, 0)
-	as.Unlock()
 
 	return as.AddFrom(f)
 }
