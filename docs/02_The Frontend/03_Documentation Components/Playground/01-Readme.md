@@ -24,7 +24,7 @@ For all configruation options see [Properties](?t=properties).
 
 With annotations you can highlight specific points on the playground and add a comment.
 
-<Playground annotations="annotations.json"><FigmaEmbed document="Ppu4fKoeiDXCGMB5XgvZefHc" frame="TagComponent" token="11435-1dd12ee1-db3f-4c56-8e3f-85840e1db2d2"></FigmaEmbed></Playground>
+<Playground annotations="annotations.json">{Component}</Playground>
 
 ```
 <Playground annotations="annotations.json">{Component}</Playground>

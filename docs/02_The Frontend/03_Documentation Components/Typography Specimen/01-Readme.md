@@ -8,7 +8,6 @@
 
 ```
 <TypographySpecimen src="./typography.json"></TypographySpecimen>
-<TypographySpecimen src="./typography.json" compact="true"></TypographySpecimen>
 ```
 
 # File format
