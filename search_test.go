@@ -458,3 +458,44 @@ func expectNoFilterSearchResult(t *testing.T, nodes []*Node, url string) {
 		}
 	}
 }
+
+func TestFilterSearchMultipleTagsWithLogicalAndInQuery(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n0 := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n0.Create()
+	n0.CreateMeta("meta.yaml", &NodeMeta{
+		Tags: []string{"foo", "bar", "qux"},
+	})
+	n0.Load()
+
+	n1 := NewNode(filepath.Join(tmp, "Navigation"), tmp)
+	n1.Create()
+	n1.CreateMeta("meta.yaml", &NodeMeta{
+		Tags: []string{"foo"},
+	})
+	n1.Load()
+
+	n2 := NewNode(filepath.Join(tmp, "Type"), tmp)
+	n2.Create()
+	n2.CreateMeta("meta.yaml", &NodeMeta{
+		Tags: []string{"bar"},
+	})
+	n2.Load()
+
+	s := setupSearchTest(t, tmp, "en", []*Node{n0, n1, n2})
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FilterSearch("foo", false)
+	expectFilterSearchResult(t, rs, "Colors")
+	expectFilterSearchResult(t, rs, "Navigation")
+
+	rs, _, _, _, _ = s.FilterSearch("bar", false)
+	expectFilterSearchResult(t, rs, "Colors")
+	expectFilterSearchResult(t, rs, "Type")
+
+	rs, _, _, _, _ = s.FilterSearch("foo bar", false)
+	expectFilterSearchResult(t, rs, "Colors")
+	expectNoFilterSearchResult(t, rs, "Navigation")
+	expectNoFilterSearchResult(t, rs, "Type")
+}
