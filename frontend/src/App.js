@@ -96,9 +96,7 @@ function App(props) {
   useEffect(loadTree, []);
 
   // Load the current node being displayed. Reload it whenever the route changes.
-  useEffect(() => {
-    loadNode();
-  }, [props.route]);
+  useEffect(loadNode, [props.route]);
 
   let content;
   if (error) {
