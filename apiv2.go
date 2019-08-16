@@ -62,6 +62,7 @@ func (api APIv2) MountHTTPHandlers() {
 	http.HandleFunc("/api/v2/filter", api.FilterHandler)
 	http.HandleFunc("/api/v2/search", api.SearchHandler)
 	http.HandleFunc("/api/v2/messages", api.v1.MessagesHandler)
+	http.HandleFunc("/api/v2", api.v1.NotFoundHandler)
 }
 
 func (api APIv2) NewNodeTreeSearchResults(hs []*FullSearchHit, total int, took time.Duration) *APIv2FullSearchResults {

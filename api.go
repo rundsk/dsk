@@ -6,5 +6,6 @@
 package main
 
 type API interface {
+	// Handlers must be mounted below /api/v{major version}.
 	MountHTTPHandlers()
 }

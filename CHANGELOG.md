@@ -31,7 +31,9 @@
 - Each document now also makes an array of top-level components available
   through the API. As this is a non-breaking addition it is also
   available through v1 of the API.
-    
+- The backend now responds to missing API resources with a 404, this allows to use 
+  HEAD request to test for the existence of i.e. a node.
+
 ## 1.1.1
 
 - Fix possible data race in repository lookup table, #58

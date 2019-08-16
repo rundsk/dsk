@@ -141,6 +141,7 @@ func (api APIv1) MountHTTPHandlers() {
 	})
 	http.HandleFunc("/api/v1/search", api.SearchHandler)
 	http.HandleFunc("/api/v1/messages", api.MessagesHandler)
+	http.HandleFunc("/api/v1", api.NotFoundHandler)
 }
 
 func (api APIv1) NewHello() *APIv1Hello {
@@ -513,4 +514,9 @@ func (api APIv1) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	wr.OK(api.NewNodeTreeSearchResults(results, total, took))
+}
+
+func (api APIv1) NotFoundHandler(w http.ResponseWriter, r *http.Request) {
+	wr := &HTTPResponder{w, r, ""}
+	wr.Error(HTTPErrNotFound, nil)
 }

@@ -204,15 +204,14 @@ func main() {
 		api.MountHTTPHandlers()
 	}
 
-	// Handles frontend index document delivery, frontend assets and catch
-	// everything else funnelling it into the general error handler.
+	// Handles frontend root document delivery and frontend assets.
+	// The frontend is allowed to use any path except /api. We route
+	// everything else into the front controller (index.html).
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/" || r.URL.Path == "index.html" {
-			frontendIndexHandler(w, r)
-		} else if filepath.Ext(r.URL.Path) != "" {
+		if filepath.Ext(r.URL.Path) != "" {
 			frontendAssetHandler(w, r)
 		} else {
-			errorHandler(w, r)
+			frontendRootHandler(w, r)
 		}
 	})
 
@@ -232,7 +231,12 @@ func main() {
 }
 
 // Serves the frontend's index.html.
-func frontendIndexHandler(w http.ResponseWriter, r *http.Request) {
+//
+// Handles these kinds of URLs:
+//   /
+//   /index.html
+//   /* <catch all>
+func frontendRootHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, ""}
 	path := "index.html"
 
@@ -282,9 +286,4 @@ func frontendAssetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.ServeContent(w, r, info.Name(), info.ModTime(), asset)
-}
-
-func errorHandler(w http.ResponseWriter, r *http.Request) {
-	wr := &HTTPResponder{w, r, ""}
-	wr.Error(HTTPErrNotFound, nil)
 }
