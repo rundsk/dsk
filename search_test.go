@@ -267,6 +267,49 @@ func TestFilterSearchIsCaseInsensitive(t *testing.T) {
 	expectFilterSearchResult(t, rs, "Colors")
 }
 
+func TestFilterSearchNamespacedTags(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n0 := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n0.Create()
+	n0.CreateMeta("meta.yaml", &NodeMeta{
+		Tags: []string{"foo", "status/draft"},
+	})
+	n0.Load()
+
+	n1 := NewNode(filepath.Join(tmp, "Navigation"), tmp)
+	n1.Create()
+	n1.CreateMeta("meta.yaml", &NodeMeta{
+		Tags: []string{"status/ready"},
+	})
+	n1.Load()
+
+	n2 := NewNode(filepath.Join(tmp, "Type"), tmp)
+	n2.Create()
+	n2.CreateMeta("meta.yaml", &NodeMeta{
+		Tags: []string{"draft"},
+	})
+	n2.Load()
+
+	s := setupSearchTest(t, tmp, "en", []*Node{n0, n1, n2})
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FilterSearch("status", false)
+	expectFilterSearchResult(t, rs, "Colors")
+	expectFilterSearchResult(t, rs, "Navigation")
+	expectNoFilterSearchResult(t, rs, "Type")
+
+	rs, _, _, _, _ = s.FilterSearch("status/draft", false)
+	expectFilterSearchResult(t, rs, "Colors")
+	expectNoFilterSearchResult(t, rs, "Navigation")
+	expectNoFilterSearchResult(t, rs, "Type")
+
+	rs, _, _, _, _ = s.FilterSearch("draft", false)
+	expectFilterSearchResult(t, rs, "Colors")
+	expectNoFilterSearchResult(t, rs, "Navigation")
+	expectFilterSearchResult(t, rs, "Type")
+}
+
 // Tests for search in general, often testing only FullSearch, but
 // assumes FilterSearch behaves the same, as both use the same search
 // backend:
@@ -384,6 +427,9 @@ func TestSearchFindsAllTagsWhenProvidedAsSlice(t *testing.T) {
 	expectFullSearchResult(t, rs, "Diversity")
 
 	rs, _, _, _, _ = s.FullSearch("bar")
+	expectFullSearchResult(t, rs, "Diversity")
+
+	rs, _, _, _, _ = s.FullSearch("foo bar")
 	expectFullSearchResult(t, rs, "Diversity")
 }
 
