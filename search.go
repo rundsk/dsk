@@ -18,6 +18,7 @@ import (
 	"github.com/blevesearch/bleve/analysis/lang/de"
 	"github.com/blevesearch/bleve/analysis/lang/en"
 	"github.com/blevesearch/bleve/mapping"
+	"github.com/blevesearch/bleve/search/query"
 	"github.com/fatih/color"
 )
 
@@ -383,8 +384,16 @@ func (s *Search) FilterSearch(q string, useWideIndex bool) ([]*Node, int, time.D
 	s.RLock()
 	defer s.RUnlock()
 
-	pq := bleve.NewPrefixQuery(q)
-	req := bleve.NewSearchRequest(pq)
+	queryStrings := strings.Split(q, " ")
+	var pqs []query.Query
+
+	for _, queryString := range queryStrings {
+		pq := bleve.NewPrefixQuery(queryString)
+		pqs = append(pqs, pq)
+	}
+
+	cq := bleve.NewConjunctionQuery(pqs...)
+	req := bleve.NewSearchRequest(cq)
 
 	var res *bleve.SearchResult
 	var err error
