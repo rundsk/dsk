@@ -498,4 +498,15 @@ func TestFilterSearchMultipleTagsWithLogicalAndInQuery(t *testing.T) {
 	expectFilterSearchResult(t, rs, "Colors")
 	expectNoFilterSearchResult(t, rs, "Navigation")
 	expectNoFilterSearchResult(t, rs, "Type")
+
+	rs, _, _, _, _ = s.FilterSearch("foo col", false)
+	expectFilterSearchResult(t, rs, "Colors")
+	expectNoFilterSearchResult(t, rs, "Navigation")
+	expectNoFilterSearchResult(t, rs, "Type")
+
+	rs, _, _, _, _ = s.FilterSearch("foo shadows", false)
+	expectNoFilterSearchResult(t, rs, "Colors")
+	expectNoFilterSearchResult(t, rs, "Navigation")
+	expectNoFilterSearchResult(t, rs, "Type")
+}
 }
