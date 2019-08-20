@@ -193,7 +193,7 @@ func TestFilterSearchGermanWordPartials(t *testing.T) {
 	rs, _, _, _, _ := s.FilterSearch("diversit", false)
 	expectFilterSearchResult(t, rs, "Diversitat")
 
-	rs, _, _, _, _ = s.FilterSearch("diversita", false)
+	rs, _, _, _, _ = s.FilterSearch("diversitä", false)
 	expectFilterSearchResult(t, rs, "Diversitat")
 }
 
