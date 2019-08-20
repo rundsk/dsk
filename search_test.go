@@ -509,4 +509,3 @@ func TestFilterSearchMultipleTagsWithLogicalAndInQuery(t *testing.T) {
 	expectNoFilterSearchResult(t, rs, "Navigation")
 	expectNoFilterSearchResult(t, rs, "Type")
 }
-}
