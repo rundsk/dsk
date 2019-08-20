@@ -345,16 +345,19 @@ func (s *Search) FullSearch(q string) ([]*FullSearchHit, int, time.Duration, boo
 	s.RLock()
 	defer s.RUnlock()
 
+	// Prefix query is case sensitive, we want to have it case insensitive.
+	qlower := strings.ToLower(q)
+
 	mq := bleve.NewMatchQuery(q)
 	mq.SetFuzziness(1)
 
-	pq := bleve.NewPrefixQuery(q)
+	pq := bleve.NewPrefixQuery(qlower)
 
 	tmq := bleve.NewMatchQuery(q)
 	tmq.SetField("Title")
 	tmq.SetBoost(2)
 
-	tpq := bleve.NewPrefixQuery(q)
+	tpq := bleve.NewPrefixQuery(qlower)
 	tpq.SetField("Title")
 	tpq.SetBoost(3)
 
@@ -407,11 +410,12 @@ func (s *Search) FilterSearch(q string, useWideIndex bool) ([]*Node, int, time.D
 	s.RLock()
 	defer s.RUnlock()
 
-	queryStrings := strings.Split(q, " ")
-	var pqs []query.Query
+	// Prefix query is case sensitive, we want to have it case insensitive.
+	qlower := strings.ToLower(q)
 
-	for _, queryString := range queryStrings {
-		pq := bleve.NewPrefixQuery(queryString)
+	var pqs []query.Query
+	for _, qlowerPart := range strings.Split(qlower, " ") {
+		pq := bleve.NewPrefixQuery(qlowerPart)
 		pqs = append(pqs, pq)
 	}
 

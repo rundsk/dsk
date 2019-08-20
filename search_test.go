@@ -122,6 +122,25 @@ func TestFullSearchDocumentContents(t *testing.T) {
 	expectFullSearchResult(t, rs, "Colors")
 }
 
+func TestFullSearchIsCaseInsensitive(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n.Create()
+
+	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FullSearch("colors")
+	expectFullSearchResult(t, rs, "Colors")
+
+	rs, _, _, _, _ = s.FullSearch("Colors")
+	expectFullSearchResult(t, rs, "Colors")
+
+	rs, _, _, _, _ = s.FullSearch("coLOrs")
+	expectFullSearchResult(t, rs, "Colors")
+}
+
 // Tests for FilterSearch:
 
 func TestFilterSearchPrefixes(t *testing.T) {
@@ -171,11 +190,30 @@ func TestFilterSearchGermanWordPartials(t *testing.T) {
 	s := setupSearchTest(t, tmp, "de", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FilterSearch("Diversit", false)
+	rs, _, _, _, _ := s.FilterSearch("diversit", false)
 	expectFilterSearchResult(t, rs, "Diversitat")
 
-	rs, _, _, _, _ = s.FilterSearch("Diversita", false)
+	rs, _, _, _, _ = s.FilterSearch("diversita", false)
 	expectFilterSearchResult(t, rs, "Diversitat")
+}
+
+func TestFilterSearchIsCaseInsensitive(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n.Create()
+
+	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FilterSearch("colors", false)
+	expectFilterSearchResult(t, rs, "Colors")
+
+	rs, _, _, _, _ = s.FilterSearch("Colors", false)
+	expectFilterSearchResult(t, rs, "Colors")
+
+	rs, _, _, _, _ = s.FilterSearch("coLOrs", false)
+	expectFilterSearchResult(t, rs, "Colors")
 }
 
 // Tests for search in general, often testing only FullSearch, but
@@ -219,10 +257,10 @@ func TestSearchFindsFullWords(t *testing.T) {
 	s := setupSearchTest(t, tmp, "de", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FullSearch("Diversität")
+	rs, _, _, _, _ := s.FullSearch("diversität")
 	expectFullSearchResult(t, rs, "Diversitat")
 
-	rs, _, _, _, _ = s.FullSearch("Diversität")
+	rs, _, _, _, _ = s.FullSearch("diversität")
 	expectFullSearchResult(t, rs, "Diversitat")
 }
 
@@ -257,7 +295,7 @@ func TestExactMatchesWorkIndependentOfLang(t *testing.T) {
 	defer teardownSearchTest(tmp, s)
 
 	// Exact matches always work, independent of languages.
-	rs, _, _, _, _ := s.FullSearch("Diversität")
+	rs, _, _, _, _ := s.FullSearch("diversität")
 	expectFullSearchResult(t, rs, "Diversitat")
 }
 
@@ -271,10 +309,10 @@ func TestSearchConsidersStopwords(t *testing.T) {
 	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FullSearch("The")
+	rs, _, _, _, _ := s.FullSearch("the")
 	expectNoFullSearchResult(t, rs, "Diversity")
 
-	rs, _, _, _, _ = s.FullSearch("The")
+	rs, _, _, _, _ = s.FullSearch("the")
 	expectNoFullSearchResult(t, rs, "Diversity")
 }
 

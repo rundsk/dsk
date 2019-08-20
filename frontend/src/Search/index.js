@@ -129,7 +129,7 @@ function Search(props) {
       return;
     }
 
-    const search = Client.search(term.toLowerCase());
+    const search = Client.search(term);
     search.then(data => {
       if (!data.hits) {
         // Filtering yielded no results, we save us iterating over the
