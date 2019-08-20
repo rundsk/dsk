@@ -13,7 +13,6 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strings"
 
 	"github.com/fatih/color"
 	isatty "github.com/mattn/go-isatty"
@@ -88,12 +87,9 @@ func main() {
 	port := flag.String("port", "8080", "port to bind to")
 	version := flag.Bool("version", false, "print DSK version")
 	noColor := flag.Bool("no-color", false, "disables color output")
-	flang := flag.String("lang", "en", "language; separate multiple by commas, first is primary")
+	flang := flag.String("lang", "en", "language the documents are authored in")
 	ffrontend := flag.String("frontend", "", "path to a frontend, to use instead of the built-in")
 	flag.Parse()
-
-	// Used for configuring search.
-	langs := strings.Split(*flang, ",")
 
 	if len(flag.Args()) > 1 {
 		log.Fatalf("Too many arguments given, expecting exactly 0 or 1")
@@ -152,7 +148,7 @@ func main() {
 		}
 	}
 	tree = NewNodeTree(here, authors, repository, watcher, broker) // assign to global
-	search, err = NewSearch(tree, broker, langs)                   // assign to global
+	search, err = NewSearch(tree, broker, *flang)                  // assign to global
 	if err != nil {
 		log.Fatal(red.Sprintf("Failed to open search index: %s", err))
 	}

@@ -33,6 +33,7 @@
   available through v1 of the API.
 - The backend now responds to missing API resources with a 404, this allows to use 
   HEAD request to test for the existence of i.e. a node.
+- Remove support for multiple languages in documents of design aspects.
 
 ## 1.1.1
 

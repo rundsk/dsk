@@ -30,8 +30,8 @@ var (
 )
 
 // NewSearch constructs and initializes a Search. The selected
-// languages are validated and checked for availability.
-func NewSearch(t *NodeTree, b *MessageBroker, langs []string) (*Search, error) {
+// language is validated and checked for availability.
+func NewSearch(t *NodeTree, b *MessageBroker, lang string) (*Search, error) {
 	s := &Search{
 		getNode:     t.Get,
 		getAllNodes: t.GetAll,
@@ -41,15 +41,13 @@ func NewSearch(t *NodeTree, b *MessageBroker, langs []string) (*Search, error) {
 		done:        make(chan bool),
 	}
 
-	for _, l := range langs {
-		_, ok := AvailableSearchLangs[l]
-		if !ok {
-			return s, fmt.Errorf("Unsupported language: %s", l)
-		}
+	_, ok := AvailableSearchLangs[lang]
+	if !ok {
+		return s, fmt.Errorf("Unsupported language: %s", lang)
 	}
-	s.langs = langs
+	s.lang = lang
 
-	wideIndex, narrowIndex, err := NewIndexes(langs)
+	wideIndex, narrowIndex, err := NewIndexes(lang)
 	if err != nil {
 		return s, err
 	}
@@ -59,9 +57,9 @@ func NewSearch(t *NodeTree, b *MessageBroker, langs []string) (*Search, error) {
 	return s, nil
 }
 
-func NewIndexes(langs []string) (bleve.Index, bleve.Index, error) {
-	wideIndex, wideErr := bleve.NewMemOnly(NewSearchMapping(langs, true))
-	narrowIndex, narrowErr := bleve.NewMemOnly(NewSearchMapping(langs, false))
+func NewIndexes(lang string) (bleve.Index, bleve.Index, error) {
+	wideIndex, wideErr := bleve.NewMemOnly(NewSearchMapping(lang, true))
+	narrowIndex, narrowErr := bleve.NewMemOnly(NewSearchMapping(lang, false))
 
 	if wideErr != nil {
 		return wideIndex, narrowIndex, wideErr
@@ -69,12 +67,9 @@ func NewIndexes(langs []string) (bleve.Index, bleve.Index, error) {
 	return wideIndex, narrowIndex, narrowErr
 }
 
-func NewSearchMapping(langs []string, isWide bool) *mapping.IndexMappingImpl {
+func NewSearchMapping(lang string, isWide bool) *mapping.IndexMappingImpl {
 	im := bleve.NewIndexMapping()
-
-	if len(langs) > 0 {
-		im.DefaultAnalyzer = AvailableSearchLangs[langs[0]]
-	}
+	im.DefaultAnalyzer = AvailableSearchLangs[lang]
 
 	sm := bleve.NewTextFieldMapping()
 	sm.Analyzer = simple.Name
@@ -82,21 +77,18 @@ func NewSearchMapping(langs []string, isWide bool) *mapping.IndexMappingImpl {
 	km := bleve.NewTextFieldMapping()
 	km.Analyzer = keyword.Name
 
-	var tms []*mapping.FieldMapping
-	for _, l := range langs {
-		tm := bleve.NewTextFieldMapping()
-		tm.Analyzer = AvailableSearchLangs[l]
-		tms = append(tms, tm)
-	}
+	tm := bleve.NewTextFieldMapping()
+	tm.Analyzer = AvailableSearchLangs[lang]
+
 	node := bleve.NewDocumentMapping()
 	node.DefaultAnalyzer = im.DefaultAnalyzer
 
-	node.AddFieldMappingsAt("Titles", tms...)
+	node.AddFieldMappingsAt("Titles", tm)
 	node.AddFieldMappingsAt("Tags", sm, km)
 	if isWide {
 		node.AddFieldMappingsAt("Authors", sm)
-		node.AddFieldMappingsAt("Description", tms...)
-		node.AddFieldMappingsAt("Docs", tms...)
+		node.AddFieldMappingsAt("Description", tm)
+		node.AddFieldMappingsAt("Docs", tm)
 		node.AddFieldMappingsAt("Files", sm)
 		node.AddFieldMappingsAt("Version", sm, km)
 		node.AddFieldMappingsAt("Custom", sm)
@@ -123,9 +115,8 @@ type Search struct {
 	getAllNodes NodesGetter
 	getAuthors  func() *Authors
 
-	// Languages that should be used in our mapping/analyzer setup.
-	// The first language provided will be used as the default language.
-	langs []string
+	// Language that should be used in our mapping/analyzer setup.
+	lang string
 
 	wideIndex   bleve.Index
 	narrowIndex bleve.Index
@@ -179,7 +170,7 @@ func (s *Search) StartIndexer() {
 					s.Lock()
 					// Throw away previous indexes and start from scratch until we
 					// have the needs to incrementally invalidate and re-index.
-					wideIndex, narrowIndex, err := NewIndexes(s.langs)
+					wideIndex, narrowIndex, err := NewIndexes(s.lang)
 					if err != nil {
 						s.Unlock()
 						log.Print(red.Sprintf("Stopping indexer, failed to construct new indexes: %s", err))

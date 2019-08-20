@@ -363,7 +363,7 @@ func setupSearchTest(t *testing.T, tmp string, lang string, nodes []*Node) *Sear
 	t.Helper()
 	log.SetOutput(ioutil.Discard)
 
-	wideIndex, narrowIndex, _ := NewIndexes([]string{lang})
+	wideIndex, narrowIndex, _ := NewIndexes(lang)
 
 	lookup := make(map[string]*Node)
 	for _, n := range nodes {
@@ -390,7 +390,7 @@ func setupSearchTest(t *testing.T, tmp string, lang string, nodes []*Node) *Sear
 			a.Add(&Author{Name: "Randall Hyman", Email: "randall@evilcorp.org"})
 			return a
 		},
-		langs:       []string{lang},
+		lang:        lang,
 		wideIndex:   wideIndex,
 		narrowIndex: narrowIndex,
 		broker:      NewMessageBroker(), // Allow to mount indexer, and to Close()
