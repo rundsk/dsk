@@ -92,6 +92,16 @@ $ make -C frontend dev
 
 Now open http://127.0.0.1:3000 in your browser.
 
+## Debugging
+
+When running the tests the search indexes are store to disk, to ease
+debugging search issues. The test will output the paths where the
+indexes are stored.
+
+The `bleve` tool can then be used to interact with the index files directly.
+The tool can be installed with `go get github.com/blevesearch/bleve/...`. The
+`bleve` command should than be available.
+
 ## Testing
 
 To run the unit tests for the backend use `make test`, to run the

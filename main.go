@@ -148,7 +148,8 @@ func main() {
 		}
 	}
 	tree = NewNodeTree(here, authors, repository, watcher, broker) // assign to global
-	search, err = NewSearch(tree, broker, *flang)                  // assign to global
+
+	search, err = NewSearch("", tree, broker, *flang, false) // assign to global
 	if err != nil {
 		log.Fatal(red.Sprintf("Failed to open search index: %s", err))
 	}
