@@ -297,26 +297,6 @@ func TestSearchFindsMultipleWords(t *testing.T) {
 	expectFullSearchResult(t, rs, "Great")
 }
 
-func TestGermanSearchNormalizesUmlauts(t *testing.T) {
-	tmp, _ := ioutil.TempDir("", "tree")
-
-	n := NewNode(filepath.Join(tmp, "Diversität"), tmp)
-	n.Create()
-	n.Load()
-
-	s := setupSearchTest(t, tmp, "de", []*Node{n}, false)
-	defer teardownSearchTest(tmp, s)
-
-	rs, _, _, _, _ := s.FullSearch("Diversität")
-	expectFullSearchResult(t, rs, "Diversitat")
-
-	rs, _, _, _, _ = s.FullSearch("Diversitat")
-	expectFullSearchResult(t, rs, "Diversitat")
-
-	rs, _, _, _, _ = s.FullSearch("Diversitaet")
-	expectFullSearchResult(t, rs, "Diversitat")
-}
-
 func TestExactMatchesWorkIndependentOfLang(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
