@@ -82,7 +82,7 @@ func NewSearchMapping(lang string, isWide bool) *mapping.IndexMappingImpl {
 	node := bleve.NewDocumentMapping()
 	node.DefaultAnalyzer = im.DefaultAnalyzer
 
-	node.AddFieldMappingsAt("Title", sm)
+	node.AddFieldMappingsAt("Title", tm)
 	node.AddFieldMappingsAt("Tags", km)
 	if isWide {
 		node.AddFieldMappingsAt("SecondaryTitles", tm)
