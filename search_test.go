@@ -523,7 +523,6 @@ func TestFilterSearchMultipleTagsWithLogicalAndInQuery(t *testing.T) {
 	expectNoFilterSearchResult(t, rs, "Navigation")
 	expectNoFilterSearchResult(t, rs, "Type")
 }
-}
 
 func TestFilterSearchNamespacedTags(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
