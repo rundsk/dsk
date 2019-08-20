@@ -8,6 +8,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -32,8 +33,9 @@ var (
 
 // NewSearch constructs and initializes a Search. The selected
 // language is validated and checked for availability.
-func NewSearch(t *NodeTree, b *MessageBroker, lang string) (*Search, error) {
+func NewSearch(path string, t *NodeTree, b *MessageBroker, lang string, isPersistent bool) (*Search, error) {
 	s := &Search{
+		path:        path,
 		getNode:     t.Get,
 		getAllNodes: t.GetAll,
 		getAuthors:  t.GetAuthors,
@@ -48,7 +50,7 @@ func NewSearch(t *NodeTree, b *MessageBroker, lang string) (*Search, error) {
 	}
 	s.lang = lang
 
-	wideIndex, narrowIndex, err := NewIndexes(lang)
+	wideIndex, narrowIndex, err := NewIndexes(s.path, s.lang, isPersistent)
 	if err != nil {
 		return s, err
 	}
@@ -58,9 +60,26 @@ func NewSearch(t *NodeTree, b *MessageBroker, lang string) (*Search, error) {
 	return s, nil
 }
 
-func NewIndexes(lang string) (bleve.Index, bleve.Index, error) {
-	wideIndex, wideErr := bleve.NewMemOnly(NewSearchMapping(lang, true))
-	narrowIndex, narrowErr := bleve.NewMemOnly(NewSearchMapping(lang, false))
+func NewIndexes(path string, lang string, isPersistent bool) (bleve.Index, bleve.Index, error) {
+	var wideIndex bleve.Index
+	var wideErr error
+	widePath := filepath.Join(path, "wide.bleve")
+	wideMapping := NewSearchMapping(lang, true)
+
+	var narrowIndex bleve.Index
+	var narrowErr error
+	narrowPath := filepath.Join(path, "narrow.bleve")
+	narrowMapping := NewSearchMapping(lang, false)
+
+	if isPersistent {
+		log.Printf("Persisting search indexes in: %s", path)
+
+		wideIndex, wideErr = bleve.New(widePath, wideMapping)
+		narrowIndex, narrowErr = bleve.New(narrowPath, narrowMapping)
+	} else {
+		wideIndex, wideErr = bleve.NewMemOnly(wideMapping)
+		narrowIndex, narrowErr = bleve.NewMemOnly(narrowMapping)
+	}
 
 	if wideErr != nil {
 		return wideIndex, narrowIndex, wideErr
@@ -111,6 +130,10 @@ func NewSearchMapping(lang string, isWide bool) *mapping.IndexMappingImpl {
 // https://en.wikipedia.org/wiki/Precision_and_recall
 type Search struct {
 	sync.RWMutex
+
+	// Path to directory holding the indexes, when persistence is
+	// activated.
+	path string
 
 	getNode     NodeGetter
 	getAllNodes NodesGetter
@@ -171,7 +194,7 @@ func (s *Search) StartIndexer() {
 					s.Lock()
 					// Throw away previous indexes and start from scratch until we
 					// have the needs to incrementally invalidate and re-index.
-					wideIndex, narrowIndex, err := NewIndexes(s.lang)
+					wideIndex, narrowIndex, err := NewIndexes("", s.lang, false)
 					if err != nil {
 						s.Unlock()
 						log.Print(red.Sprintf("Stopping indexer, failed to construct new indexes: %s", err))

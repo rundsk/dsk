@@ -7,10 +7,11 @@ package main
 
 import (
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/blevesearch/bleve"
 )
 
 // Tests for FullSearch:
@@ -26,7 +27,7 @@ func TestFullSearchAuthorsEmail(t *testing.T) {
 	})
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("randall@evilcorp.org")
@@ -53,7 +54,7 @@ func TestFullSearchVersion(t *testing.T) {
 	})
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("2")
@@ -74,7 +75,7 @@ func TestFullSearchDescription(t *testing.T) {
 	})
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("fancy")
@@ -97,7 +98,7 @@ func TestFullSearchCustom(t *testing.T) {
 	})
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("foo")
@@ -114,7 +115,7 @@ func TestFullSearchDocumentContents(t *testing.T) {
 	n.Create()
 	n.CreateDoc("About.md", []byte("The following visual design has been agreed upon by our team:"))
 
-	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("visual design")
@@ -130,7 +131,7 @@ func TestFilterSearchPrefixes(t *testing.T) {
 	n.Create()
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FilterSearch("c", false)
@@ -150,7 +151,7 @@ func TestFilterSearchWordPartials(t *testing.T) {
 	n.Create()
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FilterSearch("na", false)
@@ -167,7 +168,7 @@ func TestFilterSearchGermanWordPartials(t *testing.T) {
 	n.Create()
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "de", []*Node{n})
+	s := setupSearchTest(t, tmp, "de", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FilterSearch("Diversit", false)
@@ -201,7 +202,7 @@ func TestFilterSearchMultipleTagsWithLogicalAndInQuery(t *testing.T) {
 	})
 	n2.Load()
 
-	s := setupSearchTest(t, tmp, "en", []*Node{n0, n1, n2})
+	s := setupSearchTest(t, tmp, "en", []*Node{n0, n1, n2}, false)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FilterSearch("foo", false)
@@ -238,7 +239,7 @@ func TestSearchWordPartials(t *testing.T) {
 	n.Create()
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("na")
@@ -266,7 +267,7 @@ func TestSearchFindsFullWords(t *testing.T) {
 	n := NewNode(filepath.Join(tmp, "Diversität"), tmp)
 	n.Create()
 
-	s := setupSearchTest(t, tmp, "de", []*Node{n})
+	s := setupSearchTest(t, tmp, "de", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("Diversität")
@@ -288,7 +289,7 @@ func TestSearchFindsMultipleWords(t *testing.T) {
 	n2 := NewNode(filepath.Join(tmp, "Amazing"), tmp)
 	n2.Create()
 
-	s := setupSearchTest(t, tmp, "de", []*Node{n0, n1, n2})
+	s := setupSearchTest(t, tmp, "de", []*Node{n0, n1, n2}, false)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("fantastic great")
@@ -303,7 +304,7 @@ func TestGermanSearchNormalizesUmlauts(t *testing.T) {
 	n.Create()
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "de", []*Node{n})
+	s := setupSearchTest(t, tmp, "de", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("Diversität")
@@ -323,7 +324,7 @@ func TestExactMatchesWorkIndependentOfLang(t *testing.T) {
 	n.Create()
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
 	// Exact matches always work, independent of languages.
@@ -338,7 +339,7 @@ func TestSearchConsidersStopwords(t *testing.T) {
 	n.Create()
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("The")
@@ -358,7 +359,7 @@ func TestSearchFindsAllTagsWhenProvidedAsSlice(t *testing.T) {
 	})
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("foo")
@@ -377,7 +378,7 @@ func TestSearchConsidersMultipleDocs(t *testing.T) {
 	n.CreateDoc("1.md", []byte("dolor amet bar"))
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("foo")
@@ -395,7 +396,7 @@ func TestSearchConsidersFilenames(t *testing.T) {
 	n.CreateDoc("document.md", []byte("lorem ipsum"))
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("document.md")
@@ -410,7 +411,7 @@ func TestSearchConsidersTitles(t *testing.T) {
 	n.CreateDoc("document.md", []byte("lorem ipsum"))
 	n.Load()
 
-	s := setupSearchTest(t, tmp, "en", []*Node{n})
+	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FullSearch("document")
@@ -419,11 +420,18 @@ func TestSearchConsidersTitles(t *testing.T) {
 
 // Search test helpers:
 
-func setupSearchTest(t *testing.T, tmp string, lang string, nodes []*Node) *Search {
+func setupSearchTest(t *testing.T, tmp string, lang string, nodes []*Node, dumpIndex bool) *Search {
 	t.Helper()
-	log.SetOutput(ioutil.Discard)
 
-	wideIndex, narrowIndex, _ := NewIndexes(lang)
+	var wideIndex bleve.Index
+	var narrowIndex bleve.Index
+
+	if dumpIndex {
+		searchPath, _ := ioutil.TempDir("", "dsk"+t.Name())
+		wideIndex, narrowIndex, _ = NewIndexes(searchPath, lang, true)
+	} else {
+		wideIndex, narrowIndex, _ = NewIndexes("", lang, false)
+	}
 
 	lookup := make(map[string]*Node)
 	for _, n := range nodes {
@@ -463,7 +471,6 @@ func setupSearchTest(t *testing.T, tmp string, lang string, nodes []*Node) *Sear
 func teardownSearchTest(tmp string, s *Search) {
 	s.Close()
 	os.RemoveAll(tmp)
-	log.SetOutput(os.Stderr)
 }
 
 func expectFullSearchResult(t *testing.T, hits []*FullSearchHit, url string) {
