@@ -64,7 +64,7 @@ export default class Client {
   static search(q) {
     let params = new URLSearchParams();
 
-    params.set('q', encodeURIComponent(q));
+    params.set('q', q);
 
     return this.fetch(`/api/v2/search?${params.toString()}`);
   }
@@ -84,7 +84,7 @@ export default class Client {
   static filter(q, useWideIndex = false) {
     let params = new URLSearchParams();
 
-    params.set('q', encodeURIComponent(q));
+    params.set('q', q);
     if (useWideIndex) {
       params.set('index', 'wide');
     }
