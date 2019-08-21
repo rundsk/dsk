@@ -34,6 +34,8 @@
 - The backend now responds to missing API resources with a 404, this allows to use 
   HEAD request to test for the existence of i.e. a node.
 - Remove support for multiple languages in documents of design aspects.
+- Remove support for using wide index with filter search, all filter queries 
+  will use the narrow index.
 
 ## 1.1.1
 

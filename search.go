@@ -400,7 +400,7 @@ func (s *Search) FullSearch(q string) ([]*FullSearchHit, int, time.Duration, boo
 // FilterSearch performs a narrow restricted prefix search on the
 // node's visible attributes (the title) plus tags using the narrow
 // index by default. Returns a slice of found unique Nodes.
-func (s *Search) FilterSearch(q string, useWideIndex bool) ([]*Node, int, time.Duration, bool, error) {
+func (s *Search) FilterSearch(q string) ([]*Node, int, time.Duration, bool, error) {
 	s.RLock()
 	defer s.RUnlock()
 
@@ -423,13 +423,8 @@ func (s *Search) FilterSearch(q string, useWideIndex bool) ([]*Node, int, time.D
 	cq := bleve.NewConjunctionQuery(pqs...)
 	req := bleve.NewSearchRequest(cq)
 
-	var res *bleve.SearchResult
-	var err error
-	if useWideIndex {
-		res, err = s.wideIndex.Search(req)
-	} else {
-		res, err = s.narrowIndex.Search(req)
-	}
+	res, err := s.narrowIndex.Search(req)
+
 	if err != nil {
 		return nil, 0, time.Duration(0), s.isStale, fmt.Errorf("Query '%s' failed: %s", q, err)
 	}

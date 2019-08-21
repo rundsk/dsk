@@ -81,13 +81,10 @@ export default class Client {
   //      return Tree.filteredBy(urls);
   //   });
   // ```
-  static filter(q, useWideIndex = false) {
+  static filter(q) {
     let params = new URLSearchParams();
 
     params.set('q', q);
-    if (useWideIndex) {
-      params.set('index', 'wide');
-    }
 
     return this.fetch(`/api/v2/filter?${params.toString()}`);
   }

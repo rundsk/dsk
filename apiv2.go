@@ -33,8 +33,8 @@ type APIv2 struct {
 // contains all found results in form of a list of node URLs.
 type APIv2FullSearchResults struct {
 	Hits  []*APIv2FullSearchHit `json:"hits"`
-	Total int               `json:"total"`
-	Took  int64             `json:"took"` // nanoseconds
+	Total int                   `json:"total"`
+	Took  int64                 `json:"took"` // nanoseconds
 }
 
 type APIv2FullSearchHit struct {
@@ -114,9 +114,8 @@ func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 func (api APIv2) FilterHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, "application/json"}
 	q := r.URL.Query().Get("q")
-	useWideIndex := r.URL.Query().Get("index") == "wide"
 
-	results, total, took, _, err := api.search.FilterSearch(q, useWideIndex)
+	results, total, took, _, err := api.search.FilterSearch(q)
 	if err != nil {
 		wr.Error(HTTPErr, err)
 		return

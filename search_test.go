@@ -322,13 +322,13 @@ func TestFilterSearchPrefixes(t *testing.T) {
 	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FilterSearch("c", false)
+	rs, _, _, _, _ := s.FilterSearch("c")
 	expectFilterSearchResult(t, rs, "Colors")
 
-	rs, _, _, _, _ = s.FilterSearch("co", false)
+	rs, _, _, _, _ = s.FilterSearch("co")
 	expectFilterSearchResult(t, rs, "Colors")
 
-	rs, _, _, _, _ = s.FilterSearch("col", false)
+	rs, _, _, _, _ = s.FilterSearch("col")
 	expectFilterSearchResult(t, rs, "Colors")
 }
 
@@ -342,10 +342,10 @@ func TestFilterSearchWordPartials(t *testing.T) {
 	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FilterSearch("na", false)
+	rs, _, _, _, _ := s.FilterSearch("na")
 	expectFilterSearchResult(t, rs, "Navigation")
 
-	rs, _, _, _, _ = s.FilterSearch("naviga", false)
+	rs, _, _, _, _ = s.FilterSearch("naviga")
 	expectFilterSearchResult(t, rs, "Navigation")
 }
 
@@ -359,10 +359,10 @@ func TestFilterSearchGermanWordPartials(t *testing.T) {
 	s := setupSearchTest(t, tmp, "de", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FilterSearch("diversit", false)
+	rs, _, _, _, _ := s.FilterSearch("diversit")
 	expectFilterSearchResult(t, rs, "Diversitat")
 
-	rs, _, _, _, _ = s.FilterSearch("diversitä", false)
+	rs, _, _, _, _ = s.FilterSearch("diversitä")
 	expectFilterSearchResult(t, rs, "Diversitat")
 }
 
@@ -393,25 +393,25 @@ func TestFilterSearchMultipleTagsWithLogicalAndInQuery(t *testing.T) {
 	s := setupSearchTest(t, tmp, "en", []*Node{n0, n1, n2}, false)
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FilterSearch("foo", false)
+	rs, _, _, _, _ := s.FilterSearch("foo")
 	expectFilterSearchResult(t, rs, "Colors")
 	expectFilterSearchResult(t, rs, "Navigation")
 
-	rs, _, _, _, _ = s.FilterSearch("bar", false)
+	rs, _, _, _, _ = s.FilterSearch("bar")
 	expectFilterSearchResult(t, rs, "Colors")
 	expectFilterSearchResult(t, rs, "Type")
 
-	rs, _, _, _, _ = s.FilterSearch("foo bar", false)
+	rs, _, _, _, _ = s.FilterSearch("foo bar")
 	expectFilterSearchResult(t, rs, "Colors")
 	expectNoFilterSearchResult(t, rs, "Navigation")
 	expectNoFilterSearchResult(t, rs, "Type")
 
-	rs, _, _, _, _ = s.FilterSearch("foo col", false)
+	rs, _, _, _, _ = s.FilterSearch("foo col")
 	expectFilterSearchResult(t, rs, "Colors")
 	expectNoFilterSearchResult(t, rs, "Navigation")
 	expectNoFilterSearchResult(t, rs, "Type")
 
-	rs, _, _, _, _ = s.FilterSearch("foo shadows", false)
+	rs, _, _, _, _ = s.FilterSearch("foo shadows")
 	expectNoFilterSearchResult(t, rs, "Colors")
 	expectNoFilterSearchResult(t, rs, "Navigation")
 	expectNoFilterSearchResult(t, rs, "Type")
@@ -426,13 +426,13 @@ func TestFilterSearchIsCaseInsensitive(t *testing.T) {
 	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FilterSearch("colors", false)
+	rs, _, _, _, _ := s.FilterSearch("colors")
 	expectFilterSearchResult(t, rs, "Colors")
 
-	rs, _, _, _, _ = s.FilterSearch("Colors", false)
+	rs, _, _, _, _ = s.FilterSearch("Colors")
 	expectFilterSearchResult(t, rs, "Colors")
 
-	rs, _, _, _, _ = s.FilterSearch("coLOrs", false)
+	rs, _, _, _, _ = s.FilterSearch("coLOrs")
 	expectFilterSearchResult(t, rs, "Colors")
 }
 
@@ -463,17 +463,17 @@ func TestFilterSearchNamespacedTags(t *testing.T) {
 	s := setupSearchTest(t, tmp, "en", []*Node{n0, n1, n2}, false)
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FilterSearch("status", false)
+	rs, _, _, _, _ := s.FilterSearch("status")
 	expectFilterSearchResult(t, rs, "Colors")
 	expectFilterSearchResult(t, rs, "Navigation")
 	expectNoFilterSearchResult(t, rs, "Type")
 
-	rs, _, _, _, _ = s.FilterSearch("status/draft", false)
+	rs, _, _, _, _ = s.FilterSearch("status/draft")
 	expectFilterSearchResult(t, rs, "Colors")
 	expectNoFilterSearchResult(t, rs, "Navigation")
 	expectNoFilterSearchResult(t, rs, "Type")
 
-	rs, _, _, _, _ = s.FilterSearch("draft", false)
+	rs, _, _, _, _ = s.FilterSearch("draft")
 	expectFilterSearchResult(t, rs, "Colors")
 	expectNoFilterSearchResult(t, rs, "Navigation")
 	expectFilterSearchResult(t, rs, "Type")
@@ -492,13 +492,13 @@ func TestFilterSearchTagsWithSpaces(t *testing.T) {
 	s := setupSearchTest(t, tmp, "en", []*Node{n0}, false)
 	defer teardownSearchTest(tmp, s)
 
-	rs, _, _, _, _ := s.FilterSearch("needs", false)
+	rs, _, _, _, _ := s.FilterSearch("needs")
 	expectFilterSearchResult(t, rs, "Colors")
 
-	rs, _, _, _, _ = s.FilterSearch("images", false)
+	rs, _, _, _, _ = s.FilterSearch("images")
 	expectFilterSearchResult(t, rs, "Colors")
 
-	rs, _, _, _, _ = s.FilterSearch("needs images", false)
+	rs, _, _, _, _ = s.FilterSearch("needs images")
 	expectFilterSearchResult(t, rs, "Colors")
 }
 
