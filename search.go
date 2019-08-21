@@ -101,7 +101,6 @@ func NewSearchMapping(lang string, isWide bool) *mapping.IndexMappingImpl {
 	tm.Analyzer = AvailableSearchLangs[lang]
 
 	node := bleve.NewDocumentMapping()
-	node.DefaultAnalyzer = im.DefaultAnalyzer
 
 	node.AddFieldMappingsAt("Title", tm)
 	node.AddFieldMappingsAt("Tags", km)
@@ -123,12 +122,6 @@ func NewSearchMapping(lang string, isWide bool) *mapping.IndexMappingImpl {
 // It allows to perform full text searching through FullSearch(),
 // wrapping a bleve search index and to perform filtering through
 // FilterSearch().
-//
-// Fuzzy mode can be enabled on a per query basis for FullSearch
-// and FilterSearch. The mode should be used if the result
-// set doesn't seem large enough. It follows the "It's better
-// to have false positives than false negatives" principle:
-// https://en.wikipedia.org/wiki/Precision_and_recall
 type Search struct {
 	sync.RWMutex
 
