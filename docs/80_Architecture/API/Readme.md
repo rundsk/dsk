@@ -28,11 +28,6 @@ Version 2 of the API first appeared with DSK Version 1.1.
 
 ### Filtering & Searching
 
-The `filter` endpoint support a special `wide` mode, which
-will yield more results for the cost of more false positives. The mode should
-be used if you feel the result sets are not large enough. It can optionally be
-enabled using a query parameter (i.e. `?q=foo&index=wide`).
-
 #### But how do `filter` and `search` differ? 
 
 `filter` by default matches on all the node's "visible" attributes, it always
