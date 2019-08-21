@@ -479,6 +479,29 @@ func TestFilterSearchNamespacedTags(t *testing.T) {
 	expectFilterSearchResult(t, rs, "Type")
 }
 
+func TestFilterSearchTagsWithSpaces(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n0 := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n0.Create()
+	n0.CreateMeta("meta.yaml", &NodeMeta{
+		Tags: []string{"foo", "needs images"},
+	})
+	n0.Load()
+
+	s := setupSearchTest(t, tmp, "en", []*Node{n0}, false)
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FilterSearch("needs", false)
+	expectFilterSearchResult(t, rs, "Colors")
+
+	rs, _, _, _, _ = s.FilterSearch("images", false)
+	expectFilterSearchResult(t, rs, "Colors")
+
+	rs, _, _, _, _ = s.FilterSearch("needs images", false)
+	expectFilterSearchResult(t, rs, "Colors")
+}
+
 // Search test helpers:
 
 func setupSearchTest(t *testing.T, tmp string, lang string, nodes []*Node, dumpIndex bool) *Search {
