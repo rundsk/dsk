@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -413,8 +414,15 @@ func (s *Search) FilterSearch(q string, useWideIndex bool) ([]*Node, int, time.D
 	// Prefix query is case sensitive, we want to have it case insensitive.
 	qlower := strings.ToLower(q)
 
+	// We split the query for use with prefix query. Tags may contain
+	// slashes to namespace tags (1). We want to be able to search
+	// each of them. The query may contain (2) spaces, each space
+	// separated word should be used as an individual query and AND'ed
+	// together.
+	splitter := regexp.MustCompile(`[^\p{L}0-9]`)
+
 	var pqs []query.Query
-	for _, qlowerPart := range strings.Split(qlower, " ") {
+	for _, qlowerPart := range splitter.Split(qlower, -1) {
 		pq := bleve.NewPrefixQuery(qlowerPart)
 		pqs = append(pqs, pq)
 	}

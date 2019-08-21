@@ -581,7 +581,7 @@ func TestFilterSearchNamespacedTags(t *testing.T) {
 	expectFilterSearchResult(t, rs, "Navigation")
 	expectNoFilterSearchResult(t, rs, "Type")
 
-	rs, _, _, _, _ = s.FilterSearch("statusdraft", false)
+	rs, _, _, _, _ = s.FilterSearch("status/draft", false)
 	expectFilterSearchResult(t, rs, "Colors")
 	expectNoFilterSearchResult(t, rs, "Navigation")
 	expectNoFilterSearchResult(t, rs, "Type")
