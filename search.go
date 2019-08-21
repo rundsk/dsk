@@ -101,7 +101,6 @@ func NewSearchMapping(lang string, isWide bool) *mapping.IndexMappingImpl {
 	tm.Analyzer = AvailableSearchLangs[lang]
 
 	node := bleve.NewDocumentMapping()
-	node.DefaultAnalyzer = im.DefaultAnalyzer
 
 	node.AddFieldMappingsAt("Title", tm)
 	node.AddFieldMappingsAt("Tags", km)
