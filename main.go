@@ -115,6 +115,8 @@ func main() {
 		log.Print()
 	}
 
+	log.Printf("Our PID: %d", os.Getpid())
+
 	here, err := detectTreeRoot(os.Args[0], flag.Arg(0))
 	if err != nil {
 		log.Fatal(red.Sprintf("Failed to detect root of design definitions tree: %s", err))
