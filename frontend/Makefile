@@ -7,6 +7,10 @@
 dev:
 	yarn start
 
+.PHONY: test
+test:
+	yarn test .
+
 .PHONY: dist
 dist: build
 
