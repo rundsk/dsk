@@ -102,6 +102,27 @@ The following visual design has been agreed upon by our team:
 	}
 }
 
+func TestAddComponentProtectionOnLastLine(t *testing.T) {
+	raw0 := `
+<Banner title="Banner" type="warning">Use banners to highlight things people shouldn’t miss.</Banner>
+
+<Banner title="Banner" type="warning">Use banners to highlight things people shouldn’t miss.</Banner>`
+	expected0 := `
+<script>'|dsk|'<Banner title="Banner" type="warning">Use banners to highlight things people shouldn’t miss.</Banner>'|dsk|'</script>
+
+<script>'|dsk|'<Banner title="Banner" type="warning">Use banners to highlight things people shouldn’t miss.</Banner>'|dsk|'</script>`
+
+	components0 := []*NodeDocComponent{
+		&NodeDocComponent{Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 1, Length: 103},
+		&NodeDocComponent{Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 106, Length: 103},
+	}
+
+	result0 := addComponentProtection([]byte(raw0), components0)
+	if string(result0) != expected0 {
+		t.Errorf("Failed, got: %s", result0)
+	}
+}
+
 func TestRemoveComponentProtection(t *testing.T) {
 	raw0 := `
 Yellow and <script>'|dsk|'<ColorSwatch>green</ColorSwatch>'|dsk|'</script> are the colors of spring.
@@ -200,5 +221,46 @@ hello
 
 	if string(html0) != expected0 {
 		t.Errorf("Component markup does not look like expected, got: %s", html0)
+	}
+}
+
+func TestAddRemoveComponentProtectionSymmetry(t *testing.T) {
+	raw0 := `
+<Banner title="Banner" type="warning">Use banners to highlight things people shouldn’t miss.</Banner>
+
+<Banner title="Banner" type="warning">Use banners to highlight things people shouldn’t miss.</Banner>
+`
+
+	components0 := findComponentsInMarkdown([]byte(raw0))
+	expectedComponents0 := []*NodeDocComponent{
+		&NodeDocComponent{Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 1, Length: 103},
+		&NodeDocComponent{Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 106, Length: 103},
+	}
+	if len(components0) != len(expectedComponents0) {
+		t.Errorf("Failed number of components mismatch, got: %d", len(components0))
+	}
+	for k, v := range components0 {
+		if v.Position != expectedComponents0[k].Position {
+			t.Errorf("Failed position, got: %d", v.Position)
+		}
+		if v.Length != expectedComponents0[k].Length {
+			t.Errorf("Failed length, got: %d", v.Length)
+		}
+	}
+
+	added0 := addComponentProtection([]byte(raw0), components0)
+	addedExpected0 := `
+<script>'|dsk|'<Banner title="Banner" type="warning">Use banners to highlight things people shouldn’t miss.</Banner>'|dsk|'</script>
+
+<script>'|dsk|'<Banner title="Banner" type="warning">Use banners to highlight things people shouldn’t miss.</Banner>'|dsk|'</script>
+`
+	if string(added0) != addedExpected0 {
+		t.Errorf("Failed, got: %s", added0)
+	}
+
+	removed0 := removeComponentProtection(added0)
+	removedExpected0 := raw0
+	if string(removed0) != removedExpected0 {
+		t.Errorf("Failed, got: %s", removed0)
 	}
 }

@@ -167,6 +167,9 @@ func addComponentProtection(contents []byte, components []*NodeDocComponent) []b
 			}
 			r.WriteByte(c[i])
 		}
+		if len(c) == component.Position+component.Length+offset {
+			r.WriteString(protectClosingScriptTag)
+		}
 		c = r.String()
 		r.Reset()
 		offset += len(protectOpeningScriptTag) + len(protectClosingScriptTag)
