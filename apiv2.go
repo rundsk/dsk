@@ -95,6 +95,8 @@ func (api APIv2) NewNodeTreeFilterResults(nodes []*Node, total int, took time.Du
 //   /api/v2/search?q={query}
 func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, "application/json"}
+	r.Body.Close()
+
 	q := r.URL.Query().Get("q")
 
 	results, total, took, _, err := api.search.FullSearch(q)
@@ -113,6 +115,8 @@ func (api APIv2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/v2/filter?q={query}&index=wide
 func (api APIv2) FilterHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, "application/json"}
+	r.Body.Close()
+
 	q := r.URL.Query().Get("q")
 
 	results, total, took, _, err := api.search.FilterSearch(q)
