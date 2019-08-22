@@ -87,10 +87,23 @@ function App(props) {
     }
   }
 
-  // Use frontend configuration to configure app, if present.
+  // Use frontend configuration to configure app, if present. The hook may run
+  // several times, which will cause to load the configuration again and again.
+  // To prevent this we set the state to `false`, to indicate a previous load
+  // already happened and wasn't successful, so it doesn't need to be tried
+  // again.
   useEffect(() => {
-    Client.configuration().then(setFrontendConfig, () => null)
-  }, [setFrontendConfig]);
+    if (frontendConfig === false) {
+      return;
+    }
+    Client.configuration()
+      .then((data) => {
+        setFrontendConfig(data);
+      })
+      .catch(() => {
+        setFrontendConfig(false);
+      });
+  }, [frontendConfig, setFrontendConfig]);
 
   // Initialize tree navigation and title.
   useEffect(loadTree, []);
