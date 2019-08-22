@@ -14,52 +14,50 @@ function FigmaEmbed(props) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [loadingMessage, setLoadingMessage] = useState(null);
 
+  // Retrieves document.
   useEffect(() => {
-    getDocument();
-  }, [props.document, props.frame]);
-
-  function getDocument() {
-    if (props.document && props.token) {
-      const myHeaders = new Headers();
-      myHeaders.append('X-Figma-Token', props.token);
-
-      setLoadingMessage('Loading document …');
-
-      fetch(`https://api.figma.com/v1/files/${props.document}`, {
-        method: 'GET',
-        headers: myHeaders,
-      })
-        .then(response => {
-          if (response.status === 200) {
-            return response.json();
-          } else {
-            setErrorMessage('Something went wrong.');
-          }
-        })
-        .then(data => {
-          findId(data);
-        })
-        .catch(err => {
-          console.log(err);
-          setErrorMessage('Something went wrong.');
-        });
-
-      // fetch(`https://api.figma.com/v1/teams/669136806690498635/styles`, {
-      //   method: 'GET',
-      //   headers: myHeaders,
-      // }).then((response) => {
-      //   if (response.status === 200) {
-      //     return response.json();
-      //   } else {
-      //     throw new Error('Something went wrong on api server!');
-      //   }
-      // }).then((data) => {
-      //   console.log(data)
-      // }).catch((err) => {
-      //   console.log(err);
-      // });
+    if (!props.document || !props.token) {
+      return;
     }
-  }
+    const myHeaders = new Headers();
+    myHeaders.append('X-Figma-Token', props.token);
+
+    setLoadingMessage('Loading document …');
+
+    fetch(`https://api.figma.com/v1/files/${props.document}`, {
+      method: 'GET',
+      headers: myHeaders,
+    })
+      .then(response => {
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          setErrorMessage('Something went wrong.');
+        }
+      })
+      .then(data => {
+        findId(data);
+      })
+      .catch(err => {
+        console.log(err);
+        setErrorMessage('Something went wrong.');
+      });
+
+    // fetch(`https://api.figma.com/v1/teams/669136806690498635/styles`, {
+    //   method: 'GET',
+    //   headers: myHeaders,
+    // }).then((response) => {
+    //   if (response.status === 200) {
+    //     return response.json();
+    //   } else {
+    //     throw new Error('Something went wrong on api server!');
+    //   }
+    // }).then((data) => {
+    //   console.log(data)
+    // }).catch((err) => {
+    //   console.log(err);
+    // });
+  }, [props.document, props.frame, props.token]);
 
   function findId(data) {
     let nameWeAreLookingFor = props.frame;

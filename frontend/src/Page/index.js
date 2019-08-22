@@ -40,7 +40,7 @@ function Page(props) {
     }
 
     document.title = title;
-  }, [props.title, props.designSystemTitle]);
+  }, [props.title, props.designSystemTitle, props.url]);
 
   function docDidRender() {
     // Check if there is a section marker in the URL, and if their is

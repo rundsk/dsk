@@ -23,17 +23,22 @@ import FigmaEmbed from '../FigmaEmbed';
 import TypographySpecimen from '../TypographySpecimen';
 
 function Doc(props) {
+  useEffect(() => {
+    if (!props.htmlContent) {
+      return;
+    }
+    // window.requestAnimationFrame should ensure that the rendering
+    // has finished.
+    window.requestAnimationFrame(() => {
+      if (props.onRender) {
+        props.onRender()
+      };
+    });
+  });
+
   if (!props.htmlContent) {
     return <div className="doc">{props.children}</div>;
   }
-
-  useEffect(() => {
-    // window.requestAnimationFrame should ensure that the rendering
-    // has finished
-    window.requestAnimationFrame(() => {
-      if (props.onRender) { props.onRender() };
-    });
-  });
 
   // Allow to use this inside the `transforms` constant. We cannot use
   // `props.title` there as that refers to the component/element that is being

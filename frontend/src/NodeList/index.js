@@ -14,16 +14,12 @@ function Node(props) {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    getData();
-  }, [props.url]);
-
-  function getData() {
     if (props.url) {
       Client.get(props.url).then(data => {
         setData(data);
       });
     }
-  }
+  }, [props.url]);
 
   return (
     <BaseLink router={props.router} routeName="node" routeParams={{ node: `${props.url}` }} className="node-list__node">

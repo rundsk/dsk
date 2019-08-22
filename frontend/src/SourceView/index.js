@@ -16,18 +16,12 @@ function SourceView(props) {
       Client.hello().then(data => {
         setSource(data);
       });
-      return;
-    }
-    getSource();
-  }, [props.url]);
-
-  function getSource() {
-    if (props.url !== undefined) {
+    } else if (props.url !== undefined) {
       Client.get(props.url).then(data => {
         setSource(data);
       });
     }
-  }
+  }, [props.url]);
 
   let title = `API Response for /api/v2/tree/${props.url}`;
 

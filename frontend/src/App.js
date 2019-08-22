@@ -51,7 +51,7 @@ function App(props) {
         })
       }
     });
-  }, []);
+  }, [props.router]);
 
   function loadTree() {
     Client.tree().then((data) => {
@@ -90,7 +90,7 @@ function App(props) {
   // Use frontend configuration to configure app, if present.
   useEffect(() => {
     Client.configuration().then(setFrontendConfig, () => null)
-  }, []);
+  }, [setFrontendConfig]);
 
   // Initialize tree navigation and title.
   useEffect(loadTree, []);

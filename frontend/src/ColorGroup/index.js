@@ -7,17 +7,13 @@ function ColorGroup(props) {
   const [colors, setColors] = useState([]);
 
   useEffect(() => {
-    getData();
-  }, [props.src]);
-
-  function getData() {
     if (props.src) {
       // FIXME: This should obviously be derived from the src attribute
       Client.get(`/The-Frontend/Documentation-Components/Color-Card-and-Color-Group${props.src.slice(1)}`).then(data => {
         setColors(data.colors);
       });
     }
-  }
+  }, [props.src]);
 
   let classes = ['color-group'];
 
