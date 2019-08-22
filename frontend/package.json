@@ -8,14 +8,14 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-router5": "^7.1.0",
-    "react-scripts": "2.1.8",
+    "react-scripts": "^3.0.0",
     "reactn": "^1.0.0",
     "router5": "^7.0.2",
     "router5-plugin-browser": "^7.0.2"
   },
   "devDependencies": {
     "http-proxy-middleware": "^0.19.1",
-    "prettier": "1.18.2"
+    "prettier": "^1.18.2"
   },
   "scripts": {
     "start": "react-scripts start",
