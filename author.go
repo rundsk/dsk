@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
 const (
@@ -32,6 +33,8 @@ func NewAuthors(path string) *Authors {
 //
 // See: https://github.com/git/git/blob/master/Documentation/mailmap.txt
 type Authors struct {
+	sync.RWMutex
+
 	path string
 	data []*Author
 }
@@ -42,8 +45,6 @@ type Author struct {
 }
 
 func (as *Authors) Sync() error {
-	as.data = make([]*Author, 0)
-
 	if _, err := os.Stat(as.path); os.IsNotExist(err) {
 		return nil
 	}
@@ -53,16 +54,27 @@ func (as *Authors) Sync() error {
 	if err != nil {
 		return err
 	}
+
+	as.Lock()
+	as.data = make([]*Author, 0)
+	as.Unlock()
+
 	return as.AddFrom(f)
 }
 
 // Add single author item to the internal data slice.
 func (as *Authors) Add(a *Author) {
+	as.Lock()
+	defer as.Unlock()
+
 	as.data = append(as.data, a)
 }
 
 // Parses given file and adds authors to the internal data.
 func (as *Authors) AddFrom(r io.Reader) error {
+	as.Lock()
+	defer as.Unlock()
+
 	parsed, err := as.parse(r)
 	if err != nil {
 		return err
@@ -77,7 +89,7 @@ func (as *Authors) AddFrom(r io.Reader) error {
 //   Proper Name <commit@email.xx>
 //   # this is a comment
 //   Proper Name <commit@email.xx> # inline comment
-func (as Authors) parse(r io.Reader) ([]*Author, error) {
+func (as *Authors) parse(r io.Reader) ([]*Author, error) {
 	var parsed []*Author
 
 	lineScanner := bufio.NewScanner(r)
@@ -109,7 +121,10 @@ func (as Authors) parse(r io.Reader) ([]*Author, error) {
 	return parsed, nil
 }
 
-func (as Authors) Get(email string) (ok bool, a *Author, err error) {
+func (as *Authors) Get(email string) (ok bool, a *Author, err error) {
+	as.RLock()
+	defer as.RUnlock()
+
 	for _, a := range as.data {
 		if a.Email == email {
 			return true, a, nil
