@@ -380,6 +380,7 @@ func (api APIv1) HelloHandler(w http.ResponseWriter, r *http.Request) {
 // WebSocket endpoint for receiving notifications.
 func (api *APIv1) MessagesHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, ""}
+	defer r.Body.Close()
 
 	conn, err := api.upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -412,6 +413,7 @@ func (api *APIv1) MessagesHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/v1/tree
 func (api APIv1) TreeHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, "application/json"}
+	r.Body.Close()
 	// Not getting or checking path, as only tree requests are routed here.
 
 	if wr.Cached(api.tree.Hash) {
@@ -434,6 +436,8 @@ func (api APIv1) TreeHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/v1/tree/DisplayData/Table/Row
 func (api APIv1) NodeHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, "application/json"}
+	r.Body.Close()
+
 	path := r.URL.Path[len("/api/v1/tree/"):]
 
 	if err := checkSafePath(path, api.tree.path); err != nil {
@@ -473,6 +477,8 @@ func (api APIv1) NodeHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/v1/tree/Button/foo.mp4
 func (api APIv1) NodeAssetHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, "application/json"}
+	r.Body.Close()
+
 	path := r.URL.Path[len("/api/v1/tree/"):]
 
 	if err := checkSafePath(path, api.tree.path); err != nil {
@@ -505,6 +511,8 @@ func (api APIv1) NodeAssetHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/v1/search?q={query}
 func (api APIv1) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, "application/json"}
+	r.Body.Close()
+
 	q := r.URL.Query().Get("q")
 
 	results, total, took, err := api.search.LegacyFilterSearch(q)
@@ -518,5 +526,7 @@ func (api APIv1) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 func (api APIv1) NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, ""}
+	r.Body.Close()
+
 	wr.Error(HTTPErrNotFound, nil)
 }

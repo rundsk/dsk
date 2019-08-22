@@ -237,6 +237,8 @@ func main() {
 //   /* <catch all>
 func frontendRootHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, ""}
+	r.Body.Close()
+
 	path := "index.html"
 
 	// Does not check on path, as we only ever serve a single
@@ -265,6 +267,8 @@ func frontendRootHandler(w http.ResponseWriter, r *http.Request) {
 //   /static/css/main.41064805.css
 func frontendAssetHandler(w http.ResponseWriter, r *http.Request) {
 	wr := &HTTPResponder{w, r, ""}
+	r.Body.Close()
+
 	path := r.URL.Path[len("/"):]
 
 	if err := checkSafePath(path, tree.path); err != nil {
