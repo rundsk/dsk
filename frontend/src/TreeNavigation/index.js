@@ -15,7 +15,6 @@ import './TreeNavigation.css';
 function TreeNavigation(props) {
   const [filterTerm, setFilterTerm] = useGlobal('filterTerm');
   const [filteredTree, setFilteredTree] = useState(null);
-  const [filterIsFocused, setFilterIsFocused] = useState(false);
 
   const filterInputRef = React.createRef();
 
@@ -24,30 +23,17 @@ function TreeNavigation(props) {
       blurFilter();
     }
 
-    if (event.key === 'f' && !filterIsFocused) {
+    if (event.key === 'f' && event.target.nodeName !== "INPUT") {
       event.preventDefault();
       focusFilter();
     }
   };
 
-  // We do this so we can type "s" in the filter, even though it is
-  // the global shortcut to focus search
-  const localShortcutHandler = event => {
-    if (event.key === 's' && filterIsFocused) {
-      event.stopPropagation();
-    }
-  };
-
   useEffect(() => {
     document.addEventListener('keydown', shortcutHandler);
-    filterInputRef.current.addEventListener('keydown', localShortcutHandler);
 
     return () => {
       document.removeEventListener('keydown', shortcutHandler);
-
-      if (filterInputRef.current) {
-        filterInputRef.current.removeEventListener('keydown', localShortcutHandler);
-      }
     };
   });
 
@@ -120,14 +106,6 @@ function TreeNavigation(props) {
     return <li key={node.title}>{content}</li>;
   }
 
-  function onFocusFilter() {
-    setFilterIsFocused(true);
-  }
-
-  function onBlurFilter() {
-    setFilterIsFocused(false);
-  }
-
   function blurFilter() {
     if (filterInputRef.current) {
       filterInputRef.current.blur();
@@ -162,8 +140,6 @@ function TreeNavigation(props) {
           placeholder="Filter Aspects"
           value={filterTerm}
           onChange={onFilterTermChange}
-          onFocus={onFocusFilter}
-          onBlur={onBlurFilter}
           ref={filterInputRef}
         />
       </div>

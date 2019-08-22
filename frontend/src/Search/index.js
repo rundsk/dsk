@@ -85,30 +85,17 @@ function Search(props) {
       hideSearch();
     }
 
-    if (event.key === 's' && !searchIsFocused) {
+    if (event.key === 's' && event.target.nodeName !== "INPUT") {
       event.preventDefault();
       focus();
-    }
-  };
-
-  const localShortcutHandler = event => {
-    if (event.key === 'f' && searchIsFocused) {
-      event.stopPropagation();
     }
   };
 
   useEffect(() => {
     document.addEventListener('keydown', shortcutHandler);
 
-    // We do this so we can type "f" in the search, even though it is
-    // the global shortcut to focus filter
-    searchInputRef.current.addEventListener('keydown', localShortcutHandler);
-
     return () => {
       document.removeEventListener('keydown', shortcutHandler);
-      if (searchInputRef.current) {
-        searchInputRef.current.removeEventListener('keydown', localShortcutHandler);
-      }
     };
   });
 
