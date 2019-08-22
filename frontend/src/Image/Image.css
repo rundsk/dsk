@@ -9,3 +9,11 @@
   height: auto;
   margin: var(--documentation-component-spacing) 0;
 }
+
+.image:first-child {
+  margin-top: 0;
+}
+
+.image:last-child {
+  margin-bottom: 0;
+}
