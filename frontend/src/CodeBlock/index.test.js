@@ -29,7 +29,7 @@ it('escapes HTML content', () => {
   );
 });
 
-it('does escape pre-escaped HTML content', () => {
+it('does not escape pre-escaped HTML content', () => {
   const HTML = '&lt;button&gt;Fancy&lt;/button&gt;';
   const component = shallow(<CodeBlock escaped>{HTML}</CodeBlock>);
 
