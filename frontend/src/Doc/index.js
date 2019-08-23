@@ -71,7 +71,7 @@ function Doc(props) {
       // empty "ghost" elements.
       let children = props.children.replace(/^<code>/, '').replace(/<\/code>$/, '');
 
-      return <CodeBlock escaped {...props} children={children} />,
+      return <CodeBlock escaped {...props} children={children} />;
     }
   };
 
