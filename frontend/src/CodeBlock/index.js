@@ -15,8 +15,6 @@ import { copyTextToClipboard } from '../utils';
 // We see the first case when the component is used explictly and the second,
 // when it is instantiated by the DocTransformer, turning a <pre> into a
 // CodeBlock.
-//
-// TODO: If child is <code> unwrap and turn into string.
 function CodeBlock(props) {
   let isEscaped = props.escaped;
 

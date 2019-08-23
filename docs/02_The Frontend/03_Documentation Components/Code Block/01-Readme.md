@@ -13,7 +13,7 @@
 </CodeBlock>
 
 <CodeBlock title="Example">
-  <div>test</div>
+  <div>CodeBlock directly used component</div>
 </CodeBlock>
 
 <Playground>

@@ -65,7 +65,14 @@ function Doc(props) {
     h3: props => <Heading {...props} level="gamma" docTitle={docTitle} isJumptarget={true} />,
     h4: props => <Heading {...props} level="delta" docTitle={docTitle} isJumptarget={true} />,
     img: props => <Image {...props} />,
-    pre: props => <CodeBlock escaped {...props} />,
+    pre: (props) => {
+      // When Markdown fenced code blocks get converted to <pre> they
+      // additionally include inner <code>. We cannot use orphans as this create
+      // empty "ghost" elements.
+      let children = props.children.replace(/^<code>/, '').replace(/<\/code>$/, '');
+
+      return <CodeBlock escaped {...props} children={children} />,
+    }
   };
 
   const orphans = ["p > img", "p > video"];
