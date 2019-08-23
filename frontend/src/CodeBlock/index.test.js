@@ -37,3 +37,44 @@ it('does not escape pre-escaped HTML content', () => {
     '<code class="code-block__code-content">&lt;button&gt;Fancy&lt;/button&gt;</code>'
   );
 });
+
+it('renders pre-escaped content with initial blank line', () => {
+  const HTML = `
+authors:
+  - christoph@atelierdisko.de
+  - marius@atelierdisko.de
+
+description: &gt;
+  This is a very very very fancy component. Lorem ipsum dolor sit amet,
+  sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+  magna aliquyam erat, sed diam voluptua.
+`;
+  const component = shallow(<CodeBlock escaped>{HTML}</CodeBlock>);
+
+  const expected = `authors:
+  - christoph@atelierdisko.de
+  - marius@atelierdisko.de
+
+description: &gt;
+  This is a very very very fancy component. Lorem ipsum dolor sit amet,
+  sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+  magna aliquyam erat, sed diam voluptua.
+`;
+  expect(component.find('code').html()).toEqual(
+    `<code class="code-block__code-content">${expected}</code>`
+  );
+});
+
+it('renders component build up content', () => {
+  const component = shallow(
+    <CodeBlock title="Example">
+      <div>test</div>
+    </CodeBlock>
+  );
+
+  const expected = `&lt;div&gt;test&lt;/div&gt;`;
+
+  expect(component.find('code').html()).toEqual(
+    `<code class="code-block__code-content">${expected}</code>`
+  );
+});

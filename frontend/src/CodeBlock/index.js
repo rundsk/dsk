@@ -4,25 +4,43 @@
  */
 
 import React, { useState } from 'react';
+import ReactDOMServer from 'react-dom/server';
 import './CodeBlock.css';
 import { copyTextToClipboard } from '../utils';
 
+// There are two possible ways this component is used, in the first case
+// children is a React object, in the second children is a string with
+// (escaped) HTML.
+//
+// We see the first case when the component is used explictly and the second,
+// when it is instantiated by the DocTransformer, turning a <pre> into a
+// CodeBlock.
+//
 // TODO: If child is <code> unwrap and turn into string.
 function CodeBlock(props) {
-  let content = props.children;
+  let isEscaped = props.escaped;
 
-  // Sometimes a codeblock start with a empty line, because of the way
-  // codeblocks have to be formated in Markdown. We consider this
-  // undesirable and remove the first line, if it is empty.
-  if (
-    React.Children.count(props.children) === 1 &&
-    typeof props.children[0] === 'string' &&
-    props.children[0].charAt(0) === '\n'
-  ) {
-    content = props.children[0].substring(1);
+  // Sometimes a CodeBlock start with a empty line, because of the way
+  // codeblocks have to be formated in Markdown. We consider this undesirable
+  // and remove the first line, if it is empty.
+  function trimInitialLine(content) {
+    if (content.charAt(0) === '\n') {
+      return content.substring(1);
+    }
+    return content;
   }
 
   const [copyText, setCopyText] = useState('Copy');
+
+  let content;
+  if (props.children === undefined) {
+    content = '';
+  } else if (typeof props.children === 'object') {
+    content = ReactDOMServer.renderToStaticMarkup(props.children);
+  } else if (typeof props.children === 'string') {
+    content = props.children;
+  }
+  content = trimInitialLine(content);
 
   function copyCode() {
     setCopyText('Copied!');
@@ -34,7 +52,7 @@ function CodeBlock(props) {
   }
 
   let code;
-  if (props.escaped) {
+  if (isEscaped) {
     code = <code className="code-block__code-content" dangerouslySetInnerHTML={{__html: content}} />;
   } else {
     code = <code className="code-block__code-content">{content}</code>

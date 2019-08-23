@@ -32,11 +32,11 @@
 ```
 
 <CodeBlock title="Example">
-  <div>test</div>
+  <div>CodeBlock directly used component</div>
 </CodeBlock>
 
 ```
-<div>test</div>
+<div>CodeBlock inside div-element from fenced Markdown code</div>
 ```
 
 ```

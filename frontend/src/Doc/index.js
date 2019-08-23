@@ -48,7 +48,7 @@ function Doc(props) {
 
   const transforms = {
     Banner: props => <Banner {...props} />,
-    CodeBlock: props => <CodeBlock escaped {...props} />,
+    CodeBlock: props => <CodeBlock {...props} />,
     Color: props => <ColorCard {...props} />,
     ColorGroup: props => <ColorGroup {...props} />,
     Playground: props => <ComponentDemo {...props} />,
