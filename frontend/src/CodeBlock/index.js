@@ -16,7 +16,7 @@ import { copyTextToClipboard } from '../utils';
 // when it is instantiated by the DocTransformer, turning a <pre> into a
 // CodeBlock.
 function CodeBlock(props) {
-  let isEscaped = props.escaped;
+  let isEscaped = !!props.escaped;
 
   // Sometimes a CodeBlock start with a empty line, because of the way
   // codeblocks have to be formated in Markdown. We consider this undesirable
