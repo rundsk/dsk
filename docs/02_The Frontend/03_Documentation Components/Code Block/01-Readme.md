@@ -2,44 +2,57 @@
 
 # Examples
 
-<CodeBlock title="colors.json">{code from colors.json}</CodeBlock>
+## Basic
 
-<CodeBlock title="Example">
-{code}
-</CodeBlock>
-
-<CodeBlock title="Example">
-  <Color color="#FF0000">Red</Color>
-</CodeBlock>
-
-<CodeBlock title="Example">
-  <div>CodeBlock directly used component</div>
-</CodeBlock>
-
-<Playground>
-  <Color color="#FF0000">Red</Color>
-</Playground>
-
-
-# Usage
-
-<CodeBlock title="Example">
-  <Color color="#FF0000">Red</Color>
+<CodeBlock>
+alert('Hello World!');
 </CodeBlock>
 
 ```
-<Color color="#FF0000">Red</Color>
+<CodeBlock>
+alert('Hello World!');
+</CodeBlock>
 ```
 
-<CodeBlock title="Example">
-  <div>CodeBlock directly used component</div>
+## Documenting Components
+
+<CodeBlock>
+<Color color="#001dff">Blue</Color>
 </CodeBlock>
 
 ```
-<div>CodeBlock inside div-element from fenced Markdown code</div>
+<CodeBlock>
+<Color color="#001dff">Blue</Color>
+</CodeBlock>
 ```
+
+
+## With Title
+
+<CodeBlock title="fib.js">
+function fib(n) {
+  return n < 2 ? n : fib(n - 1) + fib(n - 2);
+}	
+</CodeBlock>
+
+```
+<CodeBlock title="fib.js">
+function fib(n) {
+  return n < 2 ? n : fib(n - 1) + fib(n - 2);
+}	
+</CodeBlock>
+```
+
+## Retrieving the Source from a File
+
+<CodeBlock src="./colors.json"></CodeBlock>
 
 ```
 <CodeBlock src="./colors.json"></CodeBlock>
-<CodeBlock title="Example">{code}</CodeBlock>
+```
+
+<CodeBlock src="https://gist.githubusercontent.com/adamwathan/b271d1a34f5b37b1a2ad2e844c86b329/raw/d7321013ab5a5b4469b306f3e3a73ee6c0226100/tdd-books.md"></CodeBlock>
+
+```
+<CodeBlock src="https://gist.githubusercontent.com/adamwathan/b271d1a34f5b37b1a2ad2e844c86b329/raw/d7321013ab5a5b4469b306f3e3a73ee6c0226100/tdd-books.md"></CodeBlock>
 ```
