@@ -8,7 +8,7 @@ DDT ?= $(shell pwd)/example
 DDT_LANG ?= en
 
 VERSION ?= head-$(shell git rev-parse --short HEAD)
-LDFLAGS = -X main.CompiledVersion=$(VERSION)
+LDFLAGS = -X main.Version=$(VERSION)
 ANY_DEPS = $(wildcard *.go)
 
 .PHONY: test
