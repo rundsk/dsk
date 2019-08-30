@@ -7,8 +7,7 @@
 dist
 !empty
 _*
-cpu.prof
-mem.prof
+*.prof
 dsk.test
 .DS_Store
 node_modules

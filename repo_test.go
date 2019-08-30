@@ -6,7 +6,9 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"testing"
@@ -67,5 +69,44 @@ func TestRepoLastModified(t *testing.T) {
 	}
 	if !result.Equal(now) {
 		t.Errorf("%s != %s", result, now)
+	}
+}
+
+func BenchmarkBuildLookup(b *testing.B) {
+	log.SetOutput(ioutil.Discard)
+	defer log.SetOutput(os.Stderr)
+
+	tmp, _ := ioutil.TempDir("", "repo")
+	defer os.RemoveAll(tmp)
+
+	gr, _ := git.PlainInit(tmp, false)
+	w, _ := gr.Worktree()
+
+	now := time.Date(1981, 8, 11, 12, 0, 0, 0, time.UTC)
+
+	for i := 0; i < 100; i++ {
+		path := filepath.Join(tmp, fmt.Sprintf("Diversity%d", i))
+
+		n := NewNode(path, tmp)
+		n.Create()
+		n.CreateDoc("doc0.md", []byte("a"))
+		n.CreateDoc("doc1.md", []byte("a"))
+
+		w.Add(fmt.Sprintf("Diversity%d/doc0.md", i))
+		w.Add(fmt.Sprintf("Diversity%d/doc1.md", i))
+
+		w.Commit(fmt.Sprintf("message%d", i), &git.CommitOptions{
+			Author: &object.Signature{
+				When: now,
+			},
+		})
+	}
+	repo, err := NewRepository(tmp, "")
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	for i := 0; i < b.N; i++ {
+		repo.BuildLookup()
 	}
 }

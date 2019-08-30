@@ -21,8 +21,8 @@ bench:
 
 .PHONY: profile
 profile:
-	go test -tags=dev -run ^$$ -bench -ldflags "$(LDFLAGS)" . -cpuprofile cpu.prof -memprofile mem.prof
-	@echo Now run: go tool pprof dsk.test cpu.prof
+	go test -tags=dev -run ^$$ -bench . -cpuprofile cpu.prof -memprofile mem.prof -mutexprofile mutex.prof
+	@echo Now run i.e.: go tool pprof dsk.test cpu.prof
 
 .PHONY: dev
 dev:
