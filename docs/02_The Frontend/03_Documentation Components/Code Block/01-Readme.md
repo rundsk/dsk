@@ -2,57 +2,73 @@
 
 # Examples
 
-## Basic
+## Basic Usage
+
+Usually you'll be using fenced code blocks (\`\`\`) when authoring Markdown. 
+These get automatically converted to a `<CodeBlock>`.
+
+```
+alert('Hello World!');
+```
+
+## Necessity of using `<script>` tags
+
+Whenever the content you place in a `<CodeBlock>`,
+includes characters that are used by HTML, you must
+wrap the content inside the `<CodeBlock>` in
+`<script>` tags, stating that this is literal data.
 
 <CodeBlock>
+<script>
 alert('Hello World!');
+</script>
 </CodeBlock>
 
 ```
 <CodeBlock>
+<script>
 alert('Hello World!');
+</script>
 </CodeBlock>
 ```
 
 ## Documenting Components
 
+As any other code, components can be documented using the `<CodeBlock>`, too.
+
 <CodeBlock>
+<script>
 <Color color="#001dff">Blue</Color>
+</script>
 </CodeBlock>
 
 ```
 <CodeBlock>
+<script>
 <Color color="#001dff">Blue</Color>
+</script>
 </CodeBlock>
 ```
 
+## Adding a Title
 
-## With Title
+Some code snippets benefit greatly from an added title. Here we want to show
+what the contents of a file called `fib.js` look like.
 
 <CodeBlock title="fib.js">
+<script>
 function fib(n) {
   return n < 2 ? n : fib(n - 1) + fib(n - 2);
 }	
+</script>
 </CodeBlock>
 
 ```
 <CodeBlock title="fib.js">
+<script>
 function fib(n) {
   return n < 2 ? n : fib(n - 1) + fib(n - 2);
 }	
+</script>
 </CodeBlock>
-```
-
-## Retrieving the Source from a File
-
-<CodeBlock src="./colors.json"></CodeBlock>
-
-```
-<CodeBlock src="./colors.json"></CodeBlock>
-```
-
-<CodeBlock src="https://gist.githubusercontent.com/adamwathan/b271d1a34f5b37b1a2ad2e844c86b329/raw/d7321013ab5a5b4469b306f3e3a73ee6c0226100/tdd-books.md"></CodeBlock>
-
-```
-<CodeBlock src="https://gist.githubusercontent.com/adamwathan/b271d1a34f5b37b1a2ad2e844c86b329/raw/d7321013ab5a5b4469b306f3e3a73ee6c0226100/tdd-books.md"></CodeBlock>
 ```

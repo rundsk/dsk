@@ -48,7 +48,15 @@ function Doc(props) {
 
   const transforms = {
     Banner: props => <Banner {...props} />,
-    CodeBlock: props => <CodeBlock {...props} />,
+    CodeBlock: (props) => {
+      // When using <CodeBlock> directly within documents, its contents aren't
+      // automatically protected from interpration as HTML, when they processed
+      // by the DocTransformer. Thus we expect users to wrap their literal code
+      // in <script> tags, which we again remove here.
+      let children = props.children.replace(/^\s*<script>/, '').replace(/<\/script>\s*$/, '');
+
+      return <CodeBlock {...props} children={children} />;
+    },
     Color: props => <ColorCard {...props} />,
     ColorGroup: props => <ColorGroup {...props} />,
     Playground: props => <ComponentDemo {...props} />,
