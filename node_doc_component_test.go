@@ -5,7 +5,9 @@
 
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestFindInMarkdown(t *testing.T) {
 	raw0 := `
@@ -45,6 +47,27 @@ func TestFindInMarkdownExcludeCode(t *testing.T) {
 	if len(result1) != 0 {
 		t.Errorf("Failed to skip over code, got: %#v", result1)
 	}
+
+	raw2 := "Usually you'll be using fenced code blocks when authoring Markdown.\nThese get automatically converted to a `<CodeBlock>`."
+	result2 := findComponentsInMarkdown([]byte(raw2))
+
+	if len(result2) != 0 {
+		t.Errorf("Failed to skip over code, got: %#v", result2)
+	}
+
+	raw3 := "...to a `<CodeBlock>`\n<CodeBlock>hello world!</CodeBlock>"
+	result3 := findComponentsInMarkdown([]byte(raw3))
+	expected3 := []*NodeDocComponent{
+		&NodeDocComponent{Level: 0, Raw: "<CodeBlock>hello world!</CodeBlock>", Position: 22, Length: 35},
+	}
+	if len(result3) != len(expected3) {
+		t.Errorf("Failed number of components mismatch, got: %d", len(result3))
+	}
+	for k, v := range result3 {
+		if v.Position != expected3[k].Position {
+			t.Errorf("Failed position, got: %d", v.Position)
+		}
+	}
 }
 
 func TestFindInMarkdownExcludeFencedCode(t *testing.T) {
@@ -53,5 +76,21 @@ func TestFindInMarkdownExcludeFencedCode(t *testing.T) {
 
 	if len(result0) != 0 {
 		t.Errorf("Failed to skip over fenced code, got: %#v", result0)
+	}
+}
+
+func TestFindInMarkdownLiteralFencedCodeFragment(t *testing.T) {
+	raw0 := "use \\`\\`\\` ...to a `<CodeBlock>`\n<CodeBlock>hello world!</CodeBlock>"
+	result0 := findComponentsInMarkdown([]byte(raw0))
+	expected0 := []*NodeDocComponent{
+		&NodeDocComponent{Level: 0, Raw: "<CodeBlock>hello world!</CodeBlock>", Position: 33, Length: 35},
+	}
+	if len(result0) != len(expected0) {
+		t.Errorf("Failed number of components mismatch, got: %d", len(result0))
+	}
+	for k, v := range result0 {
+		if v.Position != expected0[k].Position {
+			t.Errorf("Failed position, got: %d", v.Position)
+		}
 	}
 }

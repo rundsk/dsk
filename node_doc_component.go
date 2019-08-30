@@ -42,7 +42,7 @@ func findComponentsInMarkdown(contents []byte) []*NodeDocComponent {
 	var openingTagPosition int
 
 	for i := 0; i < len(c); i++ {
-		if c[i] == '`' {
+		if c[i] == '`' && (i-1 < 0 || c[i-1] != '\\') {
 			if i+2 < len(c) && c[i+1] == '`' && c[i+2] == '`' {
 				i += 2
 			}
