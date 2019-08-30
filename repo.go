@@ -150,9 +150,6 @@ func (r *Repository) IsLookupStale() bool {
 // https://github.com/src-d/go-git/issues/417
 // https://github.com/src-d/go-git/issues/826
 func (r *Repository) BuildLookup() error {
-	r.Lock()
-	defer r.Unlock()
-
 	start := time.Now()
 	pathsCached := make(map[string]bool, 0)
 
@@ -161,7 +158,6 @@ func (r *Repository) BuildLookup() error {
 		log.Printf("No commits in repository %s, yet", r.path)
 		return nil
 	}
-	r.head = ref
 
 	err := filepath.Walk(r.path, func(path string, f os.FileInfo, err error) error {
 		if err != nil {
@@ -183,13 +179,13 @@ func (r *Repository) BuildLookup() error {
 		return fmt.Errorf("Failed to walk directory tree %s: %s", r.path, err)
 	}
 
-	r.lookup = make(map[string]time.Time, 0)
-
-	commits, err := r.Log(&git.LogOptions{From: r.head.Hash()})
+	commits, err := r.Log(&git.LogOptions{From: ref.Hash()})
 	if err != nil {
 		return err
 	}
 	defer commits.Close()
+
+	lookup := make(map[string]time.Time, 0)
 
 	var prevCommit *object.Commit
 	var prevTree *object.Tree
@@ -224,10 +220,10 @@ Outer:
 				// Not interested in this file.
 				continue
 			}
-			r.lookup[c.To.Name] = prevCommit.Author.When
+			lookup[c.To.Name] = prevCommit.Author.When
 			pathsCached[c.To.Name] = true
 
-			if len(r.lookup) >= len(pathsCached) {
+			if len(lookup) >= len(pathsCached) {
 				break Outer
 			}
 		}
@@ -236,7 +232,13 @@ Outer:
 		prevTree = currentTree
 	}
 
-	log.Printf("Created repository lookup table with %d object/s in %s", len(r.lookup), time.Since(start))
+	log.Printf("Created repository lookup table with %d object/s in %s", len(lookup), time.Since(start))
+
+	r.Lock()
+	r.lookup = lookup
+	r.head = ref
+	r.Unlock()
+
 	return nil
 }
 
