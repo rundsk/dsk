@@ -54,13 +54,9 @@ RUN FRONTEND=/frontend VERSION=$VERSION make dist/dsk-linux-amd64
 # Final stage that executes the binary.
 FROM alpine:latest as run
 
-# This cannot be called LANG, as it would override the original environment LANG
-# variable that sets the system locale.
-ENV DDT_LANG=en
-
 COPY --from=backend /src/dist/dsk-linux-amd64 /dsk
 
 EXPOSE 8080
 
-CMD /dsk -lang $DDT_LANG -host 0.0.0.0 -port 8080 /ddt
+CMD /dsk -host 0.0.0.0 -port 8080 /ddt
 
