@@ -49,10 +49,11 @@ var (
 
 // NewNode constructs a new Node using its path in the filesystem and
 // initalizing fields. The initialization must finalized by using Load().
-func NewNode(path string, root string) *Node {
+func NewNode(path string, root string, c *Config) *Node {
 	return &Node{
 		root:     root,
 		path:     path,
+		config:   c,
 		Children: make([]*Node, 0),
 		meta:     &NodeMeta{},
 	}
@@ -69,6 +70,8 @@ type Node struct {
 
 	// Absolute path to the node's directory.
 	path string
+
+	config *Config
 
 	// The parent node. If this is the root node, left unset.
 	Parent *Node
@@ -202,13 +205,15 @@ func (n *Node) Name() string {
 	return removeOrderNumber(norm.NFC.String(filepath.Base(n.path)))
 }
 
-// The node's computed title with any ordering numbers stripped off, usually for display purposes.
-// We normalize the title string to make sure all special characters are represented in their composed form.
-// Some filesystems store filenames in decomposed form. Using these directly in the frontend led to visual
-// inconsistencies. See: https://blog.golang.org/normalization
+// The node's computed title with any ordering numbers stripped off,
+// usually for display purposes. We normalize the title string to
+// make sure all special characters are represented in their composed
+// form. Some filesystems store filenames in decomposed form. Using
+// these directly in the frontend led to visual inconsistencies. See:
+// https://blog.golang.org/normalization
 func (n *Node) Title() string {
 	if n.root == n.path {
-		return norm.NFC.String(filepath.Base(n.root))
+		return n.config.Project
 	}
 	return removeOrderNumber(norm.NFC.String(filepath.Base(n.path)))
 }

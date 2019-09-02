@@ -13,6 +13,7 @@ import (
 	"regexp"
 
 	"github.com/go-yaml/yaml"
+	"golang.org/x/text/unicode/norm"
 )
 
 type Config struct {
@@ -47,7 +48,7 @@ func NewConfig(path string) *Config {
 	return &Config{
 		path:    path,
 		Org:     "DSK",
-		Project: filepath.Base(path),
+		Project: norm.NFC.String(filepath.Base(path)),
 		Lang:    "en",
 	}
 }

@@ -21,9 +21,10 @@ import (
 // NewNodeTree construct and partially initializes a NodeTree. Returns
 // an unsynced tree from path; you must finalize initialization using
 // Sync() or by calling Start().
-func NewNodeTree(path string, as *Authors, repo *Repository, w *Watcher, b *MessageBroker) *NodeTree {
+func NewNodeTree(path string, c *Config, as *Authors, repo *Repository, w *Watcher, b *MessageBroker) *NodeTree {
 	return &NodeTree{
 		path:       path,
+		config:     c,
 		Authors:    as,
 		Repository: repo,
 		watcher:    w,
@@ -45,6 +46,8 @@ type NodeTree struct {
 
 	// Ordered slice of un-normalized node URLs.
 	ordered []string
+
+	config *Config
 
 	// The root node and entry point to the acutal tree.
 	Root *Node `json:"root"`
@@ -110,7 +113,7 @@ func (t *NodeTree) Sync() error {
 			if strings.HasPrefix(f.Name(), ".") && !isRoot {
 				return filepath.SkipDir
 			}
-			n := NewNode(path, t.path)
+			n := NewNode(path, t.path, t.config)
 
 			if err := n.Load(); err != nil {
 				log.Print(yellow.Sprint(err))

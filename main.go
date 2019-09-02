@@ -156,7 +156,7 @@ func main() {
 			log.Fatal(red.Sprintf("Failed to enable VCS support: %s", err))
 		}
 	}
-	tree = NewNodeTree(here, authors, repository, watcher, broker) // assign to global
+	tree = NewNodeTree(here, config, authors, repository, watcher, broker) // assign to global
 
 	search, err = NewSearch("", tree, broker, config.Lang, false) // assign to global
 	if err != nil {
