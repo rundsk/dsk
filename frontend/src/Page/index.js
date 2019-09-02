@@ -31,7 +31,7 @@ function Page(props) {
     });
   }, [props.url]);
 
-  // Update the sites title when the node changes
+  // Update the window title when the node changes
   useEffect(() => {
     let title = `${props.title} – ${props.baseTitle}`;
 
