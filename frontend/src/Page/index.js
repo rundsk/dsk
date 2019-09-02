@@ -6,6 +6,7 @@
 import React, { useEffect, useRef } from 'react';
 import { BaseLink, withRoute } from 'react-router5';
 import { slugify } from '../utils';
+import { Helmet } from 'react-helmet';
 
 import './Page.css';
 
@@ -30,17 +31,6 @@ function Page(props) {
       behavior: 'auto',
     });
   }, [props.url]);
-
-  // Update the window title when the node changes
-  useEffect(() => {
-    let title = `${props.title} – ${props.baseTitle}`;
-
-    if (props.url === '') {
-      title = `${props.baseTitle}`;
-    }
-
-    document.title = title;
-  }, [props.title, props.baseTitle, props.url]);
 
   function docDidRender() {
     // Check if there is a section marker in the URL, and if their is
@@ -203,6 +193,13 @@ function Page(props) {
 
   return (
     <div className="page">
+      <Helmet
+        titleTemplate={`%s – ${props.baseTitle}`}
+        defaultTitle={props.baseTitle}
+      >
+        <title>{props.url !== '' &&  props.title}</title>
+        <meta name="description" content={props.description} />
+      </Helmet>
       <div className="page__header">
         <div className="page__header-content">
           <Breadcrumbs crumbs={props.crumbs} />
