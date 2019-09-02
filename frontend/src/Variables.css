@@ -6,8 +6,8 @@
 :root {
   --color-white: #ffffff;
   --color-black: hsl(0, 0%, 0%);
-  --color-blue: #0e26fc; /* Electric Blue */
-  --color-green: #52d0af; /* Toothpaste Green */
+  --color-blue: #3A67E5; /* dpa Blue */
+  --color-green: #30DF7B; /* dpa Green */
   --color-teal: #33CEDC;
   --color-teal--dark: #00838F;
   --color-yellow--light: rgb(255, 242, 180);
