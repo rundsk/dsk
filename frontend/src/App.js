@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { routeNode, BaseLink } from 'react-router5'
 import { useGlobal } from 'reactn';
+import { Helmet } from 'react-helmet';
 
 import { Client } from '@atelierdisko/dsk';
 import TreeNavigation from './TreeNavigation';
@@ -118,6 +119,8 @@ function App(props) {
 
   return (
     <div className="app">
+      <Helmet htmlAttributes={{ lang: config.lang }} />
+
       <button className="app_skip-to-content" onClick={() => { if (refToMain.current) { console.log(refToMain); refToMain.current.focus() } }}>Skip to Content (Press Enter)</button>
 
       <div className={`app__sidebar ${mobileSidebarIsActive ? "app__sidebar--is-visible" : ""}`}>
