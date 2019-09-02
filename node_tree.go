@@ -156,8 +156,8 @@ func (t *NodeTree) Sync() error {
 
 	// Refresh the authors database; file may appear or disappear between
 	// syncs. New entries might be added.
-	if err := t.Authors.Sync(); err != nil {
-		log.Print(yellow.Sprintf("Failed syncing authors: %s", err))
+	if _, err := t.Authors.Load(); err != nil {
+		log.Print(yellow.Sprintf("Failed loading authors: %s", err))
 	}
 
 	defer t.broker.Accept(NewMessage(

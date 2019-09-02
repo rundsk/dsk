@@ -23,7 +23,7 @@ const (
 
 func NewAuthors(path string) *Authors {
 	return &Authors{
-		path: filepath.Join(path, AuthorsConfigBasename),
+		path: path,
 		data: make([]*Author, 0),
 	}
 }
@@ -35,7 +35,10 @@ func NewAuthors(path string) *Authors {
 type Authors struct {
 	sync.RWMutex
 
+	// Absolute path to directory to look for configuration files.
 	path string
+
+	// Internal slice of authors data.
 	data []*Author
 }
 
@@ -44,26 +47,40 @@ type Author struct {
 	Name  string
 }
 
-// Sync refreshes the internal data. It parses data from a
+// Load refreshes the internal data. It parses data from a
 // configuration file. This file is allowed to appear or disappear
 // between syncs.
-func (as *Authors) Sync() error {
+func (as *Authors) Load() (string, error) {
+	file, err := as.detectFile(as.path)
+	if err != nil {
+		return file, err
+	}
+	if file == "" {
+		return file, nil
+	}
+
 	// Ensure the internal data is empty, when the file disappears.
 	as.Lock()
 	as.data = make([]*Author, 0)
 	as.Unlock()
 
-	if _, err := os.Stat(as.path); os.IsNotExist(err) {
-		return nil
-	}
-	f, err := os.Open(as.path)
+	f, err := os.Open(file)
 	defer f.Close()
 
 	if err != nil {
-		return err
+		return file, err
 	}
 
-	return as.AddFrom(f)
+	return file, as.AddFrom(f)
+}
+
+func (as *Authors) detectFile(path string) (string, error) {
+	try := filepath.Join(path, AuthorsConfigBasename)
+
+	if _, err := os.Stat(try); os.IsNotExist(err) {
+		return "", nil
+	}
+	return try, nil
 }
 
 // Add single author item to the internal data slice.

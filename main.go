@@ -174,8 +174,8 @@ func main() {
 	}
 	search.StartIndexer()
 
-	if err := authors.Sync(); err != nil {
-		log.Fatal(red.Sprintf("Failed to perform initial authors sync: %s", err))
+	if _, err := authors.Load(); err != nil {
+		log.Fatal(red.Sprintf("Failed to perform initially load authors: %s", err))
 	}
 	if err := tree.Sync(); err != nil {
 		log.Fatal(red.Sprintf("Failed to perform initial tree sync: %s", err))
