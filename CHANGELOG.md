@@ -40,6 +40,7 @@
   which sits in the DDT.
 - Removed support for providing the DDT lang through a command line flag,
   please use the configuration file to configure the language of the DDT.
+- We've improved how the window title is set, and also include a meta description.
 
 ## 1.1.1
 
