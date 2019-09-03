@@ -7,6 +7,7 @@ import React from 'react';
 import './AssetList.css';
 import Meta from '../Meta';
 import Heading from '../Heading';
+import filesize from 'filesize';
 
 function AssetList(props) {
   const imageFileTypes = ['png', 'jpg', 'jpeg'];
@@ -31,7 +32,7 @@ function AssetList(props) {
                     {a.name}
                   </a>
                 </Meta>
-                <Meta title="Size">{Math.round((a.size / 1024 / 1024) * 100) / 100} MB</Meta>
+                <Meta title="Size">{filesize(a.size)}</Meta>
                 <Meta title="Last Modified">{new Date(a.modified * 1000).toLocaleString()}</Meta>
               </div>
             </div>
