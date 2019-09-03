@@ -12,9 +12,11 @@ file to a folder inside the _design definitions tree_.
 ## Sponsors
 
 <a href="https://fielmann.com">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/160506_Fielmann_LogoNEU_pos_wiki.svg/1920px-160506_Fielmann_LogoNEU_pos_wiki.svg.png" height="40" alt="fielmann">
+  <img src="fielmann_logo@2x.png" alt="Fielmann">
 </a>
 
+<br>
+
 <a href="https://dpa.com">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Logo_DPA_neu.svg" height="50" alt="dpa">
+  <img src="dpa_logo@2x.png" alt="dpa">
 </a>
