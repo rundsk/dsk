@@ -39,5 +39,8 @@ Possible meta data keys are:
 * `related`: An array of related aspect URLs within DSK.
 * `tags`: An array of tags to group related aspects together.
 * `version`: A freeform version string.
+* `custom`: Any kind of custom meta data.
 
-Starting with DSK version 1.2 (currently in alpha) you can also add custom meta data, under the key `custom`. These items will be displayed alongside the general meta data of the aspect.
+<Banner title="Version Feature">
+ Support for custom meta data was added in version 1.2.
+</Banner>

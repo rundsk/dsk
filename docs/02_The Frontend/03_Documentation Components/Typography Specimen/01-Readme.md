@@ -1,4 +1,6 @@
-<Banner title="Experimental Feature" type="warning">Documentation Components are a new feature and will be introduced with version 1.2, which is currently in alpha.</Banner>
+<Banner title="Version Feature">
+  Documentation Components are available since version 1.2.
+</Banner>
 
 # Example
 
