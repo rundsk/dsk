@@ -216,21 +216,24 @@ func (dt NodeDocTransformer) maybeAddDataNode(t html.Token, attrName string) (ht
 	// Blindly try to lookup and see it already succeeds, this enables
 	// support for both "/foo/bar" and "foo/bar", that is when the leading
 	// slash has been forgotten.
+	var okdn bool
+	var okdna bool
 	var dn string
 	var dna string
 
-	dn, dna = dt.discoverNodeInfo(u)
-	if dn == "" {
+	okdn, dn, okdna, dna = dt.discoverNodeInfo(u)
+	if !okdn {
 		// Retry while making the URL absolute.
-		dn, dna = dt.discoverNodeInfo(dt.nodeBase.ResolveReference(u))
-		if dn == "" {
+		okdn, dn, okdna, dna = dt.discoverNodeInfo(dt.nodeBase.ResolveReference(u))
+		if !okdn {
 			return t, nil
 		}
 	}
-	if dn != "" {
+
+	if okdn {
 		t.Attr = append(t.Attr, html.Attribute{Key: "data-node", Val: dn})
 	}
-	if dna != "" {
+	if okdna {
 		t.Attr = append(t.Attr, html.Attribute{Key: "data-node-asset", Val: dna})
 	}
 	return t, nil
@@ -329,23 +332,26 @@ func (dt NodeDocTransformer) attr(t html.Token, name string) (bool, int, string)
 // Tries to lookup path of the URL as a node, if that fails tries to
 // lookup as node an node asset. Returns string values usuable for
 // data attributes.
-func (dt NodeDocTransformer) discoverNodeInfo(u *url.URL) (string, string) {
+//
+// Using ok return values, as the URL for the root node is an empty
+// string, and thus isn't usable to check if the discovery succeeded.
+func (dt NodeDocTransformer) discoverNodeInfo(u *url.URL) (bool, string, bool, string) {
 	ok, n, _ := dt.nodeGet(strings.TrimLeft(u.Path, "/"))
 	if ok {
-		return n.URL(), ""
+		return true, n.URL(), false, ""
 	}
 	// Retry while removing the last part of the URL, it might
 	// be an asset of the node.
 	ok, n, _ = dt.nodeGet(strings.TrimLeft(path.Dir(u.Path), "/"))
 	if !ok {
-		return "", ""
+		return false, "", false, ""
 	}
 	// We've found a node but cannot be sure that the asset really
 	// is part of the node, let's check that.
 	a, err := n.Asset(path.Base(u.Path))
 	if err == nil {
-		return n.URL(), a.Name()
+		return true, n.URL(), true, a.Name()
 	}
 	// We'll ignore invalid assets on valid nodes for now and keep on going.
-	return n.URL(), ""
+	return true, n.URL(), false, ""
 }
