@@ -69,7 +69,7 @@ environment variable.
 
 First, please ensure your frontend is built and production ready assets along
 with an `index.html` as an entrypoint have been created. In the example below we assume
-these have been stored in a `build` subdirectory.
+these have been stored in a `build` subfolder.
 
 ```
 FRONTEND=/path/to/acme/frontend/build make dist

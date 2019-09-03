@@ -1,6 +1,6 @@
 # Meta Data
 
-You can add meta data about an aspect by placing  a special file called `meta.yaml` into the directory of the aspect. This file holds meta data, like a short description, tags and authors, about an aspect. The file uses the easy to write  [YAML](https://www.youtube.com/watch?v=W3tQPk8DNbk)  format.
+You can add meta data about an aspect by placing  a special file called `meta.yaml` into the folder of the aspect. This file holds meta data, like a short description, tags and authors, about an aspect. The file uses the easy to write [YAML](https://www.youtube.com/watch?v=W3tQPk8DNbk)  format.
 
 <Banner title="Note" type="important">If you prefer to use  <a href="https://www.json.org/">JSON</a> as a format, that is supported too. Just exchange <code>.yaml</code> for <code>.json</code> as the extension.</Banner>
 

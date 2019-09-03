@@ -1,6 +1,6 @@
 # Documents
 
-Aspects are documented by adding [Markdown](https://guides.github.com/features/mastering-markdown/)  formatted documentation files to their directory.
+Aspects are documented by adding [Markdown](https://guides.github.com/features/mastering-markdown/) formatted documentation files to their folder.
 
 A document file may describe an aspect or give clues how to use a certain component. You can split documentation over several files when you like to. We usually use `readme.md`, `api.md`, `explain.md` or `comments.md`.
 

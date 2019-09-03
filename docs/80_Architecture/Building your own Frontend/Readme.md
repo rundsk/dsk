@@ -2,13 +2,13 @@
 
 DSK’s built-in frontend is written as a React app and is completely decoupled from the backend – it uses the open [API](../API) to communicate with it.
 
-If you want a custom-styled frontend or need additional frontend features it is possible to build your own frontend using the same API and bundle it with the DSK binary. The default frontend is a good starting point when developing your own. It can be found in the `frontend` directory of this [project](http://github.com/atelierdisko/dsk).
+If you want a custom-styled frontend or need additional frontend features it is possible to build your own frontend using the same API and bundle it with the DSK binary. The default frontend is a good starting point when developing your own. It can be found in the `frontend` folder of this [project](http://github.com/atelierdisko/dsk).
 
 ## Available API Endpoints
 Please read our [API document](../API) for in depth information.
 
 ## Designing the URL Schema
-Your frontend and its subdirectories will be mounted directly at the root path `/`. Requests to anything under `/api` are routed to the backend, anything else is routed into your application in `index.html`. 
+Your frontend and its subdirectories will be mounted directly at the root path `/`. Requests to anything under `/api` are routed to the backend, anything else is routed into your application in `index.html`.
 
 Relative asset source paths inside documents will be made absolute to allow you displaying a document’s content wherever you like to.
 

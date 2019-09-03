@@ -6,7 +6,7 @@ One of the fundamental ideas in DSK was to use the filesystem as the interface f
 
 ![screenshot](https://atelierdisko.de/assets/app/img/github_dsk_fs.png)
 
-The _design definitions tree_ (DDT for short), is a tree of directories and subdirectories. Each of these directories stands for a _design aspect_ in the hierarchy of your design system, these might be actual components, when you are documenting the user interface, or chapters of your company’s guide into its design culture. In other words: an aspect is a directory that can contain several other aspects and/or several files belonging to this aspect.
+The _design definitions tree_ (DDT for short), is a tree of directories and subdirectories. Each of these directories stands for a _design aspect_ in the hierarchy of your design system, these might be actual components, when you are documenting the user interface, or chapters of your company’s guide into its design culture. In other words: an aspect is a folder that can contain several other aspects and/or several files belonging to this aspect.
 
 → [Read on about Aspects](./Aspects)
 

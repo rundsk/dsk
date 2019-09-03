@@ -4,7 +4,7 @@ We make official prebuilt docker container images
 [available on docker hub](https://hub.docker.com/r/atelierdisko/dsk/tags).
 
 The [Design Definitions Tree](/The-Design-Definitions-Tree), that is
-the directory containing your design system documents, is not part of the container
+the folder containing your design system documents, is not part of the container
 image and must be mounted into the container when running it. The example below
 uses a simple bind mount to make the documents available at the default `/ddt`
 location inside the container.

@@ -26,7 +26,7 @@ The `Dockerfile` hardcodes the process to build the built-in frontend. However
 it can be reused for your custom frontend without any changes, when your
 frontend...
 
-1. ...is stored next to the `Dockerfile` in a `frontend` directory,
+1. ...is stored next to the `Dockerfile` in a `frontend` folder,
 2. ...has a `yarn.lock`, so `yarn install` installs all dependencies
 3. ...will create a production build, when `yarn run build` is executed,
 4. ...will store the build artifacts in a `build` subfolder.
