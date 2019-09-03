@@ -16,14 +16,13 @@ file to a directory inside the _design definitions tree_.
 ## Sponsors
 
 <a href="https://fielmann.com">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/160506_Fielmann_LogoNEU_pos_wiki.svg/1920px-160506_Fielmann_LogoNEU_pos_wiki.svg.png" height="40" alt="fielmann">
+  <img src="https://rundsk.com/api/v2/tree/fielmann_logo@2x.png" width="236" height="58" alt="Fielmann">
 </a>
 
 <br>
-<br>
 
 <a href="https://dpa.com">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Logo_DPA_neu.svg" height="50" alt="dpa">
+  <img src="https://rundsk.com/api/v2/tree/dpa_logo@2x.png" width="200" height="67.5" alt="dpa">
 </a>
 
 ## Quickstart
