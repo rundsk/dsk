@@ -1,3 +1,5 @@
+description: >
+  Design Aspects live inside the Design Defintions Tree as folders. They can be
+    anything from a component documentation to a guide into design culture.
 tags:
-  - needs description
   - needs images
