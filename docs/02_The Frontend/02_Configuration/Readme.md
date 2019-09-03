@@ -1,37 +1,31 @@
 <Banner title="Version Feature">
-  This is a feature of the redesigned frontend and available with version 1.2.
+  Support for configuration has been added in version 1.2.
 </Banner>
 
-You can configure the frontend by placing a file called `frontendConfiguration.json` in the root of your Design Definiftions Tree.
+You can configure DSK by placing a file called `dsk.yaml` in the root of
+your Design Definitions Tree. This configuration file could look like this:
 
-This configuration file could look like this:
-
-<CodeBlock title="frontendConfiguration.json">
+<CodeBlock title="dsk.yaml">
 <script>
-{
-  "organisation": "ACME Crop",
-  "tags": [
-    {
-      "name": "production",
-      "color": "#8DE381"
-    },
-    {
-      "name": "deprecated",
-      "color": "#ED6666"
-    },
-    {
-      "name": "progress",
-      "color": "#0091AB"
-    }
-  ]
-}
+org: ACME Corp.
+project: Example
+lang: en
+tags:
+  - name: production
+    color: "#8DE381"
+  - name: deprecated
+    color: "#ED6666"
+  - name: progress
+    color: "#0091AB"
 </script>
 </CodeBlock>
 
-Property | Type | Description
----|---|---|
-`organisation` | `String` | The name of the organisation that this Design System is for. Will be displayed in the top left corner of the UI.
-`tags` | `[TagConfiguration]` | An array of configuration objects for specific tags. Allows you to display certain tags in custom colors.
+Property | Type | Default Value | Description
+---|---|---|---|
+`org` | `String` | `DSK` | The name of the organization that this Design System is for. Will be displayed in the top left corner of the UI.
+`project` | `String` | name of the DDT folder | The name of the Design System. Will be displayed in the top left corner of the UI next to the name of the organization.
+`lang` | [`ISO 639-1 Code`](https://en.wikipedia.org/wiki/ISO_639-1) | `en` | Code of the language, the documents are authored in. Mainly used for indexing the documents for search.
+`tags` | [`[TagConfiguration]`](?t=readme§tags) | – | An array of configuration objects for specific tags. Allows you to display certain tags in custom colors.
 
 ## Tags
 
@@ -42,9 +36,13 @@ Property | Type | Description
 
 Configuring tags allows you to define which color is used for a specific tag.
 
-Property | Type | Description
----|---|---|
-`name` | `String` | The color will be used if a tag **contains** this string.
-`color` | `CSS Color String (hex, rgba)` | The color to use for the tag.
+Property | Type | Default Value | Description
+---|---|---|---|
+`name` | `String` | – | The color will be used if a tag **contains** this string.
+`color` | `CSS Color String` (i.e. hex, rgba) | – | The color to use for the tag.
 
-<Banner title="Tip">If you want to use colors that blend in with the DSK frontend you can also use one of the following values: <code>"var(--color-teal)"</code>, <code>"var(--color-yellow)"</code>, <code>"var(--color-orange)"</code>, <code>"var(--color-red)"</code>.</Banner>
+<Banner title="Tip">
+  If you want to use colors that blend in with the frontend you can also use one of the following values:
+  <code>var(--color-teal)</code>, <code>var(--color-yellow)</code>,
+  <code>var(--color-orange)</code>, <code>var(--color-red)</code>.
+</Banner>
