@@ -6,7 +6,7 @@
 
 ## Basic Usage
 
-Usually you'll be using fenced code blocks (\`\`\`) when authoring Markdown. 
+Usually you'll be using fenced code blocks (\`\`\`) when authoring Markdown.
 These get automatically converted to a `<CodeBlock>`.
 
 ```
@@ -61,7 +61,7 @@ what the contents of a file called `fib.js` look like.
 <script>
 function fib(n) {
   return n < 2 ? n : fib(n - 1) + fib(n - 2);
-}	
+}
 </script>
 </CodeBlock>
 
@@ -70,7 +70,7 @@ function fib(n) {
 <script>
 function fib(n) {
   return n < 2 ? n : fib(n - 1) + fib(n - 2);
-}	
+}
 </script>
 </CodeBlock>
 ```

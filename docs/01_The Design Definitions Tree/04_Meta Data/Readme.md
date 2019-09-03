@@ -7,6 +7,7 @@ You can add meta data about an aspect by placing  a special file called `meta.ya
 An example of a full meta data file looks like this:
 
 <CodeBlock title="meta.yaml">
+<script>
 authors:
   - christoph@atelierdisko.de
   - marius@atelierdisko.de
@@ -31,6 +32,7 @@ custom:
     - Input
     - Text Field
   - platform: iOS
+</script>
 </CodeBlock>
 
 Possible meta data keys are:

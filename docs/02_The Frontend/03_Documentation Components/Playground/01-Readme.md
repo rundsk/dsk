@@ -20,7 +20,7 @@
 <Playground background="pinstripes" backgroundColor="#FED28C">{Component}</Playground>
 ```
 
-For all configruation options see [Properties](?t=properties).
+For all configuration options see [Properties](?t=properties).
 
 ## Annotations
 
@@ -32,9 +32,11 @@ With annotations you can highlight specific points on the playground and add a c
 <Playground annotations="annotations.json">{Component}</Playground>
 ```
 
-The annotations specification file has to be formated like this (`annotationColor` is optional):
+The annotations specification file has to be formatted like this (`annotationColor` is optional):
 
-<CodeBlock title="annotations.json">{
+<CodeBlock title="annotations.json">
+<script>
+{
   "annnotations": [
     {
       "x": "36%",
@@ -48,4 +50,6 @@ The annotations specification file has to be formated like this (`annotationColo
     }
   ],
   "annotationColor": "#EE645D"
-}</CodeBlock>
+}
+</script>
+</CodeBlock>

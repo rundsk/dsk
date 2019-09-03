@@ -11,6 +11,7 @@ The _design definitions tree_ (DDT for short), is a tree of directories and subd
 → [Read on about Aspects](./Aspects)
 
 <CodeBlock title="Scheme of a design definitions tree">
+<script>
 example-ddt
 ├── AUTHORS.txt                 <- authors database, see "Authors" below
 ├── Components
@@ -24,6 +25,7 @@ example-ddt
 │   │   ├── meta.yml            <- meta data file
 │   │   ├── explain.md          <- document
 │   │   └── unmask.svg          <- asset
+</script>
 </CodeBlock>
 
 By default, DSK displays aspects in alphabetic order. You can manually change this order be prepending a number, separated by a dash or underscore to the title of the aspect.

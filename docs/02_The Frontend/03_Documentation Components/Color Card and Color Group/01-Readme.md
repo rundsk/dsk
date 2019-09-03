@@ -61,7 +61,9 @@ Moving the mouse over a color card reveals accessibility information about the c
 ### File format
 The Color Group component expects a file according to the [Lona Color Defintions Spec](https://github.com/airbnb/Lona/blob/master/docs/file-formats/colors.md).
 
-<CodeBlock title="colors.json">{
+<CodeBlock title="colors.json">
+<script>
+{
   "colors": [
     {
       "name": "Blue",
@@ -85,4 +87,6 @@ The Color Group component expects a file according to the [Lona Color Defintions
       "value": "#0091ab"
     }
   ]
-}</CodeBlock>
+}
+</script>
+</CodeBlock>

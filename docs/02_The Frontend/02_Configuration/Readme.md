@@ -6,13 +6,15 @@ You can configure the frontend by placing a file called `frontendConfiguration.j
 
 This configuration file could look like this:
 
-<CodeBlock title="frontendConfiguration.json">{
+<CodeBlock title="frontendConfiguration.json">
+<script>
+{
   "organisation": "ACME Crop",
   "tags": [
     {
       "name": "production",
       "color": "#8DE381"
-    }, 
+    },
     {
       "name": "deprecated",
       "color": "#ED6666"
@@ -22,7 +24,9 @@ This configuration file could look like this:
       "color": "#0091AB"
     }
   ]
-}</CodeBlock>
+}
+</script>
+</CodeBlock>
 
 Property | Type | Description
 ---|---|---|

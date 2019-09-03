@@ -15,7 +15,9 @@
 # File format
 The Typography Specimen component expects a file according to the [Lona Text Style Spec](https://github.com/airbnb/Lona/blob/master/docs/file-formats/text-styles.md).
 
-<CodeBlock title="typography.json">{
+<CodeBlock title="typography.json">
+<script>
+{
   "colors": [
     {
       "name": "Blue",
@@ -39,4 +41,6 @@ The Typography Specimen component expects a file according to the [Lona Text Sty
       "value": "#0091ab"
     }
   ]
-}</CodeBlock>
+}
+</script>
+</CodeBlock>
