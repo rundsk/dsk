@@ -41,19 +41,18 @@ func TestAddComponentProtection(t *testing.T) {
 </CodeBlock>
 `
 	expected0 := `
-<script>'|dsk|'<CodeBlock title="Example">
-  echo "GREETINGS PROFESSOR FALKEN."
-</CodeBlock>'|dsk|'</script>
+dsk+component+23
 `
 	components0 := []*NodeDocComponent{
 		&NodeDocComponent{
+			Id:       23,
 			Raw:      raw0[1 : len(raw0)-1],
-			Length:   len(raw0) - 2,
+			Length:   77,
 			Position: 1,
 		},
 	}
 
-	result0 := addComponentProtection([]byte(raw0), components0)
+	result0 := extractComponents([]byte(raw0), components0)
 	if string(result0) != expected0 {
 		t.Errorf("Failed, got: %s", result0)
 	}
@@ -62,17 +61,18 @@ func TestAddComponentProtection(t *testing.T) {
 Yellow and <ColorSwatch>green</ColorSwatch> are the colors of spring.
 `
 	expected1 := `
-Yellow and <script>'|dsk|'<ColorSwatch>green</ColorSwatch>'|dsk|'</script> are the colors of spring.
+Yellow and dsk+component+23 are the colors of spring.
 `
 	components1 := []*NodeDocComponent{
 		&NodeDocComponent{
+			Id:       23,
 			Raw:      "<ColorSwatch>green</ColorSwatch>",
 			Length:   len("<ColorSwatch>green</ColorSwatch>"),
 			Position: 12,
 		},
 	}
 
-	result1 := addComponentProtection([]byte(raw1), components1)
+	result1 := extractComponents([]byte(raw1), components1)
 	if string(result1) != expected1 {
 		t.Errorf("Failed, got: %s", result1)
 	}
@@ -87,15 +87,15 @@ The following visual design has been agreed upon by our team:
 	expected2 := `
 The following visual design has been agreed upon by our team:
 
-<script>'|dsk|'<Banner>Hi there!</Banner>'|dsk|'</script>
+dsk+component+0
 
-<script>'|dsk|'<Warning>Don't do this</Warning>'|dsk|'</script>
+dsk+component+1
 `
 	components2 := []*NodeDocComponent{
-		&NodeDocComponent{Level: 0, Raw: "<Banner>Hi there!</Banner>", Position: 64, Length: 26},
-		&NodeDocComponent{Level: 0, Raw: "<Warning>Don't do this</Warning>", Position: 92, Length: 32},
+		&NodeDocComponent{Id: 0, Level: 0, Raw: "<Banner>Hi there!</Banner>", Position: 64, Length: 26},
+		&NodeDocComponent{Id: 1, Level: 0, Raw: "<Warning>Don't do this</Warning>", Position: 92, Length: 32},
 	}
-	result2 := addComponentProtection([]byte(raw2), components2)
+	result2 := extractComponents([]byte(raw2), components2)
 
 	if string(result2) != expected2 {
 		t.Errorf("Failed, got: %s", result2)
@@ -108,16 +108,16 @@ func TestAddComponentProtectionOnLastLine(t *testing.T) {
 
 <Banner title="Banner" type="warning">Use banners to highlight things people shouldn’t miss.</Banner>`
 	expected0 := `
-<script>'|dsk|'<Banner title="Banner" type="warning">Use banners to highlight things people shouldn’t miss.</Banner>'|dsk|'</script>
+dsk+component+0
 
-<script>'|dsk|'<Banner title="Banner" type="warning">Use banners to highlight things people shouldn’t miss.</Banner>'|dsk|'</script>`
+dsk+component+1`
 
 	components0 := []*NodeDocComponent{
-		&NodeDocComponent{Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 1, Length: 103},
-		&NodeDocComponent{Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 106, Length: 103},
+		&NodeDocComponent{Id: 0, Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 1, Length: 103},
+		&NodeDocComponent{Id: 1, Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 106, Length: 103},
 	}
 
-	result0 := addComponentProtection([]byte(raw0), components0)
+	result0 := extractComponents([]byte(raw0), components0)
 	if string(result0) != expected0 {
 		t.Errorf("Failed, got: %s", result0)
 	}
@@ -125,13 +125,21 @@ func TestAddComponentProtectionOnLastLine(t *testing.T) {
 
 func TestRemoveComponentProtection(t *testing.T) {
 	raw0 := `
-Yellow and <script>'|dsk|'<ColorSwatch>green</ColorSwatch>'|dsk|'</script> are the colors of spring.
+Yellow and dsk+component+23 are the colors of spring.
 `
 	expected0 := `
 Yellow and <ColorSwatch>green</ColorSwatch> are the colors of spring.
 `
+	components0 := []*NodeDocComponent{
+		&NodeDocComponent{
+			Id:       23,
+			Raw:      "<ColorSwatch>green</ColorSwatch>",
+			Length:   len("<ColorSwatch>green</ColorSwatch>") - 2,
+			Position: 1,
+		},
+	}
 
-	result0 := removeComponentProtection([]byte(raw0))
+	result0 := insertComponents([]byte(raw0), components0)
 	if string(result0) != expected0 {
 		t.Errorf("Failed, got: %s", result0)
 	}
@@ -202,15 +210,15 @@ hello
 
 <p>The following visual design has been agreed upon by our team:</p>
 
-<Banner>Hi there!</Banner>
+<p><Banner>Hi there!</Banner></p>
 
-<Warning>Don't do this</Warning>
+<p><Warning>Don't do this</Warning></p>
 
 <p>hello</p>
 
-<CodeBlock title="test">
+<p><CodeBlock title="test">
 	<h1>Hello Headline</h1>
-</CodeBlock>
+</CodeBlock></p>
 `
 	ioutil.WriteFile(doc0, []byte(raw0), 0666)
 
@@ -232,9 +240,11 @@ func TestAddRemoveComponentProtectionSymmetry(t *testing.T) {
 `
 
 	components0 := findComponentsInMarkdown([]byte(raw0))
+	components0[0].Id = 0
+	components0[1].Id = 1
 	expectedComponents0 := []*NodeDocComponent{
-		&NodeDocComponent{Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 1, Length: 103},
-		&NodeDocComponent{Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 106, Length: 103},
+		&NodeDocComponent{Id: 0, Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 1, Length: 103},
+		&NodeDocComponent{Id: 1, Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 106, Length: 103},
 	}
 	if len(components0) != len(expectedComponents0) {
 		t.Errorf("Failed number of components mismatch, got: %d", len(components0))
@@ -248,17 +258,17 @@ func TestAddRemoveComponentProtectionSymmetry(t *testing.T) {
 		}
 	}
 
-	added0 := addComponentProtection([]byte(raw0), components0)
+	added0 := extractComponents([]byte(raw0), components0)
 	addedExpected0 := `
-<script>'|dsk|'<Banner title="Banner" type="warning">Use banners to highlight things people shouldn’t miss.</Banner>'|dsk|'</script>
+dsk+component+0
 
-<script>'|dsk|'<Banner title="Banner" type="warning">Use banners to highlight things people shouldn’t miss.</Banner>'|dsk|'</script>
+dsk+component+1
 `
 	if string(added0) != addedExpected0 {
 		t.Errorf("Failed, got: %s", added0)
 	}
 
-	removed0 := removeComponentProtection(added0)
+	removed0 := insertComponents(added0, components0)
 	removedExpected0 := raw0
 	if string(removed0) != removedExpected0 {
 		t.Errorf("Failed, got: %s", removed0)

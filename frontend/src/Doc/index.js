@@ -83,7 +83,12 @@ function Doc(props) {
     }
   };
 
-  const orphans = ["p > img", "p > video"];
+  const orphans = Object.keys(transforms)
+    .filter(k => k !== 'a')
+    .map(k => `p > ${k}`)
+    .concat([
+      'p > video'
+    ]);
 
   let transformedContent = transform(props.htmlContent, transforms, orphans, {
     isPreformatted: type => type === 'pre' || type === 'CodeBlock'.toLowerCase(),

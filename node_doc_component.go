@@ -7,15 +7,35 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"regexp"
 	"strings"
 )
 
+const (
+	maxComponentsPerDoc = 10000
+)
+
 type NodeDocComponent struct {
-	Level    int // Nesting level
+	Id       int // Unique ID
 	Raw      string
+	Level    int // Nesting level
 	Position int // Start position inside document.
 	Length   int // Length of the component code.
+}
+
+func NewNodeDocComponent(raw string, level int, position int) *NodeDocComponent {
+	return &NodeDocComponent{
+		Id:       rand.Intn(maxComponentsPerDoc),
+		Raw:      raw,
+		Level:    level,
+		Position: position,
+		Length:   len(raw),
+	}
+}
+
+func (c *NodeDocComponent) Placeholder() string {
+	return fmt.Sprintf("dsk+component+%d", c.Id)
 }
 
 // TODO: Implement
@@ -70,12 +90,11 @@ func findComponentsInMarkdown(contents []byte) []*NodeDocComponent {
 				}
 
 				if strings.Contains(current.String(), closingTag) {
-					found = append(found, &NodeDocComponent{
-						Level:    0, // Currently finding only top level components.
-						Raw:      current.String(),
-						Position: openingTagPosition,
-						Length:   len(current.String()),
-					})
+					found = append(found, NewNodeDocComponent(
+						current.String(),
+						0, // Currently finding only top level components.
+						openingTagPosition,
+					))
 
 					current.Reset()
 					openingTag = ""

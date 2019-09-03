@@ -20,11 +20,6 @@ import (
 	"golang.org/x/text/unicode/norm"
 )
 
-const (
-	protectOpeningScriptTag = "<script>'|dsk|'"
-	protectClosingScriptTag = "'|dsk|'</script>"
-)
-
 // NodeDoc is a document file.
 type NodeDoc struct {
 	// Absolute path to the document file.
@@ -69,14 +64,15 @@ func (d NodeDoc) HTML(treePrefix string, nodeURL string, nodeGet NodeGetter) ([]
 
 	switch strings.ToLower(filepath.Ext(d.path)) {
 	case ".md", ".markdown":
-		contents = addComponentProtection(contents, findComponentsInMarkdown(contents))
+		components := findComponentsInMarkdown(contents)
+		contents = extractComponents(contents, components)
 
 		parsed, err := d.parseMarkdown(contents)
 		if err != nil {
 			return parsed, err
 		}
 
-		parsed = removeComponentProtection(parsed)
+		parsed = insertComponents(parsed, components)
 		return dt.ProcessHTML(parsed)
 	case ".html", ".htm":
 		return dt.ProcessHTML(contents)
@@ -146,11 +142,8 @@ func (d NodeDoc) parseMarkdown(contents []byte) ([]byte, error) {
 	), nil
 }
 
-// Used to protect component code from the Markdown parser. The
-// implied script tags can be removed once the Markdown has been
-// transformed into HTML. Similar to how Go automatically implies
-// semicolons.
-func addComponentProtection(contents []byte, components []*NodeDocComponent) []byte {
+// Extracts components and adds a placeholder instead of it.
+func extractComponents(contents []byte, components []*NodeDocComponent) []byte {
 	var c string
 	var r strings.Builder
 	var offset int
@@ -159,27 +152,25 @@ func addComponentProtection(contents []byte, components []*NodeDocComponent) []b
 
 	for _, component := range components {
 		for i := 0; i < len(c); i++ {
-			if i == component.Position+offset {
-				r.WriteString(protectOpeningScriptTag)
-
-			} else if i == component.Position+component.Length+offset {
-				r.WriteString(protectClosingScriptTag)
+			if i >= component.Position+offset && i < component.Position+component.Length+offset {
+				if i == component.Position+offset {
+					r.WriteString(component.Placeholder())
+				}
+				continue
 			}
 			r.WriteByte(c[i])
 		}
-		if len(c) == component.Position+component.Length+offset {
-			r.WriteString(protectClosingScriptTag)
-		}
 		c = r.String()
 		r.Reset()
-		offset += len(protectOpeningScriptTag) + len(protectClosingScriptTag)
+		offset += len(component.Placeholder()) - component.Length
 	}
 	return []byte(c)
 }
 
-func removeComponentProtection(contents []byte) []byte {
-	contents = bytes.ReplaceAll(contents, []byte(protectOpeningScriptTag), []byte{})
-	contents = bytes.ReplaceAll(contents, []byte(protectClosingScriptTag), []byte{})
-
+// Replaces placeholders with components.
+func insertComponents(contents []byte, components []*NodeDocComponent) []byte {
+	for _, component := range components {
+		contents = bytes.ReplaceAll(contents, []byte(component.Placeholder()), []byte(component.Raw))
+	}
 	return contents
 }
