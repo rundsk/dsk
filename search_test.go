@@ -19,7 +19,7 @@ import (
 func TestFullSearchWordPartials(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Navigation"), tmp)
+	n := NewNode(filepath.Join(tmp, "Navigation"), tmp, &Config{})
 	n.Create()
 	n.Load()
 
@@ -48,7 +48,7 @@ func TestFullSearchWordPartials(t *testing.T) {
 func TestFullSearchFindsFullWords(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Diversität"), tmp)
+	n := NewNode(filepath.Join(tmp, "Diversität"), tmp, &Config{})
 	n.Create()
 
 	s := setupSearchTest(t, tmp, "de", []*Node{n}, false)
@@ -64,13 +64,13 @@ func TestFullSearchFindsFullWords(t *testing.T) {
 func TestFullSearchUsesLogicalOrWithMultipleWords(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n0 := NewNode(filepath.Join(tmp, "Great"), tmp)
+	n0 := NewNode(filepath.Join(tmp, "Great"), tmp, &Config{})
 	n0.Create()
 
-	n1 := NewNode(filepath.Join(tmp, "Fantastic"), tmp)
+	n1 := NewNode(filepath.Join(tmp, "Fantastic"), tmp, &Config{})
 	n1.Create()
 
-	n2 := NewNode(filepath.Join(tmp, "Amazing"), tmp)
+	n2 := NewNode(filepath.Join(tmp, "Amazing"), tmp, &Config{})
 	n2.Create()
 
 	s := setupSearchTest(t, tmp, "de", []*Node{n0, n1, n2}, false)
@@ -84,7 +84,7 @@ func TestFullSearchUsesLogicalOrWithMultipleWords(t *testing.T) {
 func TestFullSearchExactMatchesWorkIndependentOfLang(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Diversität"), tmp)
+	n := NewNode(filepath.Join(tmp, "Diversität"), tmp, &Config{})
 	n.Create()
 	n.Load()
 
@@ -99,7 +99,7 @@ func TestFullSearchExactMatchesWorkIndependentOfLang(t *testing.T) {
 func TestFullSearchConsidersStopwords(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "The Diversity"), tmp)
+	n := NewNode(filepath.Join(tmp, "The Diversity"), tmp, &Config{})
 	n.Create()
 	n.Load()
 
@@ -116,7 +116,7 @@ func TestFullSearchConsidersStopwords(t *testing.T) {
 func TestFullSearchFindsAllTagsWhenProvidedAsSlice(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Diversity"), tmp)
+	n := NewNode(filepath.Join(tmp, "Diversity"), tmp, &Config{})
 	n.Create()
 	n.CreateMeta("meta.yaml", &NodeMeta{
 		Tags: []string{"foo", "bar"},
@@ -139,7 +139,7 @@ func TestFullSearchFindsAllTagsWhenProvidedAsSlice(t *testing.T) {
 func TestFullSearchConsidersMultipleDocs(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Diversity"), tmp)
+	n := NewNode(filepath.Join(tmp, "Diversity"), tmp, &Config{})
 	n.Create()
 	n.CreateDoc("0.md", []byte("lorem ipsum foo"))
 	n.CreateDoc("1.md", []byte("dolor amet bar"))
@@ -158,7 +158,7 @@ func TestFullSearchConsidersMultipleDocs(t *testing.T) {
 func TestFullSearchConsidersFilenames(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Diversity"), tmp)
+	n := NewNode(filepath.Join(tmp, "Diversity"), tmp, &Config{})
 	n.Create()
 	n.CreateDoc("document.md", []byte("lorem ipsum"))
 	n.Load()
@@ -173,7 +173,7 @@ func TestFullSearchConsidersFilenames(t *testing.T) {
 func TestFullSearchConsidersSecondaryTitles(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Diversity"), tmp)
+	n := NewNode(filepath.Join(tmp, "Diversity"), tmp, &Config{})
 	n.Create()
 	n.CreateDoc("document.md", []byte("lorem ipsum"))
 	n.Load()
@@ -188,7 +188,7 @@ func TestFullSearchConsidersSecondaryTitles(t *testing.T) {
 func TestFullSearchAuthorsEmail(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n := NewNode(filepath.Join(tmp, "Colors"), tmp, &Config{})
 	n.Create()
 
 	n.CreateMeta("meta.yaml", &NodeMeta{
@@ -215,7 +215,7 @@ func TestFullSearchAuthorsEmail(t *testing.T) {
 func TestFullSearchVersion(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n := NewNode(filepath.Join(tmp, "Colors"), tmp, &Config{})
 	n.Create()
 
 	n.CreateMeta("meta.yaml", &NodeMeta{
@@ -236,7 +236,7 @@ func TestFullSearchVersion(t *testing.T) {
 func TestFullSearchDescription(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n := NewNode(filepath.Join(tmp, "Colors"), tmp, &Config{})
 	n.Create()
 
 	n.CreateMeta("meta.yaml", &NodeMeta{
@@ -254,7 +254,7 @@ func TestFullSearchDescription(t *testing.T) {
 func TestFullSearchCustom(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n := NewNode(filepath.Join(tmp, "Colors"), tmp, &Config{})
 	n.Create()
 
 	n.CreateMeta("meta.yaml", &NodeMeta{
@@ -280,7 +280,7 @@ func TestFullSearchCustom(t *testing.T) {
 func TestFullSearchDocumentContents(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n := NewNode(filepath.Join(tmp, "Colors"), tmp, &Config{})
 	n.Create()
 	n.CreateDoc("About.md", []byte("The following visual design has been agreed upon by our team:"))
 
@@ -294,7 +294,7 @@ func TestFullSearchDocumentContents(t *testing.T) {
 func TestFullSearchIsCaseInsensitive(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n := NewNode(filepath.Join(tmp, "Colors"), tmp, &Config{})
 	n.Create()
 
 	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
@@ -315,7 +315,7 @@ func TestFullSearchIsCaseInsensitive(t *testing.T) {
 func TestFilterSearchPrefixes(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n := NewNode(filepath.Join(tmp, "Colors"), tmp, &Config{})
 	n.Create()
 	n.Load()
 
@@ -335,7 +335,7 @@ func TestFilterSearchPrefixes(t *testing.T) {
 func TestFilterSearchWordPartials(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Navigation"), tmp)
+	n := NewNode(filepath.Join(tmp, "Navigation"), tmp, &Config{})
 	n.Create()
 	n.Load()
 
@@ -352,7 +352,7 @@ func TestFilterSearchWordPartials(t *testing.T) {
 func TestFilterSearchGermanWordPartials(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Diversität"), tmp)
+	n := NewNode(filepath.Join(tmp, "Diversität"), tmp, &Config{})
 	n.Create()
 	n.Load()
 
@@ -369,21 +369,21 @@ func TestFilterSearchGermanWordPartials(t *testing.T) {
 func TestFilterSearchMultipleTagsWithLogicalAndInQuery(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n0 := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n0 := NewNode(filepath.Join(tmp, "Colors"), tmp, &Config{})
 	n0.Create()
 	n0.CreateMeta("meta.yaml", &NodeMeta{
 		Tags: []string{"foo", "bar", "qux"},
 	})
 	n0.Load()
 
-	n1 := NewNode(filepath.Join(tmp, "Navigation"), tmp)
+	n1 := NewNode(filepath.Join(tmp, "Navigation"), tmp, &Config{})
 	n1.Create()
 	n1.CreateMeta("meta.yaml", &NodeMeta{
 		Tags: []string{"foo"},
 	})
 	n1.Load()
 
-	n2 := NewNode(filepath.Join(tmp, "Type"), tmp)
+	n2 := NewNode(filepath.Join(tmp, "Type"), tmp, &Config{})
 	n2.Create()
 	n2.CreateMeta("meta.yaml", &NodeMeta{
 		Tags: []string{"bar"},
@@ -420,7 +420,7 @@ func TestFilterSearchMultipleTagsWithLogicalAndInQuery(t *testing.T) {
 func TestFilterSearchIsCaseInsensitive(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n := NewNode(filepath.Join(tmp, "Colors"), tmp, &Config{})
 	n.Create()
 
 	s := setupSearchTest(t, tmp, "en", []*Node{n}, false)
@@ -439,21 +439,21 @@ func TestFilterSearchIsCaseInsensitive(t *testing.T) {
 func TestFilterSearchNamespacedTags(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n0 := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n0 := NewNode(filepath.Join(tmp, "Colors"), tmp, &Config{})
 	n0.Create()
 	n0.CreateMeta("meta.yaml", &NodeMeta{
 		Tags: []string{"foo", "status/draft"},
 	})
 	n0.Load()
 
-	n1 := NewNode(filepath.Join(tmp, "Navigation"), tmp)
+	n1 := NewNode(filepath.Join(tmp, "Navigation"), tmp, &Config{})
 	n1.Create()
 	n1.CreateMeta("meta.yaml", &NodeMeta{
 		Tags: []string{"status/ready"},
 	})
 	n1.Load()
 
-	n2 := NewNode(filepath.Join(tmp, "Type"), tmp)
+	n2 := NewNode(filepath.Join(tmp, "Type"), tmp, &Config{})
 	n2.Create()
 	n2.CreateMeta("meta.yaml", &NodeMeta{
 		Tags: []string{"draft"},
@@ -482,7 +482,7 @@ func TestFilterSearchNamespacedTags(t *testing.T) {
 func TestFilterSearchTagsWithSpaces(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
-	n0 := NewNode(filepath.Join(tmp, "Colors"), tmp)
+	n0 := NewNode(filepath.Join(tmp, "Colors"), tmp, &Config{})
 	n0.Create()
 	n0.CreateMeta("meta.yaml", &NodeMeta{
 		Tags: []string{"foo", "needs images"},

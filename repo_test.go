@@ -26,7 +26,7 @@ func TestRepoLastModified(t *testing.T) {
 	w, _ := gr.Worktree()
 
 	path := filepath.Join(tmp, "Diversity")
-	n := NewNode(path, tmp)
+	n := NewNode(path, tmp, &Config{})
 	n.Create()
 	n.CreateDoc("doc0.md", []byte("a"))
 	n.CreateDoc("doc1.md", []byte("a"))
@@ -87,7 +87,7 @@ func BenchmarkBuildLookup(b *testing.B) {
 	for i := 0; i < 100; i++ {
 		path := filepath.Join(tmp, fmt.Sprintf("Diversity%d", i))
 
-		n := NewNode(path, tmp)
+		n := NewNode(path, tmp, &Config{})
 		n.Create()
 		n.CreateDoc("doc0.md", []byte("a"))
 		n.CreateDoc("doc1.md", []byte("a"))
