@@ -20,6 +20,7 @@ file to a directory inside the _design definitions tree_.
 </a>
 
 <br>
+<br>
 
 <a href="https://dpa.com">
   <img src="https://rundsk.com/api/v2/tree/dpa_logo@2x.png" width="200" height="67.5" alt="dpa">
