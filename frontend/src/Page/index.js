@@ -145,7 +145,11 @@ function Page(props) {
     }
 
     if (activeDoc && activeDoc.content) {
-      doc = <Doc title={activeDoc.title} onRender={docDidRender}>{activeDoc.content}</Doc>;
+      doc = (
+        <Doc title={activeDoc.title} onRender={docDidRender}>
+          {activeDoc.content}
+        </Doc>
+      );
     }
   }
 
@@ -193,11 +197,8 @@ function Page(props) {
 
   return (
     <div className="page">
-      <Helmet
-        titleTemplate={`%s – ${props.baseTitle}`}
-        defaultTitle={props.baseTitle}
-      >
-        <title>{props.url !== '' &&  props.title}</title>
+      <Helmet titleTemplate={`%s – ${props.baseTitle}`} defaultTitle={props.baseTitle}>
+        <title>{props.url !== '' && props.title}</title>
         <meta name="description" content={props.description} />
       </Helmet>
       <div className="page__header">

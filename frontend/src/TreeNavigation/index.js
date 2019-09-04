@@ -23,7 +23,7 @@ function TreeNavigation(props) {
       blurFilter();
     }
 
-    if (event.key === 'f' && event.target.nodeName !== "INPUT") {
+    if (event.key === 'f' && event.target.nodeName !== 'INPUT') {
       event.preventDefault();
       focusFilter();
     }

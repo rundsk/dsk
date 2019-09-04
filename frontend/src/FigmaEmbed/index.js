@@ -8,7 +8,7 @@ import { useGlobal } from 'reactn';
 import './FigmaEmbed.css';
 
 function FigmaEmbed(props) {
-  const [config, setConfig] = useGlobal("config");
+  const [config, setConfig] = useGlobal('config');
   const [image, setImage] = useState(null);
   const [frameId, setFrameId] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -17,7 +17,9 @@ function FigmaEmbed(props) {
   // Retrieves document.
   useEffect(() => {
     if (!config.figma.accessToken) {
-      setErrorMessage('Missing personal access token, please visit: https://rundsk.com/tree/The-Frontend/Configuration');
+      setErrorMessage(
+        'Missing personal access token, please visit: https://rundsk.com/tree/The-Frontend/Configuration'
+      );
       return;
     }
     if (!props.document) {
@@ -29,8 +31,8 @@ function FigmaEmbed(props) {
     fetch(`https://api.figma.com/v1/files/${props.document}`, {
       method: 'GET',
       headers: new Headers({
-        'X-Figma-Token': config.figma.accessToken
-      })
+        'X-Figma-Token': config.figma.accessToken,
+      }),
     })
       .then(response => {
         if (response.status === 200) {
@@ -77,8 +79,8 @@ function FigmaEmbed(props) {
       return fetch(`https://api.figma.com/v1/images/${props.document}?ids=${nodeId}`, {
         method: 'GET',
         headers: new Headers({
-          'X-Figma-Token': config.figma.accessToken
-        })
+          'X-Figma-Token': config.figma.accessToken,
+        }),
       })
         .then(response => {
           if (response.status === 200) {

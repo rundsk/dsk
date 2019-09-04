@@ -25,7 +25,7 @@ function Heading(props) {
 
   let id;
 
-  if (typeof props.children === "object") {
+  if (typeof props.children === 'object') {
     id = slugify(props.children[0]);
   } else {
     id = slugify(props.children);

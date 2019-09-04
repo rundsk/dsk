@@ -31,8 +31,8 @@ function Doc(props) {
     // has finished.
     window.requestAnimationFrame(() => {
       if (props.onRender) {
-        props.onRender()
-      };
+        props.onRender();
+      }
     });
   });
 
@@ -48,7 +48,7 @@ function Doc(props) {
 
   const transforms = {
     Banner: props => <Banner {...props} />,
-    CodeBlock: (props) => {
+    CodeBlock: props => {
       // When using <CodeBlock> directly within documents, its contents aren't
       // automatically protected from interpration as HTML, when they processed
       // by the DocTransformer. Thus we expect users to wrap their literal code
@@ -73,22 +73,20 @@ function Doc(props) {
     h3: props => <Heading {...props} level="gamma" docTitle={docTitle} isJumptarget={true} />,
     h4: props => <Heading {...props} level="delta" docTitle={docTitle} isJumptarget={true} />,
     img: props => <Image {...props} />,
-    pre: (props) => {
+    pre: props => {
       // When Markdown fenced code blocks get converted to <pre> they
       // additionally include inner <code>. We cannot use orphans as this create
       // empty "ghost" elements.
       let children = props.children.replace(/^<code>/, '').replace(/<\/code>$/, '');
 
       return <CodeBlock escaped {...props} children={children} />;
-    }
+    },
   };
 
   const orphans = Object.keys(transforms)
     .filter(k => k !== 'a')
     .map(k => `p > ${k}`)
-    .concat([
-      'p > video'
-    ]);
+    .concat(['p > video']);
 
   let transformedContent = transform(props.htmlContent, transforms, orphans, {
     isPreformatted: type => type === 'pre' || type === 'CodeBlock'.toLowerCase(),

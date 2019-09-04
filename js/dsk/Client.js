@@ -5,7 +5,6 @@
 
 // Client for accessing the DSK APIv2.
 export default class Client {
-
   static hello() {
     return this.fetch('/api/v2/hello');
   }
@@ -112,7 +111,7 @@ export default class Client {
           resolve(xhr.response);
         }
       });
-      xhr.addEventListener('error', (ev) => {
+      xhr.addEventListener('error', ev => {
         reject(new Error(`Fetching '${url}' failed :-S: ${ev}`));
       });
       xhr.open('GET', url);
@@ -138,7 +137,7 @@ export default class Client {
           }
         }
       });
-      xhr.addEventListener('error', (ev) => {
+      xhr.addEventListener('error', ev => {
         reject(new Error(`Pinging '${url}' failed :-S: ${ev}`));
       });
       xhr.open('HEAD', url);

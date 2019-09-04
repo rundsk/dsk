@@ -108,7 +108,7 @@ function ComponentDemo(props) {
   return (
     <div className={classes.join(' ')}>
       <div className="component-demo__stage" style={style}>
-      <div className="component-demo__stage-content">{props.children}</div>
+        <div className="component-demo__stage-content">{props.children}</div>
         <div className="component-demo__annotation-marker-stage">{annotationMarkers}</div>
       </div>
       {annotations.length > 0 && <div className="component-demo__annotations">{annotations}</div>}

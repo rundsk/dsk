@@ -139,7 +139,7 @@ export default class DocTransformer {
     if (this.options.isPreformatted(type)) {
       props.children = node.innerHTML;
     } else {
-      node.childNodes.forEach((c) => {
+      node.childNodes.forEach(c => {
         let t = this.transform(c);
         if (t) {
           props.children.push(t);

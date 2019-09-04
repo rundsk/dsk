@@ -33,7 +33,6 @@ function CodeBlock(props) {
     return content;
   }
 
-
   function copyCode() {
     setCopyText('Copied!');
     copyTextToClipboard(codeRef.current.textContent);
@@ -45,13 +44,13 @@ function CodeBlock(props) {
 
   useEffect(() => {
     if (props.title) {
-      setTitle(props.title)
+      setTitle(props.title);
     } else if (props['data-node-asset']) {
       setTitle(props['data-node-asset']);
     } else if (props.src) {
       setTitle(props.src);
     }
-  }, [props.title, props.src, props['data-node-asset']])
+  }, [props.title, props.src, props['data-node-asset']]);
 
   useEffect(() => {
     if (props.src) {
@@ -69,12 +68,12 @@ function CodeBlock(props) {
       content = trimInitialLine(content);
 
       if (isEscaped) {
-        setCode(<code className="code-block__code-content" dangerouslySetInnerHTML={{__html: content}} />);
+        setCode(<code className="code-block__code-content" dangerouslySetInnerHTML={{ __html: content }} />);
       } else {
         setCode(<code className="code-block__code-content">{content}</code>);
       }
     }
-  }, [props.src, props.children, isEscaped])
+  }, [props.src, props.children, isEscaped]);
 
   return (
     <div className="code-block">

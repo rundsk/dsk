@@ -60,9 +60,7 @@ description: &gt;
   sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
   magna aliquyam erat, sed diam voluptua.
 `;
-  expect(component.find('code').html()).toEqual(
-    `<code class="code-block__code-content">${expected}</code>`
-  );
+  expect(component.find('code').html()).toEqual(`<code class="code-block__code-content">${expected}</code>`);
 });
 
 it('renders component build up content', () => {
@@ -74,7 +72,5 @@ it('renders component build up content', () => {
 
   const expected = `&lt;div&gt;test&lt;/div&gt;`;
 
-  expect(component.find('code').html()).toEqual(
-    `<code class="code-block__code-content">${expected}</code>`
-  );
+  expect(component.find('code').html()).toEqual(`<code class="code-block__code-content">${expected}</code>`);
 });

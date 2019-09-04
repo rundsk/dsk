@@ -85,7 +85,7 @@ function Search(props) {
       hideSearch();
     }
 
-    if (event.key === 's' && event.target.nodeName !== "INPUT") {
+    if (event.key === 's' && event.target.nodeName !== 'INPUT') {
       event.preventDefault();
       focus();
     }
