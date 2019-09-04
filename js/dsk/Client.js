@@ -85,34 +85,38 @@ export default class Client {
   // is a network issue (catch) as well as when we a HTTP response status
   // indicating an error. Using plain XHR for better browser support and easier
   // basic auth handling.
-  static fetch(url) {
+  static fetch(url, type = 'json') {
     return new Promise((resolve, reject) => {
       let xhr = new XMLHttpRequest();
+      xhr.responseType = type;
 
       xhr.addEventListener('readystatechange', () => {
         if (xhr.readyState === 4) {
           let first = xhr.status.toString().charAt(0);
 
           if (first !== '2' && first !== '3') {
-            try {
-              reject(new Error(`Fetching '${url}' failed :-S: ${JSON.parse(xhr.responseText).message}`));
-            } catch (e) {
+            // The JSON error responses are formatted according to
+            // JSend, and carry an error message in the `message`
+            // property.
+            if (type === 'json') {
+              try {
+                reject(new Error(`Fetching '${url}' failed :-S: ${xhr.response.message}`));
+              } catch (e) {
+                reject(new Error(`Fetching '${url}' failed :-S: ${xhr.statusText}`));
+              }
+            } else {
               reject(new Error(`Fetching '${url}' failed :-S: ${xhr.statusText}`));
             }
             return;
           }
-          try {
-            resolve(JSON.parse(xhr.responseText));
-          } catch (e) {
-            reject(new Error(`Fetching '${url}' succeeded, but failed to parse response :-S: ${e}`));
-          }
+          resolve(xhr.response);
         }
       });
       xhr.addEventListener('error', (ev) => {
         reject(new Error(`Fetching '${url}' failed :-S: ${ev}`));
       });
       xhr.open('GET', url);
-      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.setRequestHeader('Accept', type === 'json' ? 'application/json' : '*/*');
       xhr.send();
     });
   }
