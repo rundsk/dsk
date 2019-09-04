@@ -46,10 +46,12 @@ function CodeBlock(props) {
   useEffect(() => {
     if (props.title) {
       setTitle(props.title)
+    } else if (props['data-node-asset']) {
+      setTitle(props['data-node-asset']);
     } else if (props.src) {
       setTitle(props.src);
     }
-  }, [props.title, props.src])
+  }, [props.title, props.src, props['data-node-asset']])
 
   useEffect(() => {
     if (props.src) {
@@ -76,7 +78,7 @@ function CodeBlock(props) {
 
   return (
     <div className="code-block">
-      {props.title && (
+      {title && (
         <div className="code-block__header">
           <div className="code-block__title">{title}</div>
         </div>
