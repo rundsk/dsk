@@ -37,5 +37,8 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "jest": {
+    "transformIgnorePatterns": ["/node_modules/(?!@atelierdisko/dsk)"]
+  }
 }
