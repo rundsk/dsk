@@ -4,11 +4,11 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useGlobal } from 'reactn';
 import './FigmaEmbed.css';
 
-// FIXME: This component should not use my persolan
-// access token
 function FigmaEmbed(props) {
+  const [config, setConfig] = useGlobal("config");
   const [image, setImage] = useState(null);
   const [frameId, setFrameId] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -16,17 +16,21 @@ function FigmaEmbed(props) {
 
   // Retrieves document.
   useEffect(() => {
-    if (!props.document || !props.token) {
+    if (!config.figma.accessToken) {
+      setErrorMessage('Missing personal access token, please visit: https://rundsk.com/tree/The-Frontend/Configuration');
       return;
     }
-    const myHeaders = new Headers();
-    myHeaders.append('X-Figma-Token', props.token);
-
+    if (!props.document) {
+      setErrorMessage('No document given.');
+      return;
+    }
     setLoadingMessage('Loading document …');
 
     fetch(`https://api.figma.com/v1/files/${props.document}`, {
       method: 'GET',
-      headers: myHeaders,
+      headers: new Headers({
+        'X-Figma-Token': config.figma.accessToken
+      })
     })
       .then(response => {
         if (response.status === 200) {
@@ -35,29 +39,12 @@ function FigmaEmbed(props) {
           setErrorMessage('Something went wrong.');
         }
       })
-      .then(data => {
-        findId(data);
-      })
+      .then(findId)
       .catch(err => {
         console.log(err);
         setErrorMessage('Something went wrong.');
       });
-
-    // fetch(`https://api.figma.com/v1/teams/669136806690498635/styles`, {
-    //   method: 'GET',
-    //   headers: myHeaders,
-    // }).then((response) => {
-    //   if (response.status === 200) {
-    //     return response.json();
-    //   } else {
-    //     throw new Error('Something went wrong on api server!');
-    //   }
-    // }).then((data) => {
-    //   console.log(data)
-    // }).catch((err) => {
-    //   console.log(err);
-    // });
-  }, [props.document, props.frame, props.token]);
+  }, [props.document, props.frame, config]);
 
   function findId(data) {
     let nameWeAreLookingFor = props.frame;
@@ -84,14 +71,14 @@ function FigmaEmbed(props) {
   }
 
   function getImage(nodeId) {
-    if (nodeId && props.document && props.token) {
+    if (nodeId && props.document && config.figma.accessToken) {
       setLoadingMessage(`Loading image for “${props.frame}” …`);
 
-      const myHeaders = new Headers();
-      myHeaders.append('X-Figma-Token', props.token);
       return fetch(`https://api.figma.com/v1/images/${props.document}?ids=${nodeId}`, {
         method: 'GET',
-        headers: myHeaders,
+        headers: new Headers({
+          'X-Figma-Token': config.figma.accessToken
+        })
       })
         .then(response => {
           if (response.status === 200) {

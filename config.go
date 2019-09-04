@@ -32,11 +32,19 @@ type Config struct {
 
 	// A slice of configuration objects for specific tags. Allows you to display certain tags in custom colors.
 	Tags []*TagConfig `json:"tags,omitempty" yaml:"tags,omitempty"`
+
+	// Configuration related to figma.com.
+	Figma *FigmaConfig `json:"figma,omitempty" yaml:"figma,omitempty"`
 }
 
 type TagConfig struct {
 	Name  string `json:"name,omitempty" yaml:"name,omitempty"`
 	Color string `json:"color,omitempty" yaml:"color,omitempty"`
+}
+
+type FigmaConfig struct {
+	// A generated figma personal access token, used for accessing the Figma API on users behalf.
+	AccessToken string `json:"accessToken,omitempty" yaml:"accessToken,omitempty"`
 }
 
 var (
@@ -50,6 +58,8 @@ func NewConfig(path string) *Config {
 		Org:     "DSK",
 		Project: norm.NFC.String(filepath.Base(path)),
 		Lang:    "en",
+		Tags:    make([]*TagConfig, 0),
+		Figma:   &FigmaConfig{},
 	}
 }
 
