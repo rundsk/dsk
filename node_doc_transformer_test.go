@@ -92,6 +92,36 @@ func TestTransformNodeAssets(t *testing.T) {
 	}
 }
 
+func TestTransformNodeAssetsInComponentAttributes(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+	defer os.RemoveAll(tmp)
+
+	node0 := filepath.Join(tmp, "foo")
+	os.Mkdir(node0, 0777)
+
+	asset0 := filepath.Join(node0, "colors.json")
+	ioutil.WriteFile(asset0, []byte(""), 0666)
+
+	get := func(url string) (bool, *Node, error) {
+		if url == "foo" {
+			return true, &Node{root: tmp, path: filepath.Join(tmp, url)}, nil
+		}
+		return false, &Node{}, nil
+	}
+	dt, _ := NewNodeDocTransformer("/tree", "foo", get)
+
+	expected := map[string]string{
+		"<ColorGroup src=\"colors.json\"></ColorGroup>": "<colorgroup src=\"/tree/foo/colors.json\" data-node=\"foo\" data-node-asset=\"colors.json\"></ColorGroup>",
+		"<ColorSpecimen src=\"colors.json\" />":         "<colorspecimen src=\"/tree/foo/colors.json\" data-node=\"foo\" data-node-asset=\"colors.json\"/>",
+	}
+	for h, e := range expected {
+		r, _ := dt.ProcessHTML([]byte(h))
+
+		if !reflect.DeepEqual(r, []byte(e)) {
+			t.Errorf("\nexpected input : %s\nto parse to    : %s\nbut got instead: %s", h, e, r)
+		}
+	}
+}
 func TestNonNodeLinks(t *testing.T) {
 	get := func(url string) (bool, *Node, error) {
 		return false, &Node{}, nil

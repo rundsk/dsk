@@ -128,6 +128,8 @@ func (dt NodeDocTransformer) ProcessHTML(contents []byte) ([]byte, error) {
 			}
 		}
 
+		oksrc, _, _ := dt.attr(t, "src")
+
 		// Order matters: maybeAddDateNode should come first.
 		switch {
 		case t.Data == "img":
@@ -160,6 +162,16 @@ func (dt NodeDocTransformer) ProcessHTML(contents []byte) ([]byte, error) {
 				return buf.Bytes(), err
 			}
 			t, err = dt.maybeMakeAbsolute(t, "href")
+			if err != nil {
+				return buf.Bytes(), err
+			}
+			buf.WriteString(t.String())
+		case oksrc:
+			t, err := dt.maybeAddDataNode(t, "src")
+			if err != nil {
+				return buf.Bytes(), err
+			}
+			t, err = dt.maybeMakeAbsolute(t, "src")
 			if err != nil {
 				return buf.Bytes(), err
 			}
@@ -353,5 +365,5 @@ func (dt NodeDocTransformer) discoverNodeInfo(u *url.URL) (bool, string, bool, s
 		return true, n.URL(), true, a.Name()
 	}
 	// We'll ignore invalid assets on valid nodes for now and keep on going.
-	return true, n.URL(), false, ""
+	return false, n.URL(), false, ""
 }
