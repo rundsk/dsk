@@ -9,10 +9,8 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
@@ -50,9 +48,6 @@ func (d NodeDoc) Title() string {
 // and node URL will be used to resolve relative source and node URLs
 // inside the documents, to i.e. make them absolute.
 func (d NodeDoc) HTML(treePrefix string, nodeURL string, nodeGet NodeGetter) ([]byte, error) {
-	start := time.Now()
-	defer log.Printf("Rendered document %s in %s", prettyPath(d.path), time.Since(start))
-
 	contents, err := ioutil.ReadFile(d.path)
 	if err != nil {
 		return nil, err

@@ -32,7 +32,7 @@ function App(props) {
   // not displaying notifications, as we consider them to be too intrusive.
   useEffect(() => {
     let socket = Client.messages();
-    console.log('Connected to messages WebSocket', socket);
+    console.log('Connected to messages WebSocket.');
 
     socket.addEventListener('message', (ev) => {
       let m = JSON.parse(ev.data);
