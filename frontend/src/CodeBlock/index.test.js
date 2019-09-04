@@ -6,7 +6,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import CodeBlock from '.';
-import { shallow } from 'enzyme';
+import { mount } from 'enzyme';
 import 'jest-enzyme';
 
 it('renders without crashing', () => {
@@ -15,14 +15,14 @@ it('renders without crashing', () => {
 });
 
 it('wraps content in code block', () => {
-  const component = shallow(<CodeBlock>Hello World!</CodeBlock>);
+  const component = mount(<CodeBlock>Hello World!</CodeBlock>);
   const code = <code className="code-block__code-content">Hello World!</code>;
   expect(component).toContainReact(code);
 });
 
 it('escapes HTML content', () => {
   const HTML = '<button>Fancy</button>';
-  const component = shallow(<CodeBlock>{HTML}</CodeBlock>);
+  const component = mount(<CodeBlock>{HTML}</CodeBlock>);
 
   expect(component.find('code').html()).toEqual(
     '<code class="code-block__code-content">&lt;button&gt;Fancy&lt;/button&gt;</code>'
@@ -31,7 +31,7 @@ it('escapes HTML content', () => {
 
 it('does not escape pre-escaped HTML content', () => {
   const HTML = '&lt;button&gt;Fancy&lt;/button&gt;';
-  const component = shallow(<CodeBlock escaped>{HTML}</CodeBlock>);
+  const component = mount(<CodeBlock escaped>{HTML}</CodeBlock>);
 
   expect(component.find('code').html()).toEqual(
     '<code class="code-block__code-content">&lt;button&gt;Fancy&lt;/button&gt;</code>'
@@ -49,7 +49,7 @@ description: &gt;
   sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
   magna aliquyam erat, sed diam voluptua.
 `;
-  const component = shallow(<CodeBlock escaped>{HTML}</CodeBlock>);
+  const component = mount(<CodeBlock escaped>{HTML}</CodeBlock>);
 
   const expected = `authors:
   - christoph@atelierdisko.de
@@ -66,7 +66,7 @@ description: &gt;
 });
 
 it('renders component build up content', () => {
-  const component = shallow(
+  const component = mount(
     <CodeBlock title="Example">
       <div>test</div>
     </CodeBlock>
