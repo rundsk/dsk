@@ -52,41 +52,14 @@ Moving the mouse over a color card reveals accessibility information about the c
 
 ## Color Group from JSON
 
-<ColorGroup src="./colors.json"></ColorGroup>
+<ColorGroup src="colors.json"></ColorGroup>
 
 ```
-<ColorGroup src="./colors.json"></ColorGroup>
+<ColorGroup src="colors.json"></ColorGroup>
 ```
 
 ### File format
+
 The Color Group component expects a file according to the [Lona Color Defintions Spec](https://github.com/airbnb/Lona/blob/master/docs/file-formats/colors.md).
 
-<CodeBlock title="colors.json">
-<script>
-{
-  "colors": [
-    {
-      "name": "Blue",
-      "id": "blue",
-      "value": "#001dff",
-      "comment": "Our primary color"
-    },
-    {
-      "name": "White",
-      "id": "white",
-      "value": "#ffffff"
-    },
-    {
-      "name": "Green",
-      "id": "green",
-      "value": "#52d0af"
-    },
-    {
-      "name": "Teal",
-      "id": "teal",
-      "value": "#0091ab"
-    }
-  ]
-}
-</script>
-</CodeBlock>
+<CodeBlock title="colors.json" src="colors.json"></CodeBlock>

@@ -8,10 +8,7 @@ function ColorGroup(props) {
 
   useEffect(() => {
     if (props.src) {
-      // FIXME: This should obviously be derived from the src attribute
-      Client.get(`/The-Frontend/Documentation-Components/Color-Card-and-Color-Group${props.src.slice(1)}`).then(data => {
-        setColors(data.colors);
-      });
+      Client.fetch(props.src).then(data => setColors(data.colors));
     }
   }, [props.src]);
 

@@ -3,10 +3,11 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import './CodeBlock.css';
 import { copyTextToClipboard } from '../utils';
+import { Client } from '@atelierdisko/dsk';
 
 // There are two possible ways this component is used, in the first case
 // children is a React object, in the second children is a string with
@@ -16,7 +17,11 @@ import { copyTextToClipboard } from '../utils';
 // when it is instantiated by the DocTransformer, turning a <pre> into a
 // CodeBlock.
 function CodeBlock(props) {
+  const [code, setCode] = useState(null);
+  const [title, setTitle] = useState(null);
+  const [copyText, setCopyText] = useState('Copy');
   let isEscaped = !!props.escaped;
+  const codeRef = React.createRef();
 
   // Sometimes a CodeBlock start with a empty line, because of the way
   // codeblocks have to be formated in Markdown. We consider this undesirable
@@ -28,46 +33,59 @@ function CodeBlock(props) {
     return content;
   }
 
-  const [copyText, setCopyText] = useState('Copy');
-
-  let content;
-  if (props.children === undefined) {
-    content = '';
-  } else if (typeof props.children === 'object') {
-    content = ReactDOMServer.renderToStaticMarkup(props.children);
-  } else if (typeof props.children === 'string') {
-    content = props.children;
-  }
-  content = trimInitialLine(content);
 
   function copyCode() {
     setCopyText('Copied!');
-    copyTextToClipboard(content);
+    copyTextToClipboard(codeRef.current.textContent);
 
     setTimeout(() => {
       setCopyText('Copy');
     }, 2000);
   }
 
-  let code;
-  if (isEscaped) {
-    code = <code className="code-block__code-content" dangerouslySetInnerHTML={{__html: content}} />;
-  } else {
-    code = <code className="code-block__code-content">{content}</code>
-  }
+  useEffect(() => {
+    if (props.title) {
+      setTitle(props.title)
+    } else if (props.src) {
+      setTitle(props.src);
+    }
+  }, [props.title, props.src])
+
+  useEffect(() => {
+    if (props.src) {
+      Client.fetch(props.src, 'text').then(data => setCode(data));
+    } else {
+      let content;
+
+      if (props.children === undefined) {
+        content = '';
+      } else if (typeof props.children === 'object') {
+        content = ReactDOMServer.renderToStaticMarkup(props.children);
+      } else if (typeof props.children === 'string') {
+        content = props.children;
+      }
+      content = trimInitialLine(content);
+
+      if (isEscaped) {
+        setCode(<code className="code-block__code-content" dangerouslySetInnerHTML={{__html: content}} />);
+      } else {
+        setCode(<code className="code-block__code-content">{content}</code>);
+      }
+    }
+  }, [props.src, props.children, isEscaped])
 
   return (
     <div className="code-block">
       {props.title && (
         <div className="code-block__header">
-          <div className="code-block__title">{props.title}</div>
+          <div className="code-block__title">{title}</div>
         </div>
       )}
       <div className="code-block__stage">
         <div className="code-block__copy" onClick={copyCode}>
           {copyText}
         </div>
-        <pre className="code-block__code">
+        <pre className="code-block__code" ref={codeRef}>
           {code}
         </pre>
       </div>
