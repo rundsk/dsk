@@ -1,0 +1,10 @@
+description: >
+  DSK is short for “Design System Kit” – a workbench for collaboratively
+  creating Design Systems. Today we're glad to announce the general availability
+  of stable version 1.1. This is the first minor release following the initial
+  release of DSK in 2018.
+authors:
+  - christoph@atelierdisko.de
+  - marius@atelierdisko.de
+tags:
+  - release
