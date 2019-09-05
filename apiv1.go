@@ -113,10 +113,8 @@ type APIv1NodeDoc struct {
 }
 
 type APIv1NodeDocComponent struct {
-	Level    int    `json:"level"`
 	Raw      string `json:"raw"`
 	Position int    `json:"position"`
-	Length   int    `json:"length"`
 }
 
 type APIv1NodeAsset struct {
@@ -217,10 +215,8 @@ func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
 		components := make([]*APIv1NodeDocComponent, 0, len(nComponents))
 		for _, n := range nComponents {
 			components = append(components, &APIv1NodeDocComponent{
-				Level:    n.Level,
 				Raw:      n.Raw,
 				Position: n.Position,
-				Length:   n.Length,
 			})
 		}
 
