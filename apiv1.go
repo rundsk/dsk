@@ -47,6 +47,7 @@ type APIv1 struct {
 
 type APIv1Hello struct {
 	Hello   string `json:"hello"`
+	Org     string `json:"org"`
 	Project string `json:"project"`
 	Version string `json:"version"`
 }
@@ -153,7 +154,7 @@ func (api APIv1) MountHTTPHandlers() {
 }
 
 func (api APIv1) NewHello() *APIv1Hello {
-	return &APIv1Hello{"dsk", filepath.Base(api.tree.path), Version}
+	return &APIv1Hello{"dsk", api.config.Org, api.config.Project, Version}
 }
 
 func (api APIv1) NewNode(n *Node) (*APIv1Node, error) {
