@@ -11,7 +11,7 @@ simple directories. Creating documentation is as easy as adding a
 [Markdown](https://guides.github.com/features/mastering-markdown/) formatted
 file to a directory inside the _design definitions tree_.
 
-![screenshot](https://atelierdisko.de/assets/app/img/github_dsk.png?v=3)
+![DSK promotional image](https://rundsk.com/api/v2/tree/dsk_promo_list.jpg)
 
 ## Sponsors
 
@@ -42,7 +42,7 @@ Too quick? Follow the alternative [Step by Step guide](https://rundsk.com/tree/G
 
 One of the fundamental ideas in DSK was to use the filesystem as the interface for content creation. This enables _direct manipulation_ of the content and frees us from tedious administration interfaces.
 
-![screenshot](https://atelierdisko.de/assets/app/img/github_dsk_fs.png)
+![Screenshort of Finder showing a design aspect folder](/api/v2/tree/The-Design-Definitions-Tree/Aspects/folder.jpg)
 
 The _design definitions tree_ (DDT for short), is a tree of
 directories and subdirectories. Each of these directories stands for

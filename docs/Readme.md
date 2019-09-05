@@ -7,7 +7,10 @@ simple directories. Creating documentation is as easy as adding a
 [Markdown](https://guides.github.com/features/mastering-markdown/) formatted
 file to a folder inside the _design definitions tree_.
 
-![screenshot](https://atelierdisko.de/assets/app/img/github_dsk.png?v=3)
+Get started with our [Step by Step Guide](Getting-Started/Step-by-Step) 
+or [download the latest DSK release](https://github.com/atelierdisko/dsk/releases/latest).
+
+![DSK promotional image](dsk_promo_list.jpg)
 
 ## Sponsors
 
