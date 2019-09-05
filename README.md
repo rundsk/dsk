@@ -42,7 +42,7 @@ Too quick? Follow the alternative [Step by Step guide](https://rundsk.com/tree/G
 
 One of the fundamental ideas in DSK was to use the filesystem as the interface for content creation. This enables _direct manipulation_ of the content and frees us from tedious administration interfaces.
 
-![Screenshort of Finder showing a design aspect folder](/api/v2/tree/The-Design-Definitions-Tree/Aspects/folder.jpg)
+![Screenshot of Finder showing a design aspect folder](https://rundsk.com/api/v2/tree/The-Design-Definitions-Tree/Aspects/folder.jpg)
 
 The _design definitions tree_ (DDT for short), is a tree of
 directories and subdirectories. Each of these directories stands for
