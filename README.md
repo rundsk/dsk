@@ -11,6 +11,8 @@ file to a directory inside the _design definitions tree_.
 
 ![DSK promotional image](https://rundsk.com/api/v2/tree/dsk_promo_list.jpg)
 
+Visit the official [Website](https://rundsk.com), to get started with our [step by step guide](Getting-Started/Step-by-Step).
+
 ## Sponsors
 
 <a href="https://fielmann.com">
