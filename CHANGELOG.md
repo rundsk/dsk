@@ -3,44 +3,55 @@
 ## 1.2.0 Unreleased
 
 - The frontend has been rewritten as a React-App, and redesigned
-  from scratch.
-- `frontend/js/dsk` is now a package
-- Introduce `frontend` flag, so the built-in frontend can be switched out without
-  compiling it in.
-- Before we index markdown documents for search, they are now
-  better cleaned up.
-- Implement search hit fragments
-- Introduce unfiltered assets, that can be freely inlcuded or made available for
-  download in the frontends: stop filtering downloads overly strict, and expose
-  all files that are not node documents or meta files as assets. Add `assets` to
-  API responses for nodes and deprecate `downloads`, it will be removed in APIv3.
-- Remove ignore of directories beginning with an underscore (`_`), `x-` or `x_`.
-  This clarifies a possible misunderstanding. Things you don't want to be accessed, 
-  should not be stored inside the DDT.
-- Official prebuilt docker container images are now available
-  [on docker hub](https://cloud.docker.com/u/atelierdisko/repository/registry-1.docker.io/atelierdisko/dsk).
+  from scratch. It surfaces important features, like full text search and
+  just looks great.
+- We've introduced documentation components, i.e. `<Banner>`, `<CodeBlock>`, or `<DoDont>` 
+  to help you creating   top class design documentation. This feature is currently limited 
+  to Markdown documents.
 - We now support freeform data under the `custom` key in `meta.yaml` (or `meta.json`). It 
   is made available through the API. The built-in frontend has been enhanced to display 
   the freeform meta data nicely. #62, #71, #72
-- Introduce Documentation Components, i.e. `<Warning>`, `<CodeBlock>`, or `<DoDont>` to help you creating
-  top class design documentation. This feature is currently limited to Markdown documents.
-- We now officially support using components inside Markdown and HTML documents.
-  Currently component code is limited to a Simple-JSX-style: it must be parsable
-  by a HTML-parser and cannot contain self-closing component tags. The components
-  can be used similar to MDX, without any additional markup like code fences.
-- Each document now also makes an array of top-level components available
-  through the API. As this is a non-breaking addition it is also
-  available through v1 of the API.
-- The backend now responds to missing API resources with a 404, this allows to use 
-  HEAD request to test for the existence of i.e. a node.
-- Remove support for multiple languages in documents of design aspects.
-- Remove support for using wide index with filter search, all filter queries 
-  will use the narrow index.
-- Certain aspects can now be configured through an optional configuration file,
-  which sits in the DDT.
-- Removed support for providing the DDT lang through a command line flag,
-  please use the configuration file to configure the language of the DDT.
-- We've improved how the window title is set, and also include a meta description.
+- Certain aspects can now be configured through an optional configuration file.
+- The window title is now formatted in a more search engine/human friendly way.
+  When an aspect has a description we use that to set a meta description.
+- We now clean up Markdown documents better before they are indexed for search.
+- Search results now return hit fragments, so highlighting can be implemented in the frontend.
+- We unfiltered assets, so that these can be freely inlcuded or made available for
+  download in the frontend. It's now up to the frontend to decided whether an asset
+  should be made available for download. The next version of the API will not 
+  include `downloads` on node results any more. We recommend to use the new `assets` 
+  instead. 
+- The DDT is not a good place to store secrets and we want to be more clear about that. We've
+  removed special ignore rules and do not exclude aspects  prefixed with  `_`, `x-` or `x_`. 
+  anymore. This clarifies a possible misunderstanding. Things you don't want to be accessed, 
+  should not be stored inside the DDT.
+- Each document now makes an array of (top-level) components available
+  through the API. We plan to expand the information that 
+  is returned here for the next release.
+- We fixed an issue where the backend didn't correctly respond to HTTP
+  requests. The backend now responds to missing API resources with a
+  404, this allows to use HEAD request to test for the existence of i.e.
+  a node.
+- Our JavaScript SDK `frontend/js/dsk` is now a package, that we publish on npm.
+- The JavaScript API client from the SDK, now supports pinging and    
+  checking for the existence of a node or asset. In total three new     
+  methods were added: `has()`, `config()` and `ping()`.                 
+- The document transform from the JavaScript SDK, is used to parse documents
+  received from the backend and replaces occurences of components, with 
+  actual component instances. The transformer has cleaned up and modified 
+  to work with the new documentation components.
+- Many of you wish to run DSK inside a docker container. We now prebuild and ship official 
+  container imagee and make them available on
+  [on docker hub](https://cloud.docker.com/u/atelierdisko/repository/registry-1.docker.io/atelierdisko/dsk).
+- Support for multiple languages has been removed, this unfortunately
+  didn't work out the way we expected to. We've also removed the `lang`
+  command line in favor of providing the language of the DDT via the new
+  optional configuration file. In the language is a property of the DDT
+  not the program.
+- We've also removed support for using wide index with filter search,
+  all filter queries will use the narrow index.
+- The `frontend` flag has been added, so the built-in frontend can be switched out without
+  compiling it in.
 
 ## 1.1.1
 
