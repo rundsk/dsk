@@ -37,7 +37,7 @@ function App(props) {
     socket.addEventListener('message', (ev) => {
       let m = JSON.parse(ev.data);
 
-      if (m.type === 'tree-synced') {
+      if (m.topic === 'tree.synced') {
         loadTree();
 
         // The node might have gone away.

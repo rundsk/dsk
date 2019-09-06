@@ -8,11 +8,13 @@ DDT ?= $(shell pwd)/example
 
 VERSION ?= head-$(shell git rev-parse --short HEAD)
 LDFLAGS = -X main.Version=$(VERSION)
-ANY_DEPS = $(wildcard *.go)
+ANY_DEPS = $(shell find cmd internal vendor)
+ALL_PKGS = $(shell go list ./...)
+CMD_PKG = github.com/atelierdisko/dsk/cmd/dsk
 
 .PHONY: test
 test:
-	go test -tags=dev -race -ldflags "$(LDFLAGS)"
+	go test -tags=dev -race -ldflags "$(LDFLAGS)" $(ALL_PKGS)
 
 .PHONY: bench
 bench:
@@ -20,13 +22,13 @@ bench:
 
 .PHONY: profile
 profile:
-	go test -tags=dev -run ^$$ -bench . -cpuprofile cpu.prof -memprofile mem.prof -mutexprofile mutex.prof
-	@echo Now run i.e.: go tool pprof dsk.test cpu.prof
+	go test -tags=dev -run ^$$ -bench . -cpuprofile cpu.prof -memprofile mem.prof -mutexprofile mutex.prof $(ALL_PKGS)
 
 .PHONY: dev
 dev:
-	go build -mod=vendor -tags=dev -race -ldflags "$(LDFLAGS)"
+	go build -mod=vendor -tags=dev -race -ldflags "$(LDFLAGS)" $(CMD_PKG)
 	./dsk -frontend $(FRONTEND) "$(DDT)"
+	rm dsk
 
 .PHONY: clean
 clean:
@@ -65,14 +67,14 @@ dist/%.tar: dist/%
 dist/%.tar.gz: | dist/%.tar
 	gzip $(basename $@)
 
-dist/%-darwin-amd64: $(ANY_DEPS) frontend_vfsdata.go
-	GOOS=darwin GOARCH=amd64 go build -mod=vendor -ldflags "$(LDFLAGS) -s -w" -o $@
+dist/%-darwin-amd64: $(ANY_DEPS) internal/frontend/vfsdata.go
+	GOOS=darwin GOARCH=amd64 go build -mod=vendor -ldflags "$(LDFLAGS) -s -w" -o $@ $(CMD_PKG)
 
-dist/%-linux-amd64: $(ANY_DEPS) frontend_vfsdata.go
-	GOOS=linux GOARCH=amd64 go build -mod=vendor -ldflags "$(LDFLAGS) -s -w" -o $@
+dist/%-linux-amd64: $(ANY_DEPS) internal/frontend/vfsdata.go
+	GOOS=linux GOARCH=amd64 go build -mod=vendor -ldflags "$(LDFLAGS) -s -w" -o $@ $(CMD_PKG)
 
-dist/%-windows-386.exe: $(ANY_DEPS) frontend_vfsdata.go
-	GOOS=windows GOARCH=386 go build -mod=vendor -ldflags "$(LDFLAGS) -s -w" -o $@
+dist/%-windows-386.exe: $(ANY_DEPS) internal/frontend/vfsdata.go
+	GOOS=windows GOARCH=386 go build -mod=vendor -ldflags "$(LDFLAGS) -s -w" -o $@ $(CMD_PKG)
 
 frontend_vfsdata.go: $(shell find $(FRONTEND) -type f) 
-	FRONTEND=$(FRONTEND) go run -mod=vendor frontend_generate.go
+	FRONTEND=$(FRONTEND) go run -mod=vendor internal/frontend/generate.go
