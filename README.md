@@ -1,7 +1,5 @@
 # Design System Kit
 
-[![Build Status](https://travis-ci.org/atelierdisko/dsk.svg?branch=master)](https://travis-ci.org/atelierdisko/dsk)
-
 ## Abstract
 
 Using the Design System Kit you quickly define and organize
