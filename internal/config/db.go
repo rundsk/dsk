@@ -148,7 +148,7 @@ func (c *DB) Load() error {
 	case ".yaml", ".yml":
 		return yaml.Unmarshal(contents, &c)
 	default:
-		return fmt.Errorf("Unsupported format: %s", pathutil.Pretty(c.path))
+		return fmt.Errorf("unsupported format: %s", pathutil.Pretty(c.path))
 	}
 }
 

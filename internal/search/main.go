@@ -44,7 +44,7 @@ func NewSearch(path string, t *ddt.NodeTree, lang string, isPersistent bool) (*S
 
 	_, ok := AvailableSearchLangs[lang]
 	if !ok {
-		return s, fmt.Errorf("Unsupported language: %s", lang)
+		return s, fmt.Errorf("unsupported language: %s", lang)
 	}
 	s.lang = lang
 
@@ -323,14 +323,14 @@ func (s *Search) FullSearch(q string) ([]*FullSearchHit, int, time.Duration, boo
 
 	res, err := s.wideIndex.Search(req)
 	if err != nil {
-		return nil, 0, time.Duration(0), s.IsStale(), fmt.Errorf("Query '%s' failed: %s", q, err)
+		return nil, 0, time.Duration(0), s.IsStale(), fmt.Errorf("query '%s' failed: %s", q, err)
 	}
 
 	hits := make([]*FullSearchHit, 0, len(res.Hits))
 	for _, hit := range res.Hits {
 		ok, n, err := s.getNode(hit.ID)
 		if err != nil {
-			return hits, int(res.Total), res.Took, s.IsStale(), fmt.Errorf("Failed to get node for hit %s: %s", hit.ID, err)
+			return hits, int(res.Total), res.Took, s.IsStale(), fmt.Errorf("failed to get node for hit %s: %s", hit.ID, err)
 		}
 		if !ok {
 			log.Printf("Node for hit %s not found, skipping hit", hit.ID)
@@ -382,7 +382,7 @@ func (s *Search) FilterSearch(q string) ([]*ddt.Node, int, time.Duration, bool, 
 	res, err := s.narrowIndex.Search(req)
 
 	if err != nil {
-		return nil, 0, time.Duration(0), s.IsStale(), fmt.Errorf("Query '%s' failed: %s", q, err)
+		return nil, 0, time.Duration(0), s.IsStale(), fmt.Errorf("query '%s' failed: %s", q, err)
 	}
 
 	var nodes []*ddt.Node
@@ -390,7 +390,7 @@ func (s *Search) FilterSearch(q string) ([]*ddt.Node, int, time.Duration, bool, 
 	for _, hit := range res.Hits {
 		ok, n, err := s.getNode(hit.ID)
 		if err != nil {
-			return nodes, len(nodes), res.Took, s.IsStale(), fmt.Errorf("Failed to get node for hit %s: %s", hit.ID, err)
+			return nodes, len(nodes), res.Took, s.IsStale(), fmt.Errorf("failed to get node for hit %s: %s", hit.ID, err)
 		}
 		if _, hasSeen := seen[n.URL()]; hasSeen {
 			continue // Keep nodes unique.

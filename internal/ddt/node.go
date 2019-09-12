@@ -346,7 +346,7 @@ func (n *Node) Asset(name string) (*NodeAsset, error) {
 		return nil, err
 	}
 	if f.IsDir() {
-		return nil, fmt.Errorf("Accessing directory as asset: %s", path)
+		return nil, fmt.Errorf("accessing directory as asset: %s", path)
 	}
 
 	return NewNodeAsset(

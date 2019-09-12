@@ -44,7 +44,7 @@ func (m *NodeMeta) Create() error {
 	case ".yaml", ".yml":
 		b, err = yaml.Marshal(m)
 	default:
-		return fmt.Errorf("Unsupported format: %s", pathutil.Pretty(m.path))
+		return fmt.Errorf("unsupported format: %s", pathutil.Pretty(m.path))
 	}
 	if err != nil {
 		return err
@@ -68,6 +68,6 @@ func (m *NodeMeta) Load() error {
 		m.Custom = dyno.ConvertMapI2MapS(m.Custom)
 		return nil
 	default:
-		return fmt.Errorf("Unsupported format: %s", pathutil.Pretty(m.path))
+		return fmt.Errorf("unsupported format: %s", pathutil.Pretty(m.path))
 	}
 }

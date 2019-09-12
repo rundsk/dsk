@@ -76,7 +76,7 @@ func (d NodeDoc) HTML(treePrefix string, nodeURL string, nodeGet NodeGetter) ([]
 		html := fmt.Sprintf("<pre>%s</pre>", html.EscapeString(string(contents)))
 		return []byte(html), nil
 	}
-	return nil, fmt.Errorf("Document not in a supported format: %s", pathutil.Pretty(d.path))
+	return nil, fmt.Errorf("unsupported format: %s", pathutil.Pretty(d.path))
 }
 
 // Text converted from original file format.
@@ -96,7 +96,7 @@ func (d NodeDoc) CleanText() ([]byte, error) {
 	case ".html", ".htm":
 		return policy.SanitizeBytes(contents), nil
 	}
-	return nil, fmt.Errorf("Document not in a supported format: %s", pathutil.Pretty(d.path))
+	return nil, fmt.Errorf("unsupported format: %s", pathutil.Pretty(d.path))
 }
 
 // Raw content of the underlying file.

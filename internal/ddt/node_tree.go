@@ -172,6 +172,10 @@ func (t *NodeTree) CalculateHash() (string, error) {
 // makes the algorithm really simple - as we don't need to do branch
 // selection - but also slow.
 //
+// The Walk recursively walks a given directory tree. It will not descend
+// into directories it considers hidden (their name is prefixed by a
+// dot), except when the given directory itself is dot-hidden.
+//
 // Nodes that are discover but fail to finalize their initialization
 // using Node.Load() will not be skipped but kept in tree in
 // a semi-initialized way. So that the their children are not
@@ -212,7 +216,7 @@ func (t *NodeTree) Sync() error {
 		return nil
 	})
 	if err != nil {
-		return fmt.Errorf("Failed to walk directory tree %s: %s", t.Path, err)
+		return fmt.Errorf("failed to walk directory tree %s: %s", t.Path, err)
 	}
 
 	// In the second pass we're doing two things: add the children
@@ -274,7 +278,7 @@ func (t *NodeTree) NeighborNodes(current *Node) (prev *Node, next *Node, err err
 	// SearchString returns the next unused key, if the given string
 	// isn't found.
 	if key == len(t.ordered) {
-		return nil, nil, fmt.Errorf("No node with URL path '%s' in tree", current.URL())
+		return nil, nil, fmt.Errorf("no node with URL path '%s' in tree", current.URL())
 	}
 
 	// Be sure current node isn't the first ddt.

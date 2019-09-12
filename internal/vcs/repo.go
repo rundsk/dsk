@@ -76,7 +76,7 @@ func NewRepo(mainPath string, subPath string, isValidVersion func(string) (bool,
 			return nil, err
 		}
 		if len(subs) == 0 {
-			return nil, errors.New("No submodules available. Are you missing a .gitmodules file?")
+			return nil, errors.New("no submodules available. Are you missing a .gitmodules file?")
 		}
 		for _, sub := range subs {
 			if filepath.Join(mainPath, sub.Config().Path) != subPath {
@@ -93,7 +93,7 @@ func NewRepo(mainPath string, subPath string, isValidVersion func(string) (bool,
 			hasFoundMatchingSub = true
 		}
 		if !hasFoundMatchingSub {
-			return nil, fmt.Errorf("Failed to match subrepository %s to available ones", subPath)
+			return nil, fmt.Errorf("failed to match subrepository %s to available ones", subPath)
 		}
 	}
 	return &Repo{
@@ -233,7 +233,7 @@ func (r *Repo) FileMetaLookup() (*plumbing.Reference, map[string]time.Time, erro
 		return nil
 	})
 	if err != nil {
-		return ref, lookup, fmt.Errorf("Failed to walk directory tree %s: %s", r.path, err)
+		return ref, lookup, fmt.Errorf("failed to walk directory tree %s: %s", r.path, err)
 	}
 
 	commits, err := r.repo.Log(&git.LogOptions{From: ref.Hash()})
