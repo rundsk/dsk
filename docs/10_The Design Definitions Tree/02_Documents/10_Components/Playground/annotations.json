@@ -1,14 +1,14 @@
 {
-  "annnotations": [
+  "annotations": [
     {
       "x": "36%",
-      "y": "0%",
+      "y": "15%",
       "description": "Use a clear label"
     },
     {
-      "x": "36%",
+      "x": "54%",
       "y": "61%",
-      "description": "Pick a color with enough contrast",
+      "description": "Pick a color with enough contrast"
     }
   ],
   "annotationColor": "#EE645D"

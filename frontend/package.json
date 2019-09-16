@@ -39,6 +39,8 @@
     "not op_mini all"
   ],
   "jest": {
-    "transformIgnorePatterns": ["/node_modules/(?!@atelierdisko/dsk)"]
+    "transformIgnorePatterns": [
+      "/node_modules/(?!@atelierdisko/dsk)"
+    ]
   }
 }

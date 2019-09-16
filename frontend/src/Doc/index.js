@@ -17,16 +17,13 @@ import Banner from '../Banner';
 import CodeBlock from '../CodeBlock';
 import ColorCard from '../ColorCard';
 import ColorGroup from '../ColorGroup';
-import ComponentDemo from '../ComponentDemo';
+import Playground from '../Playground';
 import DoDont, { Do, Dont } from '../DoDont';
 import FigmaEmbed from '../FigmaEmbed';
 import TypographySpecimen from '../TypographySpecimen';
 
 function Doc(props) {
   useEffect(() => {
-    if (!props.htmlContent) {
-      return;
-    }
     // window.requestAnimationFrame should ensure that the rendering
     // has finished.
     window.requestAnimationFrame(() => {
@@ -59,7 +56,7 @@ function Doc(props) {
     },
     Color: props => <ColorCard {...props} />,
     ColorGroup: props => <ColorGroup {...props} />,
-    Playground: props => <ComponentDemo {...props} />,
+    Playground: props => <Playground {...props} />,
     Do: props => <Do {...props} />,
     DoDontGroup: props => <DoDont {...props} />,
     Dont: props => <Dont {...props} />,

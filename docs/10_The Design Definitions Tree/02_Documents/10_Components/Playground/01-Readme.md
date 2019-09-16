@@ -26,10 +26,10 @@ For all configuration options see [Properties](?t=properties).
 
 With annotations you can highlight specific points on the playground and add a comment.
 
-<Playground annotations="annotations.json">{Component}</Playground>
+<Playground src="annotations.json">{Component}</Playground>
 
 ```
-<Playground annotations="annotations.json">{Component}</Playground>
+<Playground src="annotations.json">{Component}</Playground>
 ```
 
 ## File Format
