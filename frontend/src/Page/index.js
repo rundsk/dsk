@@ -12,7 +12,7 @@ import './Page.css';
 
 import Breadcrumbs from '../Breadcrumbs';
 import Tags from '../Tags';
-import ComponentDemo from '../ComponentDemo';
+import Playground from '../Playground';
 import Doc from '../Doc';
 import Meta from '../Meta';
 import TabBar from '../TabBar';
@@ -53,7 +53,7 @@ function Page(props) {
     props.router.navigate('node', { ...currentRouterState.params, node: currentNode, t: t }, { replace: true });
   }
 
-  let componentDemo;
+  let playground;
   let tabBar;
   let doc;
 
@@ -63,7 +63,7 @@ function Page(props) {
 
     docs = props.docs.filter(d => {
       if (d.title.toLowerCase() === 'playground') {
-        componentDemo = d;
+        playground = d;
         return false;
       }
 
@@ -227,11 +227,11 @@ function Page(props) {
         </div>
       </div>
 
-      {componentDemo && (
+      {playground && (
         <div className="page__component-demo">
-          <ComponentDemo>
-            <Doc htmlContent={componentDemo.html} />
-          </ComponentDemo>
+          <Playground>
+            <Doc htmlContent={playground.html} />
+          </Playground>
         </div>
       )}
 
