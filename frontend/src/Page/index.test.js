@@ -5,9 +5,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import PAge from '.';
-import { mount } from 'enzyme';
-import 'jest-enzyme';
+import Page from '.';
 
 it('renders without crashing', () => {
   const div = document.createElement('div');

@@ -75,7 +75,7 @@ function Page(props) {
     // any "real" document that can be presented to the user. In this case we
     // also want to show an overview.
     const showOverview =
-      props.children.length > 0 &&
+      props.children && props.children.length > 0 &&
       docs.filter(doc => {
         return doc.title.toLowerCase() !== 'authors';
       }).length === 0;
@@ -209,7 +209,7 @@ function Page(props) {
           <p className="page__description">
             {props.description}
             <span className="page__children-count">
-              {props.children.length > 0 && ` (${props.children.length} aspects)`}
+              {props.children && props.children.length > 0 && ` (${props.children.length} aspects)`}
             </span>
           </p>
 
