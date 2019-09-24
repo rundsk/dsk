@@ -15,7 +15,7 @@ function SearchResult(props) {
     if (props.isFocused && ref.current) {
       ref.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
-  }, [props.isFocused]);
+  }, [props.isFocused, ref]);
 
   function handleClick() {
     props.onSelect();
