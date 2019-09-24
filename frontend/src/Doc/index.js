@@ -15,6 +15,7 @@ import Link from '../Link';
 
 import Banner from '../Banner';
 import CodeBlock from '../CodeBlock';
+import Color from '../Color';
 import ColorCard from '../ColorCard';
 import ColorGroup from '../ColorGroup';
 import ComponentDemo from '../ComponentDemo';
@@ -57,8 +58,9 @@ function Doc(props) {
 
       return <CodeBlock {...props} children={children} />;
     },
-    Color: props => <ColorCard {...props} />,
+    ColorCard: props => <ColorCard {...props} />,
     ColorGroup: props => <ColorGroup {...props} />,
+    Color: props => <Color {...props} />,
     Playground: props => <ComponentDemo {...props} />,
     Do: props => <Do {...props} />,
     DoDontGroup: props => <DoDont {...props} />,
@@ -85,6 +87,7 @@ function Doc(props) {
 
   const orphans = Object.keys(transforms)
     .filter(k => k !== 'a')
+    .filter(k => k !== 'Color')
     .map(k => `p > ${k}`)
     .concat(['p > video']);
 

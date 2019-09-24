@@ -1,0 +1,44 @@
+/**
+ * Copyright 2019 Atelier Disko. All rights reserved. This source
+ * code is distributed under the terms of the BSD 3-Clause License.
+ */
+
+.color {
+  border: none;
+  padding: none;
+  background-color: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  display: inline;
+}
+
+.color__demo {
+  display: inline-block;
+  height: .8em;
+  width: .8em;
+  transform: translateY(0.06em);
+  border-radius: 50%;
+  margin-right: 0.1em;
+  margin-left: 0.25em;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.color--is-ultra-light .color__demo {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.color__demo::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-image: url(./CheckerboardPattern.png);
+  background-size: 60px;
+  z-index: 0;
+  border-radius: 50%;
+}

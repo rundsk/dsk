@@ -4,49 +4,51 @@
 
 Moving the mouse over a color card reveals accessibility information about the contrast ratio of black and white to the color. Clicking a color card copies the color’s value.
 
+Colors can be used inline as well, for example this beautful shade of <Color color="#EE2222">Red</Color> is just gorgeous!
+
 # Examples
 
 ## Single Color
 
-<Color color="#001dff">Blue</Color>
+<ColorCard color="#001dff">Blue</ColorCard>
 
 ```
-<Color color="#001dff">Blue</Color>
+<ColorCard color="#001dff">Blue</ColorCard>
 ```
 
 ### Compact
 
-<Color color="#001dff" compact="true">Blue</Color>
+<ColorCard color="#001dff" compact="true">Blue</ColorCard>
 
 ```
-<Color color="#001dff" compact="true">Blue</Color>
+<ColorCard color="#001dff" compact="true">Blue</ColorCard>
 ```
 
 ## Color Group
 
 <ColorGroup>
-  <Color color="#001dff">Blue</Color>
-  <Color color="#FFE874" comment="A juice shade of yellow!">Yellow</Color>
+  <ColorCard color="#001dff">Blue</ColorCard>
+  <ColorCard color="#FFE874" comment="A juice shade of yellow!">Yellow</ColorCard>
 </ColorGroup>
 
 ```
 <ColorGroup>
-  <Color color="#001dff">Blue</Color>
-  <Color color="#FFE874" comment="A juice shade of yellow!">Yellow</Color>
+  <ColorCard color="#001dff">Blue</ColorCard>
+  <ColorCard color="#FFE874" comment="A juice shade of yellow!">Yellow</ColorCard>
 </ColorGroup>
 ```
 
 ### Compact
 
 <ColorGroup compact="true">
-  <Color color="#001dff">Blue</Color>
-  <Color color="#FFE874">Yellow</Color>
+  <ColorCard color="#001dff">Blue</ColorCard>
+  <ColorCard color="#FFE874">Yellow</ColorCard>
 </ColorGroup>
 
 ```
 <ColorGroup compact="true">
-  <Color color="#001dff">Blue</Color>
-  <Color color="#FFE874" comment="A juice shade of yellow!">Yellow</Color>
+  <ColorCard color="#001dff">Blue</ColorCard>
+  <ColorCard color="#FFE874" comment="A juice shade of yellow!">Yellow</ColorCard>
 </ColorGroup>
 ```
 
