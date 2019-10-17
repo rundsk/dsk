@@ -16,7 +16,7 @@ function Link(props) {
   let hash = props.href.split('?t=')[1] || undefined;
 
   return (
-    <BaseLink router={props.router} routeName="node" routeParams={{ node, t: hash }}>
+    <BaseLink router={props.router} routeName="node" routeParams={{ node, t: hash, v: props.route.params.v }}>
       {props.children}
     </BaseLink>
   );

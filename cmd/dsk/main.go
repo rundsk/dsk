@@ -6,34 +6,33 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
+	"time"
 
 	"github.com/atelierdisko/dsk/internal/api"
-	"github.com/atelierdisko/dsk/internal/ddt"
+
 	"github.com/atelierdisko/dsk/internal/httputil"
-	"github.com/atelierdisko/dsk/internal/pathutil"
+	"github.com/atelierdisko/dsk/internal/plex"
 	"github.com/fatih/color"
 	isatty "github.com/mattn/go-isatty"
 )
-
-type CleanupFunc func() error
 
 var (
 	// Version string, compiled in.
 	Version string
 
-	// OS Signal channel.
-	sigc chan os.Signal
+	// app is the global instance of the application.
+	app *plex.App
 
-	// teardown stacks functions for teardown, when the program exits.
-	// Otherwise we'd need to keep the services we want to stop around
-	// in globals.
-	teardown []CleanupFunc
+	// sigc is the OS signal channel.
+	sigc chan os.Signal
 )
 
 func main() {
@@ -47,17 +46,10 @@ func main() {
 	go func() {
 		for sig := range sigc {
 			log.Printf("Caught %v signal, bye!", sig)
-			log.Print("Cleaning up...")
-
-			// Close services in reverse order of starting them.
-			for i := len(teardown) - 1; i >= 0; i-- {
-				if teardown[i] == nil {
-					continue
-				}
-				err := teardown[i]()
-
-				if err != nil {
-					log.Printf("Failed to teardown: %s", err)
+			if app != nil {
+				log.Print("Cleaning up...")
+				if err := app.Close(); err != nil {
+					log.Printf("Failed to clean up: %s", err)
 				}
 			}
 			os.Exit(1)
@@ -95,80 +87,60 @@ func main() {
 		log.Printf("Version %s", Version)
 		log.Print("-------------------------------------------")
 	}
+	start := time.Now()
 
 	// This is nice to have, when requesting the output of "lsof -p
 	// <PID>", when debugging unclosed file descriptors.
 	log.Printf("Our PID: %d", os.Getpid())
 
-	here, err := ddt.FindNodeTreeRoot(os.Args[0], flag.Arg(0))
+	var livePath string
+	if flag.Arg(0) != "" {
+		livePath = flag.Arg(0)
+	} else {
+		// When no path is given as an argument, take the path to
+		// the process itself. This makes sure that when opening the
+		// binary from Finder the folder it is stored in is used.
+		livePath = filepath.Dir(os.Args[0])
+	}
+	livePath, err := filepath.Abs(livePath)
 	if err != nil {
-		log.Fatal(red.Sprintf("Failed to detect root of design definitions tree: %s", err))
+		panic(err)
+	}
+	livePath, err = filepath.EvalSymlinks(livePath)
+	if err != nil {
+		panic(err)
+	}
+	log.Printf("Detected live path: %s", livePath)
+
+	app = plex.NewApp( // assign to global
+		Version,
+		livePath,
+		*ffrontend,
+	)
+	ctx, cancel := context.WithCancel(context.Background())
+	app.Teardown.AddCancelFunc(cancel)
+
+	if err := app.Open(); err != nil {
+		log.Fatal(red.Sprintf("Failed to initialize application: %s", err))
 	}
 
-	log.Printf("Tree root found: %s", here)
+	if app.HasMultiVersionsSupport() {
+		log.Printf("Detected support for multi-versions")
 
-	pathutil.SetPrettyRoot(here)
-
-	broker, cleanup, err := initBroker()
-	teardown = append(teardown, cleanup)
-	if err != nil {
-		log.Fatal(red.Sprintf("Failed to initialize message broker: %s", err))
-	}
-
-	watcher, cleanup, err := initWatcher(here)
-	teardown = append(teardown, watcher.Stop)
-	if err != nil {
-		log.Fatal(red.Sprintf("Failed to initialize watcher: %s", err))
-	}
-
-	configDB, cleanup, err := initConfigDB(here, broker)
-	teardown = append(teardown, configDB.Close)
-	if err != nil {
-		log.Fatal(red.Sprintf("Failed to initialize configuration database: %s", err))
-	}
-
-	repo, cleanup, err := initRepo(here, configDB)
-	teardown = append(teardown, cleanup)
-	if err != nil {
-		log.Fatal(red.Sprintf("Failed to initialize repository: %s", err))
-	}
-
-	authorDB, cleanup, err := initAuthorDB(here, broker)
-	teardown = append(teardown, cleanup)
-	if err != nil {
-		log.Fatal(red.Sprintf("Failed to initialize author database: %s", err))
-	}
-
-	tree, cleanup, err := initNodeTree(here, configDB, authorDB, repo, watcher, broker)
-	teardown = append(teardown, cleanup)
-	if err != nil {
-		log.Fatal(red.Sprintf("Failed to initialize node tree: %s", err))
-	}
-
-	search, cleanup, err := initSearch(tree, broker, configDB)
-	teardown = append(teardown, cleanup)
-	if err != nil {
-		log.Fatal(red.Sprintf("Failed to initialize search: %s", err))
-	}
-
-	frontend, cleanup, err := initFrontend(*ffrontend, tree)
-	teardown = append(teardown, cleanup)
-	if err != nil {
-		log.Fatal(red.Sprintf("Failed to initialize frontend: %s", err))
+		if err := app.OpenVersions(ctx); err != nil {
+			log.Print(red.Sprintf("Failed to start application: %s", err))
+		}
 	}
 
 	apis := map[int]httputil.Mountable{
-		1: api.NewV1(configDB, Version, tree, broker, search),
-		2: api.NewV2(configDB, Version, tree, broker, search),
+		1: api.NewV1(app.Sources, app.Version, app.Broker),
+		2: api.NewV2(app.Sources, app.Version, app.Broker),
 	}
-	for v, a := range apis {
+	for _, a := range apis {
 		a.MountHTTPHandlers()
-		log.Printf("Mounted HTTP handlers: APIv%d", v)
 	}
-
 	// Must come last, as it contains a catch all route.
-	frontend.MountHTTPHandlers()
-	log.Print("Mounted HTTP handlers: frontend")
+	app.Frontend.MountHTTPHandlers()
 
 	addr := fmt.Sprintf("%s:%s", *host, *port)
 	if isTerminal {
@@ -177,7 +149,7 @@ func main() {
 		log.Print("Hit Ctrl+C to quit")
 		log.Print("-------------------------------------------")
 	}
-	log.Printf("Started web interface on %s", addr)
+	log.Printf("Started web interface on %s, in %s", addr, time.Since(start))
 
 	if err := http.ListenAndServe(addr, nil); err != nil {
 		log.Fatal(red.Sprintf("Failed to start web interface: %s", err))

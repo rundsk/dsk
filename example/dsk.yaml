@@ -8,3 +8,6 @@ tags:
     color: "#ED6666"
   - name: progress
     color: "#0091AB"
+versions:
+  - dev-master
+  - 1.2.*

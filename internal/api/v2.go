@@ -6,31 +6,28 @@
 package api
 
 import (
+	"log"
 	"net/http"
 	"path/filepath"
 	"time"
 
 	"github.com/atelierdisko/dsk/internal/bus"
-	"github.com/atelierdisko/dsk/internal/config"
 	"github.com/atelierdisko/dsk/internal/ddt"
 	"github.com/atelierdisko/dsk/internal/httputil"
+	"github.com/atelierdisko/dsk/internal/plex"
 	"github.com/atelierdisko/dsk/internal/search"
 )
 
-func NewV2(cdb *config.DB, v string, t *ddt.NodeTree, hub *bus.Broker, s *search.Search) *V2 {
+func NewV2(ss *plex.Sources, appVersion string, b *bus.Broker) *V2 {
 	return &V2{
-		v1:       NewV1(cdb, v, t, hub, s),
-		configDB: cdb,
-		tree:     t,
-		search:   s,
+		v1:      NewV1(ss, appVersion, b),
+		sources: ss,
 	}
 }
 
 type V2 struct {
-	v1       *V1
-	configDB *config.DB
-	tree     *ddt.NodeTree
-	search   *search.Search
+	v1      *V1
+	sources *plex.Sources
 }
 
 // V2FullSearchResults differs from V2FilterResults in some
@@ -55,8 +52,11 @@ type V2FilterResults struct {
 }
 
 func (api V2) MountHTTPHandlers() {
+	log.Print("Mounting APIv2 HTTP handlers...")
+
 	http.HandleFunc("/api/v2/hello", api.v1.HelloHandler)
 	http.HandleFunc("/api/v2/config", api.v1.ConfigHandler)
+	http.HandleFunc("/api/v2/sources", api.v1.SourcesHandler)
 	http.HandleFunc("/api/v2/tree", api.v1.TreeHandler)
 	http.HandleFunc("/api/v2/tree/", func(w http.ResponseWriter, r *http.Request) {
 		if filepath.Ext(r.URL.Path) != "" {
@@ -97,15 +97,23 @@ func (api V2) NewNodeTreeFilterResults(nodes []*ddt.Node, total int, took time.D
 
 // Performs a full broad search over the design defintions tree.
 //
-// Handles this URL:
+// Handles these URLs:
 //   /api/v2/search?q={query}
+//   /api/v2/search?q={query}&v={version}
 func (api V2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	wr := httputil.NewResponder(w, r, "application/json")
 	r.Body.Close()
 
 	q := r.URL.Query().Get("q")
+	v := r.URL.Query().Get("v")
 
-	results, total, took, _, err := api.search.FullSearch(q)
+	s, err := api.sources.MustGet(v)
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+
+	results, total, took, _, err := s.Search.FullSearch(q)
 	if err != nil {
 		wr.Error(httputil.Err, err)
 		return
@@ -118,14 +126,21 @@ func (api V2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 //
 // Handles these URLs:
 //   /api/v2/filter?q={query}
-//   /api/v2/filter?q={query}&index=wide
+//   /api/v2/filter?q={query}&v={version}
 func (api V2) FilterHandler(w http.ResponseWriter, r *http.Request) {
 	wr := httputil.NewResponder(w, r, "application/json")
 	r.Body.Close()
 
 	q := r.URL.Query().Get("q")
+	v := r.URL.Query().Get("v")
 
-	results, total, took, _, err := api.search.FilterSearch(q)
+	s, err := api.sources.MustGet(v)
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+
+	results, total, took, _, err := s.Search.FilterSearch(q)
 	if err != nil {
 		wr.Error(httputil.Err, err)
 		return

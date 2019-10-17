@@ -45,7 +45,7 @@ html {
   z-index: 4;
   border-radius: 3px;
   border: 1px solid var(--color-gray-800);
-  box-shadow: 0 5px 10px -5px rgba(0,0,0,.2);
+  box-shadow: 0 5px 10px -5px rgba(0, 0, 0, 0.2);
   line-height: calc(var(--spacing-unit) * 3.5);
 }
 
@@ -61,7 +61,7 @@ html {
   width: calc(var(--spacing-unit) * 40);
   display: flex;
   flex-direction: column;
-  border-right: 2px solid  var(--color-gray-800);
+  border-right: 2px solid var(--color-gray-800);
   z-index: 2;
 }
 
@@ -76,7 +76,7 @@ html {
   flex-direction: column;
   justify-content: center;
   border-bottom: 1px solid var(--color-gray-800);
-  box-shadow: 0 5px 15px -10px rgba(0,0,0,.15);
+  box-shadow: 0 5px 15px -10px rgba(0, 0, 0, 0.15);
   z-index: 2;
 }
 
@@ -93,12 +93,35 @@ html {
 
 .app__shoutout {
   background-color: var(--color-gray-1000);
-  padding: calc(var(--spacing-unit) * .5) calc(var(--spacing-unit) * 2);
+  padding: calc(var(--spacing-unit) * 1) calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 0.5)
+    calc(var(--spacing-unit) * 2);
   color: var(--color-gray-500);
   font-size: var(--font-size-beta);
   border-top: 1px solid var(--color-gray-900);
   z-index: 2;
-  box-shadow: 0 5px 15px -5px rgba(0,0,0,.15);
+  box-shadow: 0 5px 15px -5px rgba(0, 0, 0, 0.15);
+}
+
+.app__versions {
+  position: relative;
+}
+
+.app__versions::after {
+  content: '›';
+  position: absolute;
+  right: calc(var(--spacing-unit) * 1.5);
+  top: 0%;
+  transform: rotate(90deg);
+}
+
+.app__versions select {
+  width: 100%;
+  font-family: inherit;
+  font-size: inherit;
+  padding: calc(var(--spacing-unit) * 0.5) calc(var(--spacing-unit) * 1);
+  appearance: none;
+  border: 1px solid var(--color-gray-800);
+  background-color: white;
 }
 
 .app__shoutout a {
@@ -121,7 +144,7 @@ html {
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid var(--color-gray-800);
-  box-shadow: 0 5px 15px -10px rgba(0,0,0,.15);
+  box-shadow: 0 5px 15px -10px rgba(0, 0, 0, 0.15);
   z-index: 3;
   display: none;
 
@@ -148,7 +171,7 @@ html {
 
 /* --- Responsive Mobile --- */
 
-@media screen and (max-width : 900px) {
+@media screen and (max-width: 900px) {
   .app__header {
     display: none;
   }
@@ -163,7 +186,7 @@ html {
     right: 0;
     border-right-width: 2px;
     transform: translateX(-100%);
-    transition: transform .5s;
+    transition: transform 0.5s;
     padding-top: calc(var(--spacing-unit) * 5);
     z-index: 3;
   }

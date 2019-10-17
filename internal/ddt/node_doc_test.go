@@ -172,7 +172,7 @@ func TestComponentIsLeftUntouchedInHTMLDocument(t *testing.T) {
 	node := &Node{root: tmp, Path: filepath.Join(tmp, "foo")}
 	docs, _ := node.Docs()
 
-	html0, _ := docs[0].HTML("/tree", "foo/bar", get)
+	html0, _ := docs[0].HTML("/tree", "foo/bar", get, "test")
 
 	if string(html0) != expected0 {
 		t.Errorf("Component markup does not look like expected, got: %s", html0)
@@ -225,7 +225,7 @@ hello
 	node := &Node{root: tmp, Path: filepath.Join(tmp, "foo")}
 	docs, _ := node.Docs()
 
-	html0, _ := docs[0].HTML("/tree", "foo/bar", get)
+	html0, _ := docs[0].HTML("/tree", "foo/bar", get, "test")
 
 	if string(html0) != expected0 {
 		t.Errorf("Component markup does not look like expected, got: %s", html0)

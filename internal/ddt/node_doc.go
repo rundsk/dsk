@@ -12,7 +12,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/atelierdisko/dsk/internal/pathutil"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
 	"golang.org/x/net/html"
@@ -48,12 +47,12 @@ func (d NodeDoc) Title() string {
 // HTML as parsed from the underlying file. The provided tree prefix
 // and node URL will be used to resolve relative source and node URLs
 // inside the documents, to i.e. make them absolute.
-func (d NodeDoc) HTML(treePrefix string, nodeURL string, nodeGet NodeGetter) ([]byte, error) {
+func (d NodeDoc) HTML(treePrefix string, nodeURL string, nodeGet NodeGetter, nodeSource string) ([]byte, error) {
 	contents, err := ioutil.ReadFile(d.path)
 	if err != nil {
 		return nil, err
 	}
-	dt, err := NewNodeDocTransformer(treePrefix, nodeURL, nodeGet)
+	dt, err := NewNodeDocTransformer(treePrefix, nodeURL, nodeGet, nodeSource)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +75,7 @@ func (d NodeDoc) HTML(treePrefix string, nodeURL string, nodeGet NodeGetter) ([]
 		html := fmt.Sprintf("<pre>%s</pre>", html.EscapeString(string(contents)))
 		return []byte(html), nil
 	}
-	return nil, fmt.Errorf("unsupported format: %s", pathutil.Pretty(d.path))
+	return nil, fmt.Errorf("unsupported format: %s", d.path)
 }
 
 // Text converted from original file format.
@@ -96,7 +95,7 @@ func (d NodeDoc) CleanText() ([]byte, error) {
 	case ".html", ".htm":
 		return policy.SanitizeBytes(contents), nil
 	}
-	return nil, fmt.Errorf("unsupported format: %s", pathutil.Pretty(d.path))
+	return nil, fmt.Errorf("unsupported format: %s", d.path)
 }
 
 // Raw content of the underlying file.

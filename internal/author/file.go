@@ -17,6 +17,13 @@ const (
 
 func FindFile(path string) (bool, string, error) {
 	try := filepath.Join(path, CanonicalBasename)
+
 	_, err := os.Stat(try)
-	return err != nil, try, err
+	if err != nil {
+		if os.IsNotExist(err) {
+			return false, try, nil
+		}
+		return false, try, err
+	}
+	return true, try, nil
 }

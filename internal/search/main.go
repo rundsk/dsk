@@ -35,6 +35,8 @@ var (
 // NewSearch constructs and initializes a Search. The selected
 // language is validated and checked for availability.
 func NewSearch(path string, t *ddt.NodeTree, lang string, isPersistent bool) (*Search, error) {
+	log.Print("Initializing search...")
+
 	s := &Search{
 		path:            path,
 		getNode:         t.Get,
@@ -55,6 +57,7 @@ func NewSearch(path string, t *ddt.NodeTree, lang string, isPersistent bool) (*S
 	s.wideIndex = wideIndex
 	s.narrowIndex = narrowIndex
 
+	go s.IndexTree()
 	return s, nil
 }
 
@@ -209,7 +212,7 @@ func (s *Search) IndexTree() error {
 	s.hash = h
 	s.Unlock()
 
-	log.Printf("Indexed tree for search in %s", took)
+	log.Printf("Indexed node tree for search in %s", took)
 	return nil
 }
 

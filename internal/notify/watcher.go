@@ -6,17 +6,19 @@
 package notify
 
 import (
+	"fmt"
 	"log"
 	"path/filepath"
 	"strings"
 
 	"github.com/atelierdisko/dsk/internal/bus"
-	"github.com/atelierdisko/dsk/internal/pathutil"
 	core "github.com/rjeczalik/notify"
 )
 
-func NewWatcher(path string) *Watcher {
-	return &Watcher{
+func NewWatcher(path string) (*Watcher, error) {
+	log.Printf("Initializing watcher on %s...", path)
+
+	w := &Watcher{
 		Subscribable: &bus.Subscribable{},
 		path:         path,
 		// Make the channel buffered to ensure we do not block. Notify will drop
@@ -24,6 +26,7 @@ func NewWatcher(path string) *Watcher {
 		changes: make(chan core.EventInfo, 1),
 		done:    make(chan bool),
 	}
+	return w, w.Open()
 }
 
 type Watcher struct {
@@ -39,9 +42,13 @@ type Watcher struct {
 	done chan bool
 }
 
+func (w *Watcher) String() string {
+	return fmt.Sprintf("watcher (...%s)", w.path[len(w.path)-10:])
+}
+
 // Open watcher to look for changes below root. Will filter out changes
 // to paths where a segment of it is hidden.
-func (w *Watcher) Start() error {
+func (w *Watcher) Open() error {
 	if err := core.Watch(w.path+"/...", w.changes, core.All); err != nil {
 		return err
 	}
@@ -63,8 +70,10 @@ func (w *Watcher) Start() error {
 				if anyPathSegmentIsHidden(pp) {
 					continue Outer
 				}
-				log.Printf("Change detected on: %s", pathutil.Pretty(p))
-				w.NotifyAll(bus.NewMessage("fs.changed", pathutil.Pretty(p)))
+				log.Printf("Change detected on: %s", p)
+				// Security: do not reveal full path, basename is safe
+				// and okay to drive notifications.
+				w.NotifyAll(bus.NewMessage("changed", filepath.Base(p)))
 			case <-w.done:
 				log.Print("Stopping watcher (received quit)...")
 				return
@@ -74,20 +83,19 @@ func (w *Watcher) Start() error {
 	return nil
 }
 
-func (w *Watcher) Stop() error {
-	w.done <- true
-	core.Stop(w.changes)
-	return nil
-}
-
 func (w *Watcher) Close() error {
+	log.Printf("Closing %s...", w)
+
+	close(w.done)
+	core.Stop(w.changes)
 	w.UnsubscribeAll()
 	return nil
 }
 
-// Checks if any of the path segments in the given path is hidden.
+// Checks if any of the path segments in the given relative or
+// absolute path is hidden.
 func anyPathSegmentIsHidden(path string) bool {
-	for path != "." {
+	for path != "/" && path != "." {
 		b := filepath.Base(path)
 
 		if strings.HasPrefix(b, ".") {

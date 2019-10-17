@@ -20,11 +20,11 @@ func TestNodeLinkAbsolute(t *testing.T) {
 		}
 		return false, &Node{}, nil
 	}
-	dt, _ := NewNodeDocTransformer("/tree", "foo/bar", get)
+	dt, _ := NewNodeDocTransformer("/tree", "foo/bar", get, "test")
 
 	expected := map[string]string{
-		"<a href=\"foo/bar\"></a>":  "<a href=\"/tree/foo/bar\" data-node=\"foo/bar\"></a>",
-		"<a href=\"/foo/bar\"></a>": "<a href=\"/tree/foo/bar\" data-node=\"foo/bar\"></a>",
+		"<a href=\"foo/bar\"></a>":  "<a href=\"/tree/foo/bar?v=test\" data-node=\"foo/bar\"></a>",
+		"<a href=\"/foo/bar\"></a>": "<a href=\"/tree/foo/bar?v=test\" data-node=\"foo/bar\"></a>",
 	}
 	for h, e := range expected {
 		r, _ := dt.ProcessHTML([]byte(h))
@@ -42,12 +42,12 @@ func TestTransformNodeLinkRelative(t *testing.T) {
 		}
 		return false, &Node{}, nil
 	}
-	dt, _ := NewNodeDocTransformer("/tree", "foo/bar", get)
+	dt, _ := NewNodeDocTransformer("/tree", "foo/bar", get, "test")
 
 	expected := map[string]string{
-		"<a href=\"baz\"></a>":        "<a href=\"/tree/foo/bar/baz\" data-node=\"foo/bar/baz\"></a>",
-		"<a href=\"./baz\"></a>":      "<a href=\"/tree/foo/bar/baz\" data-node=\"foo/bar/baz\"></a>",
-		"<a href=\"../bar/baz\"></a>": "<a href=\"/tree/foo/bar/baz\" data-node=\"foo/bar/baz\"></a>",
+		"<a href=\"baz\"></a>":        "<a href=\"/tree/foo/bar/baz?v=test\" data-node=\"foo/bar/baz\"></a>",
+		"<a href=\"./baz\"></a>":      "<a href=\"/tree/foo/bar/baz?v=test\" data-node=\"foo/bar/baz\"></a>",
+		"<a href=\"../bar/baz\"></a>": "<a href=\"/tree/foo/bar/baz?v=test\" data-node=\"foo/bar/baz\"></a>",
 	}
 	for h, e := range expected {
 		r, _ := dt.ProcessHTML([]byte(h))
@@ -74,14 +74,14 @@ func TestTransformAssets(t *testing.T) {
 		}
 		return false, &Node{}, nil
 	}
-	dt, _ := NewNodeDocTransformer("/tree", "foo", get)
+	dt, _ := NewNodeDocTransformer("/tree", "foo", get, "test")
 
 	expected := map[string]string{
-		"<a href=\"/foo/asset0.txt\">":                  "<a href=\"/tree/foo/asset0.txt\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
-		"<a href=\"foo/asset0.txt\">":                   "<a href=\"/tree/foo/asset0.txt\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
-		"<img src=\"/foo/asset0.txt\">":                 "<img src=\"/tree/foo/asset0.txt\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
-		"<img src=\"foo/asset0.txt\">":                  "<img src=\"/tree/foo/asset0.txt\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
-		"<figure><img src=\"foo/asset0.txt\"></figure>": "<figure><img src=\"/tree/foo/asset0.txt\" data-node=\"foo\" data-node-asset=\"asset0.txt\"></figure>",
+		"<a href=\"/foo/asset0.txt\">":                  "<a href=\"/tree/foo/asset0.txt?v=test\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
+		"<a href=\"foo/asset0.txt\">":                   "<a href=\"/tree/foo/asset0.txt?v=test\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
+		"<img src=\"/foo/asset0.txt\">":                 "<img src=\"/tree/foo/asset0.txt?v=test\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
+		"<img src=\"foo/asset0.txt\">":                  "<img src=\"/tree/foo/asset0.txt?v=test\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
+		"<figure><img src=\"foo/asset0.txt\"></figure>": "<figure><img src=\"/tree/foo/asset0.txt?v=test\" data-node=\"foo\" data-node-asset=\"asset0.txt\"></figure>",
 	}
 	for h, e := range expected {
 		r, _ := dt.ProcessHTML([]byte(h))
@@ -108,11 +108,11 @@ func TestTransformAssetsInComponentAttributes(t *testing.T) {
 		}
 		return false, &Node{}, nil
 	}
-	dt, _ := NewNodeDocTransformer("/tree", "foo", get)
+	dt, _ := NewNodeDocTransformer("/tree", "foo", get, "test")
 
 	expected := map[string]string{
-		"<ColorGroup src=\"colors.json\"></ColorGroup>": "<colorgroup src=\"/tree/foo/colors.json\" data-node=\"foo\" data-node-asset=\"colors.json\"></ColorGroup>",
-		"<ColorSpecimen src=\"colors.json\" />":         "<colorspecimen src=\"/tree/foo/colors.json\" data-node=\"foo\" data-node-asset=\"colors.json\"/>",
+		"<ColorGroup src=\"colors.json\"></ColorGroup>": "<colorgroup src=\"/tree/foo/colors.json?v=test\" data-node=\"foo\" data-node-asset=\"colors.json\"></ColorGroup>",
+		"<ColorSpecimen src=\"colors.json\" />":         "<colorspecimen src=\"/tree/foo/colors.json?v=test\" data-node=\"foo\" data-node-asset=\"colors.json\"/>",
 	}
 	for h, e := range expected {
 		r, _ := dt.ProcessHTML([]byte(h))
@@ -126,7 +126,7 @@ func TestNonNodeLinks(t *testing.T) {
 	get := func(url string) (bool, *Node, error) {
 		return false, &Node{}, nil
 	}
-	dt, _ := NewNodeDocTransformer("/tree", "foo/bar", get)
+	dt, _ := NewNodeDocTransformer("/tree", "foo/bar", get, "test")
 
 	expected := map[string]string{
 		"<a href=\"https://example.org\"></a>": "<a href=\"https://example.org\"></a>",
@@ -149,12 +149,12 @@ func TestNodeLinksKeepFragmentAndQueryFromOriginal(t *testing.T) {
 		}
 		return false, &Node{}, nil
 	}
-	dt, _ := NewNodeDocTransformer("/tree", "foo/bar", get)
+	dt, _ := NewNodeDocTransformer("/tree", "foo/bar", get, "test")
 
 	expected := map[string]string{
-		"<a href=\"/foo/bar?answer=42\"></a>":      "<a href=\"/tree/foo/bar?answer=42\" data-node=\"foo/bar\"></a>",
-		"<a href=\"/foo/bar#life\"></a>":           "<a href=\"/tree/foo/bar#life\" data-node=\"foo/bar\"></a>",
-		"<a href=\"/foo/bar#life?answer=42\"></a>": "<a href=\"/tree/foo/bar#life?answer=42\" data-node=\"foo/bar\"></a>",
+		"<a href=\"/foo/bar?answer=42\"></a>":      "<a href=\"/tree/foo/bar?answer=42&v=test\" data-node=\"foo/bar\"></a>",
+		"<a href=\"/foo/bar#life\"></a>":           "<a href=\"/tree/foo/bar?v=test#life\" data-node=\"foo/bar\"></a>",
+		"<a href=\"/foo/bar#life?answer=42\"></a>": "<a href=\"/tree/foo/bar?v=test#life?answer=42\" data-node=\"foo/bar\"></a>",
 	}
 	for h, e := range expected {
 		r, _ := dt.ProcessHTML([]byte(h))

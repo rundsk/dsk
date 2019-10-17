@@ -6,6 +6,7 @@
 package vcs
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -14,6 +15,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/atelierdisko/dsk/internal/bus"
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
@@ -31,12 +33,15 @@ func TestRepoLastModified(t *testing.T) {
 	ioutil.WriteFile(filepath.Join(path, "doc0.md"), []byte("a"), os.ModePerm)
 	ioutil.WriteFile(filepath.Join(path, "doc1.md"), []byte("a"), os.ModePerm)
 
-	repo, err := NewRepo(tmp, "", func(v string) (bool, error) {
-		return true, nil
-	})
+	broker, _ := bus.NewBroker()
+	defer broker.Close()
+
+	repo, err := NewRepo(tmp, "", nil, broker)
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer repo.Close()
+
 	now := time.Date(1981, 8, 11, 12, 0, 0, 0, time.UTC)
 
 	w.Add("Diversity/doc0.md")
@@ -45,9 +50,8 @@ func TestRepoLastModified(t *testing.T) {
 			When: now,
 		},
 	})
-	repo.BuildLookups()
 
-	result, err := repo.Modified(filepath.Join(tmp, "Diversity"))
+	result, err := repo.ModifiedWithContext(context.Background(), filepath.Join(tmp, "Diversity"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -63,9 +67,10 @@ func TestRepoLastModified(t *testing.T) {
 			When: now,
 		},
 	})
-	repo.BuildLookups()
 
-	result, err = repo.Modified(filepath.Join(tmp, "Diversity"))
+	time.Sleep(2*time.Second + 1*time.Millisecond)
+
+	result, err = repo.ModifiedWithContext(context.Background(), filepath.Join(tmp, "Diversity"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -102,14 +107,16 @@ func BenchmarkBuildLookups(b *testing.B) {
 			},
 		})
 	}
-	repo, err := NewRepo(tmp, "", func(v string) (bool, error) {
-		return true, nil
-	})
+	broker, _ := bus.NewBroker()
+	defer broker.Close()
+
+	repo, err := NewRepo(tmp, "", nil, broker)
 	if err != nil {
 		b.Fatal(err)
 	}
+	defer repo.Close()
 
 	for i := 0; i < b.N; i++ {
-		repo.BuildLookups()
+		//		repo.BuildModifiedLookup()
 	}
 }

@@ -6,33 +6,38 @@
 package frontend
 
 import (
+	"log"
 	"net/http"
 	"path/filepath"
 
 	"github.com/atelierdisko/dsk/internal/httputil"
 )
 
-func NewFrontendFromPath(path string, treeBase string) (*Frontend, error) {
+func NewFrontendFromPath(path string, chroot string) (*Frontend, error) {
+	log.Printf("Initializing frontend from path %s...", path)
 	path, err := filepath.Abs(path)
 
 	return &Frontend{
-		fs:       http.Dir(path),
-		treeBase: treeBase,
+		fs:     http.Dir(path),
+		chroot: chroot,
 	}, err
 }
 
-func NewFrontendFromEmbedded(treeBase string) *Frontend {
-	return &Frontend{fs: assets, treeBase: treeBase}
+func NewFrontendFromEmbedded(chroot string) *Frontend {
+	log.Print("Intializing embedded frontend...")
+	return &Frontend{fs: assets, chroot: chroot}
 }
 
 type Frontend struct {
 	fs http.FileSystem
 
-	// treeBase is used to verify that a tree traversal is not attempted.
-	treeBase string
+	// chroot is used to verify that a tree traversal is not attempted.
+	chroot string
 }
 
 func (f Frontend) MountHTTPHandlers() {
+	log.Print("Mounting frontend HTTP handlers...")
+
 	// Handles frontend root document delivery and frontend assets.
 	// The frontend is allowed to use any path except /api. We route
 	// everything else into the front controller (index.html).
@@ -86,7 +91,7 @@ func (f *Frontend) AssetHandler(w http.ResponseWriter, r *http.Request) {
 
 	path := r.URL.Path[len("/"):]
 
-	if err := httputil.CheckSafePath(path, f.treeBase); err != nil {
+	if err := httputil.CheckSafePath(path, f.chroot); err != nil {
 		wr.Error(httputil.ErrUnsafePath, err)
 		return
 	}

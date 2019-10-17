@@ -15,14 +15,19 @@ function Node(props) {
 
   useEffect(() => {
     if (props.url) {
-      Client.get(props.url).then(data => {
+      Client.get(props.url, props.source).then(data => {
         setData(data);
       });
     }
-  }, [props.url]);
+  }, [props.url, props.source]);
 
   return (
-    <BaseLink router={props.router} routeName="node" routeParams={{ node: `${props.url}` }} className="node-list__node">
+    <BaseLink
+      router={props.router}
+      routeName="node"
+      routeParams={{ node: `${props.url}`, v: props.route.params.v }}
+      className="node-list__node"
+    >
       <Heading className="node-list__node-title" level="beta" isJumptarget={false}>
         {props.title}
       </Heading>
@@ -45,7 +50,7 @@ function NodeList(props) {
     <>
       {props.nodes &&
         props.nodes.map(n => {
-          return <Node {...n} key={n.url} router={props.router} />;
+          return <Node {...n} source={props.source} key={n.url} router={props.router} route={props.route} />;
         })}
     </>
   );

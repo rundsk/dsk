@@ -39,7 +39,7 @@ function TreeNavigation(props) {
 
   useEffect(() => {
     filterTree();
-  }, [filterTerm]);
+  }, [filterTerm, props.tree]);
 
   function onFilterTermChange(ev) {
     setFilterTerm(ev.target.value);
@@ -87,7 +87,7 @@ function TreeNavigation(props) {
       <BaseLink
         router={props.router}
         routeName="node"
-        routeParams={{ node: `${node.url}` }}
+        routeParams={{ node: `${node.url}`, v: props.route.params.v }}
         key={'link'}
         onClick={props.hideMobileSidebar}
       >

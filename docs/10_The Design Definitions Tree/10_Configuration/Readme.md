@@ -28,6 +28,7 @@ Property | Type | Default | Description
 `project` | `String` | name of the DDT folder | The name of the Design System. Will be displayed in the top left corner of the UI next to the name of the organization.
 `lang` | [`ISO 639-1 Code`](https://en.wikipedia.org/wiki/ISO_639-1) | `en` | Code of the language, the documents are authored in. Mainly used for indexing the documents for search.
 `tags` | `[]TagConfig` | – | An array of configuration objects for specific tags. Allows you to display certain tags in custom colors.
+`versions` | `[]string` | `[]{"live"}` | A list of version that are whitelisted for being switched to. By default the `live` version is whitelisted.
 `figma` | `FigmaConfig` | - | Configuration related to [Figma](https://www.figma.com/).
 
 ## Configuring Tags (`TagConfig`)

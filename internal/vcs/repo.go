@@ -6,6 +6,7 @@
 package vcs
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -15,58 +16,51 @@ import (
 	"sync"
 	"time"
 
-	"github.com/fatih/color"
+	"github.com/atelierdisko/dsk/internal/bus"
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
+	"gopkg.in/src-d/go-git.v4/plumbing/storer"
 )
 
-var (
-	ErrNoData       = errors.New("not enough or no data")
-	ErrRepoNotFound = errors.New("no repository found")
-)
+// NewRepo initializes a new Repo. A mainpath must always be given,
+// an optional subpath may be given when submodules are in use.
+// Optionally an existing Repository may be provided, if none is
+// provided one will be created on the fly.
+func NewRepo(mainpath string, subpath string, gr *git.Repository, b *bus.Broker) (*Repo, error) {
+	log.Printf("Initializing repo on %s...", mainpath)
 
-// Searches beginning at given path up, until it finds a directory
-// containing a ".git" directory. We differentiate between submodules
-// having a ".git" file and regular repositories where ".git" is an
-// actual directory.
-func FindRepo(treeRoot string, searchSubmodule bool) (string, error) {
-	var path = treeRoot
-
-	for path != "." && path != "/" {
-		s, err := os.Stat(filepath.Join(path, ".git"))
-
-		if err == nil {
-			if searchSubmodule && s.Mode().IsRegular() {
-				return path, nil
-			} else if !searchSubmodule && s.Mode().IsDir() {
-				return path, nil
-			}
-		}
-		path, err = filepath.Abs(path + "/..")
-		if err != nil {
-			return "", err
-		}
-	}
-	return "", ErrRepoNotFound
-}
-
-// NewRepo initializes a new Repo. A mainPath must always
-// be given, an optional subPath may be given when submodules are in
-// use.
-func NewRepo(mainPath string, subPath string, isValidVersion func(string) (bool, error)) (*Repo, error) {
 	var path string
 	var repo *git.Repository
 
-	path = mainPath
-	repo, err := git.PlainOpen(mainPath)
-	if err != nil {
-		return nil, err
+	path = mainpath
+
+	if gr == nil {
+		gr, err := git.PlainOpen(path)
+		if err != nil {
+			return nil, err
+		}
+		repo = gr
+	} else {
+		repo = gr
 	}
 
-	var hasFoundMatchingSub bool
+	// When subpath is provided it points to the root of a submodule
+	// inside the main repository. We can only access the Repository
+	// object indirectly by iterating over the list of submodules as
+	// retrieved from the main repository.
+	//
+	// Not being able to match up subpath of a submodule with one of
+	// the paths listed by the main repository is an error condition,
+	// it means something bad happened while auto-detecting the roots
+	// of the repository and/or submodule.
+	//
+	// Please note that a submodule must not directly contain the DDT
+	// so we cannot use the subpath as an interest filter for building
+	// lookup tables.
+	if subpath != "" && subpath != mainpath {
+		var hasFoundMatchingSub bool
 
-	if subPath != "" && subPath != mainPath {
 		wt, err := repo.Worktree()
 		if err != nil {
 			return nil, err
@@ -79,126 +73,311 @@ func NewRepo(mainPath string, subPath string, isValidVersion func(string) (bool,
 			return nil, errors.New("no submodules available. Are you missing a .gitmodules file?")
 		}
 		for _, sub := range subs {
-			if filepath.Join(mainPath, sub.Config().Path) != subPath {
-				log.Printf("Skipping submodule at %s", filepath.Join(mainPath, sub.Config().Path))
+			if filepath.Join(mainpath, sub.Config().Path) != subpath {
+				log.Printf("Skipping submodule at %s", filepath.Join(mainpath, sub.Config().Path))
 				continue
 			}
-			subRepo, err := sub.Repository()
+			subrepo, err := sub.Repository()
 			if err != nil {
 				return nil, err
 			}
-			path = subPath
-			repo = subRepo
+			path = subpath
+			repo = subrepo
 
 			hasFoundMatchingSub = true
 		}
 		if !hasFoundMatchingSub {
-			return nil, fmt.Errorf("failed to match subrepository %s to available ones", subPath)
+			return nil, fmt.Errorf("failed to match subrepo %s to available ones", subpath)
 		}
 	}
-	return &Repo{
-		isValidVersion: isValidVersion,
-		repo:           repo,
-		path:           path,
-		fileMetaLookup: make(map[string]time.Time, 0),
-		ticker:         time.NewTicker(5 * time.Second),
-		done:           make(chan bool),
-	}, nil
+
+	r := &Repo{
+		repo:   repo,
+		Path:   path,
+		broker: b,
+		ticker: time.NewTicker(2 * time.Second),
+		done:   make(chan bool),
+	}
+
+	r.versionsLookup, _ = NewLookup(fmt.Sprintf("%s versions", r), func() (*plumbing.Reference, interface{}, error) {
+		return r.buildVersionsLookup()
+	})
+	r.modifiedLookup, _ = NewLookup(fmt.Sprintf("%s modified", r), func() (*plumbing.Reference, interface{}, error) {
+		return r.buildModifiedLookup()
+	})
+
+	ref, err := r.repo.Head()
+	if ref != nil && err != nil {
+		return r, err
+	}
+	r.head = ref
+
+	// We must determine the current reference name now, as once the
+	// head moves we cannot match tag references up anymore.
+	if r.head != nil {
+		currefn, err := r.currentReferenceName()
+		if err != nil {
+			return r, err
+		}
+		r.name = currefn
+	}
+
+	return r, r.Open()
 }
 
 type Repo struct {
 	sync.RWMutex
 
-	isValidVersion func(string) (bool, error)
-
+	// repo is the object we wrap.
 	repo *git.Repository
 
-	fileMetaLookup map[string]time.Time
+	// Root of the repository's worktree.
+	Path string
 
-	// Current head reference.
+	// name is the current reference name, i.e. refs/tags/v1.2.3.
+	name plumbing.ReferenceName
+
+	// head is the last known head reference to this struct, it is
+	// used to check if the head moved and the repository changed.
 	head *plumbing.Reference
 
-	// Root of the repository's worktree.
-	path string
-
-	// Ticker which triggers a lookup rebuild.
+	// Ticker which eventually triggers a lookup rebuild.
 	ticker *time.Ticker
 
-	// Quit channel, receiving true, when we are closed.
+	// broker is an external broker where we send events to, i.e. on repo.changed or repo.ready.
+	broker *bus.Broker
+
+	versionsLookup *Lookup
+
+	modifiedLookup *Lookup
+
+	// done is a quit channel, receiving true, when we are closed.
 	done chan bool
 }
 
-func (r *Repo) StartLookupBuilder() {
-	yellow := color.New(color.FgYellow)
+func (r *Repo) String() string {
+	return fmt.Sprintf("repo (...%s)", filepath.Base(r.Path))
+}
 
+func (r *Repo) Open() error {
 	go func() {
 		for {
 			select {
 			case <-r.ticker.C:
-				if r.IsLookupStale() {
-					if err := r.BuildLookups(); err != nil {
-						log.Print(yellow.Sprintf("Failed to rebuild repository lookup tables: %s", err))
-						continue
-					}
+				if r.HasHeadChanged() {
+					ref, _ := r.repo.Head()
+
+					r.broker.Accept("repo.changed", ref.Name().Short())
+
+					// Ensure we detect head change only once, the
+					// stale detection is not influenced by this.
+					r.Lock()
+					r.head = ref
+					r.Unlock()
+
+					r.versionsLookup.RequestBuild(ref)
+					r.modifiedLookup.RequestBuild(ref)
 				}
 			case <-r.done:
-				log.Print("Stopping repo lookup builder (received quit)...")
+				log.Printf("Stopping %s periodic change detector (received quit)...", r)
 				return
 			}
 		}
 	}()
-}
 
-func (r *Repo) StopLookupBuilder() error {
-	r.done <- true
 	return nil
 }
 
 func (r *Repo) Close() error {
 	r.ticker.Stop()
+	r.done <- true
+
+	r.versionsLookup.Close()
+	r.modifiedLookup.Close()
+
 	return nil
 }
 
-func (r *Repo) IsLookupStale() bool {
+func (r *Repo) HasHeadChanged() bool {
 	r.RLock()
 	defer r.RUnlock()
 
-	if r.head == nil {
-		return true
-	}
 	ref, _ := r.repo.Head()
-	return r.head.Hash() != ref.Hash()
+	if ref == nil {
+		return false
+	}
+	return !r.isSameRef(ref, r.head)
 }
 
-func (r *Repo) BuildLookups() error {
-	var wg sync.WaitGroup
+func (r *Repo) IsStale() bool {
+	r.RLock()
+	defer r.RUnlock()
 
-	wg.Add(1)
-	go func() {
-		start := time.Now()
+	ref, _ := r.repo.Head()
+	if ref == nil {
+		return false
+	}
+	return r.modifiedLookup.IsStale(ref) || r.versionsLookup.IsStale(ref)
+}
 
-		ref, l, err := r.FileMetaLookup()
-		if err != nil {
-			log.Printf("Failed to built repository file meta lookup table: %s", err)
-			return
+func (r *Repo) isSameRef(a *plumbing.Reference, b *plumbing.Reference) bool {
+	if a == nil && b == nil {
+		return true
+	}
+	if a == nil || b == nil {
+		return false
+	}
+	return a.Hash() == b.Hash()
+}
+
+func (r *Repo) currentReferenceName() (plumbing.ReferenceName, error) {
+	var found plumbing.ReferenceName
+
+	head, err := r.repo.Head()
+	if err != nil {
+		return found, err
+	}
+	refs, err := r.repo.References()
+	if err != nil {
+		return found, err
+	}
+	err = refs.ForEach(func(ref *plumbing.Reference) error {
+		if ref.Type() == plumbing.HashReference {
+			if ref.Hash() == head.Hash() {
+				found = ref.Name()
+				return storer.ErrStop
+			}
 		}
-		log.Printf("Built repository file meta lookup table with %d object/s in %s", len(l), time.Since(start))
+		return nil
+	})
+	return found, err
+}
 
-		r.Lock()
-		r.head = ref
-		r.fileMetaLookup = l
-		r.Unlock()
+func (r *Repo) HasUpstreamChanged() (bool, error) {
+	r.RLock()
+	defer r.RUnlock()
 
-		wg.Done()
-	}()
+	err := r.repo.Fetch(&git.FetchOptions{
+		RemoteName: "origin",
+	})
+	if err != nil {
+		if err == git.NoErrAlreadyUpToDate {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
+}
 
-	wg.Wait()
+// UpdateFromUpstream updates the currently checked out
+// reference from upstream.
+//
+// TODO: This currently fails with "object not found" or "already
+// up-to-date", or "not-fast-forward", when this shouldn't be the
+// case. We probably have to switch to fetch+hard reset.
+func (r *Repo) UpdateFromUpstream() error {
+	log.Printf("Updating %s from upstream...", r)
+	start := time.Now()
+
+	ref, _ := r.repo.Head()
+	r.RLock()
+	rname := r.name
+	r.RUnlock()
+
+	wt, err := r.repo.Worktree()
+	if err != nil {
+		return err
+	}
+	err = wt.Pull(&git.PullOptions{
+		RemoteName:    "origin",
+		ReferenceName: rname,
+		SingleBranch:  true,
+		// When we remove the HEAD commit from the live repo, we want
+		// its versions to be reset.
+		Force: true,
+	})
+	if err != nil {
+		if err == git.NoErrAlreadyUpToDate {
+			log.Printf("%s is already up to date with upstream", r)
+			return nil
+		}
+		return fmt.Errorf("update of %s from upstream failed: %s", r, err)
+	}
+
+	r.Lock()
+	r.head = ref
+	r.Unlock()
+
+	log.Printf("Updated %s from upstream in %s", r, time.Since(start))
 	return nil
 }
 
-// ModifiedLookup will build and return the lookup table for looking
-// up modified times on a file. Will add modified time for all files
-// and directories discovered in root, which is recursively walked.
+// Modified considers any changes in and below given path as a change
+// to the path. The path must be absolute and rooted at the repository
+// path.
+func (r *Repo) ModifiedWithContext(ctx context.Context, path string) (time.Time, error) {
+	ref, _ := r.repo.Head()
+
+	var lookup map[string]time.Time
+	var modified time.Time
+
+	select {
+	case res := <-r.modifiedLookup.GetDirtyOkay(ref):
+		lookup = res.(map[string]time.Time)
+	case <-ctx.Done():
+		return modified, errors.New("no data")
+	}
+
+	path, err := filepath.Rel(r.Path, path)
+	if err != nil {
+		return modified, err
+	}
+
+	// Fast path for files.
+	if m, ok := lookup[path]; ok {
+		return m, nil
+	}
+
+	for p, m := range lookup {
+		if !filepath.HasPrefix(p, path) {
+			continue
+		}
+		if m.After(modified) {
+			modified = m
+		}
+	}
+
+	if !modified.IsZero() {
+		return modified, nil
+	}
+	// When there's only one commit no diffing has been taken place.
+	// It can be assumed that this is an initial commit adding all
+	// files.
+	commit, err := r.repo.CommitObject(ref.Hash())
+	if err != nil {
+		return modified, err
+	}
+	return commit.Author.When, nil
+}
+
+// Version returns the current checked out version.
+func (r *Repo) Version() (*Version, error) {
+	ref, _ := r.repo.Head()
+	return NewVersionFromRef(ref), nil
+}
+
+// Versions are sorted tags (we remove a leading "v") and branches
+// (which are prefixed by "dev-", as to avoid collisions with tag
+// names).
+func (r *Repo) Versions() (*Versions, error) {
+	ref, _ := r.repo.Head()
+	return (<-r.versionsLookup.GetDirtyOkay(ref)).(*Versions), nil
+}
+
+// BuildModifiedLookup will build and swap out the lookup table for
+// looking up modified times on a file. Will add modified time for
+// all files and directories discovered in root, which is recursively
+// walked.
 //
 // Implementation based upon snippet provided in:
 // https://github.com/src-d/go-git/issues/604
@@ -206,34 +385,36 @@ func (r *Repo) BuildLookups() error {
 // Also see:
 // https://github.com/src-d/go-git/issues/417
 // https://github.com/src-d/go-git/issues/826
-func (r *Repo) FileMetaLookup() (*plumbing.Reference, map[string]time.Time, error) {
+func (r *Repo) buildModifiedLookup() (*plumbing.Reference, map[string]time.Time, error) {
 	pathsCached := make(map[string]bool, 0)
 	lookup := make(map[string]time.Time, 0)
+
 	ref, _ := r.repo.Head()
 
 	if ref == nil {
-		log.Printf("No commits in repository %s, yet", r.path)
+		log.Printf("No commits in repo %s, yet", r.Path)
 		return ref, lookup, nil
 	}
 
-	err := filepath.Walk(r.path, func(path string, f os.FileInfo, err error) error {
+	err := filepath.Walk(r.Path, func(path string, f os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
+
 		if f.IsDir() {
-			isRoot := filepath.Base(r.path) == f.Name()
+			isRoot := filepath.Base(r.Path) == f.Name()
 
 			if strings.HasPrefix(f.Name(), ".") && !isRoot {
 				return filepath.SkipDir
 			}
 			return nil // Git only knows about files
 		}
-		rel, _ := filepath.Rel(r.path, path)
+		rel, _ := filepath.Rel(r.Path, path)
 		pathsCached[rel] = false
 		return nil
 	})
 	if err != nil {
-		return ref, lookup, fmt.Errorf("failed to walk directory tree %s: %s", r.path, err)
+		return ref, lookup, fmt.Errorf("failed to walk directory tree %s: %s", r.Path, err)
 	}
 
 	commits, err := r.repo.Log(&git.LogOptions{From: ref.Hash()})
@@ -290,46 +471,21 @@ Outer:
 	return ref, lookup, nil
 }
 
-// Modified considers any changes in and below given path as a change
-// to the path. The path must be absolute and rooted at the repository
-// path.
-func (r *Repo) Modified(path string) (time.Time, error) {
-	r.RLock()
-	defer r.RUnlock()
+func (r *Repo) buildVersionsLookup() (*plumbing.Reference, *Versions, error) {
+	ref, _ := r.repo.Head()
+	versions := &Versions{}
 
-	var modified time.Time
-
-	path, err := filepath.Rel(r.path, path)
+	iter, err := r.repo.References()
 	if err != nil {
-		return modified, err
+		r.RUnlock()
+		return ref, versions, err
 	}
 
-	// Fast path for files.
-	if m, ok := r.fileMetaLookup[path]; ok {
-		return m, nil
-	}
-
-	for p, m := range r.fileMetaLookup {
-		if !filepath.HasPrefix(p, path) {
-			continue
+	err = iter.ForEach(func(ref *plumbing.Reference) error {
+		if ref.Name().IsBranch() || ref.Name().IsTag() {
+			versions.Add(NewVersionFromRef(ref))
 		}
-		if m.After(modified) {
-			modified = m
-		}
-	}
-
-	if !modified.IsZero() {
-		return modified, nil
-	}
-	if r.head == nil {
-		return modified, ErrNoData
-	}
-	// When there's only one commit no diffing has been taken place.
-	// It can be assumed that this is an initial commit adding all
-	// files.
-	commit, err := r.repo.CommitObject(r.head.Hash())
-	if err != nil {
-		return modified, err
-	}
-	return commit.Author.When, nil
+		return nil
+	})
+	return ref, versions, err
 }

@@ -14,11 +14,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/atelierdisko/dsk/internal/meta"
+
 	"golang.org/x/text/unicode/norm"
 )
 
-func NewNodeAsset(path string, URL string, ms PathModifiedStatter) *NodeAsset {
-	return &NodeAsset{path, URL, ms}
+func NewNodeAsset(path string, URL string, mdb meta.DB) *NodeAsset {
+	return &NodeAsset{path, URL, mdb}
 }
 
 // A downloadable file.
@@ -29,7 +31,7 @@ type NodeAsset struct {
 	// The URL, relative to the design defintion tree root.
 	URL string
 
-	statModified PathModifiedStatter
+	metaDB meta.DB
 }
 
 // Name is the basename of the file without its order number.
@@ -43,7 +45,7 @@ func (a NodeAsset) Title() string {
 }
 
 func (a NodeAsset) Modified() (time.Time, error) {
-	return a.statModified(a.Path)
+	return a.metaDB.Modified(a.Path)
 }
 
 // Size returns the file size in bytes.
@@ -72,12 +74,4 @@ func (a NodeAsset) Dimensions() (ok bool, w int, h int, err error) {
 	default:
 		return false, 0, 0, nil
 	}
-}
-
-func DefaultPathModifiedStatter(path string) (time.Time, error) {
-	f, err := os.Stat(path)
-	if err != nil {
-		return time.Time{}, err
-	}
-	return f.ModTime(), nil
 }

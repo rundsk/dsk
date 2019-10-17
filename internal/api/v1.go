@@ -8,26 +8,24 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/atelierdisko/dsk/internal/bus"
 	"github.com/atelierdisko/dsk/internal/config"
 	"github.com/atelierdisko/dsk/internal/ddt"
 	"github.com/atelierdisko/dsk/internal/httputil"
-	"github.com/atelierdisko/dsk/internal/search"
+	"github.com/atelierdisko/dsk/internal/plex"
 	"github.com/gorilla/websocket"
 )
 
-func NewV1(cdb *config.DB, v string, t *ddt.NodeTree, hub *bus.Broker, s *search.Search) *V1 {
+func NewV1(ss *plex.Sources, appVersion string, b *bus.Broker) *V1 {
 	return &V1{
-		configDB: cdb,
-		version:  v,
-		tree:     t,
-		search:   s,
-		messages: hub,
+		appVersion: appVersion,
+		broker:     b,
+		sources:    ss,
 		upgrader: websocket.Upgrader{
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
@@ -36,16 +34,12 @@ func NewV1(cdb *config.DB, v string, t *ddt.NodeTree, hub *bus.Broker, s *search
 }
 
 type V1 struct {
-	configDB *config.DB
+	sources *plex.Sources
 
-	version string
-
-	tree *ddt.NodeTree
-
-	search *search.Search
+	appVersion string
 
 	// We subscribe to the broker in our messages endpoint.
-	messages *bus.Broker
+	broker *bus.Broker
 
 	// Upgrades HTTP requests to WebSocket-requests.
 	upgrader websocket.Upgrader
@@ -141,12 +135,24 @@ type V1Message struct {
 	Text  string `json:"text"`
 
 	// Deprecated in favor of Topic
-	Typ string `json:"type"`
+	Typ string `json:"type,omitempty"`
+}
+
+type V1Sources struct {
+	Sources []*V1Source `json:"sources"`
+}
+
+type V1Source struct {
+	Name    string `json:"name"`
+	IsReady bool   `json:"is_ready"`
 }
 
 func (api V1) MountHTTPHandlers() {
+	log.Print("Mounting APIv1 HTTP handlers...")
+
 	http.HandleFunc("/api/v1/hello", api.HelloHandler)
 	http.HandleFunc("/api/v1/config", api.ConfigHandler)
+	http.HandleFunc("/api/v1/sources", api.SourcesHandler)
 	http.HandleFunc("/api/v1/tree", api.TreeHandler)
 	http.HandleFunc("/api/v1/tree/", func(w http.ResponseWriter, r *http.Request) {
 		if filepath.Ext(r.URL.Path) != "" {
@@ -160,12 +166,22 @@ func (api V1) MountHTTPHandlers() {
 	http.HandleFunc("/api/v1", api.NotFoundHandler)
 }
 
-func (api V1) NewHello() *V1Hello {
-	c := api.configDB.Data()
-	return &V1Hello{"dsk", c.Org, c.Project, api.version}
+func (api V1) NewHello(s *plex.Source) (*V1Hello, error) {
+	c := s.ConfigDB.Data()
+
+	return &V1Hello{
+		Hello:   "dsk",
+		Version: api.appVersion,
+		Org:     c.Org,
+		Project: c.Project,
+	}, nil
 }
 
-func (api V1) NewNode(n *ddt.Node) (*V1Node, error) {
+func (api V1) NewConfig(s *plex.Source) (*V1Config, error) {
+	return &V1Config{s.ConfigDB.Data()}, nil
+}
+
+func (api V1) NewNode(n *ddt.Node, s *plex.Source) (*V1Node, error) {
 	hash, err := n.CalculateHash()
 	if err != nil {
 		return nil, err
@@ -186,8 +202,6 @@ func (api V1) NewNode(n *ddt.Node) (*V1Node, error) {
 		authors = append(authors, &V1NodeAuthor{author.Email, author.Name})
 	}
 
-	// Fall back to file system based retrieval if a repository is not
-	// available. Also covers present but uncommitted files.
 	var modified int64
 	nModified, err := n.Modified()
 	if err != nil {
@@ -203,7 +217,7 @@ func (api V1) NewNode(n *ddt.Node) (*V1Node, error) {
 		return nil, err
 	}
 	for _, v := range nDocs {
-		html, err := v.HTML("/api/v1/tree", n.URL(), api.tree.Get)
+		html, err := v.HTML("/api/v1/tree", n.URL(), s.Tree.Get, s.Name)
 		if err != nil {
 			return nil, err
 		}
@@ -242,7 +256,7 @@ func (api V1) NewNode(n *ddt.Node) (*V1Node, error) {
 		assets = append(assets, d)
 	}
 
-	nCrumbs := n.Crumbs(api.tree.Get)
+	nCrumbs := n.Crumbs(s.Tree.Get)
 	crumbs := make([]*V1RefNode, 0, len(nCrumbs))
 	for _, n := range nCrumbs {
 		crumbs = append(crumbs, &V1RefNode{
@@ -250,7 +264,7 @@ func (api V1) NewNode(n *ddt.Node) (*V1Node, error) {
 		})
 	}
 
-	nRelated := n.Related(api.tree.Get)
+	nRelated := n.Related(s.Tree.Get)
 	related := make([]*V1RefNode, 0, len(nRelated))
 	for _, n := range nRelated {
 		related = append(related, &V1RefNode{
@@ -260,7 +274,7 @@ func (api V1) NewNode(n *ddt.Node) (*V1Node, error) {
 
 	var prev *V1RefNode
 	var next *V1RefNode
-	prevNode, nextNode, err := api.tree.NeighborNodes(n)
+	prevNode, nextNode, err := s.Tree.NeighborNodes(n)
 	if err != nil {
 		return nil, err
 	}
@@ -299,7 +313,7 @@ func (api V1) NewNode(n *ddt.Node) (*V1Node, error) {
 	}, nil
 }
 
-func (api V1) NewTreeNode(n *ddt.Node) (*V1TreeNode, error) {
+func (api V1) NewTreeNode(n *ddt.Node, s *plex.Source) (*V1TreeNode, error) {
 	hash, err := n.CalculateHash()
 	if err != nil {
 		return nil, err
@@ -307,7 +321,7 @@ func (api V1) NewTreeNode(n *ddt.Node) (*V1TreeNode, error) {
 
 	children := make([]*V1TreeNode, 0, len(n.Children))
 	for _, v := range n.Children {
-		n, err := api.NewTreeNode(v)
+		n, err := api.NewTreeNode(v, s)
 		if err != nil {
 			return nil, err
 		}
@@ -322,8 +336,8 @@ func (api V1) NewTreeNode(n *ddt.Node) (*V1TreeNode, error) {
 	}, nil
 }
 
-func (api V1) NewNodeTree(t *ddt.NodeTree) (*V1NodeTree, error) {
-	root, err := api.NewTreeNode(t.Root)
+func (api V1) NewNodeTree(t *ddt.NodeTree, s *plex.Source) (*V1NodeTree, error) {
+	root, err := api.NewTreeNode(t.Root, s)
 	if err != nil {
 		return nil, err
 	}
@@ -366,16 +380,69 @@ func (api V1) NewNodeTreeSearchResults(nodes []*ddt.Node, total int, took time.D
 	return &V1SearchResults{urls, total, took.Nanoseconds()}
 }
 
-// Says hello :)
-func (api V1) HelloHandler(w http.ResponseWriter, r *http.Request) {
-	httputil.NewResponder(w, r, "application/json").OK(api.NewHello())
+func (api V1) NewSources(ss *plex.Sources) (*V1Sources, error) {
+	vsources := make([]*V1Source, 0)
+
+	names := ss.WhitelistedNames()
+	for _, n := range names {
+		_, s, _ := ss.Get(n)
+
+		vsources = append(vsources, &V1Source{
+			Name:    s.Name,
+			IsReady: s.IsComplete(),
+		})
+	}
+	return &V1Sources{vsources}, nil
 }
 
+// Says hello :)
+//
+// Handles these URLs:
+//   /api/v1/hello
+func (api V1) HelloHandler(w http.ResponseWriter, r *http.Request) {
+	wr := httputil.NewResponder(w, r, "application/json")
+	r.Body.Close()
+
+	_, s, err := api.sources.Get("live")
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+
+	pl, err := api.NewHello(s)
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+	wr.OK(pl)
+}
+
+// ConfigHandler responds with a configuration object.
+//
+// Handles these URLs:
+//   /api/v1/config
 func (api V1) ConfigHandler(w http.ResponseWriter, r *http.Request) {
-	httputil.NewResponder(w, r, "application/json").OK(&V1Config{Config: api.configDB.Data()})
+	wr := httputil.NewResponder(w, r, "application/json")
+	r.Body.Close()
+
+	_, s, err := api.sources.Get("live")
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+
+	pl, err := api.NewConfig(s)
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+	wr.OK(pl)
 }
 
 // WebSocket endpoint for receiving notifications.
+//
+// Handles these URLs:
+//   /api/v1/messages
 func (api *V1) MessagesHandler(w http.ResponseWriter, r *http.Request) {
 	wr := httputil.NewResponder(w, r, "")
 	defer r.Body.Close()
@@ -385,7 +452,7 @@ func (api *V1) MessagesHandler(w http.ResponseWriter, r *http.Request) {
 		wr.Error(httputil.Err, err)
 		return
 	}
-	id, messages := api.messages.Subscribe("*")
+	id, messages := api.broker.Subscribe("*")
 
 	for {
 		m, ok := <-messages // Blocks until we have a message.
@@ -393,65 +460,86 @@ func (api *V1) MessagesHandler(w http.ResponseWriter, r *http.Request) {
 			// Channel is now closed.
 			break
 		}
-		am, _ := json.Marshal(&V1Message{
-			m.(*bus.Message).Topic,
-			m.(*bus.Message).Text,
+		log.Printf("Sending %s to WebSocket subscribers...", m)
 
-			// Previously we sent tree-changed and tree-syned
-			// typs. These strings can be restored from the new
-			// Topic field, as the topics follow similar names.
-			strings.Replace(m.(*bus.Message).Topic, ".", "-", 1),
-		})
+		am := &V1Message{
+			Topic: m.Topic,
+			Text:  m.Text,
+		}
+		// Deprecated/BC: Previously we sent tree-changed and
+		// tree-syned typs. These strings can be restored from the new
+		// Topic field, as the topics follow similar names.
+		if m.Topic == "live.tree.synced" {
+			am.Typ = "tree.synced"
+		} else if m.Topic == "live.tree.changed" {
+			am.Typ = "tree.changed"
+		}
+		jam, _ := json.Marshal(am)
 
-		err = conn.WriteMessage(websocket.TextMessage, am)
+		err = conn.WriteMessage(websocket.TextMessage, jam)
 		if err != nil {
 			// Silently unsubscribe, the client has gone away.
 			break
 		}
 	}
-	api.messages.Unsubscribe(id)
+	api.broker.Unsubscribe(id)
 	conn.Close()
 }
 
 // Returns all nodes in the design defintions tree, as nested nodes.
 //
-// Handles this URL:
+// Handles these URLs:
 //   /api/v1/tree
+//   /api/v1/tree&v={version}
 func (api V1) TreeHandler(w http.ResponseWriter, r *http.Request) {
 	wr := httputil.NewResponder(w, r, "application/json")
 	r.Body.Close()
 	// Not getting or checking path, as only tree requests are routed here.
 
-	if wr.Cached(api.tree.CalculateHash) {
-		return
-	}
+	v := r.URL.Query().Get("v")
 
-	atree, err := api.NewNodeTree(api.tree)
+	s, err := api.sources.MustGet(v)
 	if err != nil {
 		wr.Error(httputil.Err, err)
 		return
 	}
-	wr.Cache(api.tree.CalculateHash)
+
+	if wr.Cached(s.Tree.CalculateHash) {
+		return
+	}
+
+	atree, err := api.NewNodeTree(s.Tree, s)
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+	wr.Cache(s.Tree.CalculateHash)
 	wr.OK(atree)
 }
 
 // Returns information about a single ddt.
 //
 // Handles these kinds of URLs:
-//   /api/v1/tree/DisplayData/Table
-//   /api/v1/tree/DisplayData/Table/Row
+//   /api/v1/tree/DisplayData/Table?v={version}
 func (api V1) NodeHandler(w http.ResponseWriter, r *http.Request) {
 	wr := httputil.NewResponder(w, r, "application/json")
 	r.Body.Close()
 
 	path := r.URL.Path[len("/api/v1/tree/"):]
+	v := r.URL.Query().Get("v")
 
-	if err := httputil.CheckSafePath(path, api.tree.Path); err != nil {
+	s, err := api.sources.MustGet(v)
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+
+	if err := httputil.CheckSafePath(path, s.Tree.Path); err != nil {
 		wr.Error(httputil.ErrUnsafePath, err)
 		return
 	}
 
-	ok, n, err := api.tree.Get(path)
+	ok, n, err := s.Tree.Get(path)
 	if err != nil {
 		wr.Error(httputil.Err, err)
 		return
@@ -465,7 +553,7 @@ func (api V1) NodeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	an, err := api.NewNode(n)
+	an, err := api.NewNode(n, s)
 	if err != nil {
 		wr.Error(httputil.Err, err)
 		return
@@ -477,22 +565,26 @@ func (api V1) NodeHandler(w http.ResponseWriter, r *http.Request) {
 // Returns a node asset.
 //
 // Handles these kinds of URLs:
-//   /api/v1/tree/DisplayData/Table/foo.png
-//   /api/v1/tree/DisplayData/Table/Row/bar.mp4
-//   /api/v1/tree/DataEntry/Components/Button/test.png
-//   /api/v1/tree/Button/foo.mp4
+//   /api/v1/tree/Button/foo.mp4&v={version}
 func (api V1) NodeAssetHandler(w http.ResponseWriter, r *http.Request) {
 	wr := httputil.NewResponder(w, r, "application/json")
 	r.Body.Close()
 
 	path := r.URL.Path[len("/api/v1/tree/"):]
+	v := r.URL.Query().Get("v")
 
-	if err := httputil.CheckSafePath(path, api.tree.Path); err != nil {
+	s, err := api.sources.MustGet(v)
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+
+	if err := httputil.CheckSafePath(path, s.Tree.Path); err != nil {
 		wr.Error(httputil.ErrUnsafePath, err)
 		return
 	}
 
-	ok, n, err := api.tree.Get(filepath.Dir(path))
+	ok, n, err := s.Tree.Get(filepath.Dir(path))
 	if err != nil {
 		wr.Error(httputil.Err, err)
 		return
@@ -513,21 +605,45 @@ func (api V1) NodeAssetHandler(w http.ResponseWriter, r *http.Request) {
 // Performs a search over the design defintions tree and returns
 // results in form of a flat list of URLs of matched nodes.
 //
-// Handles this URL:
+// Handles these URL:
 //   /api/v1/search?q={query}
+//   /api/v1/search?q={query}&v={version}
 func (api V1) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	wr := httputil.NewResponder(w, r, "application/json")
 	r.Body.Close()
 
 	q := r.URL.Query().Get("q")
+	v := r.URL.Query().Get("v")
 
-	results, total, took, err := api.search.LegacyFilterSearch(q)
+	s, err := api.sources.MustGet(v)
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+
+	results, total, took, err := s.Search.LegacyFilterSearch(q)
 	if err != nil {
 		wr.Error(httputil.Err, err)
 		return
 	}
 
 	wr.OK(api.NewNodeTreeSearchResults(results, total, took))
+}
+
+// List available DDT sources.
+//
+// Handles this URL:
+//   /api/v1/sources
+func (api V1) SourcesHandler(w http.ResponseWriter, r *http.Request) {
+	wr := httputil.NewResponder(w, r, "application/json")
+	r.Body.Close()
+
+	ss, err := api.NewSources(api.sources)
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+	wr.OK(ss)
 }
 
 func (api V1) NotFoundHandler(w http.ResponseWriter, r *http.Request) {

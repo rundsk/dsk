@@ -47,6 +47,8 @@ github.com/blevesearch/bleve/search/scorer
 github.com/blevesearch/go-porterstemmer
 # github.com/blevesearch/segment v0.0.0-20160915185041-762005e7a34f
 github.com/blevesearch/segment
+# github.com/coreos/go-semver v0.3.0
+github.com/coreos/go-semver/semver
 # github.com/couchbase/vellum v0.0.0-20190626091642-41f2deade2cf
 github.com/couchbase/vellum
 github.com/couchbase/vellum/levenshtein2
@@ -79,7 +81,7 @@ github.com/gorilla/websocket
 github.com/icza/dyno
 # github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99
 github.com/jbenet/go-context/io
-# github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e
+# github.com/kevinburke/ssh_config v0.0.0-20190725054713-01f96b0aa0cd
 github.com/kevinburke/ssh_config
 # github.com/mattn/go-colorable v0.0.9
 github.com/mattn/go-colorable
@@ -87,15 +89,13 @@ github.com/mattn/go-colorable
 github.com/mattn/go-isatty
 # github.com/microcosm-cc/bluemonday v1.0.1
 github.com/microcosm-cc/bluemonday
-# github.com/mitchellh/go-homedir v1.0.0
+# github.com/mitchellh/go-homedir v1.1.0
 github.com/mitchellh/go-homedir
 # github.com/mozillazg/go-unidecode v0.1.0
 github.com/mozillazg/go-unidecode
 github.com/mozillazg/go-unidecode/table
 # github.com/mschoch/smat v0.0.0-20160514031455-90eadee771ae
 github.com/mschoch/smat
-# github.com/pelletier/go-buffruneio v0.2.0
-github.com/pelletier/go-buffruneio
 # github.com/philhofer/fwd v1.0.0
 github.com/philhofer/fwd
 # github.com/rjeczalik/notify v0.9.2
@@ -110,7 +110,7 @@ github.com/shurcooL/httpfs/vfsutil
 github.com/shurcooL/sanitized_anchor_name
 # github.com/shurcooL/vfsgen v0.0.0-20180915214035-33ae1944be3f
 github.com/shurcooL/vfsgen
-# github.com/src-d/gcfg v1.3.0
+# github.com/src-d/gcfg v1.4.0
 github.com/src-d/gcfg
 github.com/src-d/gcfg/scanner
 github.com/src-d/gcfg/token
@@ -121,9 +121,9 @@ github.com/steveyen/gtreap
 github.com/tinylib/msgp/msgp
 # github.com/willf/bitset v1.1.9
 github.com/willf/bitset
-# github.com/xanzy/ssh-agent v0.2.0
+# github.com/xanzy/ssh-agent v0.2.1
 github.com/xanzy/ssh-agent
-# golang.org/x/crypto v0.0.0-20180927165925-5295e8364332
+# golang.org/x/crypto v0.0.0-20190911031432-227b76d455e7
 golang.org/x/crypto/openpgp
 golang.org/x/crypto/openpgp/armor
 golang.org/x/crypto/openpgp/errors
@@ -140,26 +140,30 @@ golang.org/x/crypto/internal/chacha20
 golang.org/x/crypto/poly1305
 golang.org/x/crypto/ed25519/internal/edwards25519
 golang.org/x/crypto/internal/subtle
-# golang.org/x/net v0.0.0-20180926154720-4dfa2610cdf3
+# golang.org/x/net v0.0.0-20190916140828-c8589233b77d
 golang.org/x/net/html
 golang.org/x/net/html/atom
+golang.org/x/net/proxy
 golang.org/x/net/context
-# golang.org/x/sys v0.0.0-20180928133829-e4b3c5e90611
+golang.org/x/net/internal/socks
+# golang.org/x/sys v0.0.0-20190916202348-b4ddaad3f8a3
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/text v0.3.0
+golang.org/x/sys/cpu
+# golang.org/x/text v0.3.2
 golang.org/x/text/unicode/norm
 golang.org/x/text/transform
-# gopkg.in/src-d/go-billy.v4 v4.3.0
+# gopkg.in/src-d/go-billy.v4 v4.3.2
 gopkg.in/src-d/go-billy.v4
 gopkg.in/src-d/go-billy.v4/osfs
 gopkg.in/src-d/go-billy.v4/util
 gopkg.in/src-d/go-billy.v4/helper/chroot
 gopkg.in/src-d/go-billy.v4/helper/polyfill
-# gopkg.in/src-d/go-git.v4 v4.7.1
+# gopkg.in/src-d/go-git.v4 v4.13.1
 gopkg.in/src-d/go-git.v4
 gopkg.in/src-d/go-git.v4/plumbing
 gopkg.in/src-d/go-git.v4/plumbing/object
+gopkg.in/src-d/go-git.v4/plumbing/storer
 gopkg.in/src-d/go-git.v4/config
 gopkg.in/src-d/go-git.v4/internal/revision
 gopkg.in/src-d/go-git.v4/plumbing/cache
@@ -171,7 +175,6 @@ gopkg.in/src-d/go-git.v4/plumbing/protocol/packp
 gopkg.in/src-d/go-git.v4/plumbing/protocol/packp/capability
 gopkg.in/src-d/go-git.v4/plumbing/protocol/packp/sideband
 gopkg.in/src-d/go-git.v4/plumbing/revlist
-gopkg.in/src-d/go-git.v4/plumbing/storer
 gopkg.in/src-d/go-git.v4/plumbing/transport
 gopkg.in/src-d/go-git.v4/plumbing/transport/client
 gopkg.in/src-d/go-git.v4/storage
@@ -185,6 +188,7 @@ gopkg.in/src-d/go-git.v4/utils/merkletrie/index
 gopkg.in/src-d/go-git.v4/utils/merkletrie/noder
 gopkg.in/src-d/go-git.v4/plumbing/format/diff
 gopkg.in/src-d/go-git.v4/utils/binary
+gopkg.in/src-d/go-git.v4/internal/url
 gopkg.in/src-d/go-git.v4/plumbing/format/config
 gopkg.in/src-d/go-git.v4/plumbing/format/idxfile
 gopkg.in/src-d/go-git.v4/plumbing/format/pktline

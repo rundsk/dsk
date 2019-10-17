@@ -3,8 +3,8 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React, { useState, useEffect } from 'react';
-import { routeNode, BaseLink } from 'react-router5'
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { routeNode, BaseLink } from 'react-router5';
 import { useGlobal } from 'reactn';
 import { Helmet } from 'react-helmet';
 
@@ -17,62 +17,126 @@ import Page from './Page';
 import ErrorPage from './ErrorPage';
 import Search from './Search';
 
-import HamburgerIcon from './HamburgerIcon.svg'
-import CloseIcon from './CloseIcon.svg'
+import HamburgerIcon from './HamburgerIcon.svg';
+import CloseIcon from './CloseIcon.svg';
 
 function App(props) {
   const [tree, setTree] = useState(null);
   const [node, setNode] = useState(null);
   const [error, setError] = useState(null);
-  const [config, setConfig] = useGlobal("config");
+  const [source, setSource] = useGlobal('source');
+  const [availableSources, setAvailableSources] = useState([]);
+  const socket = useRef();
+  const onMessage = useRef();
+  const [config, setConfig] = useGlobal('config');
   const [mobileSidebarIsActive, setMobileSidebarIsActive] = useState(false);
 
-  // Establish WebSocket connection, once. By appending to the sync messages
-  // (state), we're triggering a full re-render of the App. We're intentionally
-  // not displaying notifications, as we consider them to be too intrusive.
+  // Establish a WebSocket connection and register a handler, that will trigger
+  // a full re-render of the App, once we receive a sync message. We're
+  // intentionally not displaying notifications, as we consider them to be too
+  // intrusive.
   useEffect(() => {
-    let socket = Client.messages();
-    console.log('Connected to messages WebSocket.');
-
-    socket.addEventListener('message', (ev) => {
+    onMessage.current = ev => {
       let m = JSON.parse(ev.data);
 
-      if (m.topic === 'tree.synced') {
+      if (m.topic === `${source}.tree.synced`) {
         loadTree();
 
         // The node might have gone away.
-        checkNode().then((isExistent) => {
+        checkNode(source).then(isExistent => {
           if (isExistent) {
             loadNode();
           } else {
-            console.log('Current node has gone away after tree sync.');
-            props.router.navigate('home');
+            console.log('Current node has gone away after tree has synced.');
+            props.router.navigate('home', { ...props.route.params, v: source });
           }
-        })
+        });
       }
+
+      if (m.topic.includes('source.status.changed')) {
+        Client.sources().then(data => {
+          setAvailableSources(data.sources);
+        });
+      }
+    };
+  }, [props.router, source]);
+
+  useEffect(() => {
+    if (socket.current) {
+      // Ensure we don't open multiple sockets.
+      return;
+    }
+    console.log('Establishing WebSocket connection...');
+    socket.current = Client.messages();
+    socket.current.addEventListener('message', ev => {
+      onMessage.current(ev);
     });
-  }, [props.router]);
+  }, [socket, onMessage]);
+
+  useEffect(() => {
+    Client.sources().then(data => {
+      setAvailableSources(data.sources);
+
+      var sourceToLoad = null;
+      let sourceFromURL = props.route.params.v;
+
+      // First we check if the source from the url exists
+      if (sourceFromURL) {
+        data.sources.forEach(v => {
+          if (v.name === sourceFromURL) {
+            sourceToLoad = sourceFromURL;
+          }
+        });
+      }
+
+      // Then we check if a live source exists
+      if (!sourceToLoad) {
+        data.sources.forEach(v => {
+          if (v.name === 'live') {
+            sourceToLoad = 'live';
+          }
+        });
+      }
+
+      // If not we take the first source we can find
+      if (!sourceToLoad) {
+        sourceToLoad = data.sources[0].name;
+      }
+
+      setSource(sourceToLoad);
+    });
+  }, []);
 
   function loadTree() {
-    Client.tree().then((data) => {
-      setTree(data.root);
-    }).catch((err) => {
-      console.log(`Failed to load tree: ${err}`);
-    });
+    if (!source) {
+      return;
+    }
+    Client.tree(source)
+      .then(data => {
+        setTree(data.root);
+      })
+      .catch(err => {
+        console.log(`Failed to load tree: ${err}`);
+      });
   }
 
   function loadNode() {
-    Client.get(nodeURLFromRouter(props.route)).then((data) => {
-      setNode(data);
-      setError(null);
-    }).catch((err)  =>{
-      console.log(`Failed to set node data: ${err}`);
-      setError("Design aspect not found.");
-    });
+    if (!source) {
+      return;
+    }
+    Client.get(nodeURLFromRouter(props.route), source)
+      .then(data => {
+        setNode({ ...data, source: source });
+        setError(null);
+      })
+      .catch(err => {
+        console.log(`Failed to set node data: ${err}`);
+        setError('Design aspect not found.');
+      });
   }
 
-  function checkNode() {
-    return Client.has(nodeURLFromRouter(props.route));
+  function checkNode(source) {
+    return Client.has(nodeURLFromRouter(props.route), source);
   }
 
   function nodeURLFromRouter(route) {
@@ -86,6 +150,21 @@ function App(props) {
     }
   }
 
+  function changeSource(newSource) {
+    setSource(newSource);
+
+    // Update URL
+    props.router.navigate(props.route.name, { ...props.route.params, v: newSource }, { replace: true });
+
+    // The node might have gone away.
+    checkNode(newSource).then(isExistent => {
+      if (!isExistent) {
+        console.log('Current node has gone away after tree has synced.');
+        props.router.navigate('home', { ...props.route.params, v: newSource });
+      }
+    });
+  }
+
   // This hook may run several times. We might receive an empty configuration
   // object from the API. We must differentiate between this case and initially
   // empty object.
@@ -93,26 +172,27 @@ function App(props) {
     if (config._populated) {
       return;
     }
-    Client.config()
-      .then((data) => {
-        setConfig({
-          ...data,
-          _populated: true,
-        });
+    Client.config().then(data => {
+      setConfig({
+        ...data,
+        _populated: true,
       });
+    });
   }, [config, setConfig]);
 
   // Initialize tree navigation.
-  useEffect(loadTree, []);
+  useEffect(loadTree, [source]);
 
   // Load the current node being displayed. Reload it whenever the route changes.
-  useEffect(loadNode, [props.route]);
+  useEffect(loadNode, [props.route, source]);
 
   let content;
   if (error) {
     content = <ErrorPage>{error}</ErrorPage>;
   } else if (node) {
-    content = <Page {...node} activeTab={props.route.params.t || undefined} baseTitle={config.org + " / " + config.project} />;
+    content = (
+      <Page {...node} activeTab={props.route.params.t || undefined} baseTitle={config.org + ' / ' + config.project} />
+    );
   }
 
   let refToMain = React.createRef();
@@ -121,37 +201,96 @@ function App(props) {
     <div className="app">
       <Helmet htmlAttributes={{ lang: config.lang }} />
 
-      <button className="app_skip-to-content" onClick={() => { if (refToMain.current) { console.log(refToMain); refToMain.current.focus() } }}>Skip to Content (Press Enter)</button>
+      <button
+        className="app_skip-to-content"
+        onClick={() => {
+          if (refToMain.current) {
+            refToMain.current.focus();
+          }
+        }}
+      >
+        Skip to Content (Press Enter)
+      </button>
 
-      <div className={`app__sidebar ${mobileSidebarIsActive ? "app__sidebar--is-visible" : ""}`}>
+      <div className={`app__sidebar ${mobileSidebarIsActive ? 'app__sidebar--is-visible' : ''}`}>
         <div className="app__header">
-          <div>{config.org || "DSK"} / <BaseLink router={props.router} routeName="home" className="app__title">{config.project}</BaseLink></div>
+          <div>
+            {config.org || 'DSK'} /{' '}
+            <BaseLink
+              router={props.router}
+              routeName="home"
+              routeParams={{ v: props.route.params.v }}
+              className="app__title"
+            >
+              {config.project}
+            </BaseLink>
+          </div>
         </div>
         <div className="app__nav">
-          <TreeNavigation tree={tree} hideMobileSidebar={() => {setMobileSidebarIsActive(false)}} />
+          <TreeNavigation
+            tree={tree}
+            hideMobileSidebar={() => {
+              setMobileSidebarIsActive(false);
+            }}
+          />
         </div>
         <div className="app__shoutout">
-          Powered by <a href="https://github.com/atelierdisko/dsk">DSK</a> · <a href="mailto:thankyou@rundsk.com">Get in Touch</a>
+          {availableSources && (
+            <div className="app__versions">
+              <select
+                value={source}
+                onChange={ev => {
+                  changeSource(ev.target.value);
+                }}
+              >
+                {availableSources.map(s => {
+                  return (
+                    <option key={s.name} value={s.name} disabled={!s.is_ready}>
+                      Version: {s.name} {s.is_ready ? '' : '(loading...)'}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+          )}
+          Powered by <a href="https://github.com/atelierdisko/dsk">DSK</a> ·{' '}
+          <a href="mailto:thankyou@rundsk.com">Get in Touch</a>
         </div>
       </div>
       <main className="app__main" ref={refToMain} tabIndex="0">
         <div className="app__mobile-header">
-          <div className="app__mobile-header-icon" onClick={() => {setMobileSidebarIsActive(!mobileSidebarIsActive)}}>
-
-            { mobileSidebarIsActive ?
-              <img src={CloseIcon} alt="Toggle Menu"/>
-            :
-              <img src={HamburgerIcon} alt="Toggle Menu"/>
-            }
+          <div
+            className="app__mobile-header-icon"
+            onClick={() => {
+              setMobileSidebarIsActive(!mobileSidebarIsActive);
+            }}
+          >
+            {mobileSidebarIsActive ? (
+              <img src={CloseIcon} alt="Toggle Menu" />
+            ) : (
+              <img src={HamburgerIcon} alt="Toggle Menu" />
+            )}
           </div>
-          <div>{config.org || "DSK"} / <BaseLink router={props.router} routeName="home" className="app__title">{config.project}</BaseLink></div>
+          <div>
+            {config.org || 'DSK'} /{' '}
+            <BaseLink
+              router={props.router}
+              routeName="home"
+              routeParams={{ v: props.route.params.v }}
+              className="app__title"
+            >
+              {config.project}
+            </BaseLink>
+          </div>
         </div>
 
         {content}
       </main>
-      <div className="app__search"><Search title={config.project} /></div>
+      <div className="app__search">
+        <Search title={config.project} />
+      </div>
     </div>
   );
 }
 
-export default routeNode('')(App)
+export default routeNode('')(App);

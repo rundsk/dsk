@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0 Unreleased
+
+- We've added support for multiple versions of a DDT. 
+
 ## 1.2.0 Unreleased
 
 - The frontend has been rewritten as a React-App, and redesigned

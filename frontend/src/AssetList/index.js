@@ -24,11 +24,13 @@ function AssetList(props) {
 
               {imageFileTypes.some(v => {
                 return a.url.indexOf(v) >= 0;
-              }) && <img className="asset-list__asset-image" src={`/api/v1/tree/${a.url}`} alt={a.name} />}
+              }) && (
+                <img className="asset-list__asset-image" src={`/api/v1/tree/${a.url}?v=${props.source}`} alt={a.name} />
+              )}
 
               <div className="asset-list__asset-meta">
                 <Meta title="Download">
-                  <a className="asset-list__asset-download" href={`/api/v1/tree/${a.url}`} download>
+                  <a className="asset-list__asset-download" href={`/api/v1/tree/${a.url}?v=${props.source}`} download>
                     {a.name}
                   </a>
                 </Meta>

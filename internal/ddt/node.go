@@ -20,7 +20,8 @@ import (
 	"time"
 
 	"github.com/atelierdisko/dsk/internal/author"
-	"github.com/fatih/color"
+	"github.com/atelierdisko/dsk/internal/config"
+	"github.com/atelierdisko/dsk/internal/meta"
 	"github.com/mozillazg/go-unidecode"
 	"golang.org/x/text/unicode/norm"
 )
@@ -48,40 +49,23 @@ var (
 	NodePathMultipleDashRegexp = regexp.MustCompile(`-+`)
 )
 
-type AuthorResolver func(string) (bool, *author.Author)
-type NodeModifiedStatter func(*Node) (time.Time, error)
-type PathModifiedStatter func(string) (time.Time, error)
-
-// Noop implementations of the above types useful for testing.
-func NoopAuthorResolver(email string) (bool, *author.Author) {
-	return false, &author.Author{}
-}
-func NoopNodeModifiedStatter(n *Node) (time.Time, error) {
-	return time.Time{}, nil
-}
-func NoopPathModifiedStatter(path string) (time.Time, error) {
-	return time.Time{}, nil
-}
-
 // NewNode constructs a new Node using its path in the filesystem and
 // initalizing fields. The initialization must finalized by using Load().
 func NewNode(
 	path string,
 	root string,
-	project string,
-	nms NodeModifiedStatter,
-	pms PathModifiedStatter,
-	ar AuthorResolver,
+	cdb config.DB,
+	mdb meta.DB,
+	adb author.DB,
 ) *Node {
 	return &Node{
-		Path:             path,
-		root:             root,
-		Children:         make([]*Node, 0),
-		meta:             &NodeMeta{},
-		statModifiedNode: nms,
-		statModifiedPath: pms,
-		resolveAuthor:    ar,
-		project:          project,
+		Path:     path,
+		root:     root,
+		Children: make([]*Node, 0),
+		meta:     &NodeMeta{},
+		configDB: cdb,
+		metaDB:   mdb,
+		authorDB: adb,
 	}
 }
 
@@ -106,13 +90,11 @@ type Node struct {
 	// Meta data as parsed from the node configuration file.
 	meta *NodeMeta
 
-	statModifiedNode NodeModifiedStatter
+	configDB config.DB
 
-	statModifiedPath PathModifiedStatter
+	metaDB meta.DB
 
-	resolveAuthor AuthorResolver
-
-	project string
+	authorDB author.DB
 
 	// hash is the lazily cached hash set, than used by
 	// CalculateHash(). The calculation is not super expensive on its
@@ -192,7 +174,7 @@ func (n *Node) CalculateHash() (string, error) {
 	// and doc hashes over the whole underlying files, we instead use
 	// the last modified file time. This also includes any meta data
 	// files.
-	m, err := n.Modified()
+	m, err := n.lastModifiedForIdentity()
 	if err != nil {
 		return "", err
 	}
@@ -255,7 +237,7 @@ func (n *Node) Name() string {
 // https://blog.golang.org/normalization
 func (n *Node) Title() string {
 	if n.root == n.Path {
-		return n.project
+		return n.configDB.Data().Project
 	}
 	return removeOrderNumber(norm.NFC.String(filepath.Base(n.Path)))
 }
@@ -272,16 +254,15 @@ func (n *Node) Custom() interface{} {
 // Returns a list of related nodes.
 func (n *Node) Related(get NodeGetter) []*Node {
 	nodes := make([]*Node, 0, len(n.meta.Related))
-	yellow := color.New(color.FgYellow).SprintfFunc()
 
 	for _, r := range n.meta.Related {
 		ok, node, err := get(r)
 		if err != nil {
-			log.Printf(yellow("Skipping related in %s: %s", n.URL(), err))
+			log.Printf("Skipping related in %s: %s", n.URL(), err)
 			continue
 		}
 		if !ok {
-			log.Printf(yellow("Skipping related in %s: '%s' not found in tree", n.URL(), r))
+			log.Printf("Skipping related in %s: '%s' not found in tree", n.URL(), r)
 			continue
 		}
 		nodes = append(nodes, node)
@@ -318,19 +299,43 @@ func (n *Node) Authors() []*author.Author {
 		return r
 	}
 	for _, email := range n.meta.Authors {
-		ok, a := n.resolveAuthor(email)
+		ok, a := n.authorDB.GetByEmail(email)
 		if ok {
 			r = append(r, a)
 		} else {
-			r = append(r, &author.Author{email, ""})
+			r = append(r, &author.Author{Email: email, Name: ""})
 		}
 	}
 	return r
 }
 
-// Modified finds the most recent modified time of the ddt.
+// Modified finds the most recent modified time of this node, including assets and docs.
 func (n *Node) Modified() (time.Time, error) {
-	return n.statModifiedNode(n)
+	n.RLock()
+	defer n.RUnlock()
+	return n.metaDB.Modified(n.Path)
+}
+
+// fastModified is used to caluclate the hash of the node. In contrast
+// to Modified() which will look at all subdirectories and their
+// files, this implementation looks only for files in the current
+// directory.
+func (n *Node) lastModifiedForIdentity() (time.Time, error) {
+	var modified time.Time
+
+	files, err := ioutil.ReadDir(n.Path)
+	if err != nil {
+		return modified, err
+	}
+	for _, f := range files {
+		if strings.HasPrefix(f.Name(), ".") {
+			continue
+		}
+		if f.ModTime().After(modified) {
+			modified = f.ModTime()
+		}
+	}
+	return modified, nil
 }
 
 func (n *Node) Version() string {
@@ -352,7 +357,7 @@ func (n *Node) Asset(name string) (*NodeAsset, error) {
 	return NewNodeAsset(
 		filepath.Join(n.Path, f.Name()),
 		filepath.Join(n.URL(), f.Name()),
-		n.statModifiedPath,
+		n.metaDB,
 	), nil
 }
 
@@ -385,7 +390,7 @@ func (n *Node) Assets() ([]*NodeAsset, error) {
 		as = append(as, NewNodeAsset(
 			filepath.Join(n.Path, f.Name()),
 			filepath.Join(n.URL(), f.Name()),
-			n.statModifiedPath,
+			n.metaDB,
 		))
 	}
 	return as, nil
@@ -424,18 +429,17 @@ func (n *Node) Crumbs(get NodeGetter) []*Node {
 	nodes := make([]*Node, 0)
 
 	parts := strings.Split(strings.TrimSuffix(n.URL(), "/"), "/")
-	yellow := color.New(color.FgYellow).SprintfFunc()
 
 	for index, _ := range parts {
 		url := strings.Join(parts[:index+1], "/")
 
 		ok, node, err := get(url)
 		if err != nil {
-			log.Printf(yellow("Skipping crumb in %s: %s", n.URL(), err))
+			log.Printf("Skipping crumb in %s: %s", n.URL(), err)
 			continue
 		}
 		if !ok {
-			log.Printf(yellow("Skipping crumb in %s: '%s' not found in tree", n.URL(), url))
+			log.Printf("Skipping crumb in %s: '%s' not found in tree", n.URL(), url)
 			continue
 		}
 		nodes = append(nodes, node)
@@ -477,48 +481,4 @@ func lookupNodeURL(url string) string {
 		strings.ToLower(normalizeNodeURL(url)),
 		"",
 	)
-}
-
-// DefaultNodeModifiedStatter will look at the directory's and all
-// files modification times, and recursively into each contained
-// directory's (node) and return the most recent time.
-//
-// This function has different semantics than the file system's mtime:
-// Most file systems change the mtime of the directory when a new file
-// or directory is created inside it, the mtime will not change when a
-// file has been modified.
-func DefaultNodeModifiedStatter(n *Node) (time.Time, error) {
-	var modified time.Time
-
-	d, err := os.Stat(n.Path)
-	if err != nil {
-		return modified, err
-	}
-	modified = d.ModTime()
-
-	files, err := ioutil.ReadDir(n.Path)
-	if err != nil {
-		return modified, err
-	}
-
-	for _, f := range files {
-		if f.IsDir() {
-			continue
-		}
-		if f.ModTime().After(modified) {
-			modified = f.ModTime()
-		}
-	}
-
-	for _, c := range n.Children {
-		cmodified, err := c.Modified()
-		if err != nil {
-			return modified, err
-		}
-		if cmodified.After(modified) {
-			modified = cmodified
-		}
-
-	}
-	return modified, nil
 }

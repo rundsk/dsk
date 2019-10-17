@@ -18,9 +18,10 @@ import (
 
 // NewNodeDocTransformer returns an initialized NodeDocTransformer, it'll
 // derive values for nodeBase and treeBase from the treePrefix and nodeURL.
-func NewNodeDocTransformer(treePrefix string, nodeURL string, nodeGet NodeGetter) (*NodeDocTransformer, error) {
+func NewNodeDocTransformer(treePrefix string, nodeURL string, nodeGet NodeGetter, nodeSource string) (*NodeDocTransformer, error) {
 	dt := &NodeDocTransformer{
 		treePrefix: treePrefix,
+		nodeSource: nodeSource,
 		nodeURL:    nodeURL,
 		nodeGet:    nodeGet,
 	}
@@ -76,6 +77,9 @@ type NodeDocTransformer struct {
 
 	// Allows us to lookup nodes by their ref-URL.
 	nodeGet NodeGetter
+
+	// nodeSource is the name of a plex.Source
+	nodeSource string
 }
 
 // ProcessHTML is the main entry point.
@@ -145,7 +149,7 @@ func (dt NodeDocTransformer) ProcessHTML(contents []byte) ([]byte, error) {
 			if err != nil {
 				return buf.Bytes(), err
 			}
-			buf.WriteString(t.String())
+			buf.WriteString(html.UnescapeString(t.String()))
 		case t.Data == "video" || t.Data == "audio":
 			t, err := dt.maybeAddDataNode(t, "src")
 			if err != nil {
@@ -155,7 +159,7 @@ func (dt NodeDocTransformer) ProcessHTML(contents []byte) ([]byte, error) {
 			if err != nil {
 				return buf.Bytes(), err
 			}
-			buf.WriteString(t.String())
+			buf.WriteString(html.UnescapeString(t.String()))
 		case t.Data == "a" && tt == html.StartTagToken:
 			t, err := dt.maybeAddDataNode(t, "href")
 			if err != nil {
@@ -165,7 +169,7 @@ func (dt NodeDocTransformer) ProcessHTML(contents []byte) ([]byte, error) {
 			if err != nil {
 				return buf.Bytes(), err
 			}
-			buf.WriteString(t.String())
+			buf.WriteString(html.UnescapeString(t.String()))
 		case oksrc:
 			t, err := dt.maybeAddDataNode(t, "src")
 			if err != nil {
@@ -175,7 +179,7 @@ func (dt NodeDocTransformer) ProcessHTML(contents []byte) ([]byte, error) {
 			if err != nil {
 				return buf.Bytes(), err
 			}
-			buf.WriteString(t.String())
+			buf.WriteString(html.UnescapeString(t.String()))
 		case t.Data == "code" && tt == html.StartTagToken:
 			isEscaping = true
 			buf.WriteString(t.String())
@@ -276,14 +280,16 @@ func (dt NodeDocTransformer) maybeMakeAbsolute(t html.Token, attrName string) (h
 		dnu := url.URL{
 			// Path is augmented with the asset when one is found.
 			Path: path.Join(dt.treePrefix, dn),
-
-			// Transfers query and fragment from original URL. When
-			// the original fragment or query string are empty, the
-			// resulting URL does not contain them, so we can blindly
-			// pass them here.
-			RawQuery: u.RawQuery,
+			// Transfer fragment from original URL.
 			Fragment: u.Fragment,
 		}
+		// We start with the query values of the original URL, as we
+		// want to copy them over to the resulting URL.
+		q := u.Query()
+		// We programatically add to the query, and add
+		// it store it on the dnu after we are finished.
+		q.Set("v", dt.nodeSource)
+		dnu.RawQuery = q.Encode()
 
 		ok, _, dna := dt.attr(t, "data-node-asset")
 		if ok {

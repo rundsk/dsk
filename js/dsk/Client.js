@@ -4,6 +4,10 @@
  */
 
 // Client for accessing the DSK APIv2.
+//
+// The client supports versions, you can select the version on a per
+// API call basis. If a version is not specified, the primary version
+// is being used.
 export default class Client {
   static hello() {
     return this.fetch('/api/v2/hello');
@@ -11,6 +15,10 @@ export default class Client {
 
   static config() {
     return this.fetch('/api/v2/config');
+  }
+
+  static sources() {
+    return this.fetch('/api/v2/sources');
   }
 
   // Returns a WebSocket connection to the messages endpoint. Asummes it
@@ -23,19 +31,34 @@ export default class Client {
     return new WebSocket(`${protocol}://${host}${port}/api/v2/messages`);
   }
 
-  static tree() {
-    return this.fetch('/api/v2/tree');
+  static tree(version = null) {
+    let params = new URLSearchParams();
+    if (version) {
+      params.set('v', version);
+    }
+
+    return this.fetch(`/api/v2/tree?${params.toString()}`);
   }
 
   // Check if a node is present. Returns a promise that resolves to a boolean
   // indicating whether a node exists under the given URL.
-  static has(url) {
-    return this.ping(`/api/v2/tree/${this.nodeURL(url)}`);
+  static has(url, version = null) {
+    let params = new URLSearchParams();
+    if (version) {
+      params.set('v', version);
+    }
+
+    return this.ping(`/api/v2/tree/${this.nodeURL(url)}?${params.toString()}`);
   }
 
   // Returns node for given relative URL path.
-  static get(url) {
-    return this.fetch(`/api/v2/tree/${this.nodeURL(url)}`);
+  static get(url, version = null) {
+    let params = new URLSearchParams();
+    if (version) {
+      params.set('v', version);
+    }
+
+    return this.fetch(`/api/v2/tree/${this.nodeURL(url)}?${params.toString()}`);
   }
 
   // Will automatically strip leading and trailing slashes from the given node
@@ -52,10 +75,12 @@ export default class Client {
 
   // Performs a full text search against the tree and returns the response
   // unfiltered.
-  static search(q) {
+  static search(q, version = null) {
     let params = new URLSearchParams();
-
     params.set('q', q);
+    if (version) {
+      params.set('v', version);
+    }
 
     return this.fetch(`/api/v2/search?${params.toString()}`);
   }
@@ -72,10 +97,12 @@ export default class Client {
   //      return Tree.filteredBy(urls);
   //   });
   // ```
-  static filter(q) {
+  static filter(q, version = null) {
     let params = new URLSearchParams();
-
     params.set('q', q);
+    if (version) {
+      params.set('v', version);
+    }
 
     return this.fetch(`/api/v2/filter?${params.toString()}`);
   }

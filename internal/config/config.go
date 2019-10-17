@@ -19,8 +19,17 @@ type Config struct {
 	// A slice of configuration objects for specific tags. Allows you to display certain tags in custom colors.
 	Tags []*TagConfig `json:"tags,omitempty" yaml:"tags,omitempty"`
 
-	// Regexp to whitelist versions of the DDT that can be selected and switched to, defaults to ".*"
-	Versions string `json:"versions,omitempty" yaml:"versions,omitempty"`
+	// List of sources or source patterns to whitelist DDT sources
+	// that can be selected and switched to, by default just the
+	// "live" version is allowed. Multiple versions can be matched
+	// using patterns. Patterns may include wildcards ('*'), which
+	// match any number of characters or ('?') to match a single
+	// character.
+	//
+	// Internally this is known as "sources", externally to the
+	// user as "versions". "Sources" as a term is too abstract and
+	// "versions" has many meanings to cover this case.
+	Sources []string `json:"versions,omitempty" yaml:"versions,omitempty"`
 
 	// Configuration related to figma.com.
 	Figma *FigmaConfig `json:"figma,omitempty" yaml:"figma,omitempty"`

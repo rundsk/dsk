@@ -14,7 +14,12 @@ function Breadcrumbs(props) {
     crumbs = props.crumbs.map(c => {
       return (
         <li className="breadcrumbs__crumb" key={c.title}>
-          <BaseLink router={props.router} routeName="node" routeParams={{ node: `${c.url}` }} key={'link'}>
+          <BaseLink
+            router={props.router}
+            routeName="node"
+            routeParams={{ node: `${c.url}`, v: props.route.params.v }}
+            key={'link'}
+          >
             {c.title}
           </BaseLink>
           {/* <a href={`/tree/${c.url}`}>{c.title}</a> */}

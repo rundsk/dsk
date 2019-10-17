@@ -19,107 +19,31 @@ import (
 	"github.com/atelierdisko/dsk/internal/author"
 	"github.com/atelierdisko/dsk/internal/bus"
 	"github.com/atelierdisko/dsk/internal/config"
-	"github.com/atelierdisko/dsk/internal/vcs"
-	"github.com/fatih/color"
+	"github.com/atelierdisko/dsk/internal/meta"
 )
 
 var (
 	ErrNodeTreeRootNotFound = errors.New("no tree root found")
 )
 
-// Tries to find root directory either by looking at args or the
-// current working directory. This function needs the full path to the
-// binary as a first argument and optionally an explicitly given path
-// as the second argument.
-func FindNodeTreeRoot(binary string, given string) (string, error) {
-	var here string
-
-	if given != "" {
-		here = given
-	} else {
-		// When no path is given as an argument, take the path to
-		// the process itself. This makes sure that when opening the
-		// binary from Finder the folder it is stored in is used.
-		here = filepath.Dir(binary)
-	}
-	here, err := filepath.Abs(here)
-	if err != nil {
-		return here, err
-	}
-	p, err := filepath.EvalSymlinks(here)
-	if err != nil {
-		return "", err
-	}
-	return p, nil
-}
-
-// NewNodeTree construct and partially initializes a NodeTree. Returns
-// an unsynced tree from path; you must finalize initialization using
-// Sync() or by calling Start().
+// NewNodeTree construct and initializes a NodeTree.
 func NewNodeTree(
 	path string,
-	cdb *config.DB,
-	adb *author.DB,
-	r *vcs.Repo,
+	cdb config.DB,
+	adb author.DB,
+	mdb meta.DB,
 	b *bus.Broker,
-) *NodeTree {
-	statModifiedNode := DefaultNodeModifiedStatter
-	// Use a Repo for calculating the modified time. This is trying
-	// to provide a better solution for situations where the modified
-	// date on disk may not reflect the actual modification date. This
-	// is the case when the DDT was checked out from Git during a
-	// build process step.
-	if r != nil {
-		statModifiedNode = func(n *Node) (time.Time, error) {
-			m, err := r.Modified(n.Path)
+) (*NodeTree, error) {
+	log.Printf("Initializing node tree on %s...", path)
 
-			// Fall back to default file system based retrieval if a
-			// repository is not available. Also covers present but
-			// uncommitted files.
-
-			if err != nil && err != vcs.ErrNoData {
-				return m, err
-			}
-			if m.IsZero() {
-				// log.Printf("Falling back to default modified statter for node: %s", pathutil.Pretty(n.Path))
-				return DefaultNodeModifiedStatter(n)
-			}
-			return m, nil
-		}
+	t := &NodeTree{
+		Path:     path,
+		configDB: cdb,
+		metaDB:   mdb,
+		authorDB: adb,
+		broker:   b,
 	}
-
-	statModifiedPath := DefaultPathModifiedStatter
-	// Use a Repo for calculating the modified time. This is trying
-	// to provide a better solution for situations where the modified
-	// date on disk may not reflect the actual modification date. This
-	// is the case when the DDT was checked out from Git during a
-	// build process step.
-	statModifiedPath = func(path string) (time.Time, error) {
-		m, err := r.Modified(path)
-
-		// Fall back to default file system based retrieval if a
-		// repository is not available. Also covers present but
-		// uncommitted files.
-
-		if err != nil && err != vcs.ErrNoData {
-			return m, err
-		}
-		if m.IsZero() {
-			// log.Printf("Falling back to default modified statter for path: %s", pathutil.Pretty(path))
-			return DefaultPathModifiedStatter(path)
-		}
-		return m, nil
-	}
-
-	return &NodeTree{
-		Path:             path,
-		configDB:         cdb,
-		statModifiedNode: statModifiedNode,
-		statModifiedPath: statModifiedPath,
-		authorsDB:        adb,
-		repo:             r,
-		broker:           b,
-	}
+	return t, t.Sync()
 }
 
 type NodeTree struct {
@@ -139,16 +63,11 @@ type NodeTree struct {
 	// The root node and entry point to the acutal tree.
 	Root *Node `json:"root"`
 
-	configDB *config.DB
+	configDB config.DB
 
-	statModifiedNode NodeModifiedStatter
+	metaDB meta.DB
 
-	statModifiedPath PathModifiedStatter
-
-	authorsDB *author.DB
-
-	// Repository, if the tree is version controlled.
-	repo *vcs.Repo
+	authorDB author.DB
 
 	// A place where we can send filtered messages to.
 	broker *bus.Broker
@@ -161,6 +80,10 @@ type NodeGetter func(url string) (ok bool, n *Node, err error)
 // NodesGetter retrieves all nodes from the tree.
 type NodesGetter func() []*Node
 
+func (t *NodeTree) String() string {
+	return fmt.Sprintf("node tree (...%s)", t.Path[len(t.Path)-10:])
+}
+
 func (t *NodeTree) CalculateHash() (string, error) {
 	t.RLock()
 	defer t.RUnlock()
@@ -172,20 +95,21 @@ func (t *NodeTree) CalculateHash() (string, error) {
 // makes the algorithm really simple - as we don't need to do branch
 // selection - but also slow.
 //
-// The Walk recursively walks a given directory tree. It will not descend
-// into directories it considers hidden (their name is prefixed by a
-// dot), except when the given directory itself is dot-hidden.
-//
 // Nodes that are discover but fail to finalize their initialization
 // using Node.Load() will not be skipped but kept in tree in
 // a semi-initialized way. So that the their children are not
 // disconnected and no gaps exist in tree branches.
+//
+// It will not descend into directories it considers hidden (their
+// name is prefixed by a dot), except when the given directory itself
+// is dot-hidden.
 func (t *NodeTree) Sync() error {
+	log.Printf("Syncing %s...", t)
+
 	t.Lock()
 	defer t.Unlock()
 
 	start := time.Now()
-	yellow := color.New(color.FgYellow)
 
 	var nodes []*Node
 
@@ -202,14 +126,13 @@ func (t *NodeTree) Sync() error {
 			n := NewNode(
 				path,
 				t.Path,
-				t.configDB.Data().Project,
-				t.statModifiedNode,
-				t.statModifiedPath,
-				t.authorsDB.GetByEmail,
+				t.configDB,
+				t.metaDB,
+				t.authorDB,
 			)
 
 			if err := n.Load(); err != nil {
-				log.Print(yellow.Sprint(err))
+				log.Print(err)
 			}
 			nodes = append(nodes, n)
 		}
@@ -250,11 +173,9 @@ func (t *NodeTree) Sync() error {
 	total := len(lookup)
 	took := time.Since(start)
 
-	defer t.broker.Accept(bus.NewMessage(
-		"tree.synced", fmt.Sprintf("%d node/s in %s", total, took),
-	))
+	defer t.broker.Accept("tree.synced", fmt.Sprintf("%d node/s in %s", total, took))
 
-	log.Printf("Synced tree with %d total node/s in %s", total, took)
+	log.Printf("Synced %s with %d total node/s in %s", t, total, took)
 	return nil
 }
 
@@ -278,7 +199,7 @@ func (t *NodeTree) NeighborNodes(current *Node) (prev *Node, next *Node, err err
 	// SearchString returns the next unused key, if the given string
 	// isn't found.
 	if key == len(t.ordered) {
-		return nil, nil, fmt.Errorf("no node with URL path '%s' in tree", current.URL())
+		return nil, nil, fmt.Errorf("no node with URL path '%s' in %s", current.URL(), t)
 	}
 
 	// Be sure current node isn't the first ddt.

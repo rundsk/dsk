@@ -83,14 +83,14 @@ function Page(props) {
     if (showOverview) {
       docs.push({
         title: 'Overview',
-        content: <NodeList nodes={props.children} />,
+        content: <NodeList nodes={props.children} source={props.source} />,
       });
     }
 
     if (props.downloads && props.downloads.length > 0) {
       rightSideTabs.push({
         title: 'Assets',
-        content: <AssetList assets={props.downloads} />,
+        content: <AssetList assets={props.downloads} source={props.source} />,
       });
     }
 
@@ -101,14 +101,14 @@ function Page(props) {
         content: (
           <>
             <SourceView url={'hello'} />
-            <SourceView url={props.url} />
+            <SourceView url={props.url} source={props.source} />
           </>
         ),
       });
     } else {
       rightSideTabs.push({
         title: 'Source',
-        content: <SourceView url={props.url} />,
+        content: <SourceView url={props.url} source={props.source} />,
       });
     }
 
@@ -251,7 +251,7 @@ function Page(props) {
             <BaseLink
               router={props.router}
               routeName="node"
-              routeParams={{ node: `${props.prev.url}` }}
+              routeParams={{ node: `${props.prev.url}`, v: props.route.params.v }}
               className="page__node-nav page__node-nav--prev"
             >
               <Meta title="Previous">{props.prev.title}</Meta>
@@ -262,7 +262,7 @@ function Page(props) {
             <BaseLink
               router={props.router}
               routeName="node"
-              routeParams={{ node: `${props.next.url}` }}
+              routeParams={{ node: `${props.next.url}`, v: props.route.params.v }}
               className="page__node-nav page__node-nav--next"
             >
               <Meta title="Next">{props.next.title}</Meta>

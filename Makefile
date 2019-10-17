@@ -26,7 +26,7 @@ profile:
 
 .PHONY: dev
 dev:
-	go build -mod=vendor -tags=dev -race -ldflags "$(LDFLAGS)" $(CMD_PKG)
+	go build -mod=vendor -tags=dev -ldflags "$(LDFLAGS)" $(CMD_PKG)
 	./dsk -frontend $(FRONTEND) "$(DDT)"
 	rm dsk
 

@@ -12,18 +12,18 @@ import (
 
 func NewMessage(topic string, text string) *Message {
 	return &Message{
-		Id:    rand.Int(),
+		ID:    rand.Int(),
 		Topic: topic,
 		Text:  text,
 	}
 }
 
 type Message struct {
-	Id    int
+	ID    int
 	Topic string
 	Text  string
 }
 
 func (m *Message) String() string {
-	return fmt.Sprintf("<Message %d %s>%s</Message>", m.Id, m.Topic, m.Text)
+	return fmt.Sprintf("message (topic: %s, text: %s)", m.Topic, m.Text)
 }
