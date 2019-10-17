@@ -23,7 +23,7 @@ Version 2 of the API first appeared with DSK Version 1.1.
 | `/tree`                         | JSON      | Get the full design definitions tree as a nested tree of nodes |
 | `/tree/{path}`                  | JSON      | Get information about a single node specified by `{path}` |
 | `/tree/{path}/{asset}`          | data      | Requests a node's asset, `{asset}` is a single filename |
-| `/versions`                     | JSON      | A list of available DDT versions. |
+| `/sources`                      | JSON      | A list of available DDT sources. |
 | `/search?q={query}`             | JSON      | Performs a full text search |
 | `/filter?q={query}`             | JSON      | Filters nodes by given query |
 | `/messages`                     | WebSocket | For receiving messages, i.e. whenever the tree changes |
@@ -70,6 +70,6 @@ Version 1 of the API first appeared with DSK Version 1.0.
 | `/tree`                         | JSON      | Get the full design definitions tree as a nested tree of nodes. |
 | `/tree/{path}`                  | JSON      | Get information about a single node specified by `{path}`. |
 | `/tree/{path}/{asset}`          | data      | Requests a node's asset, `{asset}` is a single filename. |
-| `/versions`                     | JSON      | A list of available DDT versions. |
+| `/sources`                      | JSON      | A list of available DDT sources. |
 | `/filter?q={query}`             | JSON      | Performs a narrow restricted fuzzy search. |
 | `/messages`                     | WebSocket | For receiving messages, i.e. whenever the tree changes. |
