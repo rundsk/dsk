@@ -4,7 +4,7 @@
 
 - We've added support for multiple versions of a DDT. 
 
-## 1.2.0 Unreleased
+## 1.2.0
 
 - The frontend has been rewritten as a React-App, and redesigned
   from scratch. It surfaces important features, like full text search and

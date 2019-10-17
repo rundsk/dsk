@@ -54,7 +54,7 @@ function CodeBlock(props) {
 
   useEffect(() => {
     if (props.src) {
-      Client.fetch(props.src, 'text').then(data => setCode(data));
+      Client.fetch(props.src, 'text').then(data => setCode(<code className="code-block__code-content">{data}</code>));
     } else {
       let content;
 

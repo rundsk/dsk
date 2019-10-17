@@ -3,20 +3,20 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-.component-demo {
+.playground {
   width: 100%;
   margin: var(--documentation-component-spacing) 0;
 }
 
-.component-demo:first-child {
+.playground:first-child {
   margin-top: 0;
 }
 
-.component-demo:last-child {
+.playground:last-child {
   margin-bottom: 0;
 }
 
-.component-demo__stage {
+.playground__stage {
   width: 100%;
   padding: calc(var(--spacing-unit) * 6) calc(var(--spacing-unit) * 8);
   background-color: var(--color-gray-1000);
@@ -26,22 +26,22 @@
   background-position: center center;
 }
 
-.component-demo--checkerboard .component-demo__stage {
+.playground--checkerboard .playground__stage {
   background-image: url(./CheckerboardPattern--light.png);
   background-size: 140px;
 }
 
-.component-demo--pinstripes .component-demo__stage {
+.playground--pinstripes .playground__stage {
   background-image: url(./PinstripesPattern.png);
   background-size: 100px;
 }
 
-.component-demo--plain .component-demo__stage {
+.playground--plain .playground__stage {
   background-image: none;
 }
 
 /* Make sure everything is centered, even when it’s in a doc */
-.component-demo__stage .doc {
+.playground__stage .doc {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -49,7 +49,7 @@
   align-items: center;
 }
 
-.component-demo__stage-content {
+.playground__stage-content {
   width: 100%;
   min-height: calc(var(--spacing-unit) * 22);
   display: flex;
@@ -60,7 +60,7 @@
 
 /* --- Annotations --- */
 
-.component-demo__annotation-badge {
+.playground__annotation-badge {
   cursor: default;
   display: inline-block;
   height: calc(var(--spacing-unit) * 3);
@@ -79,23 +79,23 @@
   font-variant-numeric: tabular-nums;
 }
 
-.component-demo__annotation-badge--highlight {
+.playground__annotation-badge--highlight {
   background-color: var(--color-blue);
   color: white;
 }
 
-.component-demo__annotation-marker {
+.playground__annotation-marker {
   position: absolute;
   transform: translate(-50%, -50%);
   transition: all 0.3s;
   z-index: 5;
 }
 
-.component-demo__annotation-marker--highlight {
+.playground__annotation-marker--highlight {
   transform: translate(-50%, -50%) scale(1.5);
 }
 
-.component-demo__annotation-marker-stage {
+.playground__annotation-marker-stage {
   position: absolute;
   top: calc(var(--spacing-unit) * 6);
   right: calc(var(--spacing-unit) * 8);
@@ -103,28 +103,28 @@
   left: calc(var(--spacing-unit) * 8);
 }
 
-.component-demo__annotations {
+.playground__annotations {
   padding: calc(var(--spacing-unit) * 2);
   background-color: var(--color-gray-900);
   border-radius: 0 0 3px 3px;
 }
 
-.component-demo__annotation {
+.playground__annotation {
   margin-bottom: calc(var(--spacing-unit) * 1.5);
 }
 
-.component-demo__annotation:last-child {
+.playground__annotation:last-child {
   margin-bottom: 0;
 }
 
-.component-demo__annotation .component-demo__annotation-badge {
+.playground__annotation .playground__annotation-badge {
   margin-right: calc(var(--spacing-unit) * 1);
 }
 
 /* --- Responsive Mobile --- */
 
 @media screen and (max-width: 600px) {
-  .component-demo {
+  .playground {
     padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 3);
     min-height: calc(var(--spacing-unit) * 28);
   }

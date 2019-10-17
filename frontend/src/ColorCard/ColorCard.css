@@ -7,6 +7,15 @@
   width: 100%;
   max-width: calc(var(--spacing-unit) * 18);
   margin: var(--documentation-component-spacing) 0;
+
+  border: none;
+  padding: none;
+  background-color: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  text-align: left;
 }
 
 .color-card:first-child {

@@ -5,16 +5,16 @@
 
 import React from 'react';
 import './DoDont.css';
-import ComponentDemo from '../ComponentDemo';
+import Playground from '../Playground';
 
 export function Do(props) {
   return (
     <>
       <div className="dodont-card__content">
         <div className="dodont-card__demo">
-          <ComponentDemo background={props.background} backgroundcolor={props.backgroundcolor}>
+          <Playground background={props.background} backgroundcolor={props.backgroundcolor}>
             {props.children}
-          </ComponentDemo>
+          </Playground>
         </div>
       </div>
 
@@ -37,9 +37,9 @@ export function Dont(props) {
           </svg>
         )}
         <div className="dodont-card__demo">
-          <ComponentDemo background={props.background} backgroundcolor={props.backgroundcolor}>
+          <Playground background={props.background} backgroundcolor={props.backgroundcolor}>
             {props.children}
-          </ComponentDemo>
+          </Playground>
         </div>
       </div>
 

@@ -9,7 +9,11 @@
   padding-top: calc(2px * var(--spacing-base-unit));
 }
 
-.tags li.tags__tag {
+.tags__tag-item {
+  display: inline-block;
+}
+
+.tags .tags__tag {
   display: inline-block;
   user-select: none;
   margin-right: 8px;
@@ -28,4 +32,5 @@
   padding: 0.5em 0.7em 0.5em 0.7em;
   border-radius: 3px;
   cursor: pointer;
+  border: none;
 }

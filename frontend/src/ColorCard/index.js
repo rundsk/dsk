@@ -13,7 +13,9 @@ function ColorCard(props) {
 
   let classes = ['color-card'];
 
-  if (contrast.ratio(props.color, 'white') < 1.5) {
+  let colorValue = props.color.toLowerCase();
+
+  if (isColor(props.color) && contrast.ratio(colorValue, 'white') < 1.5) {
     classes.push('color-card--is-ultra-light');
   }
 
@@ -31,19 +33,19 @@ function ColorCard(props) {
   }
 
   return (
-    <div className={classes.join(' ')} key={props.id} onClick={copyCode}>
+    <button className={classes.join(' ')} key={props.id} onClick={copyCode}>
       <div className="color-card__demo" style={{ backgroundColor: props.color }}>
         <div className="color-card__score">
-          <span>{contrast.score(props.color, 'white')}</span>
-          <span>{contrast.score(props.color, 'black')}</span>
+          <span>{isColor(props.color) && contrast.score(colorValue, 'white')}</span>
+          <span>{isColor(props.color) && contrast.score(colorValue, 'black')}</span>
         </div>
 
         <div
           className={`color-card__copied-indicator ${
             showCopiedIndicator ? 'color-card__copied-indicator--is-visible' : ''
-          }`}
+            }`}
           style={{
-            color: contrast.ratio(props.color, 'white') < contrast.ratio(props.color, 'black') ? 'black' : 'white',
+            color: isColor(props.color) && contrast.ratio(colorValue, 'white') < contrast.ratio(colorValue, 'black') ? 'black' : 'white',
           }}
         >
           Copied!
@@ -54,8 +56,15 @@ function ColorCard(props) {
       </div>
       <div className="color-card__spec">{props.color}</div>
       <div className="color-card__comment">{props.comment}</div>
-    </div>
+    </button>
   );
 }
 
 export default ColorCard;
+
+
+const isColor = (strColor) => {
+  const s = new Option().style;
+  s.color = strColor;
+  return s.color !== '';
+}

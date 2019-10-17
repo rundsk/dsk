@@ -38,7 +38,7 @@ function Tags(props) {
   if (props.tags) {
     tags = props.tags.map(t => {
       return (
-        <li
+        <li className="tags__tag-item"><button
           className="tags__tag"
           key={t}
           tag={t}
@@ -55,6 +55,7 @@ function Tags(props) {
           }}
         >
           {t}
+        </button>
         </li>
       );
     });

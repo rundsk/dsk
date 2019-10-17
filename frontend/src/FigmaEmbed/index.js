@@ -8,7 +8,7 @@ import { useGlobal } from 'reactn';
 import './FigmaEmbed.css';
 
 function FigmaEmbed(props) {
-  const [config, setConfig] = useGlobal('config');
+  const [config] = useGlobal('config');
   const [image, setImage] = useState(null);
   const [frameId, setFrameId] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
