@@ -1,6 +1,7 @@
 project: "Official Documentation"
 versions: 
   - "live"
-  - "1.2.0"
+  - "dev-1.2"
+  - "dev-1.3"
 figma:
   accessToken: "__FIGMA_ACCESS_TOKEN__"
