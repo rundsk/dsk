@@ -9,5 +9,4 @@ tags:
   - name: progress
     color: "#0091AB"
 versions:
-  - dev-master
-  - 1.2.*
+  - live
