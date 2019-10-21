@@ -4,8 +4,6 @@
 
 Moving the mouse over a color card reveals accessibility information about the contrast ratio of black and white to the color. Clicking a color card copies the color’s value.
 
-Colors can be used inline as well, for example this beautful shade of <Color color="#EE2222">Red</Color> is just gorgeous!
-
 # Examples
 
 ## Single Color

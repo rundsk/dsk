@@ -16,14 +16,14 @@
 
 .color__demo {
   display: inline-block;
-  height: .8em;
-  width: .8em;
+  height: 0.8em;
+  width: 0.8em;
   transform: translateY(0.06em);
   border-radius: 50%;
   margin-right: 0.1em;
   margin-left: 0.25em;
-  border: 1px solid rgba(0, 0, 0, 0.05);
   position: relative;
+  overflow: hidden;
 }
 
 .color--is-ultra-light .color__demo {
@@ -39,6 +39,8 @@
   right: 0;
   z-index: 2;
   background-color: inherit;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .color__demo::after {
@@ -49,7 +51,8 @@
   left: 0;
   right: 0;
   background-image: url(./CheckerboardPattern.png);
-  background-size: 60px;
+  background-size: 72px;
+  background-position: center center;
   z-index: 0;
   border-radius: 50%;
 }
