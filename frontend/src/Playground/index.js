@@ -8,7 +8,7 @@ import './Playground.css';
 import { Client } from '@atelierdisko/dsk';
 
 function Playground(props) {
-  const [annotationData, setAnnotationData] = useState({annotations: []});
+  const [annotationData, setAnnotationData] = useState({ annotations: [] });
   const [highlightedAnnotation, setHighlightedAnnotation] = useState(null);
 
   let classes = ['playground'];

@@ -75,7 +75,8 @@ function Page(props) {
     // any "real" document that can be presented to the user. In this case we
     // also want to show an overview.
     const showOverview =
-      props.children && props.children.length > 0 &&
+      props.children &&
+      props.children.length > 0 &&
       docs.filter(doc => {
         return doc.title.toLowerCase() !== 'authors';
       }).length === 0;

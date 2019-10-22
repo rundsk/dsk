@@ -43,9 +43,12 @@ function ColorCard(props) {
         <div
           className={`color-card__copied-indicator ${
             showCopiedIndicator ? 'color-card__copied-indicator--is-visible' : ''
-            }`}
+          }`}
           style={{
-            color: isColor(props.color) && contrast.ratio(colorValue, 'white') < contrast.ratio(colorValue, 'black') ? 'black' : 'white',
+            color:
+              isColor(props.color) && contrast.ratio(colorValue, 'white') < contrast.ratio(colorValue, 'black')
+                ? 'black'
+                : 'white',
           }}
         >
           Copied!
@@ -62,9 +65,8 @@ function ColorCard(props) {
 
 export default ColorCard;
 
-
-const isColor = (strColor) => {
+const isColor = strColor => {
   const s = new Option().style;
   s.color = strColor;
   return s.color !== '';
-}
+};

@@ -27,7 +27,7 @@ function Tags(props) {
           textColor = 'white';
         }
 
-        return `.tags li.tags__tag[tag*='${t.name}'] { background-color: ${t.color}; color: ${textColor}; }`;
+        return `.tags button.tags__tag[tag*='${t.name}'] { background-color: ${t.color}; color: ${textColor}; }`;
       });
       setStyle(styles.join('\n'));
     }
@@ -38,24 +38,25 @@ function Tags(props) {
   if (props.tags) {
     tags = props.tags.map(t => {
       return (
-        <li className="tags__tag-item"><button
-          className="tags__tag"
-          key={t}
-          tag={t}
-          onClick={ev => {
-            if (props.isClickable === false) {
-              return;
-            }
+        <li className="tags__tag-item">
+          <button
+            className="tags__tag"
+            key={t}
+            tag={t}
+            onClick={ev => {
+              if (props.isClickable === false) {
+                return;
+              }
 
-            if (ev.metaKey) {
-              setFilterTerm(`${filterTerm} ${t}`);
-            } else {
-              setFilterTerm(t);
-            }
-          }}
-        >
-          {t}
-        </button>
+              if (ev.metaKey) {
+                setFilterTerm(`${filterTerm} ${t}`);
+              } else {
+                setFilterTerm(t);
+              }
+            }}
+          >
+            {t}
+          </button>
         </li>
       );
     });
