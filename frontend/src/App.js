@@ -3,7 +3,7 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { routeNode, BaseLink } from 'react-router5';
 import { useGlobal } from 'reactn';
 import { Helmet } from 'react-helmet';
@@ -59,7 +59,7 @@ function App(props) {
         });
       }
     };
-  }, [props.router, source]);
+  }, [props.route, source]);
 
   useEffect(() => {
     if (socket.current) {
