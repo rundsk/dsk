@@ -7,6 +7,7 @@ package vcs
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/coreos/go-semver/semver"
@@ -20,7 +21,12 @@ func NewVersionFromRef(ref *plumbing.Reference) *Version {
 	if refn.IsBranch() {
 		name = fmt.Sprintf("dev-%s", refn.Short())
 	} else if refn.IsTag() {
-		name = strings.TrimLeft(refn.Short(), "v")
+		// Ensure we don't trim the leading v of tags that begin with other v-words.
+		if regexp.MustCompile(`^v[0-9]+`).MatchString(refn.Short()) {
+			name = strings.TrimLeft(refn.Short(), "v")
+		} else {
+			name = refn.Short()
+		}
 	} else {
 		name = refn.Short()
 	}
@@ -34,7 +40,7 @@ func NewVersionFromRef(ref *plumbing.Reference) *Version {
 		parsed:   nil,
 	}
 
-	parsed, err := semver.NewVersion(strings.TrimLeft(ref.Name().Short(), "v"))
+	parsed, err := semver.NewVersion(name)
 	if err == nil { // Being spec compliant is optional.
 		v.parsed = parsed
 	}
