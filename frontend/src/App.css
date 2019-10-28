@@ -201,7 +201,7 @@ html {
   }
 }
 
-button {
+.button--secondary {
   border-radius: 0;
   background: blue;
   padding: 20px 30px;
@@ -210,7 +210,7 @@ button {
   color: white;
 }
 
-button:hover {
+.button--secondary:hover {
   background: gray;
   cursor: pointer;
   font-weight: bold;
