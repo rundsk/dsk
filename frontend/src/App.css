@@ -200,3 +200,21 @@ html {
     padding-top: calc(var(--spacing-unit) * 5);
   }
 }
+
+button {
+  border-radius: 0;
+  background: blue;
+  padding: 20px 30px;
+  border: 1px solid white;
+  font-size: 14px;
+  color: white;
+}
+
+button:hover {
+  background: gray;
+  cursor: pointer;
+  font-weight: bold;
+}
+.playground__annotation-marker-stage {
+  pointer-events: none;
+}

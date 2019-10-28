@@ -801,6 +801,11 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
+"@charlietango/use-script@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@charlietango/use-script/-/use-script-2.0.1.tgz#3e1dfb74bf8080a022193972af25a88b81cdc30e"
+  integrity sha512-dIaBGhcxkcCa0caUj2dt/lZN7BLRSPHVHZLmz0cq2tr7NKMGJd6vjogAcucz5xPF6jJC3exD4LplBZJTFFI8RQ==
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.3.tgz#099139eaec7ebf07a27c1786a3ff64f39464d2ef"

@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@atelierdisko/dsk": "^1.3.0-alpha",
+    "@charlietango/use-script": "^2.0.1",
     "filesize": "^4.1.2",
     "get-contrast": "^2.0.0",
     "react": "^16.8.6",

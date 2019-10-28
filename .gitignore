@@ -13,4 +13,4 @@ dsk.test
 .DS_Store
 node_modules
 frontend/build
-
+internal/frontend/vfsdata.go

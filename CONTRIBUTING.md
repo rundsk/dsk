@@ -109,12 +109,11 @@ benchmarks use `make bench`, for performance profiling run `make profile`.
 
 ## Distributing
 
-When updating the files of the built-in frontend, the file `frontend_vfsdata.go`
-also needs to be remade. Run `make frontend_vfsdata.go` to do so. The file is 
-provided to make DSK go gettable.
+Before distrubtiong the binary, the data file which contains the built-in
+frontend assets must be made. This happens automatically as it is a dependency
+of the dist target.
 
 ```
 $ make -C frontend build
-$ make frontend_vfsdata.go
 $ VERSION=1.2.0-beta make dist
 ```

@@ -76,5 +76,5 @@ dist/%-linux-amd64: $(ANY_DEPS) internal/frontend/vfsdata.go
 dist/%-windows-386.exe: $(ANY_DEPS) internal/frontend/vfsdata.go
 	GOOS=windows GOARCH=386 go build -mod=vendor -ldflags "$(LDFLAGS) -s -w" -o $@ $(CMD_PKG)
 
-frontend_vfsdata.go: $(shell find $(FRONTEND) -type f) 
-	FRONTEND=$(FRONTEND) go run -mod=vendor internal/frontend/generate.go
+internal/frontend/vfsdata.go: $(shell find $(FRONTEND) -type f) 
+	FRONTEND=$(FRONTEND) go run -mod=vendor cmd/frontend/generate.go

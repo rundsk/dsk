@@ -94,3 +94,23 @@ Just want to say "Thank you" or need help getting started? [Send us a mail](mail
 DSK is Copyright (c) 2017 Atelier Disko if not otherwise
 stated. Use of the source code is governed by a BSD-style
 license that can be found in the LICENSE file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+npm install --save-dev rollup rollup-plugin-node-resolve rollup-plugin-commonjs
+npm install --save-dev rollup-plugin-babel
+
+npm install --save-dev @babel/preset-react @babel/preset-env @babel/core
+npx rollup --format system src/index.js

@@ -4,6 +4,7 @@
  */
 
 import React, { useEffect } from 'react';
+import useScript, { ScriptStatus } from '@charlietango/use-script'
 import { transform } from '@atelierdisko/dsk';
 import { withRoute } from 'react-router5';
 
@@ -24,6 +25,14 @@ import FigmaEmbed from '../FigmaEmbed';
 import TypographySpecimen from '../TypographySpecimen';
 
 function Doc(props) {
+  const [ready, status] = useScript('/api/v1/tree/bundles/example.js');
+
+  console.log('ready?', ready);
+  if (ready) {
+    var myButton = window.System.load('Button');
+    console.log(myButton);
+  }
+
   useEffect(() => {
     // window.requestAnimationFrame should ensure that the rendering
     // has finished.
@@ -45,6 +54,11 @@ function Doc(props) {
   let docTitle = props.title;
 
   const transforms = {
+    MyButton: (props) => {
+      if (myButton) {
+        return myButton(props);
+      }
+    },
     Banner: props => <Banner {...props} />,
     CodeBlock: props => {
       // When using <CodeBlock> directly within documents, its contents aren't

@@ -20,6 +20,47 @@ import Search from './Search';
 import HamburgerIcon from './HamburgerIcon.svg';
 import CloseIcon from './CloseIcon.svg';
 
+// System.register([], function (exports) {
+//   'use strict';
+//   return {
+//     execute: function () {
+//       function Button(props) {
+//         return React.createElement("button", null, "Hello DSK!");
+//       }
+//       exports('Button', Button);
+//     }
+//   };
+// });
+class DSKBundleRegistry {
+  constructor() {
+    this.modules = [];
+    this.exports = {};
+  }
+
+  register(unused, fn) {
+    this.modules.push(fn);
+  }
+
+  load(name) {
+    if (this.exports[name]) {
+      return this.exports[name];
+    }
+    let exportfn = (name, fn) => {
+      this.exports[name] = fn;
+    }
+    this.modules.forEach((m) => {
+      let bundle = m(exportfn);
+      bundle.execute();
+    });
+    if (this.exports[name]) {
+      return this.exports[name];
+    }
+  }
+}
+
+window.System = new DSKBundleRegistry();
+window.React = React;
+
 function App(props) {
   const [tree, setTree] = useState(null);
   const [node, setNode] = useState(null);

@@ -5,7 +5,7 @@
 
 // +build tools
 
-package frontend
+package main
 
 import (
 	"log"
@@ -27,8 +27,9 @@ func main() {
 	}
 
 	err := vfsgen.Generate(fs, vfsgen.Options{
-		Filename:  "frontend_vfsdata.go",
-		BuildTags: "!dev",
+		PackageName: "frontend",
+		Filename:    "internal/frontend/vfsdata.go",
+		BuildTags:   "!dev",
 	})
 	if err != nil {
 		log.Fatalln(err)
