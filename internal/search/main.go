@@ -1,3 +1,4 @@
+// Copyright 2020 Marius Wilms. All rights reserved.
 // Copyright 2018 Atelier Disko. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
@@ -38,9 +39,9 @@ func NewSearch(path string, t *ddt.Tree, lang string, isPersistent bool) (*Searc
 	log.Print("Initializing search...")
 
 	s := &Search{
-		path:            path,
-		getNode:         t.Get,
-		getAllNodes:     t.GetAll,
+		path:        path,
+		getNode:     t.Get,
+		getAllNodes: t.GetAll,
 		getTreeHash: t.CalculateHash,
 	}
 
@@ -129,8 +130,8 @@ type Search struct {
 	// activated.
 	path string
 
-	getNode         ddt.NodeGetter
-	getAllNodes     ddt.NodesGetter
+	getNode     ddt.NodeGetter
+	getAllNodes ddt.NodesGetter
 	getTreeHash func() (string, error)
 
 	// Language that should be used in our mapping/analyzer setup.

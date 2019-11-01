@@ -38,11 +38,3 @@ performance. The build is minified and the filenames include the hashes.
 Your app is ready to be deployed with a DSK build!
 
 To run the frontend source code through `prettier`, use `make prettier`.
-
-## Copyright & License
-
-DSK is Copyright (c) 2017 Atelier Disko if not otherwise stated. Use of the
-source code is governed by a BSD-style license that can be found in the LICENSE
-file.
-
-

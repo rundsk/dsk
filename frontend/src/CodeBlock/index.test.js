@@ -1,6 +1,9 @@
 /**
- * Copyright 2019 Atelier Disko. All rights reserved. This source
- * code is distributed under the terms of the BSD 3-Clause License.
+ * Copyright 2020 Marius Wilms. All rights reserved.
+ * Copyright 2019 Atelier Disko. All rights reserved.
+ *
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
  */
 
 import React from 'react';
@@ -42,7 +45,7 @@ it('renders pre-escaped content with initial blank line', () => {
   const HTML = `
 authors:
   - christoph@atelierdisko.de
-  - marius@atelierdisko.de
+  - mariuswilms@mailbox.org
 
 description: &gt;
   This is a very very very fancy component. Lorem ipsum dolor sit amet,
@@ -53,7 +56,7 @@ description: &gt;
 
   const expected = `authors:
   - christoph@atelierdisko.de
-  - marius@atelierdisko.de
+  - mariuswilms@mailbox.org
 
 description: &gt;
   This is a very very very fancy component. Lorem ipsum dolor sit amet,

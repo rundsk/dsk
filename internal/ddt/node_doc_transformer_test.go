@@ -1,3 +1,4 @@
+// Copyright 2020 Marius Wilms. All rights reserved.
 // Copyright 2018 Atelier Disko. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
@@ -155,8 +156,8 @@ func TestNodeLinksKeepFragmentAndQueryFromOriginal(t *testing.T) {
 	dt, _ := NewNodeDocTransformer("/tree", "foo/bar", get, "test")
 
 	expected := map[string]string{
-		"<a href=\"?answer=42\"></a>":      		"<a href=\"/tree/foo/bar?answer=42&v=test\" data-node=\"foo/bar\"></a>",
-		"<a href=\"./?answer=42\"></a>":      		"<a href=\"/tree/foo/bar?answer=42&v=test\" data-node=\"foo/bar\"></a>",
+		"<a href=\"?answer=42\"></a>":              "<a href=\"/tree/foo/bar?answer=42&v=test\" data-node=\"foo/bar\"></a>",
+		"<a href=\"./?answer=42\"></a>":            "<a href=\"/tree/foo/bar?answer=42&v=test\" data-node=\"foo/bar\"></a>",
 		"<a href=\"/foo/bar?answer=42\"></a>":      "<a href=\"/tree/foo/bar?answer=42&v=test\" data-node=\"foo/bar\"></a>",
 		"<a href=\"/foo/bar#life\"></a>":           "<a href=\"/tree/foo/bar?v=test#life\" data-node=\"foo/bar\"></a>",
 		"<a href=\"/foo/bar#life?answer=42\"></a>": "<a href=\"/tree/foo/bar?v=test#life?answer=42\" data-node=\"foo/bar\"></a>",

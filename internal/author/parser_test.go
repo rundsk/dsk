@@ -1,3 +1,4 @@
+// Copyright 2020 Marius Wilms. All rights reserved.
 // Copyright 2018 Atelier Disko. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
@@ -13,7 +14,7 @@ import (
 func TestParse(t *testing.T) {
 	txt := `
 Christoph Labacher <christoph@atelierdisko.de>
-Marius Wilms <marius@atelierdisko.de>
+Marius Wilms <mariuswilms@mailbox.org>
 `
 	r := strings.NewReader(txt)
 
@@ -33,7 +34,7 @@ func TestParseComments(t *testing.T) {
 # this is a first comment
 Christoph Labacher <christoph@atelierdisko.de>
 	# this is an indented 2nd comment
-Marius Wilms <marius@atelierdisko.de> # this is a 3rd comment
+Marius Wilms <mariuswilms@mailbox.org> # this is a 3rd comment
 # this is the last comment
 `
 	r := strings.NewReader(txt)
