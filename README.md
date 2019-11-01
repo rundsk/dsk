@@ -88,9 +88,3 @@ tracker](https://github.com/atelierdisko/dsk/issues/new) and use the
 _enhancement_ label.
 
 Just want to say "Thank you" or need help getting started? [Send us a mail](mailto:thankyou@rundsk.com).
-
-## Copyright & License
-
-DSK is Copyright (c) 2017 Atelier Disko if not otherwise
-stated. Use of the source code is governed by a BSD-style
-license that can be found in the LICENSE file.
