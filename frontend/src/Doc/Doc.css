@@ -40,17 +40,6 @@
 
 /* Figure */
 
-.doc figure {
-  width: 100%;
-  margin: var(--documentation-component-spacing) 0;
-}
-
-.doc figcaption {
-  font-size: var(--font-size-beta);
-  font-weight: 700;
-  color: var(--color-gray-500);
-}
-
 .doc video {
   max-width: 100%;
   height: auto;

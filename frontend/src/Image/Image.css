@@ -3,8 +3,9 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-.image {
+ .image {
   display: block;
+  width: auto;
   max-width: 100%;
   height: auto;
   margin: var(--documentation-component-spacing) 0;
@@ -16,4 +17,17 @@
 
 .image:last-child {
   margin-bottom: 0;
+}
+
+.image img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.image__caption {
+  font-size: var(--font-size-gamma);
+  line-height: 1.7em;
+  color: var(--color-gray-500);
+  margin-top: calc(var(--spacing-unit) * 1);
 }
