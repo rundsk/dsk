@@ -18,6 +18,10 @@
   text-align: left;
 }
 
+.color-card:active {
+  color: inherit;
+}
+
 .color-card:first-child {
   margin-top: 0;
 }

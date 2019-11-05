@@ -221,7 +221,7 @@ function Page(props) {
               <div className="page__meta-item">
                 <Meta title="Last Changed">{new Date(props.modified * 1000).toLocaleDateString()}</Meta>
               </div>
-              <div className="page__meta-item">{authors}</div>
+              {authors && <div className="page__meta-item">{authors}</div>}
               {custom}
             </div>
           </div>
