@@ -50,10 +50,6 @@
   position: relative;
 }
 
-.playground__stage-content {
-  background-color: #ffff002a;
-}
-
 .playground__stage-content > figure {
   display: inline-block;
 }
