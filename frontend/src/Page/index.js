@@ -230,7 +230,7 @@ function Page(props) {
 
       {playground && (
         <div className="page__component-demo">
-          <Playground>
+          <Playground isPageComponentDemo>
             <Doc htmlContent={playground.html} />
           </Playground>
         </div>

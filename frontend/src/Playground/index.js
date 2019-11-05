@@ -25,6 +25,10 @@ function Playground(props) {
     classes.push('playground--plain');
   }
 
+  if (props.isPageComponentDemo) {
+    classes.push('playground--is-page-component-demo');
+  }
+
   let style = {};
 
   if (props.backgroundcolor) {
@@ -94,8 +98,14 @@ function Playground(props) {
   return (
     <div className={classes.join(' ')}>
       <div className="playground__stage" style={style}>
-        <div className="playground__stage-content">{props.children}</div>
-        <div className="playground__annotation-marker-stage">{annotationMarkers}</div>
+        <div className="playground__stage-wrapper">
+          {annotationMarkers}
+
+          { /* This wrapper doesn’t do any styling, we just need the content to be isolated for stuff like :first-child to work */ }
+          <div className="playground__stage-content">
+            {props.children}
+          </div>
+        </div>
       </div>
       {annotations.length > 0 && <div className="playground__annotations">{annotations}</div>}
     </div>

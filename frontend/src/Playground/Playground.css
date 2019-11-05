@@ -3,7 +3,7 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
-.playground {
+ .playground {
   width: 100%;
   margin: var(--documentation-component-spacing) 0;
 }
@@ -40,8 +40,36 @@
   background-image: none;
 }
 
+.playground__stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  position: relative;
+}
+
+.playground__stage-content {
+  background-color: #ffff002a;
+}
+
+.playground__stage-content > figure {
+  display: inline-block;
+}
+
+
+/* When the playground is used as the demo on top of a page, we need to force it to
+   have a width of 100%, so that certain components, like ColorGroups display right.
+   This destorys our ability to have annotations, but we don’t have them in this playground
+   anyways.
+   */
+.playground--is-page-component-demo .playground__stage-wrapper {
+  width: 100%;
+}
+
 /* Make sure everything is centered, even when it’s in a doc */
-.playground__stage .doc {
+.playground--is-page-component-demo .playground__stage-content > .doc {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -49,14 +77,6 @@
   align-items: center;
 }
 
-.playground__stage-content {
-  width: 100%;
-  min-height: calc(var(--spacing-unit) * 22);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-}
 
 /* --- Annotations --- */
 
@@ -93,14 +113,6 @@
 
 .playground__annotation-marker--highlight {
   transform: translate(-50%, -50%) scale(1.5);
-}
-
-.playground__annotation-marker-stage {
-  position: absolute;
-  top: calc(var(--spacing-unit) * 6);
-  right: calc(var(--spacing-unit) * 8);
-  bottom: calc(var(--spacing-unit) * 6);
-  left: calc(var(--spacing-unit) * 8);
 }
 
 .playground__annotations {
