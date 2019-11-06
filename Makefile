@@ -14,15 +14,15 @@ CMD_PKG = github.com/atelierdisko/dsk/cmd/dsk
 
 .PHONY: test
 test:
-	go test -tags=dev -race -ldflags "$(LDFLAGS)" $(ALL_PKGS)
+	go test -mod=vendor -tags=dev -race -ldflags "$(LDFLAGS)" $(ALL_PKGS)
 
 .PHONY: bench
 bench:
-	go test -tags=dev -run XXX -bench -ldflags "$(LDFLAGS)" .
+	go test -mod=vendor -tags=dev -run XXX -bench -ldflags "$(LDFLAGS)" .
 
 .PHONY: profile
 profile:
-	go test -tags=dev -run ^$$ -bench . -cpuprofile cpu.prof -memprofile mem.prof -mutexprofile mutex.prof $(ALL_PKGS)
+	go test -mod=vendor -tags=dev -run ^$$ -bench . -cpuprofile cpu.prof -memprofile mem.prof -mutexprofile mutex.prof $(ALL_PKGS)
 
 .PHONY: dev
 dev:

@@ -1,0 +1,112 @@
+name: Release
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  github-release:
+    name: Create GitHub Release
+    needs:
+      - build-linux
+      - build-darwin
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v1
+        with:
+          name: dist-darwin
+          path: dist-darwin
+      - uses: actions/download-artifact@v1
+        with:
+          name: dist-linux
+          path: dist-linux
+      - uses: softprops/action-gh-release@v1
+        with:
+          draft: false
+          prerelease: false
+          files: |
+            dist-darwin/*
+            dist-linux/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  docker-hub:
+    name: Release Container and Push to Docker Registry
+    needs:
+      - build-container
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          docker login -u rundskbot -p ${{secrets.docker_hub_access_token}}
+          docker load container.tar
+          make container-push
+
+  build-container:
+    name: Build Docker Container
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - run: |
+          export VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' | sed -e 's/^v//')
+
+          make container-image
+          docker save rundsk/dsk:${VERSION} > container.tar
+
+  build-linux:
+    name: Build Linux Binary
+    runs-on: ubuntu-latest
+    needs:
+      - build-frontend
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-go@v1
+        with:
+          go-version: '1.13'
+      - uses: actions/download-artifact@v1
+        with:
+          name: frontend-build
+          path: frontend/build
+      - run: |
+          export VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' | sed -e 's/^v//')
+          make dist/dsk-linux-amd64 dist/dsk-linux-amd64.tar.gz
+      - uses: actions/upload-artifact@v1
+        with:
+          name: dist-linux
+          path: dist
+
+  build-darwin:
+    name: Build Darwin Binary
+    runs-on: macOS-latest
+    needs:
+      - build-frontend
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-go@v1
+        with:
+          go-version: '1.13'
+      - uses: actions/download-artifact@v1
+        with:
+          name: frontend-build
+          path: frontend/build
+      - run: |
+          export VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' | sed -e 's/^v//')
+          make dist/dsk-darwin-amd64 dist/dsk-darwin-amd64.zip
+      - uses: actions/upload-artifact@v1
+        with:
+          name: dist-darwin
+          path: dist
+
+  build-frontend:
+    name: Build Builtin-Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+      - run: |
+          cd frontend
+          yarn install --production=true
+          yarn build
+      - uses: actions/upload-artifact@v1
+        with:
+          name: frontend-build
+          path: frontend/build
