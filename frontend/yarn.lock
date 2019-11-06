@@ -2,10 +2,9 @@
 # yarn lockfile v1
 
 
-"@atelierdisko/dsk@^1.3.0-alpha":
+"@atelierdisko/dsk@rundsk/js-sdk#1.3":
   version "1.3.0-alpha"
-  resolved "https://registry.yarnpkg.com/@atelierdisko/dsk/-/dsk-1.3.0-alpha.tgz#f6b09aabf4a8a72b3096a2e5aa7cac6baf5d680d"
-  integrity sha512-72cmBA4pod9g683MspB8NmBspHQnmaEdHdk/YikNbHJGFEob5SqQa29LCXksXY8d/6k0dzEh8vOUM5PEXFxr5Q==
+  resolved "https://codeload.github.com/rundsk/js-sdk/tar.gz/fad00607c69b4a9dad40b72795e1a9244323ab6d"
 
 "@babel/code-frame@7.5.5", "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.5.5":
   version "7.5.5"
