@@ -14,3 +14,4 @@ dsk.test
 node_modules
 frontend/build
 internal/frontend/vfsdata.go
+frontend/package-lock.json
