@@ -358,7 +358,7 @@ func (n *Node) Asset(name string) (*NodeAsset, error) {
 			continue
 		}
 
-		// if the filename with stripped ordernumber match the given input return the first match
+		// if the filename with stripped ordernumber matches the given input return the first match
 		if removeOrderNumber(f.Name()) ==  name {
 			return NewNodeAsset(
 				filepath.Join(n.Path, f.Name()),
@@ -381,27 +381,6 @@ func (n *Node) Asset(name string) (*NodeAsset, error) {
 		filepath.Join(n.URL(), f.Name()),
 		n.metaDB,
 	), nil
-}
-
-func fileShouldBeExcluded(file os.FileInfo) bool {
-
-	if file.IsDir() {
-		return true
-	}
-	if strings.HasPrefix(file.Name(), ".") {
-		return true
-	}
-	if NodeMetaRegexp.MatchString(file.Name()) {
-		return true
-	}
-	if NodeDocsRegexp.MatchString(file.Name()) {
-		return true
-	}
-	if NodeAssetsIgnoreRegexp.MatchString(file.Name()) {
-		return true
-	}
-
-	return false
 }
 
 // Assets are all files inside the node directory excluding system
@@ -513,4 +492,25 @@ func lookupNodeURL(url string) string {
 		strings.ToLower(normalizeNodeURL(url)),
 		"",
 	)
+}
+
+func fileShouldBeExcluded(file os.FileInfo) bool {
+
+	if file.IsDir() {
+		return true
+	}
+	if strings.HasPrefix(file.Name(), ".") {
+		return true
+	}
+	if NodeMetaRegexp.MatchString(file.Name()) {
+		return true
+	}
+	if NodeDocsRegexp.MatchString(file.Name()) {
+		return true
+	}
+	if NodeAssetsIgnoreRegexp.MatchString(file.Name()) {
+		return true
+	}
+
+	return false
 }
