@@ -346,6 +346,28 @@ func (n *Node) Version() string {
 func (n *Node) Asset(name string) (*NodeAsset, error) {
 	path := filepath.Join(n.Path, name)
 
+	files, err := ioutil.ReadDir(n.Path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// read files in current directory
+	for _, f := range files {
+		if fileShouldBeExcluded(f) {
+			continue
+		}
+
+		// if the filename with stripped ordernumber match the given input return the first match
+		if removeOrderNumber(f.Name()) ==  name {
+			return NewNodeAsset(
+				filepath.Join(n.Path, f.Name()),
+				filepath.Join(n.URL(), f.Name()),
+				n.metaDB,
+			), nil
+		}
+	}
+
 	f, err := os.Stat(path)
 	if os.IsNotExist(err) || err != nil {
 		return nil, err
@@ -361,7 +383,28 @@ func (n *Node) Asset(name string) (*NodeAsset, error) {
 	), nil
 }
 
-// Assets aare all files inside the node directory excluding system
+func fileShouldBeExcluded(file os.FileInfo) bool {
+
+	if file.IsDir() {
+		return true
+	}
+	if strings.HasPrefix(file.Name(), ".") {
+		return true
+	}
+	if NodeMetaRegexp.MatchString(file.Name()) {
+		return true
+	}
+	if NodeDocsRegexp.MatchString(file.Name()) {
+		return true
+	}
+	if NodeAssetsIgnoreRegexp.MatchString(file.Name()) {
+		return true
+	}
+
+	return false
+}
+
+// Assets are all files inside the node directory excluding system
 // files, node documents and meta files.
 func (n *Node) Assets() ([]*NodeAsset, error) {
 	as := make([]*NodeAsset, 0)
@@ -372,21 +415,10 @@ func (n *Node) Assets() ([]*NodeAsset, error) {
 	}
 
 	for _, f := range files {
-		if f.IsDir() {
+		if fileShouldBeExcluded(f) {
 			continue
 		}
-		if strings.HasPrefix(f.Name(), ".") {
-			continue
-		}
-		if NodeMetaRegexp.MatchString(f.Name()) {
-			continue
-		}
-		if NodeDocsRegexp.MatchString(f.Name()) {
-			continue
-		}
-		if NodeAssetsIgnoreRegexp.MatchString(f.Name()) {
-			continue
-		}
+
 		as = append(as, NewNodeAsset(
 			filepath.Join(n.Path, f.Name()),
 			filepath.Join(n.URL(), f.Name()),
