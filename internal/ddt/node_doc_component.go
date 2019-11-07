@@ -109,7 +109,7 @@ func findComponentsInMarkdown(contents []byte) []*NodeDocComponent {
 
 		// Start consumption on anything that remotely doesn't look
 		// like Markdown.
-		if c[i] == '<' {
+		if c[i] == '<' && c[i+1] != '!' {
 			current.WriteByte(c[i])
 
 			isConsuming = true

@@ -70,6 +70,29 @@ func TestFindInMarkdownExcludeCode(t *testing.T) {
 	}
 }
 
+func TestFindInMarkdownExcludeComment(t *testing.T) {
+	raw0 := `
+# Test
+
+<!-- comment -->
+
+<Component>1</Component>
+
+<!-- comment -->
+
+<Component>2</Component>
+`
+	result0 := findComponentsInMarkdown([]byte(raw0))
+
+	if len(result0) != 2 {
+		t.Errorf("Failed to skip over comment, got: %#v", result0)
+	}
+
+	if result0[0].Raw != "<Component>1</Component>" || result0[1].Raw != "<Component>2</Component>" {
+		t.Errorf("Failed to skip over comment, got: %#v", result0)
+	}
+}
+
 func TestFindInMarkdownExcludeFencedCode(t *testing.T) {
 	raw0 := "```\n<h1>hello</h1>\n```"
 	result0 := findComponentsInMarkdown([]byte(raw0))
