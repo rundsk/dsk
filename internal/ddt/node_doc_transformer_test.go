@@ -37,7 +37,7 @@ func TestNodeLinkAbsolute(t *testing.T) {
 
 func TestTransformNodeLinkRelative(t *testing.T) {
 	get := func(url string) (bool, *Node, error) {
-		if url == "foo/bar/baz" {
+		if url == "foo/bar/baz" || url == "foo/bar" {
 			return true, &Node{root: "/tmp/xyz", Path: filepath.Join("/tmp/xyz", url)}, nil
 		}
 		return false, &Node{}, nil
@@ -45,6 +45,9 @@ func TestTransformNodeLinkRelative(t *testing.T) {
 	dt, _ := NewNodeDocTransformer("/tree", "foo/bar", get, "test")
 
 	expected := map[string]string{
+		"<a href=\"\"></a>":           "<a href=\"/tree/foo/bar?v=test\" data-node=\"foo/bar\"></a>",
+		"<a href=\".\"></a>":          "<a href=\"/tree/foo/bar?v=test\" data-node=\"foo/bar\"></a>",
+		"<a href=\"./\"></a>":         "<a href=\"/tree/foo/bar?v=test\" data-node=\"foo/bar\"></a>",
 		"<a href=\"baz\"></a>":        "<a href=\"/tree/foo/bar/baz?v=test\" data-node=\"foo/bar/baz\"></a>",
 		"<a href=\"./baz\"></a>":      "<a href=\"/tree/foo/bar/baz?v=test\" data-node=\"foo/bar/baz\"></a>",
 		"<a href=\"../bar/baz\"></a>": "<a href=\"/tree/foo/bar/baz?v=test\" data-node=\"foo/bar/baz\"></a>",
@@ -152,6 +155,8 @@ func TestNodeLinksKeepFragmentAndQueryFromOriginal(t *testing.T) {
 	dt, _ := NewNodeDocTransformer("/tree", "foo/bar", get, "test")
 
 	expected := map[string]string{
+		"<a href=\"?answer=42\"></a>":      		"<a href=\"/tree/foo/bar?answer=42&v=test\" data-node=\"foo/bar\"></a>",
+		"<a href=\"./?answer=42\"></a>":      		"<a href=\"/tree/foo/bar?answer=42&v=test\" data-node=\"foo/bar\"></a>",
 		"<a href=\"/foo/bar?answer=42\"></a>":      "<a href=\"/tree/foo/bar?answer=42&v=test\" data-node=\"foo/bar\"></a>",
 		"<a href=\"/foo/bar#life\"></a>":           "<a href=\"/tree/foo/bar?v=test#life\" data-node=\"foo/bar\"></a>",
 		"<a href=\"/foo/bar#life?answer=42\"></a>": "<a href=\"/tree/foo/bar?v=test#life?answer=42\" data-node=\"foo/bar\"></a>",
