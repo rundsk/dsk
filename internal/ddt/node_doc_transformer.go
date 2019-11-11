@@ -210,6 +210,11 @@ func (dt NodeDocTransformer) ProcessHTML(contents []byte) ([]byte, error) {
 //   ./bar
 //   bar
 //
+// While viewing the "bar" node, the following will resolve to itself:
+// 	 ./
+//	 .
+//   <empty string>
+//
 // The references can either target nodes or node assets, both are
 // supported:
 //  /foo/bar/cat.jpg
@@ -354,13 +359,20 @@ func (dt NodeDocTransformer) attr(t html.Token, name string) (bool, int, string)
 // Using ok return values, as the URL for the root node is an empty
 // string, and thus isn't usable to check if the discovery succeeded.
 func (dt NodeDocTransformer) discoverNodeInfo(u *url.URL) (bool, string, bool, string) {
-	ok, n, _ := dt.nodeGet(strings.TrimLeft(u.Path, "/"))
+	tu := strings.Trim(u.Path, "/")
+	if (tu == "" || tu == ".") && u.Path != "." {
+		tu = "./"
+	}
+	if tu == ".." {
+		tu = "../"
+	}
+	ok, n, _ := dt.nodeGet(tu)
 	if ok {
 		return true, n.URL(), false, ""
 	}
 	// Retry while removing the last part of the URL, it might
 	// be an asset of the ddt.
-	ok, n, _ = dt.nodeGet(strings.TrimLeft(path.Dir(u.Path), "/"))
+	ok, n, _ = dt.nodeGet(strings.TrimLeft(path.Dir(tu), "/"))
 	if !ok {
 		return false, "", false, ""
 	}
