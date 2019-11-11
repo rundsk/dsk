@@ -33,6 +33,8 @@ type Config struct {
 
 	// Configuration related to figma.com.
 	Figma *FigmaConfig `json:"figma,omitempty" yaml:"figma,omitempty"`
+
+	Custom interface{} `json:"custom,omitempty" yaml:"custom,omitempty"`
 }
 
 type TagConfig struct {

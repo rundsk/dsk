@@ -17,6 +17,7 @@ import (
 	"sync"
 
 	"github.com/go-yaml/yaml"
+	"github.com/icza/dyno"
 )
 
 func NewFileDB(path string, project string) (*FileDB, error) {
@@ -145,7 +146,11 @@ func (db *FileDB) Load() error {
 	case ".json":
 		return json.Unmarshal(contents, &db.data)
 	case ".yaml", ".yml":
-		return yaml.Unmarshal(contents, &db.data)
+		if err := yaml.Unmarshal(contents, &db.data); err != nil {
+			return err
+		}
+		db.data.Custom = dyno.ConvertMapI2MapS(db.data.Custom)
+		return nil
 	default:
 		return fmt.Errorf("unsupported format: %s", db.path)
 	}
