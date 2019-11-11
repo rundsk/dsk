@@ -13,10 +13,13 @@ function Link(props) {
   if (!node) {
     return <a href={props.href}>{props.children}</a>;
   }
-  let hash = props.href.split('?t=')[1] || undefined;
+  // Create an URL Instance from the href String and create an URLSearchParams Instance from it.
+  // Cast the URLSearchParams to an Object to merge later on. This way we can keep arbitary query parameters.
+  let url = new URL(props.href, window.location.origin);
+  let urlParams = Object.fromEntries(new URLSearchParams(url.search));
 
   return (
-    <BaseLink router={props.router} routeName="node" routeParams={{ node, t: hash, v: props.route.params.v }}>
+    <BaseLink router={props.router} routeName="node" routeParams={{ ...urlParams, node, v: props.route.params.v }}>
       {props.children}
     </BaseLink>
   );
