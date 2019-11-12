@@ -342,26 +342,24 @@ func (n *Node) Version() string {
 	return n.meta.Version
 }
 
-// Asset given its basename.
+// Asset returns the first asset that matches name, order numbers on both
+// are removed prior matching. Multiple files with the same order number
+// lead to undefined behavior.
 func (n *Node) Asset(name string) (*NodeAsset, error) {
-	path := filepath.Join(n.Path, name)
-
-	f, err := os.Stat(path)
-	if os.IsNotExist(err) || err != nil {
+	assets, err := n.Assets()
+	if err != nil {
 		return nil, err
 	}
-	if f.IsDir() {
-		return nil, fmt.Errorf("accessing directory as asset: %s", path)
-	}
 
-	return NewNodeAsset(
-		filepath.Join(n.Path, f.Name()),
-		filepath.Join(n.URL(), f.Name()),
-		n.metaDB,
-	), nil
+	for _, a := range assets {
+		if a.Name() == name {
+			return a, nil
+		}
+	}
+	return nil, fmt.Errorf("no asset: %s", name)
 }
 
-// Assets aare all files inside the node directory excluding system
+// Assets are all files inside the node directory excluding system
 // files, node documents and meta files.
 func (n *Node) Assets() ([]*NodeAsset, error) {
 	as := make([]*NodeAsset, 0)

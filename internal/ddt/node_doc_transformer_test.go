@@ -68,7 +68,7 @@ func TestTransformAssets(t *testing.T) {
 	node0 := filepath.Join(tmp, "foo")
 	os.Mkdir(node0, 0777)
 
-	asset0 := filepath.Join(node0, "asset0.txt")
+	asset0 := filepath.Join(node0, "asset0.json")
 	ioutil.WriteFile(asset0, []byte(""), 0666)
 
 	get := func(url string) (bool, *Node, error) {
@@ -80,11 +80,11 @@ func TestTransformAssets(t *testing.T) {
 	dt, _ := NewNodeDocTransformer("/tree", "foo", get, "test")
 
 	expected := map[string]string{
-		"<a href=\"/foo/asset0.txt\">":                  "<a href=\"/tree/foo/asset0.txt?v=test\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
-		"<a href=\"foo/asset0.txt\">":                   "<a href=\"/tree/foo/asset0.txt?v=test\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
-		"<img src=\"/foo/asset0.txt\">":                 "<img src=\"/tree/foo/asset0.txt?v=test\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
-		"<img src=\"foo/asset0.txt\">":                  "<img src=\"/tree/foo/asset0.txt?v=test\" data-node=\"foo\" data-node-asset=\"asset0.txt\">",
-		"<figure><img src=\"foo/asset0.txt\"></figure>": "<figure><img src=\"/tree/foo/asset0.txt?v=test\" data-node=\"foo\" data-node-asset=\"asset0.txt\"></figure>",
+		"<a href=\"/foo/asset0.json\">":                  "<a href=\"/tree/foo/asset0.json?v=test\" data-node=\"foo\" data-node-asset=\"asset0.json\">",
+		"<a href=\"foo/asset0.json\">":                   "<a href=\"/tree/foo/asset0.json?v=test\" data-node=\"foo\" data-node-asset=\"asset0.json\">",
+		"<img src=\"/foo/asset0.json\">":                 "<img src=\"/tree/foo/asset0.json?v=test\" data-node=\"foo\" data-node-asset=\"asset0.json\">",
+		"<img src=\"foo/asset0.json\">":                  "<img src=\"/tree/foo/asset0.json?v=test\" data-node=\"foo\" data-node-asset=\"asset0.json\">",
+		"<figure><img src=\"foo/asset0.json\"></figure>": "<figure><img src=\"/tree/foo/asset0.json?v=test\" data-node=\"foo\" data-node-asset=\"asset0.json\"></figure>",
 	}
 	for h, e := range expected {
 		r, _ := dt.ProcessHTML([]byte(h))

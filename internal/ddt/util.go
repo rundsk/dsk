@@ -5,7 +5,9 @@
 
 package ddt
 
-import "strconv"
+import (
+	"strconv"
+)
 
 // Finds an order number embedded into given path segment and
 // returns it. If none is found, returns 0.
