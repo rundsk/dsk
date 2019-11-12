@@ -346,23 +346,16 @@ func (n *Node) Version() string {
 func (n *Node) Asset(name string) (*NodeAsset, error) {
 	path := filepath.Join(n.Path, name)
 
-	files, err := ioutil.ReadDir(n.Path)
+	assets, err := n.Assets()
 
-	if err != nil {
-		return nil, err
-	}
-
-	// read files in current directory
-	for _, f := range files {
-		if fileShouldBeExcluded(f) {
-			continue
-		}
+	for _, a := range assets {
 
 		// if the filename with stripped ordernumber matches the given input return the first match
-		if removeOrderNumber(f.Name()) ==  name {
+		if removeOrderNumber(a.Name()) == name {
+
 			return NewNodeAsset(
-				filepath.Join(n.Path, f.Name()),
-				filepath.Join(n.URL(), f.Name()),
+				filepath.Join(n.Path, a.Name()),
+				filepath.Join(n.URL(), a.Name()),
 				n.metaDB,
 			), nil
 		}
@@ -394,10 +387,21 @@ func (n *Node) Assets() ([]*NodeAsset, error) {
 	}
 
 	for _, f := range files {
-		if fileShouldBeExcluded(f) {
+		if f.IsDir() {
 			continue
 		}
-
+		if strings.HasPrefix(f.Name(), ".") {
+			continue
+		}
+		if NodeMetaRegexp.MatchString(f.Name()) {
+			continue
+		}
+		if NodeDocsRegexp.MatchString(f.Name()) {
+			continue
+		}
+		if NodeAssetsIgnoreRegexp.MatchString(f.Name()) {
+			continue
+		}
 		as = append(as, NewNodeAsset(
 			filepath.Join(n.Path, f.Name()),
 			filepath.Join(n.URL(), f.Name()),
@@ -492,25 +496,4 @@ func lookupNodeURL(url string) string {
 		strings.ToLower(normalizeNodeURL(url)),
 		"",
 	)
-}
-
-func fileShouldBeExcluded(file os.FileInfo) bool {
-
-	if file.IsDir() {
-		return true
-	}
-	if strings.HasPrefix(file.Name(), ".") {
-		return true
-	}
-	if NodeMetaRegexp.MatchString(file.Name()) {
-		return true
-	}
-	if NodeDocsRegexp.MatchString(file.Name()) {
-		return true
-	}
-	if NodeAssetsIgnoreRegexp.MatchString(file.Name()) {
-		return true
-	}
-
-	return false
 }

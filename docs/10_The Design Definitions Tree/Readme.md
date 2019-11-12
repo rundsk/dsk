@@ -37,3 +37,5 @@ example-ddt
 ```
 
 <Banner title="Note" type="warning">Hidden directories and files beginning with a dot (.) are ignored. Things you don’t want to be accessed should not be stored inside the DDT.</Banner>
+
+<Banner title="Note" type="warning">Multiple occurrences of the same prepending number in a single directory leads to undefined behaviour.</Banner>
