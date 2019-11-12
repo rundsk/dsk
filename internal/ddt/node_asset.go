@@ -36,13 +36,7 @@ type NodeAsset struct {
 
 // Name is the basename of the file without its order number.
 func (a NodeAsset) Name() string {
-
-	switch strings.ToLower(filepath.Ext(a.Path)) {
-	case ".jpg", ".jpeg", ".png":
-		return norm.NFC.String(filepath.Base(a.Path))
-	default:
-		return removeOrderNumber(norm.NFC.String(filepath.Base(a.Path)))
-	}
+	return removeOrderNumber(norm.NFC.String(filepath.Base(a.Path)))
 }
 
 func (a NodeAsset) Title() string {

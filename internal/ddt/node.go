@@ -342,38 +342,21 @@ func (n *Node) Version() string {
 	return n.meta.Version
 }
 
-// Asset given its basename.
+// Asset returns the first asset that matches name, order numbers on both
+// are removed prior matching. Multiple files with the same order number
+// lead to undefined behavior.
 func (n *Node) Asset(name string) (*NodeAsset, error) {
-	path := filepath.Join(n.Path, name)
-
 	assets, err := n.Assets()
-
-	for _, a := range assets {
-
-		// if the filename with stripped ordernumber matches the given input return the first match
-		if removeOrderNumber(a.Name()) == name {
-
-			return NewNodeAsset(
-				filepath.Join(n.Path, a.Name()),
-				filepath.Join(n.URL(), a.Name()),
-				n.metaDB,
-			), nil
-		}
-	}
-
-	f, err := os.Stat(path)
-	if os.IsNotExist(err) || err != nil {
+	if err != nil {
 		return nil, err
 	}
-	if f.IsDir() {
-		return nil, fmt.Errorf("accessing directory as asset: %s", path)
-	}
 
-	return NewNodeAsset(
-		filepath.Join(n.Path, f.Name()),
-		filepath.Join(n.URL(), f.Name()),
-		n.metaDB,
-	), nil
+	for _, a := range assets {
+		if a.Name() == name {
+			return a, nil
+		}
+	}
+	return nil, fmt.Errorf("no asset: %s", name)
 }
 
 // Assets are all files inside the node directory excluding system
@@ -402,6 +385,7 @@ func (n *Node) Assets() ([]*NodeAsset, error) {
 		if NodeAssetsIgnoreRegexp.MatchString(f.Name()) {
 			continue
 		}
+
 		as = append(as, NewNodeAsset(
 			filepath.Join(n.Path, f.Name()),
 			filepath.Join(n.URL(), f.Name()),
