@@ -63,6 +63,7 @@ function Doc(props) {
     DoDontGroup: props => <DoDont {...props} />,
     Dont: props => <Dont {...props} />,
     FigmaEmbed: props => <FigmaEmbed {...props} />,
+    Image: props => <Image {...props} />,
     TypographySpecimen: props => <TypographySpecimen {...props} />,
     Warning: props => <Banner type="warning" {...props} />,
 
