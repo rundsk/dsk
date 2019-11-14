@@ -24,6 +24,7 @@
   background-image: url(./DotGridPattern--dark.png);
   background-size: 20px;
   background-position: center center;
+  min-height: calc(var(--spacing-unit) * 30);
 }
 
 .playground--checkerboard .playground__stage {
@@ -93,6 +94,10 @@
   letter-spacing: 0.03em;
   transition: all 0.2s;
   font-variant-numeric: tabular-nums;
+}
+
+.playground__stage .playground__annotation-badge {
+  box-shadow: 0 5px 10px 0px rgba(0,0,0,.4);
 }
 
 .playground__annotation-badge--highlight {
