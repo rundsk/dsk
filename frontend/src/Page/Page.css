@@ -70,7 +70,8 @@
   margin-bottom: calc(var(--spacing-unit) * 4);
 }
 
-.page__author a {
+.page__author a,
+.page__related a {
   text-decoration: none;
   color: inherit;
 }

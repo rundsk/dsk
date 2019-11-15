@@ -18,11 +18,13 @@ function Image(props) {
     width /= 2;
     height /= 2;
   }
-  return <figure className="image">
-    <img alt={props.alt} src={props.src} width={width} height={height} />
+  return (
+    <figure className="image">
+      <img alt={props.alt} src={props.src} width={width} height={height} />
 
-    {props.caption && <figcaption className="image__caption">{props.caption}</figcaption>}
-  </figure>;
+      {props.caption && <figcaption className="image__caption">{props.caption}</figcaption>}
+    </figure>
+  );
 }
 
 export default Image;

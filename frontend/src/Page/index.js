@@ -170,6 +170,25 @@ function Page(props) {
     authors = <Meta title={title}>{authorLinks}</Meta>;
   }
 
+  let related;
+
+  if (props.related && props.related.length > 0) {
+    let title = 'Related';
+    let relatedLinks = props.related.map((a, i) => {
+      return (
+        <span className="page__related" key={a.url}>
+          {i > 0 ? ', ' : ''}
+
+          <BaseLink router={props.router} routeName="node" routeParams={{ node: `${a.url}`, v: props.route.params.v }}>
+            {a.title}
+          </BaseLink>
+        </span>
+      );
+    });
+
+    related = <Meta title={title}>{relatedLinks}</Meta>;
+  }
+
   // Custom meta data
   let custom;
 
@@ -222,6 +241,7 @@ function Page(props) {
                 <Meta title="Last Changed">{new Date(props.modified * 1000).toLocaleDateString()}</Meta>
               </div>
               {authors && <div className="page__meta-item">{authors}</div>}
+              {related && <div className="page__meta-item">{related}</div>}
               {custom}
             </div>
           </div>
