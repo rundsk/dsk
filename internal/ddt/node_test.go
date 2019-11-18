@@ -6,6 +6,8 @@
 package ddt
 
 import (
+	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 )
@@ -125,6 +127,105 @@ func TestTitlesWithDecomposedFilenames(t *testing.T) {
 	if n.Title() != "Café" {
 		t.Errorf("failed to decode folder name, got %v", n.Title())
 	}
+}
+
+func TestAsset(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+	defer os.RemoveAll(tmp)
+
+	node0 := filepath.Join(tmp, "foo")
+	os.Mkdir(node0, 0777)
+
+	asset0 := filepath.Join(node0, "asset.json")
+	ioutil.WriteFile(asset0, []byte(""), 0666)
+
+	n := &Node{Path: node0}
+
+	_, err := n.Asset("asset.json")
+	if err != nil {
+		t.Errorf("failed to find asset: %s", err)
+	}
+}
+
+func TestAssetWithOrderNumberPrefixNoopWithPrefix(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+	defer os.RemoveAll(tmp)
+
+	node0 := filepath.Join(tmp, "foo")
+	os.Mkdir(node0, 0777)
+
+	asset0 := filepath.Join(node0, "02_asset.json")
+	ioutil.WriteFile(asset0, []byte(""), 0666)
+
+	n := &Node{Path: node0}
+
+	_, err := n.Asset("02_asset.json")
+	if err != nil {
+		t.Errorf("failed to find asset: %s", err)
+	}
+
+	a, _ := n.Asset("asset.json")
+	if a != nil {
+		t.Errorf("found asset, where it should not: %s", a)
+	}
+
+	a, _ = n.Asset("04_asset.json")
+	if a != nil {
+		t.Errorf("found asset, where it should not: %s", a)
+	}
+}
+
+func TestAssetWithOrderNumberPrefixNoopCollisions(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+	defer os.RemoveAll(tmp)
+
+	node0 := filepath.Join(tmp, "foo")
+	os.Mkdir(node0, 0777)
+
+	asset0 := filepath.Join(node0, "02_asset.json")
+	ioutil.WriteFile(asset0, []byte(""), 0666)
+
+	asset1 := filepath.Join(node0, "04_asset.json")
+	ioutil.WriteFile(asset1, []byte(""), 0666)
+
+	n := &Node{Path: node0}
+
+	a, err := n.Asset("04_asset.json")
+	if err != nil {
+		t.Error(err)
+	}
+	if a.Name() != "04_asset.json" {
+		t.Errorf("Found wrong asset: %s", a)
+	}
+
+	a, err = n.Asset("02_asset.json")
+	if err != nil {
+		t.Error(err)
+	}
+	if a.Name() != "02_asset.json" {
+		t.Errorf("Found wrong asset: %s", a)
+	}
+}
+
+func TestAssetWithOrderNumberPrefixNoopWithoutPrefix(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+	defer os.RemoveAll(tmp)
+
+	node0 := filepath.Join(tmp, "foo")
+	os.Mkdir(node0, 0777)
+
+	asset0 := filepath.Join(node0, "asset.json")
+	ioutil.WriteFile(asset0, []byte(""), 0666)
+
+	n := &Node{Path: node0}
+
+	_, err := n.Asset("asset.json")
+	if err != nil {
+		t.Errorf("failed to find asset: %s", err)
+	}
+
+	// Not testing for side-effects that not desired but are okay for
+	// us, i.e requesting 02_asset.json and having a match.
 }
 
 func BenchmarkHashCalculation(b *testing.B) {

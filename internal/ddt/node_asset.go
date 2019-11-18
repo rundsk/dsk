@@ -23,7 +23,7 @@ func NewNodeAsset(path string, URL string, mdb meta.DB) *NodeAsset {
 	return &NodeAsset{path, URL, mdb}
 }
 
-// A downloadable file.
+// An emebeddable or otherwise  downloadable file.
 type NodeAsset struct {
 	// Absolute path to the file.
 	Path string
@@ -34,11 +34,14 @@ type NodeAsset struct {
 	metaDB meta.DB
 }
 
-// Name is the basename of the file without its order number.
+// Name is the basename of the file. The canonical name of the asset
+// intentionally contains (non-functional) order numbers if the are
+// used.
 func (a NodeAsset) Name() string {
-	return removeOrderNumber(norm.NFC.String(filepath.Base(a.Path)))
+	return norm.NFC.String(filepath.Base(a.Path))
 }
 
+// Title derived from the cleaned-up basename.
 func (a NodeAsset) Title() string {
 	base := norm.NFC.String(filepath.Base(a.Path))
 	return removeOrderNumber(strings.TrimSuffix(base, filepath.Ext(base)))

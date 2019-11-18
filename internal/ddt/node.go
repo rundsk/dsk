@@ -342,9 +342,19 @@ func (n *Node) Version() string {
 	return n.meta.Version
 }
 
-// Asset returns the first asset that matches name, order numbers on both
-// are removed prior matching. Multiple files with the same order number
-// lead to undefined behavior.
+// Asset returns the that matches name. Generally we don't support
+// order numbers on assets, they make sense on documents and design
+// aspects but do not make sense on assets.
+//
+// However users may assume, they can be used on assets too.
+//
+// Assuming 02_cat.jpg exists in the filesystem, both a request for
+// 02_cat.jpg and a request for cat.jpg will succeed.
+//
+// However there is one side-effect that is undesired but okay for us:
+// having cat.jpg and requesting 02_cat.jpg or using any other order
+// prefix will succeed. This behavior is not guaranteed to work in
+// future versions.
 func (n *Node) Asset(name string) (*NodeAsset, error) {
 	assets, err := n.Assets()
 	if err != nil {
@@ -353,6 +363,11 @@ func (n *Node) Asset(name string) (*NodeAsset, error) {
 
 	for _, a := range assets {
 		if a.Name() == name {
+			return a, nil
+		}
+	}
+	for _, a := range assets {
+		if a.Name() == removeOrderNumber(name) {
 			return a, nil
 		}
 	}
