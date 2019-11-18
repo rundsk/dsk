@@ -29,3 +29,9 @@ func TestRemoveOrderNumbersLeaveSuffixed(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestRemoveOrderNumbersLeavePureNumerical(t *testing.T) {
+	if removeOrderNumber("20201224.jpg") != "20201224.jpg" {
+		t.Fail()
+	}
+}
