@@ -3,7 +3,7 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  */
 
- .playground {
+.playground {
   width: 100%;
   margin: var(--documentation-component-spacing) 0;
 }
@@ -55,7 +55,6 @@
   display: inline-block;
 }
 
-
 /* When the playground is used as the demo on top of a page, we need to force it to
    have a width of 100%, so that certain components, like ColorGroups display right.
    This destorys our ability to have annotations, but we don’t have them in this playground
@@ -73,7 +72,6 @@
   justify-content: center;
   align-items: center;
 }
-
 
 /* --- Annotations --- */
 
@@ -97,7 +95,7 @@
 }
 
 .playground__stage .playground__annotation-badge {
-  box-shadow: 0 5px 10px 0px rgba(0,0,0,.4);
+  box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.4);
 }
 
 .playground__annotation-badge--highlight {
