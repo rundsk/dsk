@@ -94,7 +94,7 @@ type V1RefNode struct {
 	Title string `json:"title"`
 }
 
-type V1NodeTree struct {
+type V1Tree struct {
 	Hash  string      `json:"hash"`
 	Root  *V1TreeNode `json:"root"`
 	Total uint16      `json:"total"`
@@ -336,13 +336,13 @@ func (api V1) NewTreeNode(n *ddt.Node, s *plex.Source) (*V1TreeNode, error) {
 	}, nil
 }
 
-func (api V1) NewNodeTree(t *ddt.NodeTree, s *plex.Source) (*V1NodeTree, error) {
+func (api V1) NewTree(t *ddt.Tree, s *plex.Source) (*V1Tree, error) {
 	root, err := api.NewTreeNode(t.Root, s)
 	if err != nil {
 		return nil, err
 	}
 
-	return &V1NodeTree{
+	return &V1Tree{
 		// Tree hash is the same as the root nodes'.
 		Hash:  root.Hash,
 		Root:  root,
@@ -372,7 +372,7 @@ func (api V1) NewNodeAsset(a *ddt.NodeAsset) (*V1NodeAsset, error) {
 	}, nil
 }
 
-func (api V1) NewNodeTreeSearchResults(nodes []*ddt.Node, total int, took time.Duration) *V1SearchResults {
+func (api V1) NewTreeSearchResults(nodes []*ddt.Node, total int, took time.Duration) *V1SearchResults {
 	urls := make([]string, 0, len(nodes))
 	for _, n := range nodes {
 		urls = append(urls, n.URL())
@@ -508,7 +508,7 @@ func (api V1) TreeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	atree, err := api.NewNodeTree(s.Tree, s)
+	atree, err := api.NewTree(s.Tree, s)
 	if err != nil {
 		wr.Error(httputil.Err, err)
 		return
@@ -627,7 +627,7 @@ func (api V1) SearchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	wr.OK(api.NewNodeTreeSearchResults(results, total, took))
+	wr.OK(api.NewTreeSearchResults(results, total, took))
 }
 
 // List available DDT sources.

@@ -102,7 +102,7 @@ type Node struct {
 	// hash value, all children will have to calculate their hashes.
 	//
 	// There is no stale detection, as we assume the Node is entirely
-	// re-initialized when it changes by the NodeTree.
+	// re-initialized when it changes by the Tree.
 	hash string
 }
 

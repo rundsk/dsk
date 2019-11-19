@@ -71,7 +71,7 @@ func (api V2) MountHTTPHandlers() {
 	http.HandleFunc("/api/v2", api.v1.NotFoundHandler)
 }
 
-func (api V2) NewNodeTreeSearchResults(hs []*search.FullSearchHit, total int, took time.Duration) *V2FullSearchResults {
+func (api V2) NewTreeSearchResults(hs []*search.FullSearchHit, total int, took time.Duration) *V2FullSearchResults {
 	hits := make([]*V2FullSearchHit, 0, len(hs))
 
 	for _, hit := range hs {
@@ -87,7 +87,7 @@ func (api V2) NewNodeTreeSearchResults(hs []*search.FullSearchHit, total int, to
 	return &V2FullSearchResults{hits, total, took.Nanoseconds()}
 }
 
-func (api V2) NewNodeTreeFilterResults(nodes []*ddt.Node, total int, took time.Duration) *V2FilterResults {
+func (api V2) NewTreeFilterResults(nodes []*ddt.Node, total int, took time.Duration) *V2FilterResults {
 	ns := make([]*V1RefNode, 0, len(nodes))
 	for _, n := range nodes {
 		ns = append(ns, &V1RefNode{n.URL(), n.Title()})
@@ -119,7 +119,7 @@ func (api V2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	wr.OK(api.NewNodeTreeSearchResults(results, total, took))
+	wr.OK(api.NewTreeSearchResults(results, total, took))
 }
 
 // Performs a restricted narrow search over the design defintions tree.
@@ -146,5 +146,5 @@ func (api V2) FilterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	wr.OK(api.NewNodeTreeFilterResults(results, total, took))
+	wr.OK(api.NewTreeFilterResults(results, total, took))
 }

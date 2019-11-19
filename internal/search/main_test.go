@@ -545,7 +545,7 @@ func setupSearchTest(t *testing.T, tmp string, lang string, nodes []*ddt.Node, d
 			}
 			return ns
 		},
-		getNodeTreeHash: func() (string, error) {
+		getTreeHash: func() (string, error) {
 			return "<node-tree-hash>", nil
 		},
 		lang:        lang,

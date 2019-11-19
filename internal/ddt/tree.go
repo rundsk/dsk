@@ -23,20 +23,20 @@ import (
 )
 
 var (
-	ErrNodeTreeRootNotFound = errors.New("no tree root found")
+	ErrTreeRootNotFound = errors.New("no tree root found")
 )
 
-// NewNodeTree construct and initializes a NodeTree.
-func NewNodeTree(
+// NewTree construct and initializes a Tree.
+func NewTree(
 	path string,
 	cdb config.DB,
 	adb author.DB,
 	mdb meta.DB,
 	b *bus.Broker,
-) (*NodeTree, error) {
+) (*Tree, error) {
 	log.Printf("Initializing node tree on %s...", path)
 
-	t := &NodeTree{
+	t := &Tree{
 		Path:     path,
 		configDB: cdb,
 		metaDB:   mdb,
@@ -46,7 +46,7 @@ func NewNodeTree(
 	return t, t.Sync()
 }
 
-type NodeTree struct {
+type Tree struct {
 	// Ensures the tree is locked, when it is being synced, to
 	// prevent reads in the middle of syncs.
 	sync.RWMutex
@@ -80,11 +80,11 @@ type NodeGetter func(url string) (ok bool, n *Node, err error)
 // NodesGetter retrieves all nodes from the tree.
 type NodesGetter func() []*Node
 
-func (t *NodeTree) String() string {
+func (t *Tree) String() string {
 	return fmt.Sprintf("node tree (...%s)", t.Path[len(t.Path)-10:])
 }
 
-func (t *NodeTree) CalculateHash() (string, error) {
+func (t *Tree) CalculateHash() (string, error) {
 	t.RLock()
 	defer t.RUnlock()
 	return t.Root.CalculateHash()
@@ -103,7 +103,7 @@ func (t *NodeTree) CalculateHash() (string, error) {
 // It will not descend into directories it considers hidden (their
 // name is prefixed by a dot), except when the given directory itself
 // is dot-hidden.
-func (t *NodeTree) Sync() error {
+func (t *Tree) Sync() error {
 	log.Printf("Syncing %s...", t)
 
 	t.Lock()
@@ -188,7 +188,7 @@ func (t *NodeTree) Sync() error {
 // the sibling node and - walking up the tree - if there is none the
 // parents sibling ddt. The algorithm for determing the previous
 // node is analogous.
-func (t *NodeTree) NeighborNodes(current *Node) (prev *Node, next *Node, err error) {
+func (t *Tree) NeighborNodes(current *Node) (prev *Node, next *Node, err error) {
 	t.RLock()
 	defer t.RUnlock()
 
@@ -221,7 +221,7 @@ func (t *NodeTree) NeighborNodes(current *Node) (prev *Node, next *Node, err err
 }
 
 // Returns the number of total nodes in the tree.
-func (t *NodeTree) TotalNodes() uint16 {
+func (t *Tree) TotalNodes() uint16 {
 	t.RLock()
 	defer t.RUnlock()
 
@@ -229,7 +229,7 @@ func (t *NodeTree) TotalNodes() uint16 {
 }
 
 // Retrieves a node from the tree, performs a case-insensitive match.
-func (t *NodeTree) Get(url string) (ok bool, n *Node, err error) {
+func (t *Tree) Get(url string) (ok bool, n *Node, err error) {
 	t.RLock()
 	defer t.RUnlock()
 
@@ -240,7 +240,7 @@ func (t *NodeTree) Get(url string) (ok bool, n *Node, err error) {
 }
 
 // GetAll nodes as a flat slice.
-func (t *NodeTree) GetAll() []*Node {
+func (t *Tree) GetAll() []*Node {
 	t.RLock()
 	defer t.RUnlock()
 

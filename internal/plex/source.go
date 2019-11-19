@@ -81,7 +81,7 @@ type Source struct {
 	// ConfigDB is the central configuration and managed from the outside.
 	ConfigDB config.DB
 
-	Tree *ddt.NodeTree
+	Tree *ddt.Tree
 
 	Search *search.Search
 
@@ -211,7 +211,7 @@ func (s *Source) Open(gr *git.Repository) error {
 		s.AuthorDB = author.NewNoopDB()
 	}
 
-	t, err := ddt.NewNodeTree(
+	t, err := ddt.NewTree(
 		s.Path,
 		s.ConfigDB,
 		s.AuthorDB,

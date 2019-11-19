@@ -34,14 +34,14 @@ var (
 
 // NewSearch constructs and initializes a Search. The selected
 // language is validated and checked for availability.
-func NewSearch(path string, t *ddt.NodeTree, lang string, isPersistent bool) (*Search, error) {
+func NewSearch(path string, t *ddt.Tree, lang string, isPersistent bool) (*Search, error) {
 	log.Print("Initializing search...")
 
 	s := &Search{
 		path:            path,
 		getNode:         t.Get,
 		getAllNodes:     t.GetAll,
-		getNodeTreeHash: t.CalculateHash,
+		getTreeHash: t.CalculateHash,
 	}
 
 	_, ok := AvailableSearchLangs[lang]
@@ -131,7 +131,7 @@ type Search struct {
 
 	getNode         ddt.NodeGetter
 	getAllNodes     ddt.NodesGetter
-	getNodeTreeHash func() (string, error)
+	getTreeHash func() (string, error)
 
 	// Language that should be used in our mapping/analyzer setup.
 	lang string
@@ -152,7 +152,7 @@ func (s *Search) IsStale() bool {
 	s.RLock()
 	defer s.RUnlock()
 
-	h, _ := s.getNodeTreeHash()
+	h, _ := s.getTreeHash()
 	return s.hash != h
 }
 
@@ -208,7 +208,7 @@ func (s *Search) IndexTree() error {
 	took := time.Since(start)
 
 	s.Lock()
-	h, _ := s.getNodeTreeHash()
+	h, _ := s.getTreeHash()
 	s.hash = h
 	s.Unlock()
 
