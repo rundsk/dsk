@@ -101,8 +101,10 @@ function Playground(props) {
         <div className="playground__stage-wrapper">
           {annotationMarkers}
 
-          {/* This wrapper doesn’t do any styling, we just need the content to be isolated for stuff like :first-child to work */}
-          <div className="playground__stage-content">{props.children}</div>
+          { /* This wrapper doesn’t do any styling, we just need the content to be isolated for stuff like :first-child to work */ }
+          <div className="playground__stage-content">
+            {props.children}
+          </div>
         </div>
       </div>
       {annotations.length > 0 && <div className="playground__annotations">{annotations}</div>}
