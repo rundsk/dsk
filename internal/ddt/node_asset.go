@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/atelierdisko/dsk/internal/meta"
+	"github.com/rundsk/dsk/internal/meta"
 
 	"golang.org/x/text/unicode/norm"
 )

@@ -14,11 +14,11 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/atelierdisko/dsk/internal/bus"
-	"github.com/atelierdisko/dsk/internal/config"
-	"github.com/atelierdisko/dsk/internal/ddt"
-	"github.com/atelierdisko/dsk/internal/httputil"
-	"github.com/atelierdisko/dsk/internal/plex"
+	"github.com/rundsk/dsk/internal/bus"
+	"github.com/rundsk/dsk/internal/config"
+	"github.com/rundsk/dsk/internal/ddt"
+	"github.com/rundsk/dsk/internal/httputil"
+	"github.com/rundsk/dsk/internal/plex"
 	"github.com/gorilla/websocket"
 )
 

@@ -11,11 +11,11 @@ import (
 	"log"
 	"path/filepath"
 
-	"github.com/atelierdisko/dsk/internal/bus"
-	"github.com/atelierdisko/dsk/internal/config"
-	"github.com/atelierdisko/dsk/internal/frontend"
-	"github.com/atelierdisko/dsk/internal/notify"
-	"github.com/atelierdisko/dsk/internal/vcs"
+	"github.com/rundsk/dsk/internal/bus"
+	"github.com/rundsk/dsk/internal/config"
+	"github.com/rundsk/dsk/internal/frontend"
+	"github.com/rundsk/dsk/internal/notify"
+	"github.com/rundsk/dsk/internal/vcs"
 	"golang.org/x/text/unicode/norm"
 	git "gopkg.in/src-d/go-git.v4"
 )

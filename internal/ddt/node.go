@@ -20,9 +20,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/atelierdisko/dsk/internal/author"
-	"github.com/atelierdisko/dsk/internal/config"
-	"github.com/atelierdisko/dsk/internal/meta"
+	"github.com/rundsk/dsk/internal/author"
+	"github.com/rundsk/dsk/internal/config"
+	"github.com/rundsk/dsk/internal/meta"
 	"github.com/mozillazg/go-unidecode"
 	"golang.org/x/text/unicode/norm"
 )

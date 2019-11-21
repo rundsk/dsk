@@ -46,7 +46,7 @@
   to work with the new documentation components.
 - Many of you wish to run DSK inside a docker container. We now prebuild and ship official 
   container imagee and make them available on
-  [on docker hub](https://cloud.docker.com/u/atelierdisko/repository/registry-1.docker.io/atelierdisko/dsk).
+  [on docker hub](https://cloud.docker.com/u/atelierdisko/repository/registry-1.docker.io/rundsk/dsk).
 - Support for multiple languages has been removed, this unfortunately
   didn't work out the way we expected to. We've also removed the `lang`
   command line in favor of providing the language of the DDT via the new

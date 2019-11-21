@@ -115,5 +115,5 @@ func (td *Teardown) Close() error {
 
 func funcName(fn interface{}) string {
 	name := runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
-	return strings.Replace(name, "github.com/atelierdisko/dsk/internal/", "", 1)
+	return strings.Replace(name, "github.com/rundsk/dsk/internal/", "", 1)
 }

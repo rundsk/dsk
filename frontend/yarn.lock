@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@atelierdisko/dsk@rundsk/js-sdk#1.3":
+"@rundsk/dsk@rundsk/js-sdk#1.3":
   version "1.3.0-alpha"
   resolved "https://codeload.github.com/rundsk/js-sdk/tar.gz/fad00607c69b4a9dad40b72795e1a9244323ab6d"
 

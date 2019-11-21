@@ -10,7 +10,7 @@ import React, { useState, useEffect } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import './CodeBlock.css';
 import { copyTextToClipboard } from '../utils';
-import { Client } from '@atelierdisko/dsk';
+import { Client } from '@rundsk/dsk';
 
 // There are two possible ways this component is used, in the first case
 // children is a React object, in the second children is a string with

@@ -9,8 +9,8 @@
 import React, { useState, useEffect } from 'react';
 import { useGlobal } from 'reactn';
 
-import { Client } from '@atelierdisko/dsk';
-import { Tree } from '@atelierdisko/dsk';
+import { Client } from '@rundsk/dsk';
+import { Tree } from '@rundsk/dsk';
 import { BaseLink, withRoute } from 'react-router5';
 
 import './TreeNavigation.css';

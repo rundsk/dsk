@@ -8,7 +8,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { BaseLink, withRoute } from 'react-router5';
-import { Client } from '@atelierdisko/dsk';
+import { Client } from '@rundsk/dsk';
 import './NodeList.css';
 import Tags from '../Tags';
 import Heading from '../Heading';

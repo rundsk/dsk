@@ -7,7 +7,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Client } from '@atelierdisko/dsk';
+import { Client } from '@rundsk/dsk';
 import './Search.css';
 import { withRoute } from 'react-router5';
 

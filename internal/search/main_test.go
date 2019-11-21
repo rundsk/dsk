@@ -12,10 +12,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/atelierdisko/dsk/internal/author"
-	"github.com/atelierdisko/dsk/internal/config"
-	"github.com/atelierdisko/dsk/internal/ddt"
-	"github.com/atelierdisko/dsk/internal/meta"
+	"github.com/rundsk/dsk/internal/author"
+	"github.com/rundsk/dsk/internal/config"
+	"github.com/rundsk/dsk/internal/ddt"
+	"github.com/rundsk/dsk/internal/meta"
 	"github.com/blevesearch/bleve"
 )
 

@@ -12,11 +12,11 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/atelierdisko/dsk/internal/bus"
-	"github.com/atelierdisko/dsk/internal/ddt"
-	"github.com/atelierdisko/dsk/internal/httputil"
-	"github.com/atelierdisko/dsk/internal/plex"
-	"github.com/atelierdisko/dsk/internal/search"
+	"github.com/rundsk/dsk/internal/bus"
+	"github.com/rundsk/dsk/internal/ddt"
+	"github.com/rundsk/dsk/internal/httputil"
+	"github.com/rundsk/dsk/internal/plex"
+	"github.com/rundsk/dsk/internal/search"
 )
 
 func NewV2(ss *plex.Sources, appVersion string, b *bus.Broker) *V2 {

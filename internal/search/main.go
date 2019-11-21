@@ -15,7 +15,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/atelierdisko/dsk/internal/ddt"
+	"github.com/rundsk/dsk/internal/ddt"
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/analysis/analyzer/keyword"
 	"github.com/blevesearch/bleve/analysis/analyzer/simple"

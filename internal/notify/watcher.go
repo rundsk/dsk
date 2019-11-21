@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/atelierdisko/dsk/internal/bus"
+	"github.com/rundsk/dsk/internal/bus"
 	core "github.com/rjeczalik/notify"
 )
 

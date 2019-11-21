@@ -8,7 +8,7 @@
 
 import React, { useState, useEffect } from 'react';
 import './Playground.css';
-import { Client } from '@atelierdisko/dsk';
+import { Client } from '@rundsk/dsk';
 
 function Playground(props) {
   const [annotationData, setAnnotationData] = useState({ annotations: [] });

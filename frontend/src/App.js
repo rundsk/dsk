@@ -8,7 +8,7 @@ import { routeNode, BaseLink } from 'react-router5';
 import { useGlobal } from 'reactn';
 import { Helmet } from 'react-helmet';
 
-import { Client } from '@atelierdisko/dsk';
+import { Client } from '@rundsk/dsk';
 import TreeNavigation from './TreeNavigation';
 
 import './Variables.css';
@@ -253,7 +253,7 @@ function App(props) {
               </select>
             </div>
           )}
-          Powered by <a href="https://github.com/atelierdisko/dsk">DSK</a> ·{' '}
+          Powered by <a href="https://github.com/rundsk/dsk">DSK</a> ·{' '}
           <a href="mailto:thankyou@rundsk.com">Get in Touch</a>
         </div>
       </div>

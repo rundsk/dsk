@@ -28,7 +28,7 @@ Visit the official [Website](https://rundsk.com), to get started with our [step 
 
 ## Quickstart
 
-1. Visit the [GitHub releases page](https://github.com/atelierdisko/dsk/releases) and download one of the quickstart packages for your operating system. For macOS use `dsk-darwin-amd64.zip`, for Linux use `dsk-linux-amd64.tar.gz`. 
+1. Visit the [GitHub releases page](https://github.com/rundsk/dsk/releases) and download one of the quickstart packages for your operating system. For macOS use `dsk-darwin-amd64.zip`, for Linux use `dsk-linux-amd64.tar.gz`. 
 
 2. The package is an archive that contains the `dsk` executable and an example design system. Double click on the downloaded file to unarchive both. 
 
@@ -80,11 +80,11 @@ us ensure the best possible fix. We're striving to maintain a lean, clean core
 and want to avoid introducing patches for symptoms of an underlying flaw.
 
 Found a bug? [Open an issue in our
-tracker](https://github.com/atelierdisko/dsk/issues/new) and label it as a
+tracker](https://github.com/rundsk/dsk/issues/new) and label it as a
 _bug_.
 
 Have an idea for a new killer feature? [Open an issue in our
-tracker](https://github.com/atelierdisko/dsk/issues/new) and use the
+tracker](https://github.com/rundsk/dsk/issues/new) and use the
 _enhancement_ label.
 
 Just want to say "Thank you" or need help getting started? [Send us a mail](mailto:thankyou@rundsk.com).

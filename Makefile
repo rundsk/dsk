@@ -11,7 +11,7 @@ VERSION ?= head-$(shell git rev-parse --short HEAD)
 LDFLAGS = -X main.Version=$(VERSION)
 ANY_DEPS = $(shell find cmd internal vendor)
 ALL_PKGS = $(shell go list ./...)
-CMD_PKG = github.com/atelierdisko/dsk/cmd/dsk
+CMD_PKG = github.com/rundsk/dsk/cmd/dsk
 
 .PHONY: test
 test:
@@ -47,11 +47,11 @@ dist: container-image
 
 .PHONY: container-image
 container-image:
-	docker build --tag atelierdisko/dsk:$(VERSION) --build-arg VERSION=$(VERSION) .
+	docker build --tag rundsk/dsk:$(VERSION) --build-arg VERSION=$(VERSION) .
 
 .PHONY: container-push
 container-push: container-image
-	docker push atelierdisko/dsk:$(VERSION)
+	docker push rundsk/dsk:$(VERSION)
 
 dist/%.zip: dist/%
 	cd dist && zip $(notdir $@) $(notdir $<)

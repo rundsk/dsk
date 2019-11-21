@@ -44,7 +44,7 @@ Clone the official repository, switch into the directory and checkout the branch
 you want to work on.
 
 ```
-$ git clone github.com/atelierdisko/dsk 
+$ git clone github.com/rundsk/dsk 
 $ git checkout 1.2
 $ cd dsk
 ```

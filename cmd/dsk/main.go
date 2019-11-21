@@ -17,10 +17,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/atelierdisko/dsk/internal/api"
+	"github.com/rundsk/dsk/internal/api"
 
-	"github.com/atelierdisko/dsk/internal/httputil"
-	"github.com/atelierdisko/dsk/internal/plex"
+	"github.com/rundsk/dsk/internal/httputil"
+	"github.com/rundsk/dsk/internal/plex"
 	"github.com/fatih/color"
 	isatty "github.com/mattn/go-isatty"
 )

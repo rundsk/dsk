@@ -3,7 +3,7 @@
   "version": "1.2.0-beta",
   "private": true,
   "dependencies": {
-    "@atelierdisko/dsk": "rundsk/js-sdk#1.3",
+    "@rundsk/dsk": "rundsk/js-sdk#1.3",
     "filesize": "^4.1.2",
     "get-contrast": "^2.0.0",
     "react": "^16.8.6",
@@ -40,7 +40,7 @@
   ],
   "jest": {
     "transformIgnorePatterns": [
-      "/node_modules/(?!@atelierdisko/dsk)"
+      "/node_modules/(?!@rundsk/dsk)"
     ]
   }
 }

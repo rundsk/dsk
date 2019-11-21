@@ -16,7 +16,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/atelierdisko/dsk/internal/bus"
+	"github.com/rundsk/dsk/internal/bus"
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )

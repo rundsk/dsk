@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/atelierdisko/dsk/internal/httputil"
+	"github.com/rundsk/dsk/internal/httputil"
 )
 
 func NewFrontendFromPath(path string, chroot string) (*Frontend, error) {

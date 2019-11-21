@@ -7,7 +7,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { transform } from '@atelierdisko/dsk';
+import { transform } from '@rundsk/dsk';
 import { withRoute } from 'react-router5';
 
 import './Doc.css';

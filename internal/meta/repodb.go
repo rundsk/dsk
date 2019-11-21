@@ -10,7 +10,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/atelierdisko/dsk/internal/vcs"
+	"github.com/rundsk/dsk/internal/vcs"
 )
 
 func NewRepoDB(r *vcs.Repo) *RepoDB {

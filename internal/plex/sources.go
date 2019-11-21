@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/atelierdisko/dsk/internal/config"
+	"github.com/rundsk/dsk/internal/config"
 )
 
 func NewSources(cdb config.DB) (*Sources, error) {
