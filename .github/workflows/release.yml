@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          docker login -u rundskbot -p ${{secrets.docker_hub_access_token}}
+          docker login -u dskbot -p ${{secrets.docker_hub_access_token}}
           docker load container.tar
           make container-push
 
