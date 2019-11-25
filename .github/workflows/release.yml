@@ -57,6 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build-frontend
+      - build-example-design-system
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-go@v1
@@ -66,6 +67,10 @@ jobs:
         with:
           name: frontend-build
           path: frontend/build
+      - uses: actions/download-artifact@v1
+        with:
+          name: example-design-system
+          path: example
       - run: |
           export VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' | sed -e 's/^v//')
           make dist/dsk-linux-amd64 dist/dsk-linux-amd64.tar.gz
@@ -79,6 +84,7 @@ jobs:
     runs-on: macOS-latest
     needs:
       - build-frontend
+      - build-example-design-system
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-go@v1
@@ -88,6 +94,10 @@ jobs:
         with:
           name: frontend-build
           path: frontend/build
+      - uses: actions/download-artifact@v1
+        with:
+          name: example-design-system
+          path: example
       - run: |
           export VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' | sed -e 's/^v//')
           make dist/dsk-darwin-amd64 dist/dsk-darwin-amd64.zip
@@ -110,3 +120,17 @@ jobs:
         with:
           name: frontend-build
           path: frontend/build
+
+  build-example-design-system:
+    name: Build Example Design System
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          repository: rundsk/example-design-system
+          ref: master
+          path: example-design-system
+      - uses: actions/upload-artifact@v1
+        with:
+          name: example-design-system
+          path: ../example-design-system
