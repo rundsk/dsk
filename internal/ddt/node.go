@@ -20,10 +20,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mozillazg/go-unidecode"
 	"github.com/rundsk/dsk/internal/author"
 	"github.com/rundsk/dsk/internal/config"
 	"github.com/rundsk/dsk/internal/meta"
-	"github.com/mozillazg/go-unidecode"
 	"golang.org/x/text/unicode/norm"
 )
 
@@ -361,6 +361,10 @@ func (n *Node) Asset(name string) (*NodeAsset, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// Precompute, the comparison in which this will participate
+	// are always normalized in this way.
+	name = norm.NFC.String(name)
 
 	for _, a := range assets {
 		if a.Name() == name {

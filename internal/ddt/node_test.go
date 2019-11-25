@@ -229,6 +229,28 @@ func TestAssetWithOrderNumberPrefixNoopWithoutPrefix(t *testing.T) {
 	// us, i.e requesting 02_asset.json and having a match.
 }
 
+func TestAssetWithDecomposedFilenames(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+	defer os.RemoveAll(tmp)
+
+	node0 := filepath.Join(tmp, "foo")
+	os.Mkdir(node0, 0777)
+
+	asset0 := filepath.Join(node0, "Cafe\u0301.json")
+	ioutil.WriteFile(asset0, []byte(""), 0666)
+
+	n := &Node{Path: node0}
+
+	_, err := n.Asset("Cafe\u0301.json")
+	if err != nil {
+		t.Errorf("failed to find asset: %s", err)
+	}
+
+	_, err = n.Asset("Café.json")
+	if err != nil {
+		t.Errorf("failed to find asset: %s", err)
+	}
+}
 func BenchmarkHashCalculation(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		// Do not use constructor, so we don't also measure meta parsing.
