@@ -9,7 +9,7 @@ simple directories. Creating documentation is as easy as adding a
 [Markdown](https://guides.github.com/features/mastering-markdown/) formatted
 file to a directory inside the _design definitions tree_.
 
-Visit the official [Website](https://rundsk.com), to get started with our [step by step guide](Getting-Started/Step-by-Step).
+Visit the official [Website](https://rundsk.com), to get started with our [step by step guide](https://rundsk.com/tree/Getting-Started/Step-by-Step).
 
 ![DSK promotional image](https://rundsk.com/api/v2/tree/dsk_promo_list.jpg)
 
