@@ -2,7 +2,20 @@
 
 ## 1.3.0 Unreleased
 
-- We've added support for multiple versions of a DDT. 
+- We've added support for multiple versions of a DDT
+- We've moved to a new GitHub organization
+- The docs have been extracted and moved to https://github.com/rundsk/website
+- The JavaScript SDK has been extracted and moved to https://github.com/rundsk/js-sdk
+- The example design system has been extracted and moved to https://github.com/rundsk/example-design-system
+- The backend has been refactored and modularized
+- The built-in frontend now supports captions for images, i.e. `<Image caption="Hello World">`
+- The annotations for playgrounds have been improved
+- We've removed support for `go get` without additional initialization as this required us to
+  keep a comparitvely big go file around where assets had been inlined
+- We've fixed a bug where assets with an order number could not be loaded
+- We now support HTML comments inside Markdown documents
+- We've moved from an internal Concourse pipeline to GitHub actions, which will run our test
+  and deploy the website. We are now able to automatically build and test packages for macOS.
 
 ## 1.2.0
 
