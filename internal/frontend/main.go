@@ -58,7 +58,7 @@ func (f Frontend) MountHTTPHandlers() {
 //   /index.html
 //   /* <catch all>
 func (f *Frontend) RootHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "")
+	wr := httputil.NewResponder(w, r, "", "")
 	r.Body.Close()
 
 	path := "index.html"
@@ -87,7 +87,7 @@ func (f *Frontend) RootHandler(w http.ResponseWriter, r *http.Request) {
 //   /assets/css/base.css
 //   /static/css/main.41064805.css
 func (f *Frontend) AssetHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "")
+	wr := httputil.NewResponder(w, r, "", "")
 	r.Body.Close()
 
 	path := r.URL.Path[len("/"):]

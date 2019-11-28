@@ -14,19 +14,20 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/gorilla/websocket"
 	"github.com/rundsk/dsk/internal/bus"
 	"github.com/rundsk/dsk/internal/config"
 	"github.com/rundsk/dsk/internal/ddt"
 	"github.com/rundsk/dsk/internal/httputil"
 	"github.com/rundsk/dsk/internal/plex"
-	"github.com/gorilla/websocket"
 )
 
-func NewV1(ss *plex.Sources, appVersion string, b *bus.Broker) *V1 {
+func NewV1(ss *plex.Sources, appVersion string, b *bus.Broker, allowOrigin string) *V1 {
 	return &V1{
-		appVersion: appVersion,
-		broker:     b,
-		sources:    ss,
+		appVersion:  appVersion,
+		allowOrigin: allowOrigin,
+		broker:      b,
+		sources:     ss,
 		upgrader: websocket.Upgrader{
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
@@ -38,6 +39,11 @@ type V1 struct {
 	sources *plex.Sources
 
 	appVersion string
+
+	// The value of the Access-Control-Allow-Origin HTTP header to set, if empty
+	// the header will remain unset. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
+	// for valid values.
+	allowOrigin string
 
 	// We subscribe to the broker in our messages endpoint.
 	broker *bus.Broker
@@ -401,7 +407,7 @@ func (api V1) NewSources(ss *plex.Sources) (*V1Sources, error) {
 // Handles these URLs:
 //   /api/v1/hello
 func (api V1) HelloHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json")
+	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
 	r.Body.Close()
 
 	_, s, err := api.sources.Get("live")
@@ -423,7 +429,7 @@ func (api V1) HelloHandler(w http.ResponseWriter, r *http.Request) {
 // Handles these URLs:
 //   /api/v1/config
 func (api V1) ConfigHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json")
+	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
 	r.Body.Close()
 
 	_, s, err := api.sources.Get("live")
@@ -445,7 +451,7 @@ func (api V1) ConfigHandler(w http.ResponseWriter, r *http.Request) {
 // Handles these URLs:
 //   /api/v1/messages
 func (api *V1) MessagesHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "")
+	wr := httputil.NewResponder(w, r, "", api.allowOrigin)
 	defer r.Body.Close()
 
 	conn, err := api.upgrader.Upgrade(w, r, nil)
@@ -493,7 +499,7 @@ func (api *V1) MessagesHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/v1/tree
 //   /api/v1/tree&v={version}
 func (api V1) TreeHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json")
+	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
 	r.Body.Close()
 	// Not getting or checking path, as only tree requests are routed here.
 
@@ -523,7 +529,7 @@ func (api V1) TreeHandler(w http.ResponseWriter, r *http.Request) {
 // Handles these kinds of URLs:
 //   /api/v1/tree/DisplayData/Table?v={version}
 func (api V1) NodeHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json")
+	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
 	r.Body.Close()
 
 	path := r.URL.Path[len("/api/v1/tree/"):]
@@ -568,7 +574,7 @@ func (api V1) NodeHandler(w http.ResponseWriter, r *http.Request) {
 // Handles these kinds of URLs:
 //   /api/v1/tree/Button/foo.mp4&v={version}
 func (api V1) NodeAssetHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json")
+	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
 	r.Body.Close()
 
 	path := r.URL.Path[len("/api/v1/tree/"):]
@@ -610,7 +616,7 @@ func (api V1) NodeAssetHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/v1/search?q={query}
 //   /api/v1/search?q={query}&v={version}
 func (api V1) SearchHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json")
+	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
 	r.Body.Close()
 
 	q := r.URL.Query().Get("q")
@@ -636,7 +642,7 @@ func (api V1) SearchHandler(w http.ResponseWriter, r *http.Request) {
 // Handles this URL:
 //   /api/v1/sources
 func (api V1) SourcesHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json")
+	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
 	r.Body.Close()
 
 	ss, err := api.NewSources(api.sources)
@@ -648,7 +654,7 @@ func (api V1) SourcesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api V1) NotFoundHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "")
+	wr := httputil.NewResponder(w, r, "", api.allowOrigin)
 	r.Body.Close()
 
 	wr.Error(httputil.ErrNotFound, nil)

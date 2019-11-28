@@ -19,10 +19,10 @@ import (
 
 	"github.com/rundsk/dsk/internal/api"
 
-	"github.com/rundsk/dsk/internal/httputil"
-	"github.com/rundsk/dsk/internal/plex"
 	"github.com/fatih/color"
 	isatty "github.com/mattn/go-isatty"
+	"github.com/rundsk/dsk/internal/httputil"
+	"github.com/rundsk/dsk/internal/plex"
 )
 
 var (
@@ -62,6 +62,7 @@ func main() {
 	version := flag.Bool("version", false, "print DSK version")
 	noColor := flag.Bool("no-color", false, "disables color output")
 	ffrontend := flag.String("frontend", "", "path to a frontend, to use instead of the built-in")
+	allowOrigin := flag.String("allow-origin", "", "sets a Access-Control-Allow-Origin HTTP header for all API responses")
 	flag.Parse()
 
 	if len(flag.Args()) > 1 {
@@ -134,8 +135,8 @@ func main() {
 	}
 
 	apis := map[int]httputil.Mountable{
-		1: api.NewV1(app.Sources, app.Version, app.Broker),
-		2: api.NewV2(app.Sources, app.Version, app.Broker),
+		1: api.NewV1(app.Sources, app.Version, app.Broker, *allowOrigin),
+		2: api.NewV2(app.Sources, app.Version, app.Broker, *allowOrigin),
 	}
 	for _, a := range apis {
 		a.MountHTTPHandlers()

@@ -19,15 +19,22 @@ import (
 	"github.com/rundsk/dsk/internal/search"
 )
 
-func NewV2(ss *plex.Sources, appVersion string, b *bus.Broker) *V2 {
+func NewV2(ss *plex.Sources, appVersion string, b *bus.Broker, allowOrigin string) *V2 {
 	return &V2{
-		v1:      NewV1(ss, appVersion, b),
-		sources: ss,
+		v1:          NewV1(ss, appVersion, b, allowOrigin),
+		allowOrigin: allowOrigin,
+		sources:     ss,
 	}
 }
 
 type V2 struct {
-	v1      *V1
+	v1 *V1
+
+	// The value of the Access-Control-Allow-Origin HTTP header to set, if empty
+	// the header will remain unset. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
+	// for valid values.
+	allowOrigin string
+
 	sources *plex.Sources
 }
 
@@ -102,7 +109,7 @@ func (api V2) NewTreeFilterResults(nodes []*ddt.Node, total int, took time.Durat
 //   /api/v2/search?q={query}
 //   /api/v2/search?q={query}&v={version}
 func (api V2) SearchHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json")
+	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
 	r.Body.Close()
 
 	q := r.URL.Query().Get("q")
@@ -129,7 +136,7 @@ func (api V2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/v2/filter?q={query}
 //   /api/v2/filter?q={query}&v={version}
 func (api V2) FilterHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json")
+	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
 	r.Body.Close()
 
 	q := r.URL.Query().Get("q")
