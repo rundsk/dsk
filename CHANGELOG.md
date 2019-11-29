@@ -16,6 +16,7 @@
 - We now support HTML comments inside Markdown documents
 - We've moved from an internal Concourse pipeline to GitHub actions, which will run our test
   and deploy the website. We are now able to automatically build and test packages for macOS.
+- API responses for node assets that are images, now carry its dimensions in pixels.
 
 ## 1.2.0
 

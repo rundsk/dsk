@@ -129,6 +129,10 @@ type V1NodeAsset struct {
 	Name     string `json:"name"`
 	Modified int64  `json:"modified"`
 	Size     int64  `json:"size"`
+
+	// Optional, format dependent, fields.
+	Width  int `json:"width,omitempty"`
+	Height int `json:"height,omitempty"`
 }
 
 type V1SearchResults struct {
@@ -371,11 +375,21 @@ func (api V1) NewNodeAsset(a *ddt.NodeAsset) (*V1NodeAsset, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	ok, width, height, err := a.Dimensions()
+	if ok && err != nil {
+		return nil, err
+	}
+
 	return &V1NodeAsset{
 		URL:      a.URL,
 		Name:     a.Name(),
 		Modified: modified,
 		Size:     size,
+
+		// Optional, these can be empty.
+		Width:  width,
+		Height: height,
 	}, nil
 }
 
