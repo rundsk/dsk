@@ -77,6 +77,15 @@ function Doc(props) {
     h4: props => <Heading {...props} level="delta" docTitle={docTitle} isJumptarget={true} />,
     img: props => <Image {...props} />,
     pre: props => {
+      // When a language is added to a Markdown fenced code block, it is
+      // stored as a class with a "language-" prefix in the inner <code>.
+      // Here we extract it and turn it into a prop.
+      let language = props.children.match(/^<code class="language-(.*?)">/);
+
+      if (language && language.length === 2) {
+        props["language"] = language[1];
+      }
+
       // When Markdown fenced code blocks get converted to <pre> they
       // additionally include inner <code>. We cannot use orphans as this create
       // empty "ghost" elements.
