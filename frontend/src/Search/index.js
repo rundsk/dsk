@@ -162,7 +162,7 @@ function Search(props) {
   return (
     <div
       className={classes.join(' ')}
-      onClick={ev => {
+      onMouseDown={ev => {
         if (searchIsFocused) {
           hideSearch();
         }
