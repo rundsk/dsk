@@ -5,7 +5,7 @@
 # license that can be found in the LICENSE file.
 
 FRONTEND ?= $(shell pwd)/frontend/build
-DDT ?= $(shell pwd)/example
+DDT ?= $(shell pwd)/../example-design-system
 
 VERSION ?= head-$(shell git rev-parse --short HEAD)
 LDFLAGS = -X main.Version=$(VERSION)
