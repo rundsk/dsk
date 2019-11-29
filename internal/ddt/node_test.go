@@ -142,8 +142,8 @@ func TestAsset(t *testing.T) {
 
 	n := &Node{Path: node0}
 
-	_, err := n.Asset("asset.json")
-	if err != nil {
+	ok, _, err := n.Asset("asset.json")
+	if !ok {
 		t.Errorf("failed to find asset: %s", err)
 	}
 }
@@ -160,18 +160,18 @@ func TestAssetWithOrderNumberPrefixNoopWithPrefix(t *testing.T) {
 
 	n := &Node{Path: node0}
 
-	_, err := n.Asset("02_asset.json")
-	if err != nil {
+	ok, _, err := n.Asset("02_asset.json")
+	if !ok {
 		t.Errorf("failed to find asset: %s", err)
 	}
 
-	a, _ := n.Asset("asset.json")
-	if a != nil {
+	ok, a, _ := n.Asset("asset.json")
+	if ok {
 		t.Errorf("found asset, where it should not: %s", a)
 	}
 
-	a, _ = n.Asset("04_asset.json")
-	if a != nil {
+	ok, a, _ = n.Asset("04_asset.json")
+	if ok {
 		t.Errorf("found asset, where it should not: %s", a)
 	}
 }
@@ -191,7 +191,7 @@ func TestAssetWithOrderNumberPrefixNoopCollisions(t *testing.T) {
 
 	n := &Node{Path: node0}
 
-	a, err := n.Asset("04_asset.json")
+	_, a, err := n.Asset("04_asset.json")
 	if err != nil {
 		t.Error(err)
 	}
@@ -199,7 +199,7 @@ func TestAssetWithOrderNumberPrefixNoopCollisions(t *testing.T) {
 		t.Errorf("Found wrong asset: %s", a)
 	}
 
-	a, err = n.Asset("02_asset.json")
+	_, a, err = n.Asset("02_asset.json")
 	if err != nil {
 		t.Error(err)
 	}
@@ -220,8 +220,8 @@ func TestAssetWithOrderNumberPrefixNoopWithoutPrefix(t *testing.T) {
 
 	n := &Node{Path: node0}
 
-	_, err := n.Asset("asset.json")
-	if err != nil {
+	ok, _, err := n.Asset("asset.json")
+	if !ok {
 		t.Errorf("failed to find asset: %s", err)
 	}
 
@@ -241,13 +241,13 @@ func TestAssetWithDecomposedFilenames(t *testing.T) {
 
 	n := &Node{Path: node0}
 
-	_, err := n.Asset("Cafe\u0301.json")
-	if err != nil {
+	ok, _, err := n.Asset("Cafe\u0301.json")
+	if !ok {
 		t.Errorf("failed to find asset: %s", err)
 	}
 
-	_, err = n.Asset("Café.json")
-	if err != nil {
+	ok, _, err = n.Asset("Café.json")
+	if !ok {
 		t.Errorf("failed to find asset: %s", err)
 	}
 }

@@ -356,10 +356,10 @@ func (n *Node) Version() string {
 // having cat.jpg and requesting 02_cat.jpg or using any other order
 // prefix will succeed. This behavior is not guaranteed to work in
 // future versions.
-func (n *Node) Asset(name string) (*NodeAsset, error) {
+func (n *Node) Asset(name string) (bool, *NodeAsset, error) {
 	assets, err := n.Assets()
 	if err != nil {
-		return nil, err
+		return false, nil, err
 	}
 
 	// Precompute, the comparison in which this will participate
@@ -368,15 +368,15 @@ func (n *Node) Asset(name string) (*NodeAsset, error) {
 
 	for _, a := range assets {
 		if a.Name() == name {
-			return a, nil
+			return true, a, nil
 		}
 	}
 	for _, a := range assets {
 		if a.Name() == removeOrderNumber(name) {
-			return a, nil
+			return true, a, nil
 		}
 	}
-	return nil, fmt.Errorf("no asset: %s", name)
+	return false, nil, nil
 }
 
 // Assets are all files inside the node directory excluding system

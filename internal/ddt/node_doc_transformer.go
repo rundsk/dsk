@@ -329,9 +329,9 @@ func (dt NodeDocTransformer) maybeSize(t html.Token, attrName string) (html.Toke
 	if !ok {
 		return t, nil
 	}
-	a, err := n.Asset(dna)
-	if err != nil {
-		return t, nil
+	ok, a, err := n.Asset(dna)
+	if !ok || err != nil {
+		return t, err
 	}
 	ok, w, h, err := a.Dimensions()
 	if !ok || err != nil {
@@ -379,8 +379,8 @@ func (dt NodeDocTransformer) discoverNodeInfo(u *url.URL) (bool, string, bool, s
 	}
 	// We've found a node but cannot be sure that the asset really
 	// is part of the node, let's check that.
-	a, err := n.Asset(path.Base(u.Path))
-	if err == nil {
+	ok, a, _ := n.Asset(path.Base(u.Path))
+	if ok {
 		return true, n.URL(), true, a.Name()
 	}
 	// We'll ignore invalid assets on valid nodes for now and keep on going.
