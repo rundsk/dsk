@@ -19,7 +19,7 @@
 - API responses for node assets that are images, now carry its dimensions in pixels.
 - JSON and YAML assets can now be converted into the other type, just exchange the extension
   to either `.json` or `.yaml`, when forming the URL to request the asset. To render the `foo.yaml`
-  asset as JSON use  http://127.0.0.1:8080/api/v1/tree/foo.json instead of `http://127.0.0.1:8080/api/v1/tree/foo.yaml`
+  asset as JSON use `/api/v1/tree/foo.json` instead of `/api/v1/tree/foo.yaml`
 
 ## 1.2.0
 
