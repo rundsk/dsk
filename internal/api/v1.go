@@ -125,10 +125,11 @@ type V1NodeDocComponent struct {
 }
 
 type V1NodeAsset struct {
-	URL      string `json:"url"`
-	Name     string `json:"name"`
-	Modified int64  `json:"modified"`
-	Size     int64  `json:"size"`
+	URL        string   `json:"url"`
+	Name       string   `json:"name"`
+	Alternates []string `json:"alternates"`
+	Modified   int64    `json:"modified"`
+	Size       int64    `json:"size"`
 
 	// Optional, format dependent, fields.
 	Width  int `json:"width,omitempty"`
@@ -382,10 +383,11 @@ func (api V1) NewNodeAsset(a *ddt.NodeAsset) (*V1NodeAsset, error) {
 	}
 
 	return &V1NodeAsset{
-		URL:      a.URL,
-		Name:     a.Name(),
-		Modified: modified,
-		Size:     size,
+		URL:        a.URL,
+		Name:       a.Name(),
+		Alternates: ddt.AlternateNames(a.Name()),
+		Modified:   modified,
+		Size:       size,
 
 		// Optional, these can be empty.
 		Width:  width,
