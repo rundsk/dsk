@@ -376,8 +376,8 @@ func (api V1) NewNodeAsset(a *ddt.NodeAsset) (*V1NodeAsset, error) {
 		return nil, err
 	}
 
-	ok, width, height, err := a.Dimensions()
-	if ok && err != nil {
+	_, width, height, err := a.Dimensions()
+	if err != nil {
 		return nil, err
 	}
 
