@@ -587,6 +587,8 @@ func (api V1) NodeHandler(w http.ResponseWriter, r *http.Request) {
 //
 // Handles these kinds of URLs:
 //   /api/v1/tree/Button/foo.mp4&v={version}
+//   /api/v1/tree/Button/colors.json&v={version}
+//   /api/v1/tree/Button/colors.yaml&v={version}
 func (api V1) NodeAssetHandler(w http.ResponseWriter, r *http.Request) {
 	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
 	r.Body.Close()
@@ -615,12 +617,56 @@ func (api V1) NodeAssetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	a, err := n.Asset(filepath.Base(path))
+	ok, a, err := n.Asset(filepath.Base(path))
 	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+	if ok {
+		http.ServeFile(w, r, a.Path)
+		return
+	}
+
+	// When the requested asset was not found under its exact name,
+	// maybe we just received a request for format conversion?
+
+	// Reusing var a *NodeAsset (see above).
+	for _, name := range ddt.AlternateNames(filepath.Base(path)) {
+		ok, a, err = n.Asset(name)
+		if err != nil {
+			wr.Error(httputil.Err, err)
+			return
+		}
+		if ok {
+			break
+		}
+	}
+	if a == nil {
 		wr.Error(httputil.ErrNoSuchAsset, err)
 		return
 	}
-	http.ServeFile(w, r, a.Path)
+
+	// We cannot serve the file contents as is, instead
+	// we serve the converted contents.
+	ok, content, err := a.As(filepath.Ext(path))
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+	if !ok {
+		wr.Error(httputil.ErrNoSuchAsset, err)
+		return
+	}
+
+	// The modified time is taken from the original file, as the
+	// conversion will change when the original changes.
+	modified, err := a.Modified()
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+
+	http.ServeContent(w, r, filepath.Base(path), modified, content)
 }
 
 // Performs a search over the design defintions tree and returns

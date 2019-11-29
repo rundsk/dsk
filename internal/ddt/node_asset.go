@@ -7,14 +7,20 @@
 package ddt
 
 import (
+	"bytes"
+	"encoding/json"
 	"image"
 	_ "image/jpeg"
 	_ "image/png"
+	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/go-yaml/yaml"
+	"github.com/icza/dyno"
 	"github.com/rundsk/dsk/internal/meta"
 
 	"golang.org/x/text/unicode/norm"
@@ -78,4 +84,58 @@ func (a NodeAsset) Dimensions() (ok bool, w int, h int, err error) {
 	default:
 		return false, 0, 0, nil
 	}
+}
+
+// As returns the node assets' contents, converted to the type
+// indicated by given extensions. The extensions should include the a
+// leading ".".
+func (a NodeAsset) As(targetExt string) (bool, io.ReadSeeker, error) {
+	sourceExt := filepath.Ext(a.Path)
+
+	contents, err := ioutil.ReadFile(a.Path)
+	if err != nil {
+		return true, nil, err
+	}
+	var data interface{}
+
+	switch sourceExt {
+	case ".json":
+		if err := json.Unmarshal(contents, &data); err != nil {
+			return true, nil, err
+		}
+	case ".yaml", ".yml":
+		if err := yaml.Unmarshal(contents, &data); err != nil {
+			return true, nil, err
+		}
+		// Fixup converted format, otherwise we can't convert to JSON.
+		data = dyno.ConvertMapI2MapS(data)
+	default:
+		return false, nil, nil
+	}
+
+	switch targetExt {
+	case ".json":
+		marshalled, err := json.Marshal(data)
+		return true, bytes.NewReader(marshalled), err
+	case ".yaml", ".yml":
+		marshalled, err := yaml.Marshal(data)
+		return true, bytes.NewReader(marshalled), err
+	default:
+		return false, nil, nil
+	}
+}
+
+func AlternateNames(name string) []string {
+	names := make([]string, 0)
+
+	ext := filepath.Ext(name)
+	filename := name[0 : len(name)-len(ext)]
+
+	switch ext {
+	case ".json":
+		names = append(names, filename+".yaml", filename+".yml")
+	case ".yaml", ".yml":
+		names = append(names, filename+".json")
+	}
+	return names
 }
