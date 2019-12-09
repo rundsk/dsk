@@ -41,6 +41,17 @@ class DSKBundleRegistry {
     this.modules.push(fn);
   }
 
+  keys() {
+    let keys = [];
+    if (Object.values(this.exports).length > 0) {
+      for (let e in this.exports) {
+        keys.push(e);
+      }
+    }
+
+    return keys;
+  }
+
   load(name) {
     if (this.exports[name]) {
       return this.exports[name];

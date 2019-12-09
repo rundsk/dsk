@@ -27,10 +27,12 @@ import TypographySpecimen from '../TypographySpecimen';
 function Doc(props) {
   const [ready, status] = useScript('/api/v1/tree/bundles/example.js');
 
-  console.log('ready?', ready);
   if (ready) {
-    var myButton = window.System.load('Button');
-    console.log(myButton);
+    var components = {};
+
+    window.System.keys().forEach((key)=> {
+      components[key] = window.System.load(key);
+    })
   }
 
   useEffect(() => {
@@ -53,12 +55,8 @@ function Doc(props) {
   // anchor.
   let docTitle = props.title;
 
-  const transforms = {
-    MyButton: (props) => {
-      if (myButton) {
-        return myButton(props);
-      }
-    },
+
+  let transforms = {
     Banner: props => <Banner {...props} />,
     CodeBlock: props => {
       // When using <CodeBlock> directly within documents, its contents aren't
@@ -95,6 +93,10 @@ function Doc(props) {
       return <CodeBlock escaped {...props} children={children} />;
     },
   };
+
+  window.System.keys().forEach(key => {
+    transforms[key] = components[key];
+  })
 
   const orphans = Object.keys(transforms)
     .filter(k => k !== 'a')
