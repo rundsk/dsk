@@ -7,11 +7,11 @@
 package api
 
 import (
-	"log"
 	"net/http"
 	"path/filepath"
 	"time"
 
+	"github.com/rs/cors"
 	"github.com/rundsk/dsk/internal/bus"
 	"github.com/rundsk/dsk/internal/ddt"
 	"github.com/rundsk/dsk/internal/httputil"
@@ -19,21 +19,24 @@ import (
 	"github.com/rundsk/dsk/internal/search"
 )
 
-func NewV2(ss *plex.Sources, appVersion string, b *bus.Broker, allowOrigin string) *V2 {
+func NewV2(ss *plex.Sources, appVersion string, b *bus.Broker, allowOrigins []string) *V2 {
 	return &V2{
-		v1:          NewV1(ss, appVersion, b, allowOrigin),
-		allowOrigin: allowOrigin,
-		sources:     ss,
+		v1:           NewV1(ss, appVersion, b, allowOrigins),
+		allowOrigins: allowOrigins,
+		sources:      ss,
 	}
 }
 
 type V2 struct {
 	v1 *V1
 
-	// The value of the Access-Control-Allow-Origin HTTP header to set, if empty
-	// the header will remain unset. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
-	// for valid values.
-	allowOrigin string
+	// allowOrigins is a list of origins a cross-domain request can be
+	// executed from. If the special * value is present in the list, all
+	// origins will be allowed. An origin may contain a wildcard (*) to
+	// replace 0 or more characters (i.e.: http://*.domain.com). Usage of
+	// wildcards implies a small performance penality. Only one wildcard
+	// can be used per origin. The default value is *.
+	allowOrigins []string
 
 	sources *plex.Sources
 }
@@ -59,24 +62,37 @@ type V2FilterResults struct {
 	Took  int64        `json:"took"` // nanoseconds
 }
 
-func (api V2) MountHTTPHandlers() {
-	log.Print("Mounting APIv2 HTTP handlers...")
+// HTTPMux returns a HTTP mux that can be mounted onto a root mux.
+func (api V2) HTTPMux() http.Handler {
+	mux := http.NewServeMux()
 
-	http.HandleFunc("/api/v2/hello", api.v1.HelloHandler)
-	http.HandleFunc("/api/v2/config", api.v1.ConfigHandler)
-	http.HandleFunc("/api/v2/sources", api.v1.SourcesHandler)
-	http.HandleFunc("/api/v2/tree", api.v1.TreeHandler)
-	http.HandleFunc("/api/v2/tree/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/hello", api.v1.HelloHandler)
+	mux.HandleFunc("/config", api.v1.ConfigHandler)
+	mux.HandleFunc("/sources", api.v1.SourcesHandler)
+	mux.HandleFunc("/tree", api.v1.TreeHandler)
+	mux.HandleFunc("/tree/", func(w http.ResponseWriter, r *http.Request) {
 		if filepath.Ext(r.URL.Path) != "" {
 			api.v1.NodeAssetHandler(w, r)
 		} else {
 			api.v1.NodeHandler(w, r)
 		}
 	})
-	http.HandleFunc("/api/v2/filter", api.FilterHandler)
-	http.HandleFunc("/api/v2/search", api.SearchHandler)
-	http.HandleFunc("/api/v2/messages", api.v1.MessagesHandler)
-	http.HandleFunc("/api/v2", api.v1.NotFoundHandler)
+	mux.HandleFunc("/filter", api.FilterHandler)
+	mux.HandleFunc("/search", api.SearchHandler)
+	mux.HandleFunc("/messages", api.v1.MessagesHandler)
+	mux.HandleFunc("/", api.v1.NotFoundHandler)
+
+	// An empty slice of origins indicates that CORS shoule be
+	// disabled. If we'd pass an empty slice to the CORS middleware
+	// it'd be interpreted to allow all origins. We want to be "secure
+	// by default".
+	if len(api.allowOrigins) == 0 {
+		return mux
+	}
+	return cors.New(cors.Options{
+		AllowedOrigins:   api.allowOrigins,
+		AllowCredentials: true,
+	}).Handler(mux)
 }
 
 func (api V2) NewTreeSearchResults(hs []*search.FullSearchHit, total int, took time.Duration) *V2FullSearchResults {
@@ -109,7 +125,7 @@ func (api V2) NewTreeFilterResults(nodes []*ddt.Node, total int, took time.Durat
 //   /api/v2/search?q={query}
 //   /api/v2/search?q={query}&v={version}
 func (api V2) SearchHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
+	wr := httputil.NewResponder(w, r, "application/json")
 	r.Body.Close()
 
 	q := r.URL.Query().Get("q")
@@ -136,7 +152,7 @@ func (api V2) SearchHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/v2/filter?q={query}
 //   /api/v2/filter?q={query}&v={version}
 func (api V2) FilterHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
+	wr := httputil.NewResponder(w, r, "application/json")
 	r.Body.Close()
 
 	q := r.URL.Query().Get("q")

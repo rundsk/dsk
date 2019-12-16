@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/rs/cors"
 	"github.com/rundsk/dsk/internal/bus"
 	"github.com/rundsk/dsk/internal/config"
 	"github.com/rundsk/dsk/internal/ddt"
@@ -22,12 +23,12 @@ import (
 	"github.com/rundsk/dsk/internal/plex"
 )
 
-func NewV1(ss *plex.Sources, appVersion string, b *bus.Broker, allowOrigin string) *V1 {
+func NewV1(ss *plex.Sources, appVersion string, b *bus.Broker, allowOrigins []string) *V1 {
 	return &V1{
-		appVersion:  appVersion,
-		allowOrigin: allowOrigin,
-		broker:      b,
-		sources:     ss,
+		appVersion:   appVersion,
+		allowOrigins: allowOrigins,
+		broker:       b,
+		sources:      ss,
 		upgrader: websocket.Upgrader{
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
@@ -40,10 +41,13 @@ type V1 struct {
 
 	appVersion string
 
-	// The value of the Access-Control-Allow-Origin HTTP header to set, if empty
-	// the header will remain unset. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
-	// for valid values.
-	allowOrigin string
+	// allowOrigins is a list of origins a cross-domain request can be
+	// executed from. If the special * value is present in the list, all
+	// origins will be allowed. An origin may contain a wildcard (*) to
+	// replace 0 or more characters (i.e.: http://*.domain.com). Usage of
+	// wildcards implies a small performance penality. Only one wildcard
+	// can be used per origin. The default value is *.
+	allowOrigins []string
 
 	// We subscribe to the broker in our messages endpoint.
 	broker *bus.Broker
@@ -158,23 +162,36 @@ type V1Source struct {
 	IsReady bool   `json:"is_ready"`
 }
 
-func (api V1) MountHTTPHandlers() {
-	log.Print("Mounting APIv1 HTTP handlers...")
+// HTTPMux returns a HTTP mux that can be mounted onto a root mux.
+func (api V1) HTTPMux() http.Handler {
+	mux := http.NewServeMux()
 
-	http.HandleFunc("/api/v1/hello", api.HelloHandler)
-	http.HandleFunc("/api/v1/config", api.ConfigHandler)
-	http.HandleFunc("/api/v1/sources", api.SourcesHandler)
-	http.HandleFunc("/api/v1/tree", api.TreeHandler)
-	http.HandleFunc("/api/v1/tree/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/hello", api.HelloHandler)
+	mux.HandleFunc("/config", api.ConfigHandler)
+	mux.HandleFunc("/sources", api.SourcesHandler)
+	mux.HandleFunc("/tree", api.TreeHandler)
+	mux.HandleFunc("/tree/", func(w http.ResponseWriter, r *http.Request) {
 		if filepath.Ext(r.URL.Path) != "" {
 			api.NodeAssetHandler(w, r)
 		} else {
 			api.NodeHandler(w, r)
 		}
 	})
-	http.HandleFunc("/api/v1/search", api.SearchHandler)
-	http.HandleFunc("/api/v1/messages", api.MessagesHandler)
-	http.HandleFunc("/api/v1", api.NotFoundHandler)
+	mux.HandleFunc("/search", api.SearchHandler)
+	mux.HandleFunc("/messages", api.MessagesHandler)
+	mux.HandleFunc("/", api.NotFoundHandler)
+
+	// An empty slice of origins indicates that CORS shoule be
+	// disabled. If we'd pass an empty slice to the CORS middleware
+	// it'd be interpreted to allow all origins. We want to be "secure
+	// by default".
+	if len(api.allowOrigins) == 0 {
+		return mux
+	}
+	return cors.New(cors.Options{
+		AllowedOrigins:   api.allowOrigins,
+		AllowCredentials: true,
+	}).Handler(mux)
 }
 
 func (api V1) NewHello(s *plex.Source) (*V1Hello, error) {
@@ -228,7 +245,7 @@ func (api V1) NewNode(n *ddt.Node, s *plex.Source) (*V1Node, error) {
 		return nil, err
 	}
 	for _, v := range nDocs {
-		html, err := v.HTML("/api/v1/tree", n.URL(), s.Tree.Get, s.Name)
+		html, err := v.HTML("/tree", n.URL(), s.Tree.Get, s.Name)
 		if err != nil {
 			return nil, err
 		}
@@ -421,7 +438,7 @@ func (api V1) NewSources(ss *plex.Sources) (*V1Sources, error) {
 // Handles these URLs:
 //   /api/v1/hello
 func (api V1) HelloHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
+	wr := httputil.NewResponder(w, r, "application/json")
 	r.Body.Close()
 
 	_, s, err := api.sources.Get("live")
@@ -443,7 +460,7 @@ func (api V1) HelloHandler(w http.ResponseWriter, r *http.Request) {
 // Handles these URLs:
 //   /api/v1/config
 func (api V1) ConfigHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
+	wr := httputil.NewResponder(w, r, "application/json")
 	r.Body.Close()
 
 	_, s, err := api.sources.Get("live")
@@ -465,7 +482,7 @@ func (api V1) ConfigHandler(w http.ResponseWriter, r *http.Request) {
 // Handles these URLs:
 //   /api/v1/messages
 func (api *V1) MessagesHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "", api.allowOrigin)
+	wr := httputil.NewResponder(w, r, "")
 	defer r.Body.Close()
 
 	conn, err := api.upgrader.Upgrade(w, r, nil)
@@ -513,7 +530,7 @@ func (api *V1) MessagesHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/v1/tree
 //   /api/v1/tree&v={version}
 func (api V1) TreeHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
+	wr := httputil.NewResponder(w, r, "application/json")
 	r.Body.Close()
 	// Not getting or checking path, as only tree requests are routed here.
 
@@ -543,10 +560,10 @@ func (api V1) TreeHandler(w http.ResponseWriter, r *http.Request) {
 // Handles these kinds of URLs:
 //   /api/v1/tree/DisplayData/Table?v={version}
 func (api V1) NodeHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
+	wr := httputil.NewResponder(w, r, "application/json")
 	r.Body.Close()
 
-	path := r.URL.Path[len("/api/v1/tree/"):]
+	path := r.URL.Path[len("/tree/"):]
 	v := r.URL.Query().Get("v")
 
 	s, err := api.sources.MustGet(v)
@@ -590,10 +607,10 @@ func (api V1) NodeHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/v1/tree/Button/colors.json&v={version}
 //   /api/v1/tree/Button/colors.yaml&v={version}
 func (api V1) NodeAssetHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
+	wr := httputil.NewResponder(w, r, "application/json")
 	r.Body.Close()
 
-	path := r.URL.Path[len("/api/v1/tree/"):]
+	path := r.URL.Path[len("/tree/"):]
 	v := r.URL.Query().Get("v")
 
 	s, err := api.sources.MustGet(v)
@@ -676,7 +693,7 @@ func (api V1) NodeAssetHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/v1/search?q={query}
 //   /api/v1/search?q={query}&v={version}
 func (api V1) SearchHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
+	wr := httputil.NewResponder(w, r, "application/json")
 	r.Body.Close()
 
 	q := r.URL.Query().Get("q")
@@ -702,7 +719,7 @@ func (api V1) SearchHandler(w http.ResponseWriter, r *http.Request) {
 // Handles this URL:
 //   /api/v1/sources
 func (api V1) SourcesHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json", api.allowOrigin)
+	wr := httputil.NewResponder(w, r, "application/json")
 	r.Body.Close()
 
 	ss, err := api.NewSources(api.sources)
@@ -714,7 +731,7 @@ func (api V1) SourcesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api V1) NotFoundHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "", api.allowOrigin)
+	wr := httputil.NewResponder(w, r, "")
 	r.Body.Close()
 
 	wr.Error(httputil.ErrNotFound, nil)

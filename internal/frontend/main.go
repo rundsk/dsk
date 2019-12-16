@@ -36,19 +36,21 @@ type Frontend struct {
 	chroot string
 }
 
-func (f Frontend) MountHTTPHandlers() {
-	log.Print("Mounting frontend HTTP handlers...")
+func (f Frontend) HTTPMux() http.Handler {
+	mux := http.NewServeMux()
 
 	// Handles frontend root document delivery and frontend assets.
 	// The frontend is allowed to use any path except /api. We route
 	// everything else into the front controller (index.html).
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if filepath.Ext(r.URL.Path) != "" {
 			f.AssetHandler(w, r)
 		} else {
 			f.RootHandler(w, r)
 		}
 	})
+
+	return mux
 }
 
 // Serves the frontend's index.html.
@@ -58,7 +60,7 @@ func (f Frontend) MountHTTPHandlers() {
 //   /index.html
 //   /* <catch all>
 func (f *Frontend) RootHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "", "")
+	wr := httputil.NewResponder(w, r, "")
 	r.Body.Close()
 
 	path := "index.html"
@@ -87,7 +89,7 @@ func (f *Frontend) RootHandler(w http.ResponseWriter, r *http.Request) {
 //   /assets/css/base.css
 //   /static/css/main.41064805.css
 func (f *Frontend) AssetHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "", "")
+	wr := httputil.NewResponder(w, r, "")
 	r.Body.Close()
 
 	path := r.URL.Path[len("/"):]

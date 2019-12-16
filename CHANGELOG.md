@@ -20,6 +20,11 @@
 - JSON and YAML assets can now be converted into the other type, just exchange the extension
   to either `.json` or `.yaml`, when forming the URL to request the asset. To render the `foo.yaml`
   asset as JSON use `/api/v1/tree/foo.json` instead of `/api/v1/tree/foo.yaml`
+- To control resource sharing we've introduced the `-allow-origin` flag, which
+  needs to be provided when starting DSK, if you like to allow origins from which
+  browsers can access API resources. A common scenario for this is when you have
+  multiple DSKs running and the frontend of DSK (a) wants to access the API of DSK
+  (b), i.e. for cross references.
 
 ## 1.2.0
 

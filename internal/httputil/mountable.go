@@ -6,6 +6,9 @@
 
 package httputil
 
+import "net/http"
+
 type Mountable interface {
-	MountHTTPHandlers()
+	// HTTPMux returns a HTTP mux that can be mounted onto a root mux.
+	HTTPMux() http.Handler
 }

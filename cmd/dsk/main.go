@@ -15,6 +15,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/rundsk/dsk/internal/api"
@@ -62,7 +63,7 @@ func main() {
 	version := flag.Bool("version", false, "print DSK version")
 	noColor := flag.Bool("no-color", false, "disables color output")
 	ffrontend := flag.String("frontend", "", "path to a frontend, to use instead of the built-in")
-	allowOrigin := flag.String("allow-origin", "", "sets a Access-Control-Allow-Origin HTTP header for all API responses")
+	fallowOrigin := flag.String("allow-origin", "", "origins from which browsers can access the HTTP API; for multiple origins, use a comma as a separator, the wildcard * is supported; to allow all use *")
 	flag.Parse()
 
 	if len(flag.Args()) > 1 {
@@ -81,6 +82,7 @@ func main() {
 	}
 	whiteOnBlue := color.New(color.FgWhite, color.BgBlue)
 	green := color.New(color.FgGreen)
+	yellow := color.New(color.FgYellow)
 	red := color.New(color.FgRed)
 
 	if isTerminal {
@@ -114,6 +116,11 @@ func main() {
 	}
 	log.Printf("Detected live path: %s", livePath)
 
+	allowOrigins := strings.Split(*fallowOrigin, ",")
+	if len(allowOrigins) != 0 {
+		log.Print(yellow.Sprintf("Allowing access of the HTTP API from origins: %s", strings.Join(allowOrigins, ", ")))
+	}
+
 	app = plex.NewApp( // assign to global
 		Version,
 		livePath,
@@ -134,15 +141,23 @@ func main() {
 		}
 	}
 
+	mux := http.NewServeMux()
+
 	apis := map[int]httputil.Mountable{
-		1: api.NewV1(app.Sources, app.Version, app.Broker, *allowOrigin),
-		2: api.NewV2(app.Sources, app.Version, app.Broker, *allowOrigin),
+		1: api.NewV1(app.Sources, app.Version, app.Broker, allowOrigins),
+		2: api.NewV2(app.Sources, app.Version, app.Broker, allowOrigins),
 	}
-	for _, a := range apis {
-		a.MountHTTPHandlers()
+	for av, a := range apis {
+		log.Printf("Mounting APIv%d HTTP mux...", av)
+		mux.Handle(
+			fmt.Sprintf("/api/v%d/", av),
+			http.StripPrefix(fmt.Sprintf("/api/v%d", av), a.HTTPMux()),
+		)
 	}
+
 	// Must come last, as it contains a catch all route.
-	app.Frontend.MountHTTPHandlers()
+	log.Print("Mounting frontend HTTP mux...")
+	mux.Handle("/", app.Frontend.HTTPMux())
 
 	addr := fmt.Sprintf("%s:%s", *host, *port)
 	if isTerminal {
@@ -153,7 +168,7 @@ func main() {
 	}
 	log.Printf("Started web interface on %s, in %s", addr, time.Since(start))
 
-	if err := http.ListenAndServe(addr, nil); err != nil {
+	if err := http.ListenAndServe(addr, mux); err != nil {
 		log.Fatal(red.Sprintf("Failed to start web interface: %s", err))
 	}
 }
