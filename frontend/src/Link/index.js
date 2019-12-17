@@ -17,7 +17,7 @@ function Link(props) {
   // Do not use router for non nodes (i.e. external links)
   // or assets (these should be downloaded directly).
   if (!node || nodeAsset) {
-    return <a href={props.href}>{props.children}</a>;
+    return <a href={props.href} target={props.target}>{props.children}</a>;
   }
   // Create an URL Instance from the href String and create an URLSearchParams Instance from it.
   // Cast the URLSearchParams to an Object to merge later on. This way we can keep arbitary query parameters.
@@ -25,7 +25,7 @@ function Link(props) {
   let urlParams = Object.fromEntries(new URLSearchParams(url.search));
 
   return (
-    <BaseLink router={props.router} routeName="node" routeParams={{ ...urlParams, node, v: props.route.params.v }}>
+    <BaseLink router={props.router} routeName="node" routeParams={{ ...urlParams, node, v: props.route.params.v }} target={props.target}>
       {props.children}
     </BaseLink>
   );

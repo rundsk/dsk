@@ -25,6 +25,7 @@
   browsers can access API resources. A common scenario for this is when you have
   multiple DSKs running and the frontend of DSK (a) wants to access the API of DSK
   (b), i.e. for cross references.
+- `Link` does now support providing a `target`. 
 
 ## 1.2.0
 
