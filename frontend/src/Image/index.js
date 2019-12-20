@@ -17,7 +17,7 @@ function Image(props) {
   let width = props.width;
   let height = props.height;
 
-  if (props.src.includes('@2x') && width && height) {
+  if ((props.src.includes('@2x') || props.src.includes('@x2')) && width && height) {
     width /= 2;
     height /= 2;
   }
