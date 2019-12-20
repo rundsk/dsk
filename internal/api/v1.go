@@ -245,7 +245,7 @@ func (api V1) NewNode(n *ddt.Node, s *plex.Source) (*V1Node, error) {
 		return nil, err
 	}
 	for _, v := range nDocs {
-		html, err := v.HTML("/tree", n.URL(), s.Tree.Get, s.Name)
+		html, err := v.HTML("/api/v1/tree", n.URL(), s.Tree.Get, s.Name)
 		if err != nil {
 			return nil, err
 		}
