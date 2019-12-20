@@ -607,7 +607,7 @@ func (api V1) NodeHandler(w http.ResponseWriter, r *http.Request) {
 //   /api/v1/tree/Button/colors.json&v={version}
 //   /api/v1/tree/Button/colors.yaml&v={version}
 func (api V1) NodeAssetHandler(w http.ResponseWriter, r *http.Request) {
-	wr := httputil.NewResponder(w, r, "application/json")
+	wr := httputil.NewResponder(w, r, "application/octet-stream")
 	r.Body.Close()
 
 	path := r.URL.Path[len("/tree/"):]
