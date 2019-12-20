@@ -63,7 +63,7 @@ func main() {
 	version := flag.Bool("version", false, "print DSK version")
 	noColor := flag.Bool("no-color", false, "disables color output")
 	ffrontend := flag.String("frontend", "", "path to a frontend, to use instead of the built-in")
-	fallowOrigin := flag.String("allow-origin", "", "origins from which browsers can access the HTTP API; for multiple origins, use a comma as a separator, the wildcard * is supported; to allow all use *")
+	allowOrigin := flag.String("allow-origin", "", "origins from which browsers can access the HTTP API; for multiple origins, use a comma as a separator, the wildcard * is supported; to allow all use *")
 	flag.Parse()
 
 	if len(flag.Args()) > 1 {
