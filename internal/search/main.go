@@ -15,7 +15,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rundsk/dsk/internal/ddt"
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/analysis/analyzer/keyword"
 	"github.com/blevesearch/bleve/analysis/analyzer/simple"
@@ -23,6 +22,7 @@ import (
 	"github.com/blevesearch/bleve/analysis/lang/en"
 	"github.com/blevesearch/bleve/mapping"
 	"github.com/blevesearch/bleve/search/query"
+	"github.com/rundsk/dsk/internal/ddt"
 )
 
 var (
@@ -382,6 +382,7 @@ func (s *Search) FilterSearch(q string) ([]*ddt.Node, int, time.Duration, bool, 
 
 	cq := bleve.NewConjunctionQuery(pqs...)
 	req := bleve.NewSearchRequest(cq)
+	req.Size = 100
 
 	res, err := s.narrowIndex.Search(req)
 
