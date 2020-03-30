@@ -15,7 +15,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rundsk/dsk/internal/ddt"
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/analysis/analyzer/keyword"
 	"github.com/blevesearch/bleve/analysis/analyzer/simple"
@@ -23,7 +22,10 @@ import (
 	"github.com/blevesearch/bleve/analysis/lang/en"
 	"github.com/blevesearch/bleve/mapping"
 	"github.com/blevesearch/bleve/search/query"
+	"github.com/rundsk/dsk/internal/ddt"
 )
+
+const FilterResultLimit = 500
 
 var (
 	// AvailableSearchLangs are languages mapped to their analyzer names.
@@ -382,6 +384,7 @@ func (s *Search) FilterSearch(q string) ([]*ddt.Node, int, time.Duration, bool, 
 
 	cq := bleve.NewConjunctionQuery(pqs...)
 	req := bleve.NewSearchRequest(cq)
+	req.Size = FilterResultLimit
 
 	res, err := s.narrowIndex.Search(req)
 

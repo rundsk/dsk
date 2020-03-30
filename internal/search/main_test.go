@@ -7,16 +7,17 @@
 package search
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/blevesearch/bleve"
 	"github.com/rundsk/dsk/internal/author"
 	"github.com/rundsk/dsk/internal/config"
 	"github.com/rundsk/dsk/internal/ddt"
 	"github.com/rundsk/dsk/internal/meta"
-	"github.com/blevesearch/bleve"
 )
 
 // Tests for FullSearch:
@@ -371,6 +372,39 @@ func TestFilterSearchGermanWordPartials(t *testing.T) {
 	expectFilterSearchResult(t, rs, "Diversitat")
 }
 
+func TestFilterSearchTags(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n0 := newTestNode(filepath.Join(tmp, "Button"), tmp)
+	n0.Create()
+	n0.CreateMeta("meta.yaml", &ddt.NodeMeta{
+		Tags: []string{"react"},
+	})
+	n0.Load()
+
+	n1 := newTestNode(filepath.Join(tmp, "Form Element"), tmp)
+	n1.Create()
+	n1.CreateMeta("meta.yaml", &ddt.NodeMeta{
+		Tags: []string{"react"},
+	})
+	n1.Load()
+
+	n2 := newTestNode(filepath.Join(tmp, "Radio Button Group"), tmp)
+	n2.Create()
+	n2.CreateMeta("meta.yaml", &ddt.NodeMeta{
+		Tags: []string{"react"},
+	})
+	n2.Load()
+
+	s := setupSearchTest(t, tmp, "en", []*ddt.Node{n0, n1, n2}, false)
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FilterSearch("react")
+	expectFilterSearchResult(t, rs, "Button")
+	expectFilterSearchResult(t, rs, "Form-Element")
+	expectFilterSearchResult(t, rs, "Radio-Button-Group")
+}
+
 func TestFilterSearchMultipleTagsWithLogicalAndInQuery(t *testing.T) {
 	tmp, _ := ioutil.TempDir("", "tree")
 
@@ -505,6 +539,77 @@ func TestFilterSearchTagsWithSpaces(t *testing.T) {
 
 	rs, _, _, _, _ = s.FilterSearch("needs images")
 	expectFilterSearchResult(t, rs, "Colors")
+}
+
+func TestFilterSearchTagsWithSpacesWhenTitleContainsSpace(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	n0 := newTestNode(filepath.Join(tmp, "Color Definition"), tmp)
+	n0.Create()
+	n0.CreateMeta("meta.yaml", &ddt.NodeMeta{
+		Tags: []string{"foo", "needs images"},
+	})
+	n0.Load()
+
+	s := setupSearchTest(t, tmp, "en", []*ddt.Node{n0}, false)
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FilterSearch("needs")
+	expectFilterSearchResult(t, rs, "Color-Definition")
+
+	rs, _, _, _, _ = s.FilterSearch("images")
+	expectFilterSearchResult(t, rs, "Color-Definition")
+
+	rs, _, _, _, _ = s.FilterSearch("needs images")
+	expectFilterSearchResult(t, rs, "Color-Definition")
+}
+
+func TestFilterSearchMoreThan10Results(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+
+	var nodes []*ddt.Node
+	for i := 0; i < 20; i++ {
+		n0 := newTestNode(filepath.Join(tmp, fmt.Sprintf("Node-%d", i)), tmp)
+		n0.Create()
+		n0.CreateMeta("meta.yaml", &ddt.NodeMeta{
+			Tags: []string{"foo"},
+		})
+		n0.Load()
+
+		nodes = append(nodes, n0)
+	}
+
+	s := setupSearchTest(t, tmp, "en", []*ddt.Node{
+		nodes[0],
+		nodes[1],
+		nodes[2],
+		nodes[3],
+		nodes[4],
+		nodes[5],
+		nodes[6],
+		nodes[7],
+		nodes[8],
+		nodes[9],
+		nodes[10],
+		nodes[11],
+		nodes[12],
+	}, false)
+	defer teardownSearchTest(tmp, s)
+
+	rs, _, _, _, _ := s.FilterSearch("foo")
+	expectFilterSearchResult(t, rs, "Node-0")
+	expectFilterSearchResult(t, rs, "Node-1")
+	expectFilterSearchResult(t, rs, "Node-2")
+	expectFilterSearchResult(t, rs, "Node-3")
+	expectFilterSearchResult(t, rs, "Node-4")
+	expectFilterSearchResult(t, rs, "Node-5")
+	expectFilterSearchResult(t, rs, "Node-6")
+	expectFilterSearchResult(t, rs, "Node-7")
+	expectFilterSearchResult(t, rs, "Node-8")
+	expectFilterSearchResult(t, rs, "Node-9")
+	expectFilterSearchResult(t, rs, "Node-10")
+	expectFilterSearchResult(t, rs, "Node-11")
+	expectFilterSearchResult(t, rs, "Node-12")
 }
 
 // Search test helpers:
