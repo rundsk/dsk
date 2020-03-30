@@ -400,8 +400,8 @@ func TestFilterSearchTags(t *testing.T) {
 
 	rs, _, _, _, _ := s.FilterSearch("react")
 	expectFilterSearchResult(t, rs, "Button")
-	expectFilterSearchResult(t, rs, "Form Element")
-	expectFilterSearchResult(t, rs, "Radio Button Group")
+	expectFilterSearchResult(t, rs, "Form-Element")
+	expectFilterSearchResult(t, rs, "Radio-Button-Group")
 }
 
 func TestFilterSearchMultipleTagsWithLogicalAndInQuery(t *testing.T) {
@@ -554,13 +554,13 @@ func TestFilterSearchTagsWithSpacesWhenTitleContainsSpace(t *testing.T) {
 	defer teardownSearchTest(tmp, s)
 
 	rs, _, _, _, _ := s.FilterSearch("needs")
-	expectFilterSearchResult(t, rs, "Color Definition")
+	expectFilterSearchResult(t, rs, "Color-Definition")
 
 	rs, _, _, _, _ = s.FilterSearch("images")
-	expectFilterSearchResult(t, rs, "Color Definition")
+	expectFilterSearchResult(t, rs, "Color-Definition")
 
 	rs, _, _, _, _ = s.FilterSearch("needs images")
-	expectFilterSearchResult(t, rs, "Color Definition")
+	expectFilterSearchResult(t, rs, "Color-Definition")
 }
 
 // Search test helpers:
