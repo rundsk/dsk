@@ -25,6 +25,8 @@ import (
 	"github.com/rundsk/dsk/internal/ddt"
 )
 
+const FILTER_RESULT_LIMIT = 500
+
 var (
 	// AvailableSearchLangs are languages mapped to their analyzer names.
 	AvailableSearchLangs = map[string]string{
@@ -382,7 +384,7 @@ func (s *Search) FilterSearch(q string) ([]*ddt.Node, int, time.Duration, bool, 
 
 	cq := bleve.NewConjunctionQuery(pqs...)
 	req := bleve.NewSearchRequest(cq)
-	req.Size = 100
+	req.Size = FILTER_RESULT_LIMIT
 
 	res, err := s.narrowIndex.Search(req)
 
