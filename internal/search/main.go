@@ -25,7 +25,7 @@ import (
 	"github.com/rundsk/dsk/internal/ddt"
 )
 
-const FILTER_RESULT_LIMIT = 500
+const FilterResultLimit = 500
 
 var (
 	// AvailableSearchLangs are languages mapped to their analyzer names.
