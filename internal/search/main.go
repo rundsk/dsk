@@ -384,7 +384,7 @@ func (s *Search) FilterSearch(q string) ([]*ddt.Node, int, time.Duration, bool, 
 
 	cq := bleve.NewConjunctionQuery(pqs...)
 	req := bleve.NewSearchRequest(cq)
-	req.Size = FILTER_RESULT_LIMIT
+	req.Size = FilterResultLimit
 
 	res, err := s.narrowIndex.Search(req)
 
