@@ -129,8 +129,13 @@ func NewRepo(mainpath string, subpath string, gr *git.Repository, b *bus.Broker)
 type Repo struct {
 	sync.RWMutex
 
-	// repo is the object we wrap.
-	repo *git.Repository
+	// repo is the object we wrap. It is protected by a mutex, as the
+	// underlying library is not thread safe by design. We can't use a
+	// RWMutex as we don't know if an action causes an internal write
+	// or just a read, i.e. what looks from the outside like a read
+	// action may in fact be an internal cache write.
+	repo      *git.Repository
+	repoMutex sync.Mutex
 
 	// Root of the repository's worktree.
 	Path string
@@ -166,7 +171,9 @@ func (r *Repo) Open() error {
 			select {
 			case <-r.ticker.C:
 				if r.HasHeadChanged() {
+					r.repoMutex.Lock()
 					ref, _ := r.repo.Head()
+					r.repoMutex.Unlock()
 
 					r.broker.Accept("repo.changed", ref.Name().Short())
 
@@ -200,10 +207,10 @@ func (r *Repo) Close() error {
 }
 
 func (r *Repo) HasHeadChanged() bool {
-	r.RLock()
-	defer r.RUnlock()
-
+	r.repoMutex.Lock()
 	ref, _ := r.repo.Head()
+	r.repoMutex.Unlock()
+
 	if ref == nil {
 		return false
 	}
@@ -211,10 +218,10 @@ func (r *Repo) HasHeadChanged() bool {
 }
 
 func (r *Repo) IsStale() bool {
-	r.RLock()
-	defer r.RUnlock()
-
+	r.repoMutex.Lock()
 	ref, _ := r.repo.Head()
+	r.repoMutex.Unlock()
+
 	if ref == nil {
 		return false
 	}
@@ -233,6 +240,9 @@ func (r *Repo) isSameRef(a *plumbing.Reference, b *plumbing.Reference) bool {
 
 func (r *Repo) currentReferenceName() (plumbing.ReferenceName, error) {
 	var found plumbing.ReferenceName
+
+	r.repoMutex.Lock()
+	defer r.repoMutex.Unlock()
 
 	head, err := r.repo.Head()
 	if err != nil {
@@ -255,8 +265,8 @@ func (r *Repo) currentReferenceName() (plumbing.ReferenceName, error) {
 }
 
 func (r *Repo) HasUpstreamChanged() (bool, error) {
-	r.RLock()
-	defer r.RUnlock()
+	r.repoMutex.Lock()
+	defer r.repoMutex.Unlock()
 
 	err := r.repo.Fetch(&git.FetchOptions{
 		RemoteName: "origin",
@@ -280,7 +290,11 @@ func (r *Repo) UpdateFromUpstream() error {
 	log.Printf("Updating %s from upstream...", r)
 	start := time.Now()
 
+	r.repoMutex.Lock()
+	defer r.repoMutex.Unlock()
+
 	ref, _ := r.repo.Head()
+
 	r.RLock()
 	rname := r.name
 	r.RUnlock()
@@ -317,7 +331,9 @@ func (r *Repo) UpdateFromUpstream() error {
 // to the path. The path must be absolute and rooted at the repository
 // path.
 func (r *Repo) ModifiedWithContext(ctx context.Context, path string) (time.Time, error) {
+	r.repoMutex.Lock()
 	ref, _ := r.repo.Head()
+	r.repoMutex.Unlock()
 
 	var lookup map[string]time.Time
 	var modified time.Time
@@ -354,7 +370,9 @@ func (r *Repo) ModifiedWithContext(ctx context.Context, path string) (time.Time,
 	// When there's only one commit no diffing has been taken place.
 	// It can be assumed that this is an initial commit adding all
 	// files.
+	r.repoMutex.Lock()
 	commit, err := r.repo.CommitObject(ref.Hash())
+	r.repoMutex.Unlock()
 	if err != nil {
 		return modified, err
 	}
@@ -363,7 +381,10 @@ func (r *Repo) ModifiedWithContext(ctx context.Context, path string) (time.Time,
 
 // Version returns the current checked out version.
 func (r *Repo) Version() (*Version, error) {
+	r.repoMutex.Lock()
 	ref, _ := r.repo.Head()
+	r.repoMutex.Unlock()
+
 	return NewVersionFromRef(ref), nil
 }
 
@@ -371,7 +392,10 @@ func (r *Repo) Version() (*Version, error) {
 // (which are prefixed by "dev-", as to avoid collisions with tag
 // names).
 func (r *Repo) Versions() (*Versions, error) {
+	r.repoMutex.Lock()
 	ref, _ := r.repo.Head()
+	r.repoMutex.Unlock()
+
 	return (<-r.versionsLookup.GetDirtyOkay(ref)).(*Versions), nil
 }
 
@@ -390,7 +414,9 @@ func (r *Repo) buildModifiedLookup() (*plumbing.Reference, map[string]time.Time,
 	pathsCached := make(map[string]bool, 0)
 	lookup := make(map[string]time.Time, 0)
 
+	r.repoMutex.Lock()
 	ref, _ := r.repo.Head()
+	r.repoMutex.Unlock()
 
 	if ref == nil {
 		log.Printf("No commits in repo %s, yet", r.Path)
@@ -417,6 +443,9 @@ func (r *Repo) buildModifiedLookup() (*plumbing.Reference, map[string]time.Time,
 	if err != nil {
 		return ref, lookup, fmt.Errorf("failed to walk directory tree %s: %s", r.Path, err)
 	}
+
+	r.repoMutex.Lock()
+	defer r.repoMutex.Unlock()
 
 	commits, err := r.repo.Log(&git.LogOptions{From: ref.Hash()})
 	if err != nil {
@@ -473,6 +502,9 @@ Outer:
 }
 
 func (r *Repo) buildVersionsLookup() (*plumbing.Reference, *Versions, error) {
+	r.repoMutex.Lock()
+	defer r.repoMutex.Unlock()
+
 	ref, _ := r.repo.Head()
 	versions := &Versions{}
 
