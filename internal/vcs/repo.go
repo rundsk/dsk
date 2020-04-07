@@ -478,7 +478,6 @@ func (r *Repo) buildVersionsLookup() (*plumbing.Reference, *Versions, error) {
 
 	iter, err := r.repo.References()
 	if err != nil {
-		r.RUnlock()
 		return ref, versions, err
 	}
 
