@@ -3,18 +3,15 @@
 ## 1.3.0 Unreleased
 
 - We've added support for Git backed versioning and multiple versions of a DDT.
-
 - We've moved to a new GitHub organization.
 - The docs have been extracted and moved to https://github.com/rundsk/website
 - The JavaScript SDK has been extracted and moved to https://github.com/rundsk/js-sdk
 - The example design system has been extracted and moved to https://github.com/rundsk/example-design-system
-
 - The backend has been refactored and modularized.
 - We've removed support for `go get` without additional initialization as this required us to
   keep a comparitvely big go file around where assets had been inlined.
 - We've moved from an internal Concourse pipeline to GitHub actions, which will run our test
   and deploy the website. We are now able to automatically build and test packages for macOS.
-
 - To control resource sharing we've introduced the `-allow-origin` flag, which
   needs to be provided when starting DSK, if you like to allow origins from which
   browsers can access API resources. A common scenario for this is when you have
@@ -26,15 +23,13 @@
 - API responses for node assets that are images, now carry its dimensions in pixels.
 - In addition to `@2x`, we've added `@x2` as a magic string, which when found in an image's file name, causes
   it to be considered "retina".
-
-- We've fixed a bug where assets with an order number could not be loaded.
-- Fix retrieval of assets, which have an order number.
-- Fix retrieval of assets, which have decomposed file names.
+- We've fixed some bugs where assets with an order number could not be loaded:
+	- Fix retrieval of assets, which have an order number.
+	- Fix retrieval of assets, which have decomposed file names.
 - We now support HTML comments inside Markdown documents.
-
-- The built-in frontend now supports captions for images, i.e. `<Image caption="Hello World">`.
 - The annotations for playgrounds have been improved.
-- The `<Link>` component does now support providing a `target` property. 
+- The `<Link>` component does now support providing a `target` property, i.e. `<Link target="new">`.
+- The built-in frontend now supports captions for images, i.e. `<Image caption="Hello World">`.
 - Introduced inline color card as `<Color>`, color cards are now named `<ColorCard>`.
 - We now display related aspects in built-in frontend.
 
