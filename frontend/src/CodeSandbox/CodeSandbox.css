@@ -1,0 +1,24 @@
+/*
+ *  Copyright 2019 Atelier Disko. All rights reserved. This source
+ *  code is distributed under the terms of the BSD 3-Clause License.
+ */
+
+.codesandbox {
+  margin: var(--documentation-component-spacing) 0;
+  width: 100%;
+}
+
+.codesandbox:first-child {
+  margin-top: 0;
+}
+
+.codesandbox:last-child {
+  margin-bottom: 0;
+}
+
+.codesandbox iframe {
+  width: 100%;
+  border: none;
+  height: calc(var(--spacing-unit) * 50);
+  overflow: hidden;
+}
