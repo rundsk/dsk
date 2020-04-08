@@ -12,6 +12,7 @@
   grid-template-columns: repeat(auto-fill, minmax(calc(var(--spacing-unit) * 18), 1fr));
   grid-column-gap: calc(var(--spacing-unit) * 4);
   grid-row-gap: calc(var(--spacing-unit) * 4);
+  align-items: flex-start;
   /* display: flex;
   flex-wrap: wrap; */
   margin: var(--documentation-component-spacing) 0;
