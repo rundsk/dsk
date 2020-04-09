@@ -19,8 +19,8 @@
   (b), i.e. for cross references.
 - JSON and YAML assets can now be converted into the other type, just exchange the extension
   to either `.json` or `.yaml`, when forming the URL to request the asset. To render the `foo.yaml`
-  asset as JSON use `/api/v1/tree/foo.json` instead of `/api/v1/tree/foo.yaml`.
-- API responses for node assets that are images, now carry its dimensions in pixels.
+  asset as JSON use `/api/v1/tree/foo.json` instead of `/api/v1/tree/foo.yaml`. Both versions of the asset are also exposed in the “Assets” tab in the frontend.
+- API responses for node assets that are images, now carry their dimensions in pixels. This information is also exposed in the “Assets” tab in the frontend.
 - In addition to `@2x`, we've added `@x2` as a magic string, which when found in an image's file name, causes
   it to be considered "retina".
 - We've fixed some bugs where assets with an order number could not be loaded:
