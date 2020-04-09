@@ -25,6 +25,9 @@ import Playground from '../Playground';
 import DoDont, { Do, Dont } from '../DoDont';
 import FigmaEmbed from '../FigmaEmbed';
 import TypographySpecimen from '../TypographySpecimen';
+import Glitch from '../Glitch';
+import CodeSandbox from '../CodeSandbox';
+import Asciinema from '../Asciinema';
 
 function Doc(props) {
   useEffect(() => {
@@ -69,6 +72,9 @@ function Doc(props) {
     Image: props => <Image {...props} />,
     TypographySpecimen: props => <TypographySpecimen {...props} />,
     Warning: props => <Banner type="warning" {...props} />,
+    Glitch: props => <Glitch {...props} />,
+    CodeSandbox: props => <CodeSandbox {...props} />,
+    Asciinema: props => <Asciinema {...props} />,
 
     a: props => <Link {...props} />,
     h1: props => <Heading {...props} level="alpha" docTitle={docTitle} isJumptarget={true} />,

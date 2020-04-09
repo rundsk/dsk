@@ -1,0 +1,26 @@
+/**
+ * Copyright 2020 Marius Wilms. All rights reserved.
+ * Copyright 2019 Atelier Disko. All rights reserved.
+ *
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+
+.asciinema {
+  margin: var(--documentation-component-spacing) 0;
+  width: 100%;
+}
+
+.asciinema:first-child {
+  margin-top: 0;
+}
+
+.asciinema:last-child {
+  margin-bottom: 0;
+}
+
+.asciinema iframe {
+  width: 100%;
+  border: none;
+  height: calc(var(--spacing-unit) * 50);
+}
