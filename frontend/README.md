@@ -9,12 +9,7 @@ App](https://github.com/facebook/create-react-app).
 
 The frontend interacts with the DSK backend using its HTTP API. It accesses
 that API via the `Client` JavaScript class from the [DSK JavaScript
-package](https://www.npmjs.com/package/@rundsk/dsk). The package source
-code can be found inside `js/dsk`.
-
-The DSK JavaScript package contains other usefull utilities, like `Tree`, that
-help with traversing and filtering trees, i.e. for the filter navigation. The
-package can be separately installed via `npm install @rundsk/dsk`.
+package](https://www.npmjs.com/package/@rundsk/js-sdk).
 
 ## Requirements
 

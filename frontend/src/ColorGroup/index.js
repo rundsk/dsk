@@ -8,7 +8,7 @@
 
 import React, { useState, useEffect } from 'react';
 import './ColorGroup.css';
-import { Client } from '@rundsk/dsk';
+import { Client } from '@rundsk/js-sdk';
 import ColorCard from '../ColorCard';
 
 function ColorGroup(props) {

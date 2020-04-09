@@ -11,7 +11,7 @@ import { routeNode, BaseLink } from 'react-router5';
 import { useGlobal } from 'reactn';
 import { Helmet } from 'react-helmet';
 
-import { Client } from '@rundsk/dsk';
+import { Client } from '@rundsk/js-sdk';
 import TreeNavigation from './TreeNavigation';
 
 import './Variables.css';

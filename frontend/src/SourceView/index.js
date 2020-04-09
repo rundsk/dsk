@@ -8,7 +8,7 @@
 
 import React, { useState, useEffect } from 'react';
 import './SourceView.css';
-import { Client } from '@rundsk/dsk';
+import { Client } from '@rundsk/js-sdk';
 import CodeBlock from '../CodeBlock';
 
 function SourceView(props) {

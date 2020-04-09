@@ -8,7 +8,7 @@
 
 import React, { useState, useEffect } from 'react';
 import './TypographySpecimen.css';
-import { Client } from '@rundsk/dsk';
+import { Client } from '@rundsk/js-sdk';
 
 function TypographySpecimen(props) {
   const [styles, setStyles] = useState([]);

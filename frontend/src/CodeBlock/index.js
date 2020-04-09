@@ -10,7 +10,7 @@ import React, { useState, useEffect } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import './CodeBlock.css';
 import { copyTextToClipboard } from '../utils';
-import { Client } from '@rundsk/dsk';
+import { Client } from '@rundsk/js-sdk';
 import hljs from 'highlight.js';
 import './atelier-forest-light.css';
 

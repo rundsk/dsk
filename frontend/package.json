@@ -41,7 +41,7 @@
   ],
   "jest": {
     "transformIgnorePatterns": [
-      "/node_modules/(?!@rundsk/dsk)"
+      "/node_modules/(?!@rundsk/js-sdk)"
     ]
   }
 }
