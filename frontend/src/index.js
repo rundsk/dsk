@@ -18,7 +18,10 @@ import { setGlobal } from 'reactn';
 import './index.css';
 import App from './App';
 
-const routes = [{ name: 'home', path: '/?:v' }, { name: 'node', path: '/tree/*node?:t&:v' }];
+const routes = [
+  { name: 'home', path: '/?:v' },
+  { name: 'node', path: '/tree/*node?:t&:v' },
+];
 
 const router = createRouter(routes, {
   defaultRoute: 'home',

@@ -89,7 +89,7 @@ function Doc(props) {
       let language = props.children.match(/^<code class="language-(.*?)">/);
 
       if (language && language.length === 2) {
-        props["language"] = language[1];
+        props['language'] = language[1];
       }
 
       // When Markdown fenced code blocks get converted to <pre> they

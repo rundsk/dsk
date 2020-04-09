@@ -85,7 +85,7 @@ function CodeBlock(props) {
       const nodes = codeRef.current.querySelectorAll('code');
 
       for (let i = 0; i < nodes.length; i++) {
-          hljs.highlightBlock(nodes[i])
+        hljs.highlightBlock(nodes[i]);
       }
     }
   }, [code, props.language, codeRef]);
