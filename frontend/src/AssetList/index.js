@@ -38,6 +38,11 @@ function AssetList(props) {
                   </a>
                 </Meta>
                 <Meta title="Size">{filesize(a.size)}</Meta>
+                {a.width && a.height && (
+                  <Meta title="Dimensions">
+                    {a.width}px × {a.height}px
+                  </Meta>
+                )}
                 <Meta title="Last Modified">{new Date(a.modified * 1000).toLocaleString()}</Meta>
               </div>
             </div>
