@@ -11,6 +11,8 @@ import ReactDOMServer from 'react-dom/server';
 import './CodeBlock.css';
 import { copyTextToClipboard } from '../utils';
 import { Client } from '@rundsk/dsk';
+import hljs from 'highlight.js';
+import './atelier-forest-light.css';
 
 // There are two possible ways this component is used, in the first case
 // children is a React object, in the second children is a string with
@@ -78,6 +80,16 @@ function CodeBlock(props) {
     }
   }, [props.src, props.children, isEscaped]);
 
+  useEffect(() => {
+    if (props.language && codeRef.current) {
+      const nodes = codeRef.current.querySelectorAll('code');
+
+      for (let i = 0; i < nodes.length; i++) {
+          hljs.highlightBlock(nodes[i])
+      }
+    }
+  }, [code, props.language, codeRef]);
+
   return (
     <div className="code-block">
       {title && (
@@ -89,7 +101,7 @@ function CodeBlock(props) {
         <div className="code-block__copy" onClick={copyCode}>
           {copyText}
         </div>
-        <pre className="code-block__code" ref={codeRef}>
+        <pre className={`code-block__code ${props.language}`} ref={codeRef}>
           {code}
         </pre>
       </div>
