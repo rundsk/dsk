@@ -37,6 +37,28 @@ function AssetList(props) {
                     {a.name}
                   </a>
                 </Meta>
+                {a.url.indexOf('json') >= 0 && (
+                  <Meta title="Download (Converted)">
+                    <a
+                      className="asset-list__asset-download"
+                      href={`/api/v1/tree/${a.url.replace('json', 'yaml')}?v=${props.source}`}
+                      download
+                    >
+                      {a.name.replace('json', 'yaml')}
+                    </a>
+                  </Meta>
+                )}
+                {a.url.indexOf('yaml') >= 0 && (
+                  <Meta title="Download (Converted)">
+                    <a
+                      className="asset-list__asset-download"
+                      href={`/api/v1/tree/${a.url.replace('yaml', 'json')}?v=${props.source}`}
+                      download
+                    >
+                      {a.name.replace('yaml', 'json')}
+                    </a>
+                  </Meta>
+                )}
                 <Meta title="Size">{filesize(a.size)}</Meta>
                 {a.width && a.height && (
                   <Meta title="Dimensions">
