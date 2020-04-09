@@ -31,6 +31,8 @@
 - The `<Link>` component does now support providing a `target` property, i.e. `<Link target="new">`.
 - The built-in frontend now supports captions for images, i.e. `<Image caption="Hello World">`.
 - Introduced inline color card as `<Color>`, color cards are now named `<ColorCard>`.
+- `<CodeBlock>` and markdown fenced code blocks now support code highlighting.
+- Introduced new documentation components for embedding code examples: `<Asciinema>`, `<CodeSandbox>` and `<Glitch>`.
 - We now display related aspects in built-in frontend.
 
 ## 1.2.0
