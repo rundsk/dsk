@@ -49,7 +49,7 @@ function FigmaEmbed(props) {
         console.log(err);
         setErrorMessage('Something went wrong.');
       });
-  }, [props.document, props.frame, config]);
+  }, [props.document, props.frame, config]); // eslint-disable-line
 
   function findId(data) {
     let nameWeAreLookingFor = props.frame;

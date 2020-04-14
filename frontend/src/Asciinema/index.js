@@ -12,7 +12,7 @@ import './Asciinema.css';
 function Asciinema(props) {
   return (
     <div className="asciinema">
-      <iframe src={`https://asciinema.org/a/${props.id}/iframe`} />
+      <iframe title={`asciinema-embed-${props.id}`} src={`https://asciinema.org/a/${props.id}/iframe`} />
     </div>
   );
 }

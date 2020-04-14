@@ -42,7 +42,7 @@ function TreeNavigation(props) {
 
   useEffect(() => {
     filterTree();
-  }, [filterTerm, props.tree]);
+  }, [filterTerm, props.tree]); // eslint-disable-line
 
   function onFilterTermChange(ev) {
     setFilterTerm(ev.target.value);
