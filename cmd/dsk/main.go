@@ -48,13 +48,26 @@ func main() {
 	go func() {
 		for sig := range sigc {
 			log.Printf("Caught %v signal, bye!", sig)
-			if app != nil {
-				log.Print("Cleaning up...")
-				if err := app.Close(); err != nil {
-					log.Printf("Failed to clean up: %s", err)
+
+			closed := make(chan bool, 1)
+			go func() {
+				if app != nil {
+					log.Print("Cleaning up...")
+					if err := app.Close(); err != nil {
+						log.Printf("Failed to clean up: %s", err)
+					}
+					closed <- true
 				}
+
+			}()
+			select {
+			case <-closed:
+				log.Print("Terminated gracefully.")
+				os.Exit(0)
+			case <-time.After(1 * time.Second):
+				log.Print("Teriminated forcefully, clean up routine took too long.")
+				os.Exit(1)
 			}
-			os.Exit(1)
 		}
 	}()
 
