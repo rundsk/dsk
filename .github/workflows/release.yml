@@ -38,7 +38,7 @@ jobs:
     steps:
       - run: |
           docker login -u dskbot -p ${{secrets.docker_hub_access_token}}
-          docker load container.tar
+          docker load -i container.tar
           make container-push
 
   build-container:
