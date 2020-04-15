@@ -38,7 +38,7 @@ jobs:
     steps:
       - run: |
           docker login -u dskbot -p ${{secrets.docker_hub_access_token}}
-          docker load container.tar
+          docker load -i container.tar
           make container-push
 
   build-container:
@@ -116,6 +116,9 @@ jobs:
           cd frontend
           yarn install --production=true
           yarn build
+        env:
+          # Don't convert warnings to errors, we love our warnings.
+          CI: false
       - uses: actions/upload-artifact@v1
         with:
           name: frontend-build
