@@ -1156,9 +1156,10 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@rundsk/js-sdk@rundsk/js-sdk#1.3":
-  version "1.3.0-alpha"
-  resolved "https://codeload.github.com/rundsk/js-sdk/tar.gz/b2f1f0b774ab078a4e2685dfc5114285ea843120"
+"@rundsk/js-sdk@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@rundsk/js-sdk/-/js-sdk-1.3.0.tgz#d1853095a997328385f1976ef8a718f42c7aeec3"
+  integrity sha512-UKihSkXzCNnletngqB4YXZpw+FaLcjMz8cIZtnOwdkaosSOYwSPteI0zCGnfwgZxNoT7f/Cw5PCqmpku72/h8Q==
 
 "@svgr/babel-plugin-add-jsx-attribute@^4.2.0":
   version "4.2.0"
