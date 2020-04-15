@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.3.0 Unreleased
+## 1.3.0
 
 - We've added support for Git backed versioning and multiple versions of a DDT.
 - We've moved to a new GitHub organization.
