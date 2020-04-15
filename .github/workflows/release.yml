@@ -116,6 +116,9 @@ jobs:
           cd frontend
           yarn install --production=true
           yarn build
+        env:
+          # Don't convert warnings to errors, we love our warnings.
+          CI: false
       - uses: actions/upload-artifact@v1
         with:
           name: frontend-build
