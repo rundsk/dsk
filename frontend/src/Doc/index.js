@@ -28,6 +28,7 @@ import TypographySpecimen from '../TypographySpecimen';
 import Glitch from '../Glitch';
 import CodeSandbox from '../CodeSandbox';
 import Asciinema from '../Asciinema';
+import ImageGrid from '../ImageGrid';
 
 function Doc(props) {
   useEffect(() => {
@@ -75,6 +76,7 @@ function Doc(props) {
     Glitch: props => <Glitch {...props} />,
     CodeSandbox: props => <CodeSandbox {...props} />,
     Asciinema: props => <Asciinema {...props} />,
+    ImageGrid: props => <ImageGrid {...props} />,
 
     a: props => <Link {...props} />,
     h1: props => <Heading {...props} level="alpha" docTitle={docTitle} isJumptarget={true} />,

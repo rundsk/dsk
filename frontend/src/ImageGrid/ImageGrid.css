@@ -1,0 +1,44 @@
+/**
+ * Copyright 2020 Marius Wilms, Christoph Labacher. All rights reserved.
+ * Copyright 2019 Atelier Disko. All rights reserved.
+ *
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+
+.image-grid {
+  margin: var(--documentation-component-spacing) 0;
+  width: 100%;
+  columns: 2;
+  column-gap: calc(var(--spacing-unit) * 3);
+}
+
+.image-grid:first-child {
+  margin-top: 0;
+}
+
+.image-grid:last-child {
+  margin-bottom: 0;
+}
+
+.image-grid .image {
+  break-inside: avoid;
+}
+
+.image-grid .image__caption {
+  font-size: 0.89em;
+  line-height: 1.45em;
+  margin-top: 2px;
+  padding: calc(var(--spacing-unit) * 1) calc(var(--spacing-unit) * 1.25);
+  background-color: var(--color-gray-1000);
+  color: var(--color-gray-300);
+  border-radius: 0 0 4px 4px;
+}
+
+/* --- Responsive Mobile --- */
+
+@media screen and (max-width: 550px) {
+  .image-grid {
+    columns: 1 !important;
+  }
+}
