@@ -12,7 +12,10 @@ import './Glitch.css';
 function Glitch(props) {
   return (
     <div className="glitch">
-      <iframe title={`glitch-embed-${props.id}`} src={`https://glitch.com/embed/#!/embed/${props.id}?path=${props.file}&previewSize=0`} />
+      <iframe
+        title={`glitch-embed-${props.id}`}
+        src={`https://glitch.com/embed/#!/embed/${props.id}?path=${props.file}&previewSize=0`}
+      />
     </div>
   );
 }

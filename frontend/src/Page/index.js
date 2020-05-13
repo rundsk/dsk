@@ -243,9 +243,11 @@ function Page(props) {
               <div className="page__meta-item">
                 <Meta title="Last Changed">{new Date(props.modified * 1000).toLocaleDateString()}</Meta>
               </div>
-              {props.version && <div className="page__meta-item">
-                <Meta title="Version">{props.version}</Meta>
-              </div>}
+              {props.version && (
+                <div className="page__meta-item">
+                  <Meta title="Version">{props.version}</Meta>
+                </div>
+              )}
               {authors && <div className="page__meta-item">{authors}</div>}
               {related && <div className="page__meta-item">{related}</div>}
               {custom}
