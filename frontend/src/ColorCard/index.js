@@ -6,13 +6,14 @@
  * license that can be found in the LICENSE file.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './ColorCard.css';
 import { copyTextToClipboard } from '../utils';
 import contrast from 'get-contrast';
 
 function ColorCard(props) {
   const [showCopiedIndicator, setShowCopiedIndicator] = useState(false);
+  const ref = useRef();
 
   let classes = ['color-card'];
 
@@ -26,9 +27,20 @@ function ColorCard(props) {
     classes.push('color-card--is-compact');
   }
 
-  function copyCode() {
+  function copyCode(ev) {
+    ev.preventDefault();
     setShowCopiedIndicator(true);
-    copyTextToClipboard(props.color);
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(props.color);
+    } else {
+      // navigator.clipboard does not work in Internet Explorer
+      copyTextToClipboard(props.color);
+
+      // Using copyTextToClipboard means the element loses focus. Here we restore it.
+      if (ref.current) {
+        ref.current.focus();
+      }
+    }
 
     setTimeout(() => {
       setShowCopiedIndicator(false);
@@ -36,7 +48,7 @@ function ColorCard(props) {
   }
 
   return (
-    <button className={classes.join(' ')} key={props.id} onClick={copyCode}>
+    <button className={classes.join(' ')} key={props.id} onClick={copyCode} ref={ref}>
       <div className="color-card__demo" style={{ backgroundColor: props.color }}>
         <div className="color-card__score">
           <span>{isColor(props.color) && contrast.score(colorValue, 'white')}</span>
