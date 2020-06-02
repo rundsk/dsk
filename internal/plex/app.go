@@ -10,6 +10,7 @@ import (
 	"context"
 	"log"
 	"path/filepath"
+	"strings"
 
 	"github.com/rundsk/dsk/internal/bus"
 	"github.com/rundsk/dsk/internal/config"
@@ -64,6 +65,22 @@ func (app *App) Open() error {
 	}
 	app.Broker = b
 	app.Teardown.AddFunc(b.Close)
+
+	// When the user provided a path or URL that points to a Git
+	// repository we'll use that to establish a local copy we can
+	// work with ("clone-first").
+	//
+	// Please note, that providing a local path to a ".git" directory
+	// will also cause a clone-first. By explicitly specifying that
+	// path we assume the users intention is a clone-first.
+	//
+	// Examples of paths and URLs that will trigger a clone-first:
+	//   git@github.com:rundsk/dsk.git
+	//   https://github.com/rundsk/dsk.git
+	//   /var/ddt/.git
+	if strings.HasSuffix(app.livePath, ".git") {
+
+	}
 
 	w, err := notify.NewWatcher(app.livePath)
 	if err != nil {
