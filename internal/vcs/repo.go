@@ -186,6 +186,9 @@ func (r *Repo) Open() error {
 					r.versionsLookup.RequestBuild(ref)
 					r.modifiedLookup.RequestBuild(ref)
 				}
+				if ok, _ := r.HasUpstreamChanged(); ok {
+					r.broker.Accept("repo.pendingUpstreamChanges", "")
+				}
 			case <-r.done:
 				log.Printf("Stopping %s periodic change detector (received quit)...", r)
 				return

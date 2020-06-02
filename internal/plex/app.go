@@ -137,6 +137,10 @@ func (app *App) Open() error {
 		return app.Sources.SelectPrimary("live")
 	}
 
+	live.Broker.SubscribeFunc("repo.pendingUpstreamChanges", func() error {
+		return live.UpdateFromUpstream()
+	})
+
 	// Pre-register the sources with their name, so the sources struct
 	// represents a complete (however not entirely initialized list).
 	versions, err := live.Versions()

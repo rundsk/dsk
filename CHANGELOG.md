@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.4.0
+
+- DSK now accepts URLs to Git repositories in addition to local paths as the
+  source for the DDT. When providing a URL that points to a Git repository
+  (i.e. one that ends with `.git`), the local DDT is created by cloning the remote
+  repository.
+
+- DDTs that have been created by on-the-fly cloning a Git repository, are auto
+  updated when the remote repository has changes.
+
 ## 1.3.0
 
 - We've added support for Git backed versioning and multiple versions of a DDT.
