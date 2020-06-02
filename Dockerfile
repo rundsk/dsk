@@ -23,7 +23,7 @@ RUN yarn run build
 
 # Build stage to compile the DSK binary, "baking in" the frontend from the
 # previous stage. The frontend will replace the default frontend.
-FROM golang:1.12 as backend
+FROM golang:1.14 as backend
 
 ARG VERSION=head
 ENV GO111MODULE=on
