@@ -57,22 +57,26 @@ function TreeNavigation(props) {
     }
 
     const filter = Client.filter(filterTerm);
-    filter.then(data => {
-      if (!data.nodes) {
-        // Filtering yielded no results, we save us iterating over the
-        // existing tree, as we already know what it should look like.
-        setFilteredTree(null);
-        return;
-      }
-      let tree = new Tree(props.tree);
+    filter
+      .then(data => {
+        if (!data.nodes) {
+          // Filtering yielded no results, we save us iterating over the
+          // existing tree, as we already know what it should look like.
+          setFilteredTree(null);
+          return;
+        }
+        let tree = new Tree(props.tree);
 
-      let urls = data.nodes.reduce((carry, node) => {
-        carry.push(node.url);
-        return carry;
-      }, []);
+        let urls = data.nodes.reduce((carry, node) => {
+          carry.push(node.url);
+          return carry;
+        }, []);
 
-      setFilteredTree(tree.filteredBy(urls).root);
-    });
+        setFilteredTree(tree.filteredBy(urls).root);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   function renderList(node, activeNode) {

@@ -120,15 +120,19 @@ function Search(props) {
     }
 
     const search = Client.search(term);
-    search.then(data => {
-      if (!data.hits) {
-        // Filtering yielded no results, we save us iterating over the
-        // existing tree, as we already know what it should look like.
-        setSearchResults([]);
-        return;
-      }
-      setSearchResults(data.hits);
-    });
+    search
+      .then(data => {
+        if (!data.hits) {
+          // Filtering yielded no results, we save us iterating over the
+          // existing tree, as we already know what it should look like.
+          setSearchResults([]);
+          return;
+        }
+        setSearchResults(data.hits);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   function showSearch() {
