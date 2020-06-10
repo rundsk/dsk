@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/microcosm-cc/bluemonday"
@@ -120,6 +121,88 @@ func (d NodeDoc) Components() ([]*NodeDocComponent, error) {
 		return findComponentsInHTML(contents), nil
 	}
 	return components, nil
+}
+
+// A headline used in the ToC
+type TocEntry struct {
+	Title    string
+	Children []*TocEntry
+	Level    int
+}
+
+// Generate Table of Contents
+func (d NodeDoc) Toc() ([]*TocEntry, error) {
+	toc := make([]*TocEntry, 0)
+
+	contents, err := ioutil.ReadFile(d.path)
+	if err != nil {
+		return nil, err
+	}
+
+	document := make([]byte, 0)
+	switch strings.ToLower(filepath.Ext(d.path)) {
+	case ".md", ".markdown":
+		document, _ = d.parseMarkdown(contents)
+	case ".html", ".htm":
+		document = contents
+	}
+
+	r := bytes.NewReader(document)
+
+	doc, _ := html.Parse(r)
+	if err != nil {
+		return toc, err
+	}
+
+	var findHeadlineInDom func(*html.Node)
+	findHeadlineInDom = func(n *html.Node) {
+		if n.Type == html.ElementNode && (n.Data == "h1" || n.Data == "h2" || n.Data == "h3" || n.Data == "h4" || n.Data == "h5") {
+			level, _ := strconv.Atoi(strings.TrimPrefix(n.Data, "h"))
+
+			var getTextContent func(*html.Node) string
+			getTextContent = func(n *html.Node) string {
+				if n.Type == html.TextNode {
+					return n.Data
+				}
+				textOfChildren := ""
+				for c := n.FirstChild; c != nil; c = c.NextSibling {
+					textOfChildren = textOfChildren + getTextContent(c)
+				}
+				return textOfChildren
+			}
+			title := getTextContent(n)
+
+			newEntry := &TocEntry{
+				Title:    title,
+				Level:    level,
+				Children: make([]*TocEntry, 0),
+			}
+
+			var insertEntryIntoSubtree func([]*TocEntry) []*TocEntry
+			insertEntryIntoSubtree = func(subtree []*TocEntry) []*TocEntry {
+				if len(subtree) == 0 {
+					subtree = append(subtree, newEntry)
+					return subtree
+				}
+				if subtree[len(subtree)-1].Level >= newEntry.Level {
+					subtree = append(subtree, newEntry)
+					return subtree
+				} else {
+					subtree[len(subtree)-1].Children = insertEntryIntoSubtree(subtree[len(subtree)-1].Children)
+					return subtree
+				}
+			}
+
+			toc = insertEntryIntoSubtree(toc)
+		} else {
+			for c := n.FirstChild; c != nil; c = c.NextSibling {
+				findHeadlineInDom(c)
+			}
+		}
+	}
+	findHeadlineInDom(doc)
+
+	return toc, nil
 }
 
 // Parses Markdown into HTML.

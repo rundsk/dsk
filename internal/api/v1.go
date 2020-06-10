@@ -121,11 +121,18 @@ type V1NodeDoc struct {
 	HTML       string                `json:"html"`
 	Raw        string                `json:"raw"`
 	Components []*V1NodeDocComponent `json:"components"`
+	Toc        []*V1NodeDocTocEntry  `json:"toc"`
 }
 
 type V1NodeDocComponent struct {
 	Raw      string `json:"raw"`
 	Position int    `json:"position"`
+}
+
+type V1NodeDocTocEntry struct {
+	Title    string               `json:"title"`
+	Level    int                  `json:"level"`
+	Children []*V1NodeDocTocEntry `json:"children"`
 }
 
 type V1NodeAsset struct {
@@ -209,6 +216,20 @@ func (api V1) NewConfig(s *plex.Source) (*V1Config, error) {
 	return &V1Config{s.ConfigDB.Data()}, nil
 }
 
+func parseTocChildren(h *ddt.TocEntry) *V1NodeDocTocEntry {
+	children := make([]*V1NodeDocTocEntry, 0, len(h.Children))
+
+	for _, c := range h.Children {
+		children = append(children, parseTocChildren(c))
+	}
+
+	return &V1NodeDocTocEntry{
+		Title:    h.Title,
+		Level:    h.Level,
+		Children: children,
+	}
+}
+
 func (api V1) NewNode(n *ddt.Node, s *plex.Source) (*V1Node, error) {
 	hash, err := n.CalculateHash()
 	if err != nil {
@@ -263,11 +284,18 @@ func (api V1) NewNode(n *ddt.Node, s *plex.Source) (*V1Node, error) {
 			})
 		}
 
+		nToc, _ := v.Toc()
+		toc := make([]*V1NodeDocTocEntry, 0, len(nToc))
+		for _, n := range nToc {
+			toc = append(toc, parseTocChildren(n))
+		}
+
 		docs = append(docs, &V1NodeDoc{
 			Title:      v.Title(),
 			HTML:       string(html[:]),
 			Raw:        string(raw[:]),
 			Components: components,
+			Toc:        toc,
 		})
 	}
 
