@@ -26,13 +26,7 @@ function Heading(props) {
     return <Tag className={`heading heading--${props.level}`}>{props.children}</Tag>;
   }
 
-  let id;
-
-  if (typeof props.children === 'object') {
-    id = slugify(props.children[0]);
-  } else {
-    id = slugify(props.children);
-  }
+  let id = slugify(getNodeText(props.children));
 
   let handleClick = ev => {
     ev.preventDefault();
@@ -64,3 +58,9 @@ function Heading(props) {
 }
 
 export default withRoute(Heading);
+
+const getNodeText = node => {
+  if (['string', 'number'].includes(typeof node)) return node;
+  if (node instanceof Array) return node.map(getNodeText).join('');
+  if (typeof node === 'object' && node) return getNodeText(node.props.children);
+};

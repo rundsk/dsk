@@ -76,12 +76,10 @@
   margin-bottom: calc(var(--spacing-unit) * 3);
 }
 
-
 .doc blockquote ul,
 .doc blockquote ol {
   margin-left: -1rem;
 }
-
 
 /* List */
 
