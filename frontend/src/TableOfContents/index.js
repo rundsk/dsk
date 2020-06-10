@@ -13,17 +13,21 @@ import { slugify } from '../utils';
 import { withRoute } from 'react-router5';
 
 function TOCEntry(props) {
+  if (props.cutoffLevel && props.level >= props.cutoffLevel) {
+    return <></>;
+  }
+
   let slug = slugify(props.title);
 
   let children = [];
   if (props.children) {
-    children = props.children.map(c => <TOCEntry {...c} onClick={props.onClick} />);
+    children = props.children.map(c => <TOCEntry {...c} docTitle={props.docTitle} onClick={props.onClick} cutoffLevel={props.cutoffLevel} />);
   }
 
   return (
     <li>
       <a
-        href=""
+        href={slugify(props.docTitle) + '§' + slug}
         onClick={ev => {
           props.onClick(ev, slug);
         }}
@@ -39,14 +43,17 @@ function TableOfContents(props) {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    let currentRouterState = props.router.getState();
-    let currentNode = currentRouterState.params.node || '';
+    let node = props.src;
+    if (!node) {
+      let currentRouterState = props.router.getState();
+      node = currentRouterState.params.node || '';
+    }
 
-    Client.get(currentNode).then(data => {
+    Client.get(node).then(data => {
       let doc = data.docs.find(d => d.title === props.docTitle);
       setData(doc.toc);
     });
-  }, []);
+  }, [props.src, props.router, props.docTitle]);
 
   let handleClick = (ev, slug) => {
     ev.preventDefault();
@@ -68,10 +75,10 @@ function TableOfContents(props) {
 
   return (
     <nav className="table-of-contents">
-      <div className="table-of-contents__title">Content</div>
+      <div className="table-of-contents__title">Contents</div>
       <ul>
         {data.map(e => {
-          return <TOCEntry {...e} onClick={handleClick} />;
+          return <TOCEntry {...e} docTitle={props.docTitle} onClick={handleClick} cutoffLevel={props.cutofflevel} />;
         })}
       </ul>
     </nav>
