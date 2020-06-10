@@ -42,7 +42,10 @@ function Page(props) {
     let h = currentRouterState.params.t || '';
     h = h.split('§')[1] || '';
     if (h !== '' && docRef.current) {
-      docRef.current.querySelector(`[heading-id='${h}']`).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      let heading = docRef.current.querySelector(`[heading-id='${h}']`);
+      if (heading) {
+      heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
     }
   }
 
