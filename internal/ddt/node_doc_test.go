@@ -342,53 +342,6 @@ func TestGenerateToCForMarkdownDocument(t *testing.T) {
 		Children: make([]*TocEntry, 0),
 	}}
 
-	// 	expected0 := `[
-	// 		{
-	// 				"title": "Heading 1",
-	// 				"level": 1,
-	// 				"children": [
-	// 						{
-	// 								"title": "Heading 2",
-	// 								"level": 2,
-	// 								"children": [
-	// 										{
-	// 												"title": "Heading 3",
-	// 												"level": 3,
-	// 												"children": []
-	// 										}
-	// 								]
-	// 						},
-	// 						{
-	// 								"title": "Heading 2",
-	// 								"level": 2,
-	// 								"children": []
-	// 						}
-	// 				]
-	// 		},
-	// 		{
-	// 				"title": "Heading 1",
-	// 				"level": 1,
-	// 				"children": [
-	// 						{
-	// 								"title": "Heading 4",
-	// 								"level": 4,
-	// 								"children": []
-	// 						},
-	// 						{
-	// 								"title": "Heading 2",
-	// 								"level": 2,
-	// 								"children": [
-	// 										{
-	// 												"title": "Heading 4",
-	// 												"level": 4,
-	// 												"children": []
-	// 										}
-	// 								]
-	// 						}
-	// 				]
-	// 		}
-	// ]`
-
 	if reflect.DeepEqual(toc0, expected0) != true {
 		t.Error("Table of Contents does not look like expected")
 	}
