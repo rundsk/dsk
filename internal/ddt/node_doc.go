@@ -123,7 +123,7 @@ func (d NodeDoc) Components() ([]*NodeDocComponent, error) {
 	return components, nil
 }
 
-// A headline used in the ToC
+// A headline used in the Table of Contents (ToC)
 type TocEntry struct {
 	Title    string
 	Children []*TocEntry
