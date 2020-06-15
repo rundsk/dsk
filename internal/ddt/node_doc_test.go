@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 )
 
@@ -273,5 +274,75 @@ dsk+component+1
 	removedExpected0 := raw0
 	if string(removed0) != removedExpected0 {
 		t.Errorf("Failed, got: %s", removed0)
+	}
+}
+
+func TestGenerateToCForMarkdownDocument(t *testing.T) {
+	tmp, _ := ioutil.TempDir("", "tree")
+	defer os.RemoveAll(tmp)
+
+	node0 := filepath.Join(tmp, "foo")
+	os.Mkdir(node0, 0777)
+
+	doc0 := filepath.Join(node0, "readme.md")
+	raw0 := `
+# Heading 1
+## Heading 2
+### Heading 3
+## Heading 2
+# Heading 1
+#### Heading 4
+## Heading 2
+#### Heading 4
+# Heading 1
+`
+
+	ioutil.WriteFile(doc0, []byte(raw0), 0666)
+
+	node := &Node{root: tmp, Path: filepath.Join(tmp, "foo")}
+	docs, _ := node.Docs()
+
+	toc0, _ := docs[0].Toc()
+
+	expected0 := []*TocEntry{&TocEntry{
+		Title: "Heading 1",
+		Level: 1,
+		Children: []*TocEntry{&TocEntry{
+			Title: "Heading 2",
+			Level: 2,
+			Children: []*TocEntry{&TocEntry{
+				Title:    "Heading 3",
+				Level:    3,
+				Children: make([]*TocEntry, 0),
+			}},
+		}, &TocEntry{
+			Title:    "Heading 2",
+			Level:    2,
+			Children: make([]*TocEntry, 0),
+		}},
+	}, &TocEntry{
+		Title: "Heading 1",
+		Level: 1,
+		Children: []*TocEntry{&TocEntry{
+			Title:    "Heading 4",
+			Level:    4,
+			Children: make([]*TocEntry, 0),
+		}, &TocEntry{
+			Title: "Heading 2",
+			Level: 2,
+			Children: []*TocEntry{&TocEntry{
+				Title:    "Heading 4",
+				Level:    4,
+				Children: make([]*TocEntry, 0),
+			}},
+		}},
+	}, &TocEntry{
+		Title:    "Heading 1",
+		Level:    1,
+		Children: make([]*TocEntry, 0),
+	}}
+
+	if reflect.DeepEqual(toc0, expected0) != true {
+		t.Error("Table of Contents does not look like expected")
 	}
 }

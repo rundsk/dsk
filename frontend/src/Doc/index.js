@@ -29,6 +29,7 @@ import Glitch from '../Glitch';
 import CodeSandbox from '../CodeSandbox';
 import Asciinema from '../Asciinema';
 import ImageGrid from '../ImageGrid';
+import TableOfContents from '../TableOfContents';
 
 function Doc(props) {
   useEffect(() => {
@@ -77,6 +78,7 @@ function Doc(props) {
     CodeSandbox: props => <CodeSandbox {...props} />,
     Asciinema: props => <Asciinema {...props} />,
     ImageGrid: props => <ImageGrid {...props} />,
+    TableOfContents: props => <TableOfContents {...props} docTitle={docTitle} />,
 
     a: props => <Link {...props} />,
     h1: props => <Heading {...props} level="alpha" docTitle={docTitle} isJumptarget={true} />,
