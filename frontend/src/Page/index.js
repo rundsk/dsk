@@ -44,8 +44,8 @@ function Page(props) {
     if (h !== '' && docRef.current) {
       let heading = docRef.current.querySelector(`[heading-id='${h}']`);
       if (heading) {
-      heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+        heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
   }
 

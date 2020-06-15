@@ -18,7 +18,7 @@
   line-height: calc(var(--spacing-unit) * 6);
   color: var(--color-gray-500);
   border-bottom: 2px solid transparent;
-  transition: all 0.2s;
+  transition: border-bottom 0.2s;
   text-decoration: none;
 }
 

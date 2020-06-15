@@ -21,7 +21,9 @@ function TOCEntry(props) {
 
   let children = [];
   if (props.children) {
-    children = props.children.map(c => <TOCEntry {...c} docTitle={props.docTitle} onClick={props.onClick} cutoffLevel={props.cutoffLevel} />);
+    children = props.children.map(c => (
+      <TOCEntry {...c} docTitle={props.docTitle} onClick={props.onClick} cutoffLevel={props.cutoffLevel} />
+    ));
   }
 
   return (
@@ -51,7 +53,9 @@ function TableOfContents(props) {
 
     Client.get(node).then(data => {
       let doc = data.docs.find(d => d.title === props.docTitle);
-      setData(doc.toc);
+      if (doc && doc.toc) {
+        setData(doc.toc);
+      }
     });
   }, [props.src, props.router, props.docTitle]);
 
