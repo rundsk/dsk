@@ -29,10 +29,6 @@
   overflow: hidden;
 }
 
-.color--is-ultra-light .color__demo {
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
 .color__demo::before {
   content: '';
   position: absolute;

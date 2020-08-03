@@ -109,6 +109,8 @@ function Playground(props) {
         </div>
       </div>
       {annotations.length > 0 && <div className="playground__annotations">{annotations}</div>}
+
+      {props.caption && <figcaption className="playground__caption">{props.caption}</figcaption>}
     </div>
   );
 }

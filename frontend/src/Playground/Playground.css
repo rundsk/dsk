@@ -135,6 +135,13 @@
   margin-right: calc(var(--spacing-unit) * 1);
 }
 
+.playground__caption {
+  font-size: var(--font-size-gamma);
+  line-height: 1.7em;
+  color: var(--color-gray-500);
+  margin-top: calc(var(--spacing-unit) * 1);
+}
+
 /* --- Responsive Mobile --- */
 
 @media screen and (max-width: 600px) {

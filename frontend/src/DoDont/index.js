@@ -13,7 +13,11 @@ import Playground from '../Playground';
 export function Do(props) {
   return (
     <>
-      <div className="dodont-card__content">
+      <div
+        className={`dodont-card__content dodont-card--do ${
+          props.backgroundcolor === '#FFFFFF' ? 'dodont-card--white' : ''
+        }`}
+      >
         <div className="dodont-card__demo">
           <Playground background={props.background} backgroundcolor={props.backgroundcolor}>
             {props.children}
@@ -32,7 +36,11 @@ export function Do(props) {
 export function Dont(props) {
   return (
     <>
-      <div className="dodont-card__content">
+      <div
+        className={`dodont-card__content dodont-card--dont ${
+          props.backgroundcolor === '#FFFFFF' ? 'dodont-card--white' : ''
+        }`}
+      >
         {props.strikethrough && (
           <svg>
             <line x1="-5%" y1="-5%" x2="105%" y2="105%" />
