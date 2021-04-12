@@ -15,4 +15,8 @@ dsk.test
 node_modules
 frontend/build
 internal/frontend/vfsdata.go
-frontend/package-lock.json
+frontend/.yarn/*
+frontend/!.yarn/releases
+frontend/!.yarn/plugins
+frontend/!.yarn/sdks
+frontend/.pnp.*
