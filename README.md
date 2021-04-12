@@ -15,16 +15,22 @@ Visit the official [Website](https://rundsk.com), to get started with our [step 
 
 ## Sponsors
 
-<a href="https://fielmann.com">
-  <img src="https://rundsk.com/api/v2/tree/fielmann_logo@2x.png" width="236" height="58" alt="Fielmann">
-</a>
+**[Fielmann](https://fielmann.com)** is a German eye-wear company
+and market leader in Germany. As our first sponsor, Fielmann has been
+extremely supportive in building significant features, i.e. versioning
+as well as taking an important role in the bootstrapping phase of DSK.
 
-<br>
-<br>
+**[Deutsche Presse-Agentur](https://dpa.com)** is the German
+news agency founded in 1949. The agency is primarly sponsoring content
+creation features, like individual documentation components, as
+well as infrastructure related ones. DSK is used at dpa, to drive one of
+its <a href="https://developerdocs.dpa-id.de">public documentation
+platforms</a>.
 
-<a href="https://dpa.com">
-  <img src="https://rundsk.com/api/v2/tree/dpa_logo@2x.png" width="200" height="67.5" alt="dpa">
-</a>
+**[Atelier Disko](https://atelierdisko.de)** is a German design and
+software studio, developing future oriented solutions for humans and businesses
+alike. Atelier Disko provides services around creating and maintaining
+top-of-the-industry design systems. Atelier Disko funded the intial development of DSK.
 
 ## Quickstart
 
