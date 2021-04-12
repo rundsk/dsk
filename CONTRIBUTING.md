@@ -31,7 +31,7 @@ directory to your `PATH`, so that go binaries can be found. In
 export PATH=$PATH:$(go env GOPATH)/bin
 ```
 
-DSK uses `go mod` to manage and vendor its dependencies. When using
+DSK uses `go mod` to manage its dependencies. When using
 Go 1.11 module support must be explictly enabled, add this line to
 `.profile`:
 ```

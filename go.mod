@@ -6,7 +6,7 @@
 
 module github.com/rundsk/dsk
 
-// replace github.com/blevesearch/go-porterstemmer => github.com/blevesearch/go-porterstemmer v1.0.2-0.20141230013033-23a2c8e5cf1f
+replace github.com/blevesearch/go-porterstemmer => github.com/blevesearch/go-porterstemmer v1.0.2-0.20141230013033-23a2c8e5cf1f
 
 require (
 	github.com/RoaringBitmap/roaring v0.4.16 // indirect
