@@ -15,7 +15,7 @@ import (
 	"strings"
 
 	"github.com/microcosm-cc/bluemonday"
-	"github.com/russross/blackfriday"
+	"github.com/russross/blackfriday/v2"
 	"golang.org/x/net/html"
 	"golang.org/x/text/unicode/norm"
 )
