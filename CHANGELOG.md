@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.0
+
+- Support _Table of Contents_ on documents.
+- Introduced new `<ImageGrid>` documentation component.
+
 ## 1.3.0
 
 - We've added support for Git backed versioning and multiple versions of a DDT.
