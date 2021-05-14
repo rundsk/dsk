@@ -7,8 +7,10 @@
 package api
 
 import (
+	"log"
 	"net/http"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/rs/cors"
@@ -19,11 +21,12 @@ import (
 	"github.com/rundsk/dsk/internal/search"
 )
 
-func NewV2(ss *plex.Sources, appVersion string, b *bus.Broker, allowOrigins []string) *V2 {
+func NewV2(ss *plex.Sources, cmps *plex.Components, appVersion string, b *bus.Broker, allowOrigins []string) *V2 {
 	return &V2{
 		v1:           NewV1(ss, appVersion, b, allowOrigins),
 		allowOrigins: allowOrigins,
 		sources:      ss,
+		components:   cmps,
 	}
 }
 
@@ -39,6 +42,8 @@ type V2 struct {
 	allowOrigins []string
 
 	sources *plex.Sources
+
+	components *plex.Components
 }
 
 // V2FullSearchResults differs from V2FilterResults in some
@@ -82,6 +87,13 @@ func (api V2) HTTPMux() http.Handler {
 	mux.HandleFunc("/messages", api.v1.MessagesHandler)
 	mux.HandleFunc("/", api.v1.NotFoundHandler)
 
+	mux.HandleFunc("/playgrounds/", func(w http.ResponseWriter, r *http.Request) {
+		if filepath.Ext(r.URL.Path) != ".html" {
+			api.PlaygroundAssetHandler(w, r)
+		} else {
+			api.PlaygroundHandler(w, r)
+		}
+	})
 	// An empty slice of origins indicates that CORS shoule be
 	// disabled. If we'd pass an empty slice to the CORS middleware
 	// it'd be interpreted to allow all origins. We want to be "secure
@@ -171,4 +183,42 @@ func (api V2) FilterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	wr.OK(api.NewTreeFilterResults(results, total, took))
+}
+
+func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
+	wr := httputil.NewResponder(w, r, "text/html")
+	r.Body.Close()
+
+	id := strings.TrimSuffix(r.URL.Path[len("/playgrounds/"):], "/index.html")
+	log.Printf("Requesting HTML for Playground with ID %s", id)
+
+	html := []byte("<html><h1>Hello World</h1></html>")
+	wr.OK(html)
+}
+
+// Serves a playground's assets.
+func (api V2) PlaygroundAssetHandler(w http.ResponseWriter, r *http.Request) {
+	wr := httputil.NewResponder(w, r, "")
+	r.Body.Close()
+
+	path := r.URL.Path[len("/playgrounds/"):]
+
+	if err := httputil.CheckSafePath(path, api.components.Path); err != nil {
+		wr.Error(httputil.ErrUnsafePath, err)
+		return
+	}
+
+	asset, err := api.components.FS.Open(path)
+	if err != nil {
+		wr.Error(httputil.ErrNoSuchAsset, err)
+		return
+	}
+	defer asset.Close()
+
+	info, err := asset.Stat()
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+	http.ServeContent(w, r, info.Name(), info.ModTime(), asset)
 }
