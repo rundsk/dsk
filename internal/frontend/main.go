@@ -11,12 +11,54 @@ import (
 	"net/http"
 	"path/filepath"
 
+	"os"
+
 	"github.com/rundsk/dsk/internal/httputil"
+
+	"github.com/evanw/esbuild/pkg/api"
 )
 
 func NewFrontendFromPath(path string, chroot string) (*Frontend, error) {
 	log.Printf("Initializing frontend from path %s...", path)
 	path, err := filepath.Abs(path)
+
+	// Link custom front end with symlink or some other tomfoolery.
+	result := api.Build(api.BuildOptions{
+		EntryPoints: []string{"frontend/src/index.js"},
+		Outfile:     filepath.Join(path, "index.js"),
+		Bundle:      true,
+		Write:       true,
+		LogLevel:    api.LogLevelInfo,
+		Loader: map[string]api.Loader{
+			".js":  api.LoaderJSX,
+			".png": api.LoaderFile,
+			".svg": api.LoaderFile,
+		},
+	})
+
+	// TODO: Better error handling
+	if len(result.Errors) > 0 {
+		os.Exit(1)
+	}
+
+	file, err := os.Create(filepath.Join(path, "index.html"))
+
+	if err != nil {
+		return nil, err
+	}
+
+	file.WriteString(`<html>
+  <head>
+		<link href="/index.css" rel="stylesheet" type="text/css"></link>
+		<script defer type="application/javascript" src="/index.js"></script>
+	</head>
+	<body>
+	  <div id="root"></div>
+	</body>
+</html
+`)
+
+	// End ESBuild built entry point
 
 	return &Frontend{
 		fs:     http.Dir(path),
@@ -26,6 +68,7 @@ func NewFrontendFromPath(path string, chroot string) (*Frontend, error) {
 
 func NewFrontendFromEmbedded(chroot string) *Frontend {
 	log.Print("Intializing embedded frontend...")
+
 	return &Frontend{fs: assets, chroot: chroot}
 }
 
