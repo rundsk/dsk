@@ -10,9 +10,11 @@ import React, { useState, useEffect } from 'react';
 import './Playground.css';
 import { Client } from '@rundsk/js-sdk';
 
+// TODO: annonations currently use src attribute isn't that confusing, would expect this to become the contents of the playground.
 function Playground(props) {
   const [annotationData, setAnnotationData] = useState({ annotations: [] });
   const [highlightedAnnotation, setHighlightedAnnotation] = useState(null);
+  const [stage, setStage] = useState(null);
 
   let classes = ['playground'];
 
@@ -105,7 +107,7 @@ function Playground(props) {
           {annotationMarkers}
 
           {/* This wrapper doesn’t do any styling, we just need the content to be isolated for stuff like :first-child to work */}
-          <div className="playground__stage-content">{props.children}</div>
+          <div className="playground__stage-content">{stage}</div>
         </div>
       </div>
       {annotations.length > 0 && <div className="playground__annotations">{annotations}</div>}
