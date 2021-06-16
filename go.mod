@@ -13,6 +13,7 @@ require (
 	github.com/RoaringBitmap/roaring v0.5.5 // indirect
 	github.com/blevesearch/bleve v1.0.14
 	github.com/coreos/go-semver v0.3.0
+	github.com/evanw/esbuild v0.12.8 // indirect
 	github.com/fatih/color v1.10.0
 	github.com/glycerine/go-unsnap-stream v0.0.0-20210130063903-47dfef350d96 // indirect
 	github.com/go-yaml/yaml v2.1.0+incompatible

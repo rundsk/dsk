@@ -13,7 +13,18 @@ import (
 	"strings"
 	"time"
 
+	"bytes"
+	"log"
+	"os"
+	"path/filepath"
+
 	"github.com/gorilla/mux"
+
+	"io/ioutil"
+	textTpl "text/template"
+
+	esbuild "github.com/evanw/esbuild/pkg/api"
+
 	"github.com/rs/cors"
 	"github.com/rundsk/dsk/internal/bus"
 	"github.com/rundsk/dsk/internal/ddt"
@@ -278,6 +289,109 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 		wr.Error(httputil.Err, err)
 		return
 	}
+
+	tmpPlaygoundInstance, err := ioutil.TempFile(os.TempDir(), "*.jsx")
+	if err != nil {
+		log.Fatal("Cannot create temporary file", err)
+	}
+
+	playgroundSrc := `import React, {useCallback} from 'react'
+
+	export default () => {
+		const onClick = useCallback(() => {
+			alert('Oh yeah')
+		}, [])
+
+		return <button onClick={onClick}>It's all coming together</button>
+	}
+	`
+
+	// Remember to clean up the file afterwards
+	defer os.Remove(tmpPlaygoundInstance.Name())
+
+	// Example writing to the file
+	if _, err = tmpPlaygoundInstance.Write([]byte(playgroundSrc)); err != nil {
+		log.Fatal("Failed to write to temporary file", err)
+	}
+
+	playgroundRuntime, err := os.ReadFile(filepath.Join("frontend", "src", "playground-runtime.jsx"))
+
+	if err != nil {
+		log.Fatal("Cannot read playground runtime")
+	}
+
+	type pageData struct {
+		RuntimeJS  template.JS
+		ImportPath template.JSStr
+	}
+
+	js, err := textTpl.New("playground-runtime-instance").Parse(`{{define "RuntimeInstance"}}import ThePlaygroundInQuestion from '{{.ImportPath}}';
+
+{{.RuntimeJS | }}
+{{end}}
+`)
+
+	// HMMM
+	playgroundRuntimeTmp, err := ioutil.TempFile(os.TempDir(), "*.jsx")
+	if err != nil {
+		log.Fatal("Cannot create temporary file", err)
+	}
+
+	// Remember to clean up the file afterwards
+	defer os.Remove(playgroundRuntimeTmp.Name())
+
+	var b bytes.Buffer
+	js.ExecuteTemplate(&b, "RuntimeInstance", pageData{
+		ImportPath: template.JSStr(template.JSEscapeString(tmpPlaygoundInstance.Name())),
+		RuntimeJS:  template.JS(playgroundRuntime),
+	})
+
+	if _, err = playgroundRuntimeTmp.Write(b.Bytes()); err != nil {
+		log.Fatal("Failed to write to temporary file", err)
+	}
+
+	result := esbuild.Build(esbuild.BuildOptions{
+		EntryPointsAdvanced: []esbuild.EntryPoint{{InputPath: playgroundRuntimeTmp.Name(),
+			OutputPath: id}},
+		Outdir:     filepath.Join(api.components.Path),
+		Bundle:     true,
+		Write:      true,
+		NodePaths:  []string{"frontend/node_modules"},
+		PublicPath: "/api/v2/playgrounds",
+		LogLevel:   esbuild.LogLevelDebug,
+	})
+
+	// Close the file
+	if err := tmpPlaygoundInstance.Close(); err != nil {
+		log.Fatal(err)
+	}
+
+	if len(result.Errors) > 0 {
+		log.Fatal(result.Errors[0].Text)
+		wr.Error(httputil.Err, nil)
+	}
+
+	html, err := template.New("playground-template").Parse(`{{define "T"}}<html>
+		<head>
+		  <meta charset="utf-8"><meta>
+			<link href="{{.CSSRoot}}" rel="stylesheet"></link>
+			<script src="{{.JSRoot}}" type="application/javascript"></script>
+		</head>
+		<body>
+			<div id="root"></div>
+		</body>
+	</html>{{end}}
+`)
+
+	var tpl bytes.Buffer
+	if err := html.ExecuteTemplate(&tpl, "T", map[string]string{
+		"JSRoot":  filepath.Join("/api/v2/playgrounds", id+".js"),
+		"CSSRoot": api.components.CSSEntryPoint,
+	}); err != nil {
+		wr.Error(httputil.Err, err)
+	}
+
+	wr.OK(tpl.Bytes())
 }
 
 // Serves a playground's assets.
