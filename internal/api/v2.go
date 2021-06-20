@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"bytes"
+	"errors"
 	"log"
 	"os"
 	"path/filepath"
@@ -45,12 +46,71 @@ func init() {
 }
 
 func NewV2(ss *plex.Sources, cmps *plex.Components, appVersion string, b *bus.Broker, allowOrigins []string) *V2 {
+	jsTemplate, err := textTpl.New("playground-runtime-instance").Parse(`{{define "RuntimeInstance"}}import ThePlaygroundInQuestion from '{{.ImportPath}}';
+
+{{.RuntimeJS | }}
+{{end}}
+`)
+	if err != nil {
+		log.Fatal("Unable to load js playground template", err)
+	}
+
+	htmlTemplate, err := template.New("playground-template").Parse(`{{define "T"}}<html>
+	<head>
+		<meta charset="utf-8"><meta>
+		<link href="{{.CSSRoot}}" rel="stylesheet"></link>
+		<script src="{{.JSRoot}}" type="application/javascript"></script>
+	</head>
+	<body>
+		<div id="root"></div>
+	</body>
+</html>{{end}}
+`)
+
+	if err != nil {
+		log.Fatal("Unable to load html playground template", err)
+	}
+
 	return &V2{
 		v1:           NewV1(ss, appVersion, b, allowOrigins),
 		allowOrigins: allowOrigins,
 		sources:      ss,
 		components:   cmps,
+		playground: &PlaygroundInstance{
+			jsTemplate:   *jsTemplate,
+			htmlTemplate: *htmlTemplate,
+		},
 	}
+}
+
+type PlaygroundRuntimeData struct {
+	jsRoot  string
+	cssRoot string
+}
+
+type PlaygroundInstanceSource struct {
+	runtimeJS  template.JS
+	importPath template.JSStr
+}
+
+type PlaygroundInstance struct {
+	htmlTemplate template.Template
+	jsTemplate   textTpl.Template
+
+	// byContentHash maps a hash to a playground source file something like the following
+	//
+	//  ```
+	//    import React, {useCallback} from 'react'
+
+	// export default () => {
+	// 	const onClick = useCallback(() => {
+	// 		alert('Oh yeah')
+	// 	}, [])
+
+	// 	return <button onClick={onClick}>It's all coming together</button>
+	// }
+	// ```
+	byContentHash map[string]string
 }
 
 type V2 struct {
@@ -67,6 +127,7 @@ type V2 struct {
 	sources *plex.Sources
 
 	components *plex.Components
+	playground *PlaygroundInstance
 }
 
 // V2FullSearchResults differs from V2FilterResults in some
@@ -290,27 +351,24 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpPlaygoundInstance, err := ioutil.TempFile(os.TempDir(), "*.jsx")
+	tmpPlaygroundInstance, err := ioutil.TempFile(os.TempDir(), "*.jsx")
 	if err != nil {
 		log.Fatal("Cannot create temporary file", err)
 	}
 
-	playgroundSrc := `import React, {useCallback} from 'react'
+	// TODO Populate map, maybe with node_doc_transformer?
+	playgroundSrc := api.playground.byContentHash[id]
 
-	export default () => {
-		const onClick = useCallback(() => {
-			alert('Oh yeah')
-		}, [])
-
-		return <button onClick={onClick}>It's all coming together</button>
+	if playgroundSrc == "" {
+		wr.Error(httputil.ErrNoSuchAsset, errors.New("No such contenthash"))
+		return
 	}
-	`
 
 	// Remember to clean up the file afterwards
-	defer os.Remove(tmpPlaygoundInstance.Name())
+	defer os.Remove(tmpPlaygroundInstance.Name())
 
 	// Example writing to the file
-	if _, err = tmpPlaygoundInstance.Write([]byte(playgroundSrc)); err != nil {
+	if _, err = tmpPlaygroundInstance.Write([]byte(playgroundSrc)); err != nil {
 		log.Fatal("Failed to write to temporary file", err)
 	}
 
@@ -320,18 +378,6 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("Cannot read playground runtime")
 	}
 
-	type pageData struct {
-		RuntimeJS  template.JS
-		ImportPath template.JSStr
-	}
-
-	js, err := textTpl.New("playground-runtime-instance").Parse(`{{define "RuntimeInstance"}}import ThePlaygroundInQuestion from '{{.ImportPath}}';
-
-{{.RuntimeJS | }}
-{{end}}
-`)
-
-	// HMMM
 	playgroundRuntimeTmp, err := ioutil.TempFile(os.TempDir(), "*.jsx")
 	if err != nil {
 		log.Fatal("Cannot create temporary file", err)
@@ -341,9 +387,9 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 	defer os.Remove(playgroundRuntimeTmp.Name())
 
 	var b bytes.Buffer
-	js.ExecuteTemplate(&b, "RuntimeInstance", pageData{
-		ImportPath: template.JSStr(template.JSEscapeString(tmpPlaygoundInstance.Name())),
-		RuntimeJS:  template.JS(playgroundRuntime),
+	api.playground.jsTemplate.Execute(&b, PlaygroundInstanceSource{
+		importPath: template.JSStr(template.JSEscapeString(tmpPlaygroundInstance.Name())),
+		runtimeJS:  template.JS(playgroundRuntime),
 	})
 
 	if _, err = playgroundRuntimeTmp.Write(b.Bytes()); err != nil {
@@ -362,7 +408,7 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	// Close the file
-	if err := tmpPlaygoundInstance.Close(); err != nil {
+	if err := tmpPlaygroundInstance.Close(); err != nil {
 		log.Fatal(err)
 	}
 
@@ -371,22 +417,10 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 		wr.Error(httputil.Err, nil)
 	}
 
-	html, err := template.New("playground-template").Parse(`{{define "T"}}<html>
-		<head>
-		  <meta charset="utf-8"><meta>
-			<link href="{{.CSSRoot}}" rel="stylesheet"></link>
-			<script src="{{.JSRoot}}" type="application/javascript"></script>
-		</head>
-		<body>
-			<div id="root"></div>
-		</body>
-	</html>{{end}}
-`)
-
 	var tpl bytes.Buffer
-	if err := html.ExecuteTemplate(&tpl, "T", map[string]string{
-		"JSRoot":  filepath.Join("/api/v2/playgrounds", id+".js"),
-		"CSSRoot": api.components.CSSEntryPoint,
+	if err := api.playground.htmlTemplate.Execute(&tpl, PlaygroundRuntimeData{
+		jsRoot:  filepath.Join("/api/v2/playgrounds", id+".js"),
+		cssRoot: api.components.CSSEntryPoint,
 	}); err != nil {
 		wr.Error(httputil.Err, err)
 	}
