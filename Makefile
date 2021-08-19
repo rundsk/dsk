@@ -25,6 +25,10 @@ bench:
 profile:
 	go test -tags=dev -run ^$$ -bench . -cpuprofile cpu.prof -memprofile mem.prof -mutexprofile mutex.prof $(ALL_PKGS)
 
+.PHONY: lint
+lint:
+	go vet -all $(shell go list ./...)
+
 .PHONY: dev
 dev:
 	go build -tags=dev -ldflags "$(LDFLAGS)" $(CMD_PKG)
