@@ -6,26 +6,29 @@
 
 .PHONY: dev
 dev:
-	yarn start
+	yarn react-scripts start
 
 .PHONY: test
 test:
-	yarn test .
+	yarn react-scripts test .
+
+.PHONY: build
+build:
+	yarn react-scripts build .
 
 .PHONY: dist
-dist: build
+dist:
+
+.PHONY: lint
+lint:
+	yarn eslint --cache src
+
+.PHONY: format
+format:
+	yarn eslint --fix --cache src
+	yarn prettier --write src/**
 
 .PHONY: clean
 clean:
-	if [ -d ./node_modules ]; then rm -fr ./node_modules; fi
 	if [ -d ./build ]; then rm -r ./build; fi
-
-build: node_modules $(shell find src)
-	yarn run build
-
-node_modules: yarn.lock
-	yarn install
-
-.PHONY: prettier
-prettier: node_modules
-	node_modules/.bin/prettier --write 'src/**/*.{css,js}'
+	if [ -d ./dist ]; then rm -r ./dist; fi

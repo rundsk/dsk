@@ -17,18 +17,23 @@
     "router5-plugin-browser": "^7.0.2"
   },
   "devDependencies": {
+    "babel-eslint": "^10.1.0",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
+    "eslint": "^7.32.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-import-resolver-node": "^0.3.6",
+    "eslint-plugin-flowtype": "^5.9.0",
+    "eslint-plugin-import": "^2.24.0",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-notice": "^0.9.10",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "http-proxy-middleware": "^0.19.1",
     "jest-enzyme": "^7.1.0",
     "prettier": "^1.18.2",
     "react-test-renderer": "^16.9.0"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -43,5 +48,10 @@
     "transformIgnorePatterns": [
       "/node_modules/(?!@rundsk/js-sdk)"
     ]
+  },
+  "dependenciesMeta": {
+    "react@16.14.0": {
+      "unplugged": true
+    }
   }
 }

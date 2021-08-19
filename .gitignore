@@ -20,3 +20,4 @@ frontend/!.yarn/releases
 frontend/!.yarn/plugins
 frontend/!.yarn/sdks
 frontend/.pnp.*
+.eslintcache

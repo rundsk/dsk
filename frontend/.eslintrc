@@ -1,22 +1,15 @@
 {
-  "extends": "airbnb",
+  "extends": ["eslint:recommended", "react-app"],
   "parser": "babel-eslint",
-  "plugins": ["react"],
-  "env": {"browser": true},
+  "plugins": ["notice"],
+  "env": {"browser": true, "es6": true},
   "rules": {
-    "import/no-named-as-default-member": "off",
-    "import/extensions": "off",
-    "react/prop-types": "off",
-    "no-console": "off",
-    "prefer-destructuring": "off",
-    "prefer-const": "off",
-    "react/jsx-filename-extension": "off",
-    "react/no-multi-comp": "off",
-    "no-param-reassign": "off",
-    "class-methods-use-this": "off",
-    "no-plusplus": "off",
-    "no-continue": "off",
-	"no-use-before-define": "off",
-	"no-restricted-globals": "off",
+    "notice/notice": [
+      "error",
+      {
+        "mustMatch": "Copyright [0-9]{0,4} Marius Wilms, Christoph Labacher",
+        "template": "/**\n * Copyright <%= YEAR %> Marius Wilms, Christoph Labacher. All rights reserved.\n *\n * Use of this source code is governed by a BSD-style\n * license that can be found in the LICENSE file.\n */\n"
+      }
+    ]
   }
 }
