@@ -1630,15 +1630,15 @@ __metadata:
     eslint-plugin-react-hooks: ^4.2.0
     filesize: ^4.1.2
     get-contrast: ^2.0.0
-    highlight.js: ^9.18.1
+    highlight.js: ^10.4.1
     http-proxy-middleware: ^0.19.1
     jest-enzyme: ^7.1.0
     prettier: ^1.18.2
-    react: ^16.8.6
+    react: ^16.14.0
     react-dom: ^16.8.6
     react-helmet: ^5.2.1
     react-router5: ^7.1.0
-    react-scripts: ^3.0.0
+    react-scripts: ^3.4.4
     react-test-renderer: ^16.9.0
     reactn: ^1.0.0
     router5: ^7.0.2
@@ -7177,10 +7177,10 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"highlight.js@npm:^9.18.1":
-  version: 9.18.5
-  resolution: "highlight.js@npm:9.18.5"
-  checksum: dea74c216cec83604e35cd3187aa9fa7a7da4876d1da6519a7bb1b635566e6525fcb3a3d8f2158a11e930499acee9506c710c5121ce30d328342af2e49fe59da
+"highlight.js@npm:^10.4.1":
+  version: 10.7.3
+  resolution: "highlight.js@npm:10.7.3"
+  checksum: 2b7bc9890d447e6cb0135f3a53fc54f1ddb11c76f8255896715bfcba94e0df32d7e8527778ab0d79a00c57bbcb6326532bb62d1d2b343fd3d685c1c8fdc0c321
   languageName: node
   linkType: hard
 
@@ -12411,7 +12411,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"react-scripts@npm:^3.0.0":
+"react-scripts@npm:^3.4.4":
   version: 3.4.4
   resolution: "react-scripts@npm:3.4.4"
   dependencies:
@@ -12507,7 +12507,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"react@npm:^16.8.6":
+"react@npm:^16.14.0":
   version: 16.14.0
   resolution: "react@npm:16.14.0"
   dependencies:
