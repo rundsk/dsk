@@ -51,7 +51,7 @@ dist: container-image
 
 .PHONY: container-image
 container-image:
-	docker build --tag rundsk/dsk:$(VERSION) --build-arg VERSION=$(VERSION) .
+	docker buildx build --tag rundsk/dsk:$(VERSION) --build-arg VERSION=$(VERSION) .
 
 .PHONY: container-push
 container-push: container-image
