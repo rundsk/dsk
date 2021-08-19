@@ -18,8 +18,8 @@ RUN apk add yarn
 
 WORKDIR /src
 
-RUN yarn install 
-RUN yarn run build
+RUN yarn
+RUN yarn react-scripts build
 
 # Build stage to compile the DSK binary, "baking in" the frontend from the
 # previous stage. The frontend will replace the default frontend.
