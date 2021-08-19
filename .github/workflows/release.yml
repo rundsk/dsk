@@ -45,7 +45,7 @@ jobs:
     name: Build Docker Container
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - run: |
           export VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' | sed -e 's/^v//')
 
@@ -59,7 +59,7 @@ jobs:
       - build-frontend
       - build-example-design-system
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - uses: actions/setup-go@v1
         with:
           go-version: '1.16'
@@ -86,7 +86,7 @@ jobs:
       - build-frontend
       - build-example-design-system
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - uses: actions/setup-go@v1
         with:
           go-version: '1.16'
@@ -110,7 +110,7 @@ jobs:
     name: Build Builtin-Frontend
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
@@ -130,7 +130,7 @@ jobs:
     name: Build Example Design System
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           repository: rundsk/example-design-system
           ref: master
