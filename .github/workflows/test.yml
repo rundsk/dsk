@@ -31,10 +31,8 @@ jobs:
           node-version: '16'
       - uses: actions/cache@v2
         with:
-          path: .yarn/cache
+          path: frontend/.yarn/cache
           key: ${{ runner.os }}-yarn-${{ hashFiles('frontend/yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-
-      - run: |
-          cd frontend
-          yarn
-          CI=true make test
+      - run: yarn --cwd frontend
+      - run: make -C frontend test

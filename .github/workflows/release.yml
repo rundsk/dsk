@@ -86,7 +86,7 @@ jobs:
 
   build-darwin:
     name: Build Darwin Binary
-    runs-on: macOS-latest
+    runs-on: macos-latest
     needs:
       - build-frontend
       - build-example-design-system
@@ -119,10 +119,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
-      - run: |
-          cd frontend
-          yarn install --production=true
-          yarn build
+      - run: yarn --cwd frontend
+      - run: make -C frontend build
         env:
           # Don't convert warnings to errors, we love our warnings.
           CI: false
