@@ -17,6 +17,11 @@ import (
 	"golang.org/x/net/html"
 )
 
+var (
+	// HTML attributes that may contain URLs. This should not include "src".
+	genericURLAttrNames = []string{"annotate"}
+)
+
 // NewNodeDocTransformer returns an initialized NodeDocTransformer, it'll
 // derive values for nodeBase and treeBase from the treePrefix and nodeURL.
 func NewNodeDocTransformer(treePrefix string, nodeURL string, nodeGet NodeGetter, nodeSource string) (*NodeDocTransformer, error) {
@@ -133,7 +138,8 @@ func (dt NodeDocTransformer) ProcessHTML(contents []byte) ([]byte, error) {
 			}
 		}
 
-		oksrc, _, _ := dt.attr(t, "src")
+		srcok, _, _ := dt.attr(t, "src")
+		genok, genkeys := dt.attrs(t, genericURLAttrNames)
 
 		// Order matters: maybeAddDateNode should come first.
 		switch {
@@ -171,7 +177,7 @@ func (dt NodeDocTransformer) ProcessHTML(contents []byte) ([]byte, error) {
 				return buf.Bytes(), err
 			}
 			buf.WriteString(html.UnescapeString(t.String()))
-		case oksrc:
+		case srcok:
 			t, err := dt.maybeAddDataNode(t, "src")
 			if err != nil {
 				return buf.Bytes(), err
@@ -181,6 +187,14 @@ func (dt NodeDocTransformer) ProcessHTML(contents []byte) ([]byte, error) {
 				return buf.Bytes(), err
 			}
 			buf.WriteString(html.UnescapeString(t.String()))
+		case genok:
+			for _, genkey := range genkeys {
+				t, err := dt.maybeMakeAbsolute(t, t.Attr[genkey].Key)
+				if err != nil {
+					return buf.Bytes(), err
+				}
+				buf.WriteString(html.UnescapeString(t.String()))
+			}
 		case t.Data == "code" && tt == html.StartTagToken:
 			isEscaping = true
 			buf.WriteString(t.String())
@@ -351,6 +365,18 @@ func (dt NodeDocTransformer) attr(t html.Token, name string) (bool, int, string)
 		}
 	}
 	return false, 0, ""
+}
+
+// Returns attribute keys for matched names.
+func (dt NodeDocTransformer) attrs(t html.Token, names []string) (ok bool, keys []int) {
+	for key, a := range t.Attr {
+		for _, name := range names {
+			if a.Key == name {
+				keys = append(keys, key)
+			}
+		}
+	}
+	return len(keys) != 0, keys
 }
 
 // Tries to lookup path of the URL as a node, if that fails tries to

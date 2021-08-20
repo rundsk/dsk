@@ -14,6 +14,12 @@ function Playground(props) {
   const [annotationData, setAnnotationData] = useState({ annotations: [] });
   const [highlightedAnnotation, setHighlightedAnnotation] = useState(null);
 
+  if (props.src) {
+    console.debug('<Playground> props.src has been deprecated in favor of props.annotate.');
+    props.annotate = props.src;
+    delete props.src;
+  }
+
   let classes = ['playground'];
 
   if (props.background === 'checkerboard') {
@@ -39,10 +45,10 @@ function Playground(props) {
   }
 
   useEffect(() => {
-    if (props.src) {
-      Client.fetch(props.src).then(data => setAnnotationData(data));
+    if (props.annotate) {
+      Client.fetch(props.annotate).then((data) => setAnnotationData(data));
     }
-  }, [props.src]);
+  }, [props.annotate]);
 
   let annotationMarkers = annotationData.annotations.map((a, i) => {
     let x = `calc(${a.x} + ${a.offsetX ? a.offsetX : '0px'})`;
