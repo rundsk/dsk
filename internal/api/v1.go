@@ -8,7 +8,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -346,7 +345,7 @@ func (api V1) NewNode(n *ddt.Node, s *plex.Source) (*V1Node, error) {
 	}
 
 	return &V1Node{
-		Hash:        fmt.Sprintf("%x", hash),
+		Hash:        hash,
 		URL:         n.URL(),
 		Parent:      parent,
 		Children:    children,
@@ -385,7 +384,7 @@ func (api V1) NewTreeNode(n *ddt.Node, s *plex.Source) (*V1TreeNode, error) {
 	}
 
 	return &V1TreeNode{
-		Hash:     fmt.Sprintf("%x", hash),
+		Hash:     hash,
 		URL:      n.URL(),
 		Children: children,
 		Title:    n.Title(),
