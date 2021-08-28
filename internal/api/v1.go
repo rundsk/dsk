@@ -67,6 +67,7 @@ type V1Config struct {
 }
 
 type V1Node struct {
+	Id          string          `json:"id"`
 	Hash        string          `json:"hash"`
 	URL         string          `json:"url"`
 	Parent      *V1RefNode      `json:"parent"`
@@ -91,6 +92,7 @@ type V1Node struct {
 
 // V1TreeMode is a light top down representation of a part of the DDT.
 type V1TreeNode struct {
+	Id       string        `json:"id"`
 	Hash     string        `json:"hash"`
 	URL      string        `json:"url"`
 	Children []*V1TreeNode `json:"children"`
@@ -100,6 +102,7 @@ type V1TreeNode struct {
 // V1NodeRef have no parent and children. References must be looked
 // up using the URL to get more information about them.
 type V1RefNode struct {
+	Id    string `json:"id"`
 	URL   string `json:"url"`
 	Title string `json:"title"`
 }
@@ -116,16 +119,12 @@ type V1NodeAuthor struct {
 }
 
 type V1NodeDoc struct {
-	Title      string                `json:"title"`
-	HTML       string                `json:"html"`
-	Raw        string                `json:"raw"`
-	Components []*V1NodeDocComponent `json:"components"`
-	Toc        []*V1NodeDocTocEntry  `json:"toc"`
-}
-
-type V1NodeDocComponent struct {
-	Raw      string `json:"raw"`
-	Position int    `json:"position"`
+	Id    string               `json:"id"`
+	URL   string               `json:"url"`
+	Title string               `json:"title"`
+	HTML  string               `json:"html"`
+	Raw   string               `json:"raw"`
+	Toc   []*V1NodeDocTocEntry `json:"toc"`
 }
 
 type V1NodeDocTocEntry struct {
@@ -237,12 +236,12 @@ func (api V1) NewNode(n *ddt.Node, s *plex.Source) (*V1Node, error) {
 
 	var parent *V1RefNode
 	if n.Parent != nil {
-		parent = &V1RefNode{n.Parent.URL(), n.Parent.Title()}
+		parent = &V1RefNode{n.Parent.Id(), n.Parent.URL(), n.Parent.Title()}
 	}
 
 	children := make([]*V1RefNode, 0, len(n.Children))
 	for _, v := range n.Children {
-		children = append(children, &V1RefNode{v.URL(), v.Title()})
+		children = append(children, &V1RefNode{v.Id(), v.URL(), v.Title()})
 	}
 
 	authors := make([]*V1NodeAuthor, 0)
@@ -274,15 +273,6 @@ func (api V1) NewNode(n *ddt.Node, s *plex.Source) (*V1Node, error) {
 			return nil, err
 		}
 
-		nComponents, _ := v.Components()
-		components := make([]*V1NodeDocComponent, 0, len(nComponents))
-		for _, n := range nComponents {
-			components = append(components, &V1NodeDocComponent{
-				Raw:      n.Raw,
-				Position: n.Position,
-			})
-		}
-
 		nToc, _ := v.Toc()
 		toc := make([]*V1NodeDocTocEntry, 0, len(nToc))
 		for _, n := range nToc {
@@ -290,11 +280,12 @@ func (api V1) NewNode(n *ddt.Node, s *plex.Source) (*V1Node, error) {
 		}
 
 		docs = append(docs, &V1NodeDoc{
-			Title:      v.Title(),
-			HTML:       string(html[:]),
-			Raw:        string(raw[:]),
-			Components: components,
-			Toc:        toc,
+			Id:    v.Id(),
+			URL:   v.URL(),
+			Title: v.Title(),
+			HTML:  string(html[:]),
+			Raw:   string(raw[:]),
+			Toc:   toc,
 		})
 	}
 
@@ -315,7 +306,7 @@ func (api V1) NewNode(n *ddt.Node, s *plex.Source) (*V1Node, error) {
 	crumbs := make([]*V1RefNode, 0, len(nCrumbs))
 	for _, n := range nCrumbs {
 		crumbs = append(crumbs, &V1RefNode{
-			n.URL(), n.Title(),
+			n.Id(), n.URL(), n.Title(),
 		})
 	}
 
@@ -323,7 +314,7 @@ func (api V1) NewNode(n *ddt.Node, s *plex.Source) (*V1Node, error) {
 	related := make([]*V1RefNode, 0, len(nRelated))
 	for _, n := range nRelated {
 		related = append(related, &V1RefNode{
-			n.URL(), n.Title(),
+			n.Id(), n.URL(), n.Title(),
 		})
 	}
 
@@ -335,16 +326,16 @@ func (api V1) NewNode(n *ddt.Node, s *plex.Source) (*V1Node, error) {
 	}
 	if prevNode != nil {
 		prev = &V1RefNode{
-			prevNode.URL(), prevNode.Title(),
+			prevNode.Id(), prevNode.URL(), prevNode.Title(),
 		}
 	}
 	if nextNode != nil {
 		next = &V1RefNode{
-			nextNode.URL(), nextNode.Title(),
+			nextNode.Id(), nextNode.URL(), nextNode.Title(),
 		}
 	}
-
 	return &V1Node{
+		Id:          n.Id(),
 		Hash:        hash,
 		URL:         n.URL(),
 		Parent:      parent,
@@ -384,6 +375,7 @@ func (api V1) NewTreeNode(n *ddt.Node, s *plex.Source) (*V1TreeNode, error) {
 	}
 
 	return &V1TreeNode{
+		Id:       n.Id(),
 		Hash:     hash,
 		URL:      n.URL(),
 		Children: children,

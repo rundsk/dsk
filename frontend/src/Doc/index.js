@@ -46,47 +46,51 @@ function Doc(props) {
     return <div className="doc">{props.children}</div>;
   }
 
-  // Allow to use this inside the `transforms` constant. We cannot use
-  // `props.title` there as that refers to the component/element that is being
-  // transformed. The title is needed as to calculate the `Heading`'s jump
-  // anchor.
-  let docTitle = props.title;
+  // Transform context: Allow to use this inside the `transforms` constant. We
+  // cannot use `props.x` there as that refers to the component/element that is
+  // being transformed.
+  let context = {
+    node: props.node,
+    doc: { id: props.id, url: props.url, title: props.title },
+  };
 
   const transforms = {
-    Banner: props => <Banner {...props} />,
-    CodeBlock: props => {
+    Banner: (props) => <Banner {...props} />,
+    CodeBlock: (props) => {
       // When using <CodeBlock> directly within documents, its contents aren't
       // automatically protected from interpration as HTML, when they processed
       // by the DocTransformer. Thus we expect users to wrap their literal code
       // in <script> tags, which we again remove here.
       let children = props.children.replace(/^\s*<script>/, '').replace(/<\/script>\s*$/, '');
 
-      return <CodeBlock {...props} children={children} />;
+      return <CodeBlock {...props} {...context} children={children} />;
     },
-    ColorCard: props => <ColorCard {...props} />,
-    ColorGroup: props => <ColorGroup {...props} />,
-    Color: props => <Color {...props} />,
-    Playground: props => <Playground {...props} />,
-    Do: props => <Do {...props} />,
-    DoDontGroup: props => <DoDont {...props} />,
-    Dont: props => <Dont {...props} />,
-    FigmaEmbed: props => <FigmaEmbed {...props} />,
-    Image: props => <Image {...props} />,
-    TypographySpecimen: props => <TypographySpecimen {...props} />,
-    Warning: props => <Banner type="warning" {...props} />,
-    Glitch: props => <Glitch {...props} />,
-    CodeSandbox: props => <CodeSandbox {...props} />,
-    Asciinema: props => <Asciinema {...props} />,
-    ImageGrid: props => <ImageGrid {...props} />,
-    TableOfContents: props => <TableOfContents {...props} docTitle={docTitle} />,
+    ColorCard: (props) => <ColorCard {...props} {...context} />,
+    ColorGroup: (props) => <ColorGroup {...props} {...context} />,
+    Color: (props) => <Color {...props} {...context} />,
+    Playground: (props) => <Playground {...props} {...context} />,
+    Do: (props) => <Do {...props} {...context} />,
+    DoDontGroup: (props) => <DoDont {...props} {...context} />,
+    Dont: (props) => <Dont {...props} {...context} />,
+    FigmaEmbed: (props) => <FigmaEmbed {...props} {...context} />,
+    Image: (props) => <Image {...props} {...context} />,
+    TypographySpecimen: (props) => <TypographySpecimen {...props} {...context} />,
+    Warning: (props) => <Banner type="warning" {...props} {...context} />,
+    Glitch: (props) => <Glitch {...props} {...context} />,
+    CodeSandbox: (props) => <CodeSandbox {...props} {...context} />,
+    Asciinema: (props) => <Asciinema {...props} {...context} />,
+    ImageGrid: (props) => <ImageGrid {...props} {...context} />,
+    TableOfContents: (props) => <TableOfContents {...props} {...context} />,
 
-    a: props => <Link {...props} />,
-    h1: props => <Heading {...props} level="alpha" docTitle={docTitle} isJumptarget={true} />,
-    h2: props => <Heading {...props} level="beta" docTitle={docTitle} isJumptarget={true} />,
-    h3: props => <Heading {...props} level="gamma" docTitle={docTitle} isJumptarget={true} />,
-    h4: props => <Heading {...props} level="delta" docTitle={docTitle} isJumptarget={true} />,
-    img: props => <Image {...props} />,
-    pre: props => {
+    a: (props) => <Link {...props} {...context} />,
+
+    h1: (props) => <Heading {...props} {...context} level="alpha" isJumptarget={true} />,
+    h2: (props) => <Heading {...props} {...context} level="beta" isJumptarget={true} />,
+    h3: (props) => <Heading {...props} {...context} level="gamma" isJumptarget={true} />,
+    h4: (props) => <Heading {...props} {...context} level="delta" isJumptarget={true} />,
+
+    img: (props) => <Image {...props} {...context} />,
+    pre: (props) => {
       // When a language is added to a Markdown fenced code block, it is
       // stored as a class with a "language-" prefix in the inner <code>.
       // Here we extract it and turn it into a prop.
@@ -101,18 +105,18 @@ function Doc(props) {
       // empty "ghost" elements.
       let children = props.children.replace(/^<code>/, '').replace(/<\/code>$/, '');
 
-      return <CodeBlock escaped {...props} children={children} />;
+      return <CodeBlock escaped {...props} {...context} children={children} />;
     },
   };
 
   const orphans = Object.keys(transforms)
-    .filter(k => k !== 'a')
-    .filter(k => k !== 'Color')
-    .map(k => `p > ${k}`)
+    .filter((k) => k !== 'a')
+    .filter((k) => k !== 'Color')
+    .map((k) => `p > ${k}`)
     .concat(['p > video']);
 
   let transformedContent = transform(props.htmlContent, transforms, orphans, {
-    isPreformatted: type => type === 'pre' || type === 'CodeBlock'.toLowerCase(),
+    isPreformatted: (type) => ['pre', 'CodeBlock', 'Playground'].map((v) => v.toLowerCase()).includes(type),
     noTransform: (type, props) => {
       // This gets called on HTML elements that do not need
       // to be transformed to special React components.

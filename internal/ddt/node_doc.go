@@ -9,6 +9,7 @@ package ddt
 import (
 	"bytes"
 	"fmt"
+	"hash/adler32"
 	"io/ioutil"
 	"path/filepath"
 	"strconv"
@@ -24,6 +25,14 @@ import (
 type NodeDoc struct {
 	// Absolute path to the document file.
 	path string
+}
+
+func (d NodeDoc) Id() string {
+	return strings.ToUpper(fmt.Sprintf("D%x", adler32.Checksum([]byte(d.path))))
+}
+
+func (d NodeDoc) URL() string {
+	return filepath.Base(d.path)
 }
 
 // Order is a hint for outside sorting mechanisms.
@@ -103,6 +112,19 @@ func (d NodeDoc) CleanText() ([]byte, error) {
 // Raw content of the underlying file.
 func (d NodeDoc) Raw() ([]byte, error) {
 	return ioutil.ReadFile(d.path)
+}
+
+func (d NodeDoc) GetPlayground(id string) (bool, *NodeDocComponent, error) {
+	cmps, err := d.Components()
+	if err != nil {
+		return false, nil, err
+	}
+	for _, cmp := range cmps {
+		if cmp.Id() == id {
+			return true, cmp, nil
+		}
+	}
+	return false, nil, nil
 }
 
 // Components as found in the raw document.
@@ -249,7 +271,16 @@ func extractComponents(contents []byte, components []*NodeDocComponent) []byte {
 // Replaces placeholders with components.
 func insertComponents(contents []byte, components []*NodeDocComponent) []byte {
 	for _, component := range components {
-		contents = bytes.ReplaceAll(contents, []byte(component.Placeholder()), []byte(component.Raw))
+		// Add the components ID as data-component attribute. We cannot use
+		// NodeDocTransformer as component code cannot run through it, as the
+		// DOM parser will destroy casing of the component code.
+		raw := strings.Replace(
+			component.Raw,
+			fmt.Sprintf("<%s", component.Name),
+			fmt.Sprintf("<%s data-component=\"%s\"", component.Name, component.Id()),
+			1,
+		)
+		contents = bytes.ReplaceAll(contents, []byte(component.Placeholder()), []byte(raw))
 	}
 	return contents
 }

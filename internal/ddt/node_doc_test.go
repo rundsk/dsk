@@ -47,7 +47,7 @@ dsk+component+23
 `
 	components0 := []*NodeDocComponent{
 		&NodeDocComponent{
-			Id:       23,
+			uniqueId: 23,
 			Raw:      raw0[1 : len(raw0)-1],
 			Length:   77,
 			Position: 1,
@@ -67,7 +67,7 @@ Yellow and dsk+component+23 are the colors of spring.
 `
 	components1 := []*NodeDocComponent{
 		&NodeDocComponent{
-			Id:       23,
+			uniqueId: 23,
 			Raw:      "<ColorSwatch>green</ColorSwatch>",
 			Length:   len("<ColorSwatch>green</ColorSwatch>"),
 			Position: 12,
@@ -94,8 +94,8 @@ dsk+component+0
 dsk+component+1
 `
 	components2 := []*NodeDocComponent{
-		&NodeDocComponent{Id: 0, Level: 0, Raw: "<Banner>Hi there!</Banner>", Position: 64, Length: 26},
-		&NodeDocComponent{Id: 1, Level: 0, Raw: "<Warning>Don't do this</Warning>", Position: 92, Length: 32},
+		&NodeDocComponent{uniqueId: 0, Level: 0, Raw: "<Banner>Hi there!</Banner>", Position: 64, Length: 26},
+		&NodeDocComponent{uniqueId: 1, Level: 0, Raw: "<Warning>Don't do this</Warning>", Position: 92, Length: 32},
 	}
 	result2 := extractComponents([]byte(raw2), components2)
 
@@ -115,8 +115,8 @@ dsk+component+0
 dsk+component+1`
 
 	components0 := []*NodeDocComponent{
-		&NodeDocComponent{Id: 0, Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 1, Length: 103},
-		&NodeDocComponent{Id: 1, Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 106, Length: 103},
+		&NodeDocComponent{uniqueId: 0, Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 1, Length: 103},
+		&NodeDocComponent{uniqueId: 1, Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 106, Length: 103},
 	}
 
 	result0 := extractComponents([]byte(raw0), components0)
@@ -134,7 +134,7 @@ Yellow and <ColorSwatch>green</ColorSwatch> are the colors of spring.
 `
 	components0 := []*NodeDocComponent{
 		&NodeDocComponent{
-			Id:       23,
+			uniqueId: 23,
 			Raw:      "<ColorSwatch>green</ColorSwatch>",
 			Length:   len("<ColorSwatch>green</ColorSwatch>") - 2,
 			Position: 1,
@@ -242,11 +242,11 @@ func TestAddRemoveComponentProtectionSymmetry(t *testing.T) {
 `
 
 	components0 := findComponentsInMarkdown([]byte(raw0))
-	components0[0].Id = 0
-	components0[1].Id = 1
+	components0[0].uniqueId = 0
+	components0[1].uniqueId = 1
 	expectedComponents0 := []*NodeDocComponent{
-		&NodeDocComponent{Id: 0, Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 1, Length: 103},
-		&NodeDocComponent{Id: 1, Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 106, Length: 103},
+		&NodeDocComponent{uniqueId: 0, Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 1, Length: 103},
+		&NodeDocComponent{uniqueId: 1, Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 106, Length: 103},
 	}
 	if len(components0) != len(expectedComponents0) {
 		t.Errorf("Failed number of components mismatch, got: %d", len(components0))

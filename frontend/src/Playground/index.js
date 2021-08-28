@@ -6,21 +6,51 @@
  * license that can be found in the LICENSE file.
  */
 
-import React, { useState, useEffect } from 'react';
-import './Playground.css';
 import { Client } from '@rundsk/js-sdk';
+import React, { useEffect, useState } from 'react';
+import ReactDOMServer from 'react-dom/server';
+import { useGlobal } from 'reactn';
+import './Playground.css';
 
 function Playground(props) {
+  const [source] = useGlobal('source');
+
+  const [iframeSourceURL, setIframeSourceURL] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [annotationData, setAnnotationData] = useState({ annotations: [] });
   const [highlightedAnnotation, setHighlightedAnnotation] = useState(null);
 
   if (props.src) {
-    console.debug('<Playground> props.src has been deprecated in favor of props.annotate.');
+    console.warn('<Playground> props.src has been deprecated in favor of props.annotate.');
     props.annotate = props.src;
     delete props.src;
   }
 
+  useEffect(() => {
+    Client.playgroundURL(props.node.url, props.doc.id, props['data-component'], source).then(setIframeSourceURL);
+  }, [setIframeSourceURL, props.node.url, props.doc.id, props.children, source]);
+
+  // Handle communication with iframe. This is currently happens only from the iframe to us.
+  useEffect(() => {
+    const handler = (ev) => {
+      let data = JSON.parse(ev.data);
+
+      console.debug('Received message from playground iframe:', data);
+
+      if (data?.status === 'ready') {
+        setIsLoading(false);
+      }
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, [setIsLoading]);
+
   let classes = ['playground'];
+
+  if (isLoading) {
+    classes.push('is-loading');
+  }
 
   if (props.background === 'checkerboard') {
     classes.push('playground--checkerboard');
@@ -46,7 +76,7 @@ function Playground(props) {
 
   useEffect(() => {
     if (props.annotate) {
-      Client.fetch(props.annotate).then((data) => setAnnotationData(data));
+      Client.fetch(props.annotate).then(setAnnotationData);
     }
   }, [props.annotate]);
 
@@ -107,12 +137,9 @@ function Playground(props) {
   return (
     <div className={classes.join(' ')}>
       <div className="playground__stage" style={style}>
-        <div className="playground__stage-wrapper">
-          {annotationMarkers}
-
-          {/* This wrapper doesn’t do any styling, we just need the content to be isolated for stuff like :first-child to work */}
-          <div className="playground__stage-content">{props.children}</div>
-        </div>
+        {isLoading && <div className="playground__loading-message">Loading Playground …</div>}
+        {annotationMarkers}
+        <iframe className="playground__stage-frame" src={iframeSourceURL} />
       </div>
       {annotations.length > 0 && <div className="playground__annotations">{annotations}</div>}
 

@@ -20,7 +20,7 @@ the `frontend/build` directory by default.
 
 ## Prerequisites
 
-[Go](https://golang.org/) version 1.11 or later is needed for developing
+[Go](https://golang.org/) version 1.16 or later is needed for developing
 and testing the application. [Node.js](https://nodejs.org) and
 [Yarn](https://yarnpkg.com) are needed to build the built-in frontend.
 
@@ -31,66 +31,50 @@ directory to your `PATH`, so that go binaries can be found. In
 export PATH=$PATH:$(go env GOPATH)/bin
 ```
 
-DSK uses `go mod` to manage its dependencies. When using
-Go 1.11 module support must be explictly enabled, add this line to
-`.profile`:
-```
-export GO111MODULE=on
-```
-
 ## Setup
 
-Clone the official repository, switch into the directory and checkout the branch
-you want to work on.
+First we'll be setting up an umbrella directory where the main dsk repository
+and supporting repositories will live, which we'll clone into it.
 
 ```
-$ git clone github.com/rundsk/dsk 
-$ git checkout 1.2
-$ cd dsk
+mkdir rundsk
+cd rundsk
+
+git clone git@github.com:rundsk/dsk.git
+git clone git@github.com:rundsk/js-sdk.git
+git clone git@github.com:rundsk/example-component-library.git
+git clone git@github.com:rundsk/example-design-system.git
 ```
 
-When using the built-in frontend, the `frontend/build` folder must be
-present and contain the compiled version of the frontend. After a new
-checkout you can create it, using the following command. 
+All the following documentation will assume that you are working from inside the
+main repository checkout.
 
 ```
-$ make -C frontend build
+cd dsk
 ```
 
-## Improving the frontend
+## Developing
 
-There are two ways to work on the built-in frontend and verify changes
-in your browser easily at the same time while you go.
+First we'll start the backend in development mode and after that do the same
+with the frontend.
 
-First start the backend which will also serve the frontend.
-```
-$ make dev
-```
-
-Each time you change the source of the frontend run the following
-command and reload the browser window to see the changes.
+On a fresh checkout we'll have to install the dependencie of the frontend
+first, and then start the frontend's development server.
 
 ```
-$ make -C frontend build
+cd frontend
+yarn
+make dev
 ```
 
-Alternatively you can start the frontend (using a development server)
-and the backend separately on different ports, having the frontend use
-backend over its HTTP API.
+You should now be able to reach the frontend when opening http://127.0.0.1:3000
+in your browser. You might see some errors as we not yet have started the backend.
 
-Start the backend, first. By default it'll be reachable over port 8080.
-```
-$ make dev
-```
-
-Second, start the frontend using a development server. It will be
-reachable over port 3000 and proxy requests through to the backend.
+Now inside another terminal we'll start the backend.
 
 ```
-$ make -C frontend dev
+make dev
 ```
-
-Now open http://127.0.0.1:3000 in your browser.
 
 ## Debugging
 

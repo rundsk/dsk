@@ -67,7 +67,7 @@ function Page(props) {
     let docs = [];
     let rightSideTabs = [];
 
-    docs = props.docs.filter(d => {
+    docs = props.docs.filter((d) => {
       if (d.title.toLowerCase() === 'playground') {
         playground = d;
         return false;
@@ -83,7 +83,7 @@ function Page(props) {
     const showOverview =
       props.children &&
       props.children.length > 0 &&
-      docs.filter(doc => {
+      docs.filter((doc) => {
         return doc.title.toLowerCase() !== 'authors';
       }).length === 0;
 
@@ -132,12 +132,12 @@ function Page(props) {
       <TabBar
         onSetActiveTab={navigateToActiveTab}
         activeTab={activeTab}
-        tabs={docs.map(d => d.title)}
-        rightSideTabs={rightSideTabs.map(d => d.title)}
+        tabs={docs.map((d) => d.title)}
+        rightSideTabs={rightSideTabs.map((d) => d.title)}
       />
     );
 
-    let activeDoc = [...docs, ...rightSideTabs].find(d => {
+    let activeDoc = [...docs, ...rightSideTabs].find((d) => {
       return slugify(d.title) === activeTab;
     });
 
@@ -148,12 +148,27 @@ function Page(props) {
     // If this is not an overview/asset/source doc, its content comes
     // from the API in the form of HTML, rather than React elements
     if (activeDoc && activeDoc.html) {
-      doc = <Doc title={activeDoc.title} htmlContent={activeDoc.html} onRender={docDidRender} />;
+      doc = (
+        <Doc
+          id={activeDoc.id}
+          url={activeDoc.url}
+          title={activeDoc.title}
+          htmlContent={activeDoc.html}
+          node={{ id: props.id, url: props.url, title: props.title }}
+          onRender={docDidRender}
+        />
+      );
     }
 
     if (activeDoc && activeDoc.content) {
       doc = (
-        <Doc title={activeDoc.title} onRender={docDidRender}>
+        <Doc
+          id={activeDoc.id}
+          url={activeDoc.url}
+          title={activeDoc.title}
+          node={{ id: props.id, url: props.url, title: props.title }}
+          onRender={docDidRender}
+        >
           {activeDoc.content}
         </Doc>
       );
@@ -177,7 +192,6 @@ function Page(props) {
   }
 
   let related;
-
   if (props.related && props.related.length > 0) {
     let title = 'Related';
     let relatedLinks = props.related.map((a, i) => {
@@ -200,7 +214,7 @@ function Page(props) {
 
   if (props.custom) {
     // Turn props.custom object into array to be able to iterate with map()
-    custom = Object.entries(props.custom).map(data => {
+    custom = Object.entries(props.custom).map((data) => {
       let title = data[0];
 
       // Display value list or single value
@@ -262,7 +276,7 @@ function Page(props) {
       {playground && (
         <div className="page__component-demo">
           <Playground isPageComponentDemo>
-            <Doc htmlContent={playground.html} />
+            <Doc htmlContent={playground.html} node={props} />
           </Playground>
         </div>
       )}

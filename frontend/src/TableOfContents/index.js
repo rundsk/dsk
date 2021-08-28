@@ -21,16 +21,16 @@ function TOCEntry(props) {
 
   let children = [];
   if (props.children) {
-    children = props.children.map(c => (
-      <TOCEntry {...c} docTitle={props.docTitle} onClick={props.onClick} cutoffLevel={props.cutoffLevel} />
+    children = props.children.map((c) => (
+      <TOCEntry {...c} doc={props.doc} onClick={props.onClick} cutoffLevel={props.cutoffLevel} />
     ));
   }
 
   return (
     <li>
       <a
-        href={slugify(props.docTitle) + '§' + slug}
-        onClick={ev => {
+        href={slugify(props.doc.title) + '§' + slug}
+        onClick={(ev) => {
           props.onClick(ev, slug);
         }}
       >
@@ -51,20 +51,20 @@ function TableOfContents(props) {
       node = currentRouterState.params.node || '';
     }
 
-    Client.get(node).then(data => {
-      let doc = data.docs.find(d => d.title === props.docTitle);
+    Client.get(node).then((data) => {
+      let doc = data.docs.find((d) => d.title === props.doc.title);
       if (doc && doc.toc) {
         setData(doc.toc);
       }
     });
-  }, [props.src, props.router, props.docTitle]);
+  }, [props.src, props.router, props.doc.title]);
 
   let handleClick = (ev, slug) => {
     ev.preventDefault();
 
     let currentRouterState = props.router.getState();
     let currentNode = currentRouterState.params.node || '';
-    let t = slugify(props.docTitle) + '§' + slug;
+    let t = slugify(props.doc.title) + '§' + slug;
 
     props.router.navigate(
       'node',
@@ -81,8 +81,8 @@ function TableOfContents(props) {
     <nav className="table-of-contents">
       <div className="table-of-contents__title">Contents</div>
       <ul>
-        {data.map(e => {
-          return <TOCEntry {...e} docTitle={props.docTitle} onClick={handleClick} cutoffLevel={props.cutofflevel} />;
+        {data.map((e) => {
+          return <TOCEntry {...e} doc={props.doc} onClick={handleClick} cutoffLevel={props.cutofflevel} />;
         })}
       </ul>
     </nav>

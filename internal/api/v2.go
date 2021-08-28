@@ -7,10 +7,13 @@
 package api
 
 import (
+	"embed"
+	"html/template"
 	"net/http"
-	"path/filepath"
+	"strings"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"github.com/rundsk/dsk/internal/bus"
 	"github.com/rundsk/dsk/internal/ddt"
@@ -19,11 +22,23 @@ import (
 	"github.com/rundsk/dsk/internal/search"
 )
 
-func NewV2(ss *plex.Sources, appVersion string, b *bus.Broker, allowOrigins []string) *V2 {
+var (
+	//go:embed *.tmpl
+	templatesFS embed.FS
+
+	playgroundIndexTemplate *template.Template
+)
+
+func init() {
+	playgroundIndexTemplate = template.Must(template.ParseFS(templatesFS, "v2_playground_index.html.tmpl"))
+}
+
+func NewV2(ss *plex.Sources, cmps *plex.Components, appVersion string, b *bus.Broker, allowOrigins []string) *V2 {
 	return &V2{
 		v1:           NewV1(ss, appVersion, b, allowOrigins),
 		allowOrigins: allowOrigins,
 		sources:      ss,
+		components:   cmps,
 	}
 }
 
@@ -39,6 +54,8 @@ type V2 struct {
 	allowOrigins []string
 
 	sources *plex.Sources
+
+	components *plex.Components
 }
 
 // V2FullSearchResults differs from V2FilterResults in some
@@ -64,35 +81,42 @@ type V2FilterResults struct {
 
 // HTTPMux returns a HTTP mux that can be mounted onto a root mux.
 func (api V2) HTTPMux() http.Handler {
-	mux := http.NewServeMux()
+	root := mux.NewRouter()
 
-	mux.HandleFunc("/hello", api.v1.HelloHandler)
-	mux.HandleFunc("/config", api.v1.ConfigHandler)
-	mux.HandleFunc("/sources", api.v1.SourcesHandler)
-	mux.HandleFunc("/tree", api.v1.TreeHandler)
-	mux.HandleFunc("/tree/", func(w http.ResponseWriter, r *http.Request) {
-		if filepath.Ext(r.URL.Path) != "" {
-			api.v1.NodeAssetHandler(w, r)
-		} else {
-			api.v1.NodeHandler(w, r)
-		}
-	})
-	mux.HandleFunc("/filter", api.FilterHandler)
-	mux.HandleFunc("/search", api.SearchHandler)
-	mux.HandleFunc("/messages", api.v1.MessagesHandler)
-	mux.HandleFunc("/", api.v1.NotFoundHandler)
+	tree := root.PathPrefix("/tree").Subrouter()
+	node := tree.PathPrefix("/{node:[0-9a-zA-Z-_/]+}").Subrouter()                   // node is one or multiple slugged path elements.
+	doc := node.PathPrefix("/_docs/{doc:[0-9a-zA-Z-_.]+}").Subrouter()               // doc is a single slugged path element, a filename.
+	playground := doc.PathPrefix("/_playgrounds/{playground:[0-9a-z]+}").Subrouter() // playground is a sha1.
+
+	root.HandleFunc("/hello", api.v1.HelloHandler)
+	root.HandleFunc("/config", api.v1.ConfigHandler)
+	root.HandleFunc("/sources", api.v1.SourcesHandler)
+
+	tree.HandleFunc("", api.v1.TreeHandler)
+
+	node.HandleFunc("", api.v1.NodeHandler)
+	node.HandleFunc("/{asset:.*}", api.v1.NodeAssetHandler) // catch-all
+
+	playground.HandleFunc("/index.html", api.PlaygroundHandler)
+	playground.HandleFunc("/{asset:.*}", api.PlaygroundAssetHandler) // catch-all
+
+	root.HandleFunc("/filter", api.FilterHandler)
+	root.HandleFunc("/search", api.SearchHandler)
+	root.HandleFunc("/messages", api.v1.MessagesHandler)
+
+	root.HandleFunc("/", api.v1.NotFoundHandler) // catch-all
 
 	// An empty slice of origins indicates that CORS shoule be
 	// disabled. If we'd pass an empty slice to the CORS middleware
 	// it'd be interpreted to allow all origins. We want to be "secure
 	// by default".
 	if len(api.allowOrigins) == 0 {
-		return mux
+		return root
 	}
 	return cors.New(cors.Options{
 		AllowedOrigins:   api.allowOrigins,
 		AllowCredentials: true,
-	}).Handler(mux)
+	}).Handler(root)
 }
 
 func (api V2) NewTreeSearchResults(hs []*search.FullSearchHit, total int, took time.Duration) *V2FullSearchResults {
@@ -101,6 +125,7 @@ func (api V2) NewTreeSearchResults(hs []*search.FullSearchHit, total int, took t
 	for _, hit := range hs {
 		hits = append(hits, &V2FullSearchHit{
 			V1RefNode: V1RefNode{
+				hit.Node.Id(),
 				hit.Node.URL(),
 				hit.Node.Title(),
 			},
@@ -114,7 +139,7 @@ func (api V2) NewTreeSearchResults(hs []*search.FullSearchHit, total int, took t
 func (api V2) NewTreeFilterResults(nodes []*ddt.Node, total int, took time.Duration) *V2FilterResults {
 	ns := make([]*V1RefNode, 0, len(nodes))
 	for _, n := range nodes {
-		ns = append(ns, &V1RefNode{n.URL(), n.Title()})
+		ns = append(ns, &V1RefNode{n.Id(), n.URL(), n.Title()})
 	}
 	return &V2FilterResults{ns, total, took.Nanoseconds()}
 }
@@ -171,4 +196,113 @@ func (api V2) FilterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	wr.OK(api.NewTreeFilterResults(results, total, took))
+}
+
+func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
+	wr := httputil.NewResponder(w, r, "text/html")
+	r.Body.Close()
+
+	v := r.URL.Query().Get("v")
+
+	// As the regex for the "node" route param is too greedy (there's no option
+	// to make it ungreedy) this results in:
+	//   The-Design-Definitions-Tree/Documents/Playground/_docs/Readme
+	//
+	// ...whereas we want:
+	//   The-Design-Definitions-Tree/Documents/Playground
+	//
+	// TODO: Once more than this handler starts to use the "node" param, this
+	//       function will need to be made more generally available to other handlers
+	//       in one form or the other. A good form would be to create a middleware
+	//       that looks for the param and if found will automatically lookup up the
+	//       corresponding node and make it available in the context.
+	nodeURL := func() string {
+		path, _ := mux.Vars(r)["node"]
+
+		// Consume path elements until one begins with an underscore.
+		var parts []string
+		for _, p := range strings.Split(path, "/") {
+			if strings.HasPrefix(p, "_") {
+				break
+			}
+			parts = append(parts, p)
+		}
+		return strings.Join(parts, "/")
+	}
+	docURL, _ := mux.Vars(r)["doc"]
+	playgroundId, _ := mux.Vars(r)["playground"]
+
+	s, err := api.sources.MustGet(v)
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+
+	ok, n, err := s.Tree.Get(nodeURL())
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+	if !ok {
+		wr.Error(httputil.ErrNoSuchNode, nil)
+		return
+	}
+
+	ok, doc, err := n.GetDoc(docURL)
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+	if !ok {
+		wr.Error(httputil.ErrNoSuchDoc, nil)
+		return
+	}
+
+	ok, playground, err := doc.GetPlayground(playgroundId)
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+	if !ok {
+		wr.Error(httputil.ErrNoSuchPlayground, nil)
+		return
+	}
+	err = playgroundIndexTemplate.Execute(w, struct {
+		Id  string
+		Raw string
+	}{
+		Id:  playground.Id(),
+		Raw: playground.RawInner,
+	})
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+}
+
+// Serves a playground's assets.
+func (api V2) PlaygroundAssetHandler(w http.ResponseWriter, r *http.Request) {
+	wr := httputil.NewResponder(w, r, "")
+	r.Body.Close()
+
+	assetPath, _ := mux.Vars(r)["asset"]
+
+	if err := httputil.CheckSafePath(assetPath, api.components.Path); err != nil {
+		wr.Error(httputil.ErrUnsafePath, err)
+		return
+	}
+
+	asset, err := api.components.FS.Open(assetPath)
+	if err != nil {
+		wr.Error(httputil.ErrNoSuchAsset, err)
+		return
+	}
+	defer asset.Close()
+
+	info, err := asset.Stat()
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+	http.ServeContent(w, r, info.Name(), info.ModTime(), asset)
 }

@@ -21,7 +21,7 @@ function TreeNavigation(props) {
 
   const filterInputRef = React.createRef();
 
-  const shortcutHandler = event => {
+  const shortcutHandler = (event) => {
     if (event.key === 'Escape') {
       blurFilter();
     }
@@ -56,9 +56,8 @@ function TreeNavigation(props) {
       return;
     }
 
-    const filter = Client.filter(filterTerm);
-    filter
-      .then(data => {
+    Client.filter(filterTerm)
+      .then((data) => {
         if (!data.nodes) {
           // Filtering yielded no results, we save us iterating over the
           // existing tree, as we already know what it should look like.
@@ -67,14 +66,14 @@ function TreeNavigation(props) {
         }
         let tree = new Tree(props.tree);
 
-        let urls = data.nodes.reduce((carry, node) => {
-          carry.push(node.url);
+        let ids = data.nodes.reduce((carry, node) => {
+          carry.push(node.id);
           return carry;
         }, []);
 
-        setFilteredTree(tree.filteredBy(urls).root);
+        setFilteredTree(tree.filteredBy(ids).root);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
   }
@@ -85,11 +84,10 @@ function TreeNavigation(props) {
     }
 
     let classList = ['node'];
-    if (activeNode && node.url === activeNode.url) {
+    if (activeNode && node.id === activeNode.id) {
       classList.push('node--is-active');
     }
 
-    // let content = [<a href={`/tree/${node.url}`} key={"link"}>{node.title}</a>]
     let content = [
       <BaseLink
         router={props.router}
@@ -102,7 +100,7 @@ function TreeNavigation(props) {
       </BaseLink>,
     ];
 
-    let children = node.children.map(c => {
+    let children = node.children.map((c) => {
       return renderList(c, activeNode);
     });
 

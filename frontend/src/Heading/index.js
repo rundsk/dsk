@@ -28,12 +28,12 @@ function Heading(props) {
 
   let id = slugify(getNodeText(props.children));
 
-  let handleClick = ev => {
+  let handleClick = (ev) => {
     ev.preventDefault();
 
     let currentRouterState = props.router.getState();
     let currentNode = currentRouterState.params.node || '';
-    let t = slugify(props.docTitle) + '§' + id;
+    let t = slugify(props.doc.title) + '§' + id;
 
     props.router.navigate(
       'node',
@@ -59,7 +59,7 @@ function Heading(props) {
 
 export default withRoute(Heading);
 
-const getNodeText = node => {
+const getNodeText = (node) => {
   if (['string', 'number'].includes(typeof node)) return node;
   if (node instanceof Array) return node.map(getNodeText).join('');
   if (typeof node === 'object' && node) return getNodeText(node.props.children);

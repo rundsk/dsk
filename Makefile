@@ -6,6 +6,7 @@
 
 FRONTEND ?= $(shell pwd)/frontend/build
 DDT ?= $(shell pwd)/../example-design-system
+COMPONENTS ?= $(shell pwd)/../example-component-library/build
 
 VERSION ?= head-$(shell git rev-parse --short HEAD)
 LDFLAGS = -X main.Version=$(VERSION)
@@ -32,7 +33,7 @@ lint:
 .PHONY: dev
 dev:
 	go build -tags=dev -ldflags "$(LDFLAGS)" $(CMD_PKG)
-	./dsk -frontend $(FRONTEND) "$(DDT)"
+	./dsk -frontend $(FRONTEND) -components $(COMPONENTS) "$(DDT)"
 	rm dsk
 
 .PHONY: clean
