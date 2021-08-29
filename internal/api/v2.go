@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"bytes"
-	"errors"
 	"log"
 	"os"
 	"path/filepath"
@@ -54,11 +53,6 @@ func NewV2(ss *plex.Sources, cmps *plex.Components, appVersion string, b *bus.Br
 		components:   cmps,
 		playground:   &PlaygroundInstance{},
 	}
-}
-
-type PlaygroundRuntimeData struct {
-	jsRoot  string
-	cssRoot string
 }
 
 type PlaygroundInstanceSource struct {
@@ -309,36 +303,17 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 		wr.Error(httputil.ErrNoSuchPlayground, nil)
 		return
 	}
-	err = playgroundIndexTemplate.Execute(w, struct {
-		Id  string
-		Raw string
-	}{
-		Id:  playground.Id(),
-		Raw: playground.RawInner,
-	})
-	if err != nil {
-		wr.Error(httputil.Err, err)
-		return
-	}
 
 	tmpPlaygroundInstance, err := ioutil.TempFile(os.TempDir(), "*.jsx")
 	if err != nil {
 		log.Fatal("Cannot create temporary file", err)
 	}
 
-	// TODO Populate map, maybe with node_doc_transformer?
-	playgroundSrc := api.playground.byContentHash[id]
-
-	if playgroundSrc == "" {
-		wr.Error(httputil.ErrNoSuchAsset, errors.New("No such contenthash"))
-		return
-	}
-
 	// Remember to clean up the file afterwards
 	defer os.Remove(tmpPlaygroundInstance.Name())
 
 	// Example writing to the file
-	if _, err = tmpPlaygroundInstance.Write([]byte(playgroundSrc)); err != nil {
+	if _, err = tmpPlaygroundInstance.Write([]byte(playground.RawInner)); err != nil {
 		log.Fatal("Failed to write to temporary file", err)
 	}
 
@@ -367,8 +342,10 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := esbuild.Build(esbuild.BuildOptions{
-		EntryPointsAdvanced: []esbuild.EntryPoint{{InputPath: playgroundRuntimeTmp.Name(),
-			OutputPath: id}},
+		EntryPointsAdvanced: []esbuild.EntryPoint{{
+			InputPath:  playgroundRuntimeTmp.Name(),
+			OutputPath: playground.Id(),
+		}},
 		Outdir:     filepath.Join(api.components.Path),
 		Bundle:     true,
 		Write:      true,
@@ -388,13 +365,25 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var tpl bytes.Buffer
-	if err := playgroundIndexTemplate.Execute(&tpl, PlaygroundRuntimeData{
-		jsRoot:  filepath.Join("/api/v2/playgrounds", id+".js"),
-		cssRoot: api.components.CSSEntryPoint,
-	}); err != nil {
-		wr.Error(httputil.Err, err)
-	}
+	err = playgroundIndexTemplate.Execute(&tpl, struct {
+		// TODO(user-components): For debugging, remove later?
+		Id  string
+		Raw string
 
+		jsRoot  string
+		cssRoot string
+	}{
+		Id:  playground.Id(),
+		Raw: playground.RawInner,
+
+		// This replacement trick saves us to rebuild the lengthy URL.
+		jsRoot:  strings.Replace(r.URL.Path, "index.html", "index.js", 1),
+		cssRoot: api.components.CSSEntryPoint,
+	})
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
 	wr.OK(tpl.Bytes())
 }
 
