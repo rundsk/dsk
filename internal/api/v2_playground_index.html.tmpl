@@ -13,8 +13,11 @@
 				status: 'ready',
 			}), '*');
 		</script>
+		<link href="{{.CSSRoot}}" rel="stylesheet"></link>
+		<script src="{{.JSRoot}}" type="application/javascript"></script>
 	</head>
 	<body>
+		<div id="root"></div>
 		<h1>Hello World {{ .Id }}</h1>
 <pre>
 {{ .Raw }}

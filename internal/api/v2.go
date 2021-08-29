@@ -22,7 +22,6 @@ import (
 	"github.com/gorilla/mux"
 
 	"io/ioutil"
-	textTpl "text/template"
 
 	esbuild "github.com/evanw/esbuild/pkg/api"
 
@@ -38,48 +37,22 @@ var (
 	//go:embed *.tmpl
 	templatesFS embed.FS
 
-	playgroundIndexTemplate *template.Template
+	playgroundIndexTemplate   *template.Template
+	playgroundRuntimeTemplate *template.Template
 )
 
 func init() {
 	playgroundIndexTemplate = template.Must(template.ParseFS(templatesFS, "v2_playground_index.html.tmpl"))
+	playgroundRuntimeTemplate = template.Must(template.ParseFS(templatesFS, "v2_playground_runtime.jsx.tmpl"))
 }
 
 func NewV2(ss *plex.Sources, cmps *plex.Components, appVersion string, b *bus.Broker, allowOrigins []string) *V2 {
-	jsTemplate, err := textTpl.New("playground-runtime-instance").Parse(`{{define "RuntimeInstance"}}import ThePlaygroundInQuestion from '{{.ImportPath}}';
-
-{{.RuntimeJS | }}
-{{end}}
-`)
-	if err != nil {
-		log.Fatal("Unable to load js playground template", err)
-	}
-
-	htmlTemplate, err := template.New("playground-template").Parse(`{{define "T"}}<html>
-	<head>
-		<meta charset="utf-8"><meta>
-		<link href="{{.CSSRoot}}" rel="stylesheet"></link>
-		<script src="{{.JSRoot}}" type="application/javascript"></script>
-	</head>
-	<body>
-		<div id="root"></div>
-	</body>
-</html>{{end}}
-`)
-
-	if err != nil {
-		log.Fatal("Unable to load html playground template", err)
-	}
-
 	return &V2{
 		v1:           NewV1(ss, appVersion, b, allowOrigins),
 		allowOrigins: allowOrigins,
 		sources:      ss,
 		components:   cmps,
-		playground: &PlaygroundInstance{
-			jsTemplate:   *jsTemplate,
-			htmlTemplate: *htmlTemplate,
-		},
+		playground:   &PlaygroundInstance{},
 	}
 }
 
@@ -94,9 +67,6 @@ type PlaygroundInstanceSource struct {
 }
 
 type PlaygroundInstance struct {
-	htmlTemplate template.Template
-	jsTemplate   textTpl.Template
-
 	// byContentHash maps a hash to a playground source file something like the following
 	//
 	//  ```
@@ -387,7 +357,7 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 	defer os.Remove(playgroundRuntimeTmp.Name())
 
 	var b bytes.Buffer
-	api.playground.jsTemplate.Execute(&b, PlaygroundInstanceSource{
+	playgroundRuntimeTemplate.Execute(&b, PlaygroundInstanceSource{
 		importPath: template.JSStr(template.JSEscapeString(tmpPlaygroundInstance.Name())),
 		runtimeJS:  template.JS(playgroundRuntime),
 	})
@@ -418,7 +388,7 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var tpl bytes.Buffer
-	if err := api.playground.htmlTemplate.Execute(&tpl, PlaygroundRuntimeData{
+	if err := playgroundIndexTemplate.Execute(&tpl, PlaygroundRuntimeData{
 		jsRoot:  filepath.Join("/api/v2/playgrounds", id+".js"),
 		cssRoot: api.components.CSSEntryPoint,
 	}); err != nil {
