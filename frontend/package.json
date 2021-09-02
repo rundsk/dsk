@@ -53,5 +53,6 @@
     "react@16.14.0": {
       "unplugged": true
     }
-  }
+  },
+  "packageManager": "yarn@3.0.1"
 }
