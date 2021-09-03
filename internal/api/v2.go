@@ -8,9 +8,9 @@ package api
 
 import (
 	"embed"
-	"html/template"
 	"net/http"
 	"strings"
+	"text/template"
 	"time"
 
 	"bytes"
@@ -51,30 +51,7 @@ func NewV2(ss *plex.Sources, cmps *plex.Components, appVersion string, b *bus.Br
 		allowOrigins: allowOrigins,
 		sources:      ss,
 		components:   cmps,
-		playground:   &PlaygroundInstance{},
 	}
-}
-
-type PlaygroundInstanceSource struct {
-	runtimeJS  template.JS
-	importPath template.JSStr
-}
-
-type PlaygroundInstance struct {
-	// byContentHash maps a hash to a playground source file something like the following
-	//
-	//  ```
-	//    import React, {useCallback} from 'react'
-
-	// export default () => {
-	// 	const onClick = useCallback(() => {
-	// 		alert('Oh yeah')
-	// 	}, [])
-
-	// 	return <button onClick={onClick}>It's all coming together</button>
-	// }
-	// ```
-	byContentHash map[string]string
 }
 
 type V2 struct {
@@ -91,7 +68,6 @@ type V2 struct {
 	sources *plex.Sources
 
 	components *plex.Components
-	playground *PlaygroundInstance
 }
 
 // V2FullSearchResults differs from V2FilterResults in some
@@ -318,7 +294,6 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	playgroundRuntime, err := os.ReadFile(filepath.Join("frontend", "src", "playground-runtime.jsx"))
-
 	if err != nil {
 		log.Fatal("Cannot read playground runtime")
 	}
@@ -332,11 +307,13 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 	defer os.Remove(playgroundRuntimeTmp.Name())
 
 	var b bytes.Buffer
-	playgroundRuntimeTemplate.Execute(&b, PlaygroundInstanceSource{
-		importPath: template.JSStr(template.JSEscapeString(tmpPlaygroundInstance.Name())),
-		runtimeJS:  template.JS(playgroundRuntime),
+	playgroundRuntimeTemplate.Execute(&b, struct {
+		ImportPath string
+		RuntimeJS  string
+	}{
+		ImportPath: tmpPlaygroundInstance.Name(),
+		RuntimeJS:  string(playgroundRuntime),
 	})
-
 	if _, err = playgroundRuntimeTmp.Write(b.Bytes()); err != nil {
 		log.Fatal("Failed to write to temporary file", err)
 	}
@@ -350,7 +327,7 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 		Bundle:     true,
 		Write:      true,
 		NodePaths:  []string{"frontend/node_modules"},
-		PublicPath: "/api/v2/playgrounds",
+		PublicPath: "/api/v2/playgrounds", // TODO(user-components): This path isn't correct yet, see replace trick below.
 		LogLevel:   esbuild.LogLevelDebug,
 	})
 
