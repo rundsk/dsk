@@ -337,8 +337,9 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(result.Errors) > 0 {
-		log.Fatal(result.Errors[0].Text)
-		wr.Error(httputil.Err, nil)
+		log.Print(result.Errors[0].Text)
+		//		log.Fatal(result.Errors[0].Text)
+		//		wr.Error(httputil.Err, nil)
 	}
 
 	var tpl bytes.Buffer
@@ -347,15 +348,15 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 		Id  string
 		Raw string
 
-		jsRoot  string
-		cssRoot string
+		JSRoot  string
+		CSSRoot string
 	}{
 		Id:  playground.Id(),
 		Raw: playground.RawInner,
 
 		// This replacement trick saves us to rebuild the lengthy URL.
-		jsRoot:  strings.Replace(r.URL.Path, "index.html", "index.js", 1),
-		cssRoot: api.components.CSSEntryPoint,
+		JSRoot:  strings.Replace(r.URL.Path, "index.html", "index.js", 1),
+		CSSRoot: api.components.CSSEntryPoint,
 	})
 	if err != nil {
 		wr.Error(httputil.Err, err)
