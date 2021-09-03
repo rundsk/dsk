@@ -8,6 +8,9 @@ package api
 
 import (
 	"embed"
+	"fmt"
+	"html"
+	"io"
 	"net/http"
 	"strings"
 	"text/template"
@@ -36,13 +39,13 @@ var (
 	//go:embed *.tmpl
 	templatesFS embed.FS
 
-	playgroundIndexTemplate   *template.Template
-	playgroundRuntimeTemplate *template.Template
+	playgroundIndexHTMLTemplate *template.Template
+	playgroundIndexJSTemplate   *template.Template
 )
 
 func init() {
-	playgroundIndexTemplate = template.Must(template.ParseFS(templatesFS, "v2_playground_index.html.tmpl"))
-	playgroundRuntimeTemplate = template.Must(template.ParseFS(templatesFS, "v2_playground_runtime.jsx.tmpl"))
+	playgroundIndexHTMLTemplate = template.Must(template.ParseFS(templatesFS, "v2_playground_index.html.tmpl"))
+	playgroundIndexJSTemplate = template.Must(template.ParseFS(templatesFS, "v2_playground_runtime.jsx.tmpl"))
 }
 
 func NewV2(ss *plex.Sources, cmps *plex.Components, appVersion string, b *bus.Broker, allowOrigins []string) *V2 {
@@ -109,7 +112,8 @@ func (api V2) HTTPMux() http.Handler {
 	node.HandleFunc("", api.v1.NodeHandler)
 	node.HandleFunc("/{asset:.*}", api.v1.NodeAssetHandler) // catch-all
 
-	playground.HandleFunc("/index.html", api.PlaygroundHandler)
+	playground.HandleFunc("/index.html", api.PlaygroundIndexHTMLHandler)
+	playground.HandleFunc("/index.js", api.PlaygroundIndexJSHandler)
 	playground.HandleFunc("/{asset:.*}", api.PlaygroundAssetHandler) // catch-all
 
 	root.HandleFunc("/filter", api.FilterHandler)
@@ -210,37 +214,13 @@ func (api V2) FilterHandler(w http.ResponseWriter, r *http.Request) {
 	wr.OK(api.NewTreeFilterResults(results, total, took))
 }
 
-func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
+func (api V2) PlaygroundIndexHTMLHandler(w http.ResponseWriter, r *http.Request) {
 	wr := httputil.NewResponder(w, r, "text/html")
 	r.Body.Close()
 
 	v := r.URL.Query().Get("v")
 
-	// As the regex for the "node" route param is too greedy (there's no option
-	// to make it ungreedy) this results in:
-	//   The-Design-Definitions-Tree/Documents/Playground/_docs/Readme
-	//
-	// ...whereas we want:
-	//   The-Design-Definitions-Tree/Documents/Playground
-	//
-	// TODO: Once more than this handler starts to use the "node" param, this
-	//       function will need to be made more generally available to other handlers
-	//       in one form or the other. A good form would be to create a middleware
-	//       that looks for the param and if found will automatically lookup up the
-	//       corresponding node and make it available in the context.
-	nodeURL := func() string {
-		path, _ := mux.Vars(r)["node"]
-
-		// Consume path elements until one begins with an underscore.
-		var parts []string
-		for _, p := range strings.Split(path, "/") {
-			if strings.HasPrefix(p, "_") {
-				break
-			}
-			parts = append(parts, p)
-		}
-		return strings.Join(parts, "/")
-	}
+	nodeURL := api.nodeURL(mux.Vars(r)["node"])
 	docURL, _ := mux.Vars(r)["doc"]
 	playgroundId, _ := mux.Vars(r)["playground"]
 
@@ -250,7 +230,77 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok, n, err := s.Tree.Get(nodeURL())
+	ok, n, err := s.Tree.Get(nodeURL)
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+	if !ok {
+		wr.Error(httputil.ErrNoSuchNode, nil)
+		return
+	}
+
+	ok, doc, err := n.GetDoc(docURL)
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+	if !ok {
+		wr.Error(httputil.ErrNoSuchDoc, nil)
+		return
+	}
+
+	ok, playground, err := doc.GetPlayground(playgroundId)
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+	if !ok {
+		wr.Error(httputil.ErrNoSuchPlayground, nil)
+		return
+	}
+
+	var tpl bytes.Buffer
+	err = playgroundIndexHTMLTemplate.Execute(&tpl, struct {
+		// TODO(user-components): For debugging, remove later?
+		Id  string
+		Raw string
+
+		JSRoot  string
+		CSSRoot string
+	}{
+		Id:  playground.Id(),
+		Raw: html.EscapeString(playground.RawInner),
+
+		// This replacement trick saves us to rebuild the lengthy URL.
+		// TODO: Find a better way to provide prefix
+		JSRoot:  fmt.Sprintf("/api/v2/%s", strings.Replace(r.URL.Path, "index.html", "index.js", 1)),
+		CSSRoot: api.components.CSSEntryPoint,
+	})
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+	wr.OK(tpl.Bytes())
+}
+
+func (api V2) PlaygroundIndexJSHandler(w http.ResponseWriter, r *http.Request) {
+	wr := httputil.NewResponder(w, r, "application/javascript")
+	r.Body.Close()
+
+	v := r.URL.Query().Get("v")
+
+	nodeURL := api.nodeURL(mux.Vars(r)["node"])
+	docURL, _ := mux.Vars(r)["doc"]
+	playgroundId, _ := mux.Vars(r)["playground"]
+
+	s, err := api.sources.MustGet(v)
+	if err != nil {
+		wr.Error(httputil.Err, err)
+		return
+	}
+
+	ok, n, err := s.Tree.Get(nodeURL)
 	if err != nil {
 		wr.Error(httputil.Err, err)
 		return
@@ -307,7 +357,7 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 	defer os.Remove(playgroundRuntimeTmp.Name())
 
 	var b bytes.Buffer
-	playgroundRuntimeTemplate.Execute(&b, struct {
+	playgroundIndexJSTemplate.Execute(&b, struct {
 		ImportPath string
 		RuntimeJS  string
 	}{
@@ -327,7 +377,7 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 		Bundle:     true,
 		Write:      true,
 		NodePaths:  []string{"frontend/node_modules"},
-		PublicPath: "/api/v2/playgrounds", // TODO(user-components): This path isn't correct yet, see replace trick below.
+		PublicPath: "/api/v2/playgrounds", // TODO(user-components): This path isn't correct yet, see replace trick above.
 		LogLevel:   esbuild.LogLevelDebug,
 	})
 
@@ -337,32 +387,14 @@ func (api V2) PlaygroundHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(result.Errors) > 0 {
+
 		log.Print(result.Errors[0].Text)
 		//		log.Fatal(result.Errors[0].Text)
 		//		wr.Error(httputil.Err, nil)
 	}
 
-	var tpl bytes.Buffer
-	err = playgroundIndexTemplate.Execute(&tpl, struct {
-		// TODO(user-components): For debugging, remove later?
-		Id  string
-		Raw string
-
-		JSRoot  string
-		CSSRoot string
-	}{
-		Id:  playground.Id(),
-		Raw: playground.RawInner,
-
-		// This replacement trick saves us to rebuild the lengthy URL.
-		JSRoot:  strings.Replace(r.URL.Path, "index.html", "index.js", 1),
-		CSSRoot: api.components.CSSEntryPoint,
-	})
-	if err != nil {
-		wr.Error(httputil.Err, err)
-		return
-	}
-	wr.OK(tpl.Bytes())
+	contents, _ := io.ReadAll(tmpPlaygroundInstance)
+	wr.OK(contents)
 }
 
 // Serves a playground's assets.
@@ -390,4 +422,28 @@ func (api V2) PlaygroundAssetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.ServeContent(w, r, info.Name(), info.ModTime(), asset)
+}
+
+// As the regex for the "node" route param is too greedy (there's no option
+// to make it ungreedy) this results in:
+//   The-Design-Definitions-Tree/Documents/Playground/_docs/Readme
+//
+// ...whereas we want:
+//   The-Design-Definitions-Tree/Documents/Playground
+//
+// TODO: Once more than this handler starts to use the "node" param, this
+//       function will need to be made more generally available to other handlers
+//       in one form or the other. A good form would be to create a middleware
+//       that looks for the param and if found will automatically lookup up the
+//       corresponding node and make it available in the context.
+func (api V2) nodeURL(path string) string {
+	// Consume path elements until one begins with an underscore.
+	var parts []string
+	for _, p := range strings.Split(path, "/") {
+		if strings.HasPrefix(p, "_") {
+			break
+		}
+		parts = append(parts, p)
+	}
+	return strings.Join(parts, "/")
 }
