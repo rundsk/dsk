@@ -34,5 +34,7 @@ jobs:
           path: frontend/.yarn/cache
           key: ${{ runner.os }}-yarn-${{ hashFiles('frontend/yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-
-      - run: yarn --cwd frontend
-      - run: make -C frontend test
+      - run: yarn
+        working-directory: ./frontend
+      - run: make test
+        working-directory: ./frontend
