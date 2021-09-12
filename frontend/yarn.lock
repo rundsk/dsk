@@ -2197,7 +2197,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rundsk/frontend@workspace:."
   dependencies:
-    "@rundsk/js-sdk": "rundsk/js-sdk#1.4"
+    "@rundsk/js-sdk": "rundsk/js-sdk#user-components"
     babel-eslint: ^10.1.0
     enzyme: ^3.10.0
     enzyme-adapter-react-16: ^1.14.0
@@ -2232,10 +2232,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rundsk/js-sdk@rundsk/js-sdk#1.4":
+"@rundsk/js-sdk@rundsk/js-sdk#user-components":
   version: 0.0.0
-  resolution: "@rundsk/js-sdk@https://github.com/rundsk/js-sdk.git#commit=15947ebaf198baa6f11859be1e5598b1a93990fa"
-  checksum: d77cbb89a8e8dc134d18bb1b694f6fe09a2158905bcb52528c8593cd10f91a8f3c6b15970809f94659800aa6ba11aec63d54ea47fd585508e4d45065e1fff04a
+  resolution: "@rundsk/js-sdk@https://github.com/rundsk/js-sdk.git#commit=8f667ac726926603d112ecaeb329e14df4d7523a"
+  checksum: 7390bd5f6fed78c05ad3857212b80fe9b1fc61c290fbc2cc5767e3d468e1a7df50596be4fc6f9709f42edda4040650324e470ed3ef9541a3f5499f3e8d0a4d4c
   languageName: node
   linkType: hard
 
