@@ -3,7 +3,7 @@
   "version": "1.3.0",
   "private": true,
   "dependencies": {
-    "@rundsk/js-sdk": "rundsk/js-sdk#user-components",
+    "@rundsk/js-sdk": "rundsk/js-sdk#1.4",
     "filesize": "^4.1.2",
     "get-contrast": "^2.0.0",
     "highlight.js": "^10.4.1",
@@ -54,5 +54,5 @@
       "unplugged": true
     }
   },
-  "packageManager": "yarn@3.0.1"
+  "packageManager": "yarn@3.0.2"
 }
