@@ -2234,8 +2234,8 @@ __metadata:
 
 "@rundsk/js-sdk@rundsk/js-sdk#1.4":
   version: 0.0.0
-  resolution: "@rundsk/js-sdk@https://github.com/rundsk/js-sdk.git#commit=6c21951880f48e414c5aab5616663fb3372657eb"
-  checksum: a92dc8d96f6a5aa6b94ec79ece0cd884c745c8e336f6695c369e2f167c2b8a5ff7af665525d0b8e3bc5fb37b791c7245be8ae2b108595b3390f60881f0d19f17
+  resolution: "@rundsk/js-sdk@https://github.com/rundsk/js-sdk.git#commit=15947ebaf198baa6f11859be1e5598b1a93990fa"
+  checksum: d77cbb89a8e8dc134d18bb1b694f6fe09a2158905bcb52528c8593cd10f91a8f3c6b15970809f94659800aa6ba11aec63d54ea47fd585508e4d45065e1fff04a
   languageName: node
   linkType: hard
 

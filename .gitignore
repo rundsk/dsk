@@ -16,8 +16,8 @@ node_modules
 frontend/build
 internal/frontend/vfsdata.go
 frontend/.yarn/*
-frontend/!.yarn/releases
-frontend/!.yarn/plugins
-frontend/!.yarn/sdks
+!frontend/.yarn/releases
+!frontend/.yarn/plugins
+!frontend/.yarn/sdks
 frontend/.pnp.*
 .eslintcache
