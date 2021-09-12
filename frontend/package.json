@@ -54,8 +54,5 @@
       "unplugged": true
     }
   },
-  "packageManager": "yarn@3.0.2",
-  "resolutions": {
-    "@rundsk/js-sdk": "portal:/Users/zachwegrzyniak/js-sdk"
-  }
+  "packageManager": "yarn@3.0.2"
 }
