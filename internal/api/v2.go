@@ -274,7 +274,7 @@ func (api V2) PlaygroundIndexHTMLHandler(w http.ResponseWriter, r *http.Request)
 
 		// This replacement trick saves us to rebuild the lengthy URL.
 		// TODO: Find a better way to provide prefix
-		JSRoot:  fmt.Sprintf("/api/v2/%s", strings.Replace(r.URL.Path, "index.html", "index.js", 1)),
+		JSRoot:  fmt.Sprintf("/api/v2%s", strings.Replace(r.URL.Path, "index.html", "index.js", 1)),
 		CSSRoot: api.components.CSSEntryPoint,
 	})
 	if err != nil {
