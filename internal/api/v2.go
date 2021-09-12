@@ -10,7 +10,6 @@ import (
 	"embed"
 	"fmt"
 	"html"
-	"io"
 	"net/http"
 	"strings"
 	"text/template"
@@ -379,6 +378,50 @@ func (api V2) PlaygroundIndexJSHandler(w http.ResponseWriter, r *http.Request) {
 		NodePaths:  []string{"frontend/node_modules"},
 		PublicPath: "/api/v2/playgrounds", // TODO(user-components): This path isn't correct yet, see replace trick above.
 		LogLevel:   esbuild.LogLevelDebug,
+		Plugins: []esbuild.Plugin{
+			{
+				// https://github.com/evanw/esbuild/issues/806#issuecomment-779138268
+				Name: "react-cdn-translation-hail-mary",
+				Setup: func(build esbuild.PluginBuild) {
+					// Original JS:
+					// build.onResolve({filter: /^react$/, (args)=> {
+					// 	return {
+					// 		 path: args.path,
+					// 		 namespace: 'globalExternal'
+					// 	}
+					// }
+					build.OnResolve(esbuild.OnResolveOptions{
+						Filter: `^react(-dom)?$`,
+					},
+						func(args esbuild.OnResolveArgs) (esbuild.OnResolveResult, error) {
+							return esbuild.OnResolveResult{
+								Path:      args.Path,
+								Namespace: "globalExternal",
+							}, nil
+						},
+					)
+
+					// Original JS:
+					// build.onLoad({filter:/.*/,namespace: 'globalExternal'},args => {
+					// 		return {
+					// 		 contents: `module.exports = globalThis.React`,
+					// 		 loader: 'js'
+					// 	 }
+					// }}
+					build.OnLoad(esbuild.OnLoadOptions{Filter: `.*`, Namespace: "globalExternal"},
+						func(args esbuild.OnLoadArgs) (esbuild.OnLoadResult, error) {
+							contents := "module.exports = globalThis.React"
+							if args.Path == "react-dom" {
+								contents += "DOM"
+							}
+							return esbuild.OnLoadResult{
+								Contents: &contents,
+								Loader:   esbuild.LoaderJS,
+							}, nil
+						})
+				},
+			},
+		},
 	})
 
 	// Close the file
@@ -387,14 +430,18 @@ func (api V2) PlaygroundIndexJSHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(result.Errors) > 0 {
-
-		log.Print(result.Errors[0].Text)
-		//		log.Fatal(result.Errors[0].Text)
-		//		wr.Error(httputil.Err, nil)
+		log.Fatal(result.Errors[0].Text)
+		wr.Error(httputil.Err, nil)
 	}
 
-	contents, _ := io.ReadAll(tmpPlaygroundInstance)
-	wr.OK(contents)
+	outputFiles := result.OutputFiles
+
+	if len(outputFiles) != 1 {
+		log.Fatal("There should only be one file output from ESBuild.")
+		wr.Error(httputil.Err, nil)
+	}
+
+	wr.OK(outputFiles[0].Contents)
 }
 
 // Serves a playground's assets.

@@ -2232,12 +2232,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rundsk/js-sdk@rundsk/js-sdk#user-components":
-  version: 0.0.0
-  resolution: "@rundsk/js-sdk@https://github.com/rundsk/js-sdk.git#commit=8f667ac726926603d112ecaeb329e14df4d7523a"
-  checksum: 7390bd5f6fed78c05ad3857212b80fe9b1fc61c290fbc2cc5767e3d468e1a7df50596be4fc6f9709f42edda4040650324e470ed3ef9541a3f5499f3e8d0a4d4c
+"@rundsk/js-sdk@portal:/Users/zachwegrzyniak/js-sdk::locator=%40rundsk%2Ffrontend%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@rundsk/js-sdk@portal:/Users/zachwegrzyniak/js-sdk::locator=%40rundsk%2Ffrontend%40workspace%3A."
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@sinonjs/commons@npm:^1.7.0":
   version: 1.8.3
