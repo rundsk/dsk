@@ -33,12 +33,17 @@ type Components struct {
 
 func (cmps *Components) Detect() {
 	hasFile := func(path string) bool {
-		if _, err := os.Stat(path); err == nil {
+		normalizedPath := filepath.Join(cmps.Path, path)
+		if _, err := os.Stat(normalizedPath); err == nil {
 			return true
 		}
+		log.Printf("Failed to load %s components at %s", path, normalizedPath)
 		return false
 	}
 	if hasFile("index.js") {
 		cmps.JSEntryPoint = "index.js"
+	}
+	if hasFile("index.css") {
+		cmps.CSSEntryPoint = "index.css"
 	}
 }

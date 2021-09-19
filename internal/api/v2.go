@@ -338,7 +338,7 @@ func (api V2) PlaygroundIndexJSHandler(w http.ResponseWriter, r *http.Request) {
 	defer os.Remove(tmpPlaygroundInstance.Name())
 
 	// Example writing to the file
-	if _, err = tmpPlaygroundInstance.Write([]byte(playground.RawInner)); err != nil {
+	if _, err = tmpPlaygroundInstance.Write([]byte(fmt.Sprintf("import * as my from \"%s\";\n%s", filepath.Join(api.components.Path, api.components.JSEntryPoint), playground.RawInner))); err != nil {
 		log.Fatal("Failed to write to temporary file", err)
 	}
 
@@ -430,7 +430,7 @@ func (api V2) PlaygroundIndexJSHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(result.Errors) > 0 {
-		log.Fatal(result.Errors[0].Text)
+		log.Printf("There were compliation errors %s", result.Errors[0].Text)
 		wr.Error(httputil.Err, nil)
 	}
 
