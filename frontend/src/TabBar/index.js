@@ -36,7 +36,7 @@ function TabBar(props) {
           href={`#${t}`}
           className={classes.join(' ')}
           key={t}
-          onClick={ev => {
+          onClick={(ev) => {
             ev.preventDefault();
             props.onSetActiveTab(t);
           }}
@@ -62,7 +62,7 @@ function TabBar(props) {
           href={`#${t}`}
           className={classes.join(' ')}
           key={t}
-          onClick={ev => {
+          onClick={(ev) => {
             ev.preventDefault();
             props.onSetActiveTab(t);
           }}

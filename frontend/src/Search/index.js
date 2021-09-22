@@ -55,7 +55,7 @@ function Search(props) {
 
   const searchInputRef = React.createRef();
 
-  const shortcutHandler = event => {
+  const shortcutHandler = (event) => {
     if (event.key === 'ArrowDown' && searchResults.length > 0) {
       event.preventDefault();
 
@@ -121,7 +121,7 @@ function Search(props) {
 
     const search = Client.search(term);
     search
-      .then(data => {
+      .then((data) => {
         if (!data.hits) {
           // Filtering yielded no results, we save us iterating over the
           // existing tree, as we already know what it should look like.
@@ -130,7 +130,7 @@ function Search(props) {
         }
         setSearchResults(data.hits);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
   }
@@ -166,7 +166,7 @@ function Search(props) {
   return (
     <div
       className={classes.join(' ')}
-      onMouseDown={ev => {
+      onMouseDown={(ev) => {
         if (searchIsFocused) {
           hideSearch();
         }
@@ -175,7 +175,7 @@ function Search(props) {
       <div className="search__content-container">
         <div
           className="search__content"
-          onClick={ev => {
+          onClick={(ev) => {
             ev.stopPropagation();
           }}
         >
@@ -184,13 +184,13 @@ function Search(props) {
             placeholder={`Search ${props.title}…`}
             value={searchTerm}
             onChange={onSearchTermChange}
-            onFocus={ev => {
+            onFocus={(ev) => {
               ev.preventDefault();
               ev.stopPropagation();
               showSearch();
             }}
             ref={searchInputRef}
-            onClick={ev => {
+            onClick={(ev) => {
               ev.stopPropagation();
               ev.preventDefault();
             }}

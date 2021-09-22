@@ -16,11 +16,11 @@ function SourceView(props) {
 
   useEffect(() => {
     if (props.url === 'hello') {
-      Client.hello().then(data => {
+      Client.hello().then((data) => {
         setData(data);
       });
     } else if (props.url !== undefined) {
-      Client.get(props.url, props.source).then(data => {
+      Client.get(props.url, props.source).then((data) => {
         setData(data);
       });
     }

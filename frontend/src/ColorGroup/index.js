@@ -16,7 +16,7 @@ function ColorGroup(props) {
 
   useEffect(() => {
     if (props.src) {
-      Client.fetch(props.src).then(data => setColors(data.colors));
+      Client.fetch(props.src).then((data) => setColors(data.colors));
     }
   }, [props.src]);
 
@@ -29,7 +29,7 @@ function ColorGroup(props) {
 
     // We have to make sure the compact property is set on all
     // children as well
-    content = React.Children.map(props.children, c => {
+    content = React.Children.map(props.children, (c) => {
       return React.cloneElement(c, { compact: true });
     });
   }
@@ -37,7 +37,7 @@ function ColorGroup(props) {
   // If the src prop is set, the information about the colors should
   // be loaded via the API
   if (props.src) {
-    content = colors.map(c => {
+    content = colors.map((c) => {
       return (
         <ColorCard key={c.value} color={c.value} comment={c.comment} id={c.id} compact={props.compact}>
           {c.name}

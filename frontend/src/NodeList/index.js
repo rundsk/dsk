@@ -18,7 +18,7 @@ function Node(props) {
 
   useEffect(() => {
     if (props.url) {
-      Client.get(props.url, props.source).then(data => {
+      Client.get(props.url, props.source).then((data) => {
         setData(data);
       });
     }
@@ -52,7 +52,7 @@ function NodeList(props) {
   return (
     <>
       {props.nodes &&
-        props.nodes.map(n => {
+        props.nodes.map((n) => {
           return <Node {...n} source={props.source} key={n.url} router={props.router} route={props.route} />;
         })}
     </>

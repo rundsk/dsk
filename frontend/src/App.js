@@ -39,14 +39,14 @@ function App(props) {
   // intentionally not displaying notifications, as we consider them to be too
   // intrusive.
   useEffect(() => {
-    onMessage.current = ev => {
+    onMessage.current = (ev) => {
       let m = JSON.parse(ev.data);
 
       if (m.topic === `${source}.tree.synced`) {
         loadTree();
 
         // The node might have gone away.
-        checkNode(source).then(isExistent => {
+        checkNode(source).then((isExistent) => {
           if (isExistent) {
             loadNode();
           } else {
@@ -57,7 +57,7 @@ function App(props) {
       }
 
       if (m.topic.includes('source.status.changed')) {
-        Client.sources().then(data => {
+        Client.sources().then((data) => {
           setAvailableSources(data.sources);
         });
       }
@@ -71,13 +71,13 @@ function App(props) {
     }
     console.log('Establishing WebSocket connection...');
     socket.current = Client.messages();
-    socket.current.addEventListener('message', ev => {
+    socket.current.addEventListener('message', (ev) => {
       onMessage.current(ev);
     });
   }, [socket, onMessage]);
 
   useEffect(() => {
-    Client.sources().then(data => {
+    Client.sources().then((data) => {
       setAvailableSources(data.sources);
 
       var sourceToLoad = null;
@@ -85,7 +85,7 @@ function App(props) {
 
       // First we check if the source from the url exists
       if (sourceFromURL) {
-        data.sources.forEach(v => {
+        data.sources.forEach((v) => {
           if (v.name === sourceFromURL) {
             sourceToLoad = sourceFromURL;
           }
@@ -94,7 +94,7 @@ function App(props) {
 
       // Then we check if a live source exists
       if (!sourceToLoad) {
-        data.sources.forEach(v => {
+        data.sources.forEach((v) => {
           if (v.name === 'live') {
             sourceToLoad = 'live';
           }
@@ -115,10 +115,10 @@ function App(props) {
       return;
     }
     Client.tree(source)
-      .then(data => {
+      .then((data) => {
         setTree(data.root);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(`Failed to load tree: ${err}`);
       });
   }
@@ -128,11 +128,11 @@ function App(props) {
       return;
     }
     Client.get(nodeURLFromRouter(props.route), source)
-      .then(data => {
+      .then((data) => {
         setNode({ ...data, source: source });
         setError(null);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(`Failed to set node data: ${err}`);
         setError('Design aspect not found.');
       });
@@ -160,7 +160,7 @@ function App(props) {
     props.router.navigate(props.route.name, { ...props.route.params, v: newSource }, { replace: true });
 
     // The node might have gone away.
-    checkNode(newSource).then(isExistent => {
+    checkNode(newSource).then((isExistent) => {
       if (!isExistent) {
         console.log('Current node has gone away after tree has synced.');
         props.router.navigate('home', { ...props.route.params, v: newSource });
@@ -175,7 +175,7 @@ function App(props) {
     if (config._populated) {
       return;
     }
-    Client.config().then(data => {
+    Client.config().then((data) => {
       setConfig({
         ...data,
         _populated: true,
@@ -242,11 +242,11 @@ function App(props) {
             <div className="app__versions">
               <select
                 value={source}
-                onChange={ev => {
+                onChange={(ev) => {
                   changeSource(ev.target.value);
                 }}
               >
-                {availableSources.map(s => {
+                {availableSources.map((s) => {
                   return (
                     <option key={s.name} value={s.name} disabled={!s.is_ready}>
                       Version: {s.name} {s.is_ready ? '' : '(loading...)'}

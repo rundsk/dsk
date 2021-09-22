@@ -19,7 +19,7 @@ function Tags(props) {
 
   useEffect(() => {
     if (config.tags) {
-      let styles = config.tags.map(t => {
+      let styles = config.tags.map((t) => {
         let textColor = 'rgba(0,0,0,.7)';
 
         if (!t.color.includes('var') && contrast.ratio(t.color, 'black') < contrast.ratio(t.color, 'white')) {
@@ -39,14 +39,14 @@ function Tags(props) {
   let tags;
 
   if (props.tags) {
-    tags = props.tags.map(t => {
+    tags = props.tags.map((t) => {
       return (
         <li className="tags__tag-item">
           <button
             className="tags__tag"
             key={t}
             tag={t}
-            onClick={ev => {
+            onClick={(ev) => {
               if (props.isClickable === false) {
                 return;
               }

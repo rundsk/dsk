@@ -87,15 +87,15 @@ function TypographySpecimen(props) {
 
   useEffect(() => {
     if (props.src) {
-      Client.fetch(props.src).then(data => setStyles(data.styles));
+      Client.fetch(props.src).then((data) => setStyles(data.styles));
     }
   }, [props.src]);
 
   return (
     <div className="typography-specimen">
-      {styles.map(s => {
+      {styles.map((s) => {
         if (s.extends) {
-          let extending = styles.find(style => style.id === s.extends);
+          let extending = styles.find((style) => style.id === s.extends);
 
           s = {
             ...extending,
