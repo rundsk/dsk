@@ -20,7 +20,7 @@ the `frontend/build` directory by default.
 
 ## Prerequisites
 
-[Go](https://golang.org/) version 1.16 or later is needed for developing
+[Go](https://golang.org/) version 1.17 or later is needed for developing
 and testing the application. [Node.js](https://nodejs.org) and
 [Yarn](https://yarnpkg.com) are needed to build the built-in frontend.
 

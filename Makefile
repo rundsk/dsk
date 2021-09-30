@@ -27,22 +27,23 @@ profile:
 	go test -tags=dev -run ^$$ -bench . -cpuprofile cpu.prof -memprofile mem.prof -mutexprofile mutex.prof $(ALL_PKGS)
 
 .PHONY: lint
-lint:
+lint: internal/frontend/vfsdata.go
 	go vet -all $(shell go list ./...)
 
 .PHONY: dev
-dev:
+dev: internal/frontend/vfsdata.go
 	go build -tags=dev -ldflags "$(LDFLAGS)" $(CMD_PKG)
 	./dsk -frontend $(FRONTEND) -components $(COMPONENTS) "$(DDT)"
 	rm dsk
 
 .PHONY: clean
 clean:
+	if [ -f ./internal/frontend/vfsdata.go ]; then rm ./internal/frontend/vfsdata.go; fi
 	if [ -d ./dist ]; then rm -r ./dist; fi
 	if [ -f ./dsk ]; then rm ./dsk; fi
-	if [ -f ./dsk.test ]; then rm -r ./dsk.test; fi
-	if [ -f ./cpu.prof ]; then rm -r ./cpu.prof; fi
-	if [ -f ./mem.prof ]; then rm -r ./mem.prof; fi
+	if [ -f ./dsk.test ]; then rm ./dsk.test; fi
+	if [ -f ./cpu.prof ]; then rm ./cpu.prof; fi
+	if [ -f ./mem.prof ]; then rm ./mem.prof; fi
 
 .PHONY: dist
 dist: dist/dsk-darwin-amd64 dist/dsk-linux-amd64 dist/dsk-windows-386.exe 
