@@ -6,7 +6,7 @@
 
 module github.com/rundsk/dsk
 
-go 1.16
+go 1.17
 
 require (
 	github.com/Microsoft/go-winio v0.4.16 // indirect
@@ -39,4 +39,30 @@ require (
 	golang.org/x/text v0.3.6
 	gopkg.in/src-d/go-billy.v4 v4.3.2
 	gopkg.in/src-d/go-git.v4 v4.13.1
+)
+
+require (
+	github.com/aymerick/douceur v0.2.0 // indirect
+	github.com/blevesearch/go-porterstemmer v1.0.3 // indirect
+	github.com/blevesearch/mmap-go v1.0.2 // indirect
+	github.com/blevesearch/segment v0.9.0 // indirect
+	github.com/blevesearch/snowballstem v0.9.0 // indirect
+	github.com/blevesearch/zap/v11 v11.0.14 // indirect
+	github.com/blevesearch/zap/v12 v12.0.14 // indirect
+	github.com/blevesearch/zap/v13 v13.0.6 // indirect
+	github.com/blevesearch/zap/v14 v14.0.5 // indirect
+	github.com/blevesearch/zap/v15 v15.0.3 // indirect
+	github.com/couchbase/vellum v1.0.2 // indirect
+	github.com/emirpasic/gods v1.12.0 // indirect
+	github.com/gorilla/css v1.0.0 // indirect
+	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
+	github.com/mattn/go-colorable v0.1.8 // indirect
+	github.com/mitchellh/go-homedir v1.1.0 // indirect
+	github.com/mschoch/smat v0.2.0 // indirect
+	github.com/philhofer/fwd v1.1.1 // indirect
+	github.com/src-d/gcfg v1.4.0 // indirect
+	github.com/steveyen/gtreap v0.1.0 // indirect
+	go.etcd.io/bbolt v1.3.5 // indirect
+	google.golang.org/protobuf v1.26.0 // indirect
+	gopkg.in/warnings.v0 v0.1.2 // indirect
 )

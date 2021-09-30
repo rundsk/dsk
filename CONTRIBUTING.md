@@ -20,7 +20,7 @@ the `frontend/build` directory by default.
 
 ## Prerequisites
 
-[Go](https://golang.org/) version 1.11 or later is needed for developing
+[Go](https://golang.org/) version 1.17 or later is needed for developing
 and testing the application. [Node.js](https://nodejs.org) and
 [Yarn](https://yarnpkg.com) are needed to build the built-in frontend.
 
@@ -29,13 +29,6 @@ directory to your `PATH`, so that go binaries can be found. In
 `.profile` add the following line.
 ```
 export PATH=$PATH:$(go env GOPATH)/bin
-```
-
-DSK uses `go mod` to manage its dependencies. When using
-Go 1.11 module support must be explictly enabled, add this line to
-`.profile`:
-```
-export GO111MODULE=on
 ```
 
 ## Setup
