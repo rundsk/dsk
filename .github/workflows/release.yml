@@ -119,8 +119,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
-      - run: yarn --cwd frontend
-      - run: make -C frontend build
+      - run: yarn
+        working-directory: ./frontend
+      - run: make build
+        working-directory: ./frontend
         env:
           # Don't convert warnings to errors, we love our warnings.
           CI: false
