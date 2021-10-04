@@ -12,6 +12,14 @@ import (
 	"path/filepath"
 )
 
+var (
+	cssEntryNames = []string{
+		"index.css",
+		"styles.css",
+		"main.css",
+	}
+)
+
 func NewComponents(path string) (*Components, error) {
 	log.Printf("Initializing components from path %s...", path)
 
@@ -43,7 +51,10 @@ func (cmps *Components) Detect() {
 	if hasFile("index.js") {
 		cmps.JSEntryPoint = "index.js"
 	}
-	if hasFile("index.css") {
-		cmps.CSSEntryPoint = "index.css"
+	for _, f := range cssEntryNames {
+		if hasFile(f) {
+			cmps.CSSEntryPoint = f
+			break
+		}
 	}
 }
