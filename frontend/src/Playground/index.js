@@ -8,18 +8,21 @@
 
 import { Client } from '@rundsk/js-sdk';
 import React, { useEffect, useState } from 'react';
-import ReactDOMServer from 'react-dom/server';
 import { useGlobal } from 'reactn';
-import './Playground.css';
+
+import './ReactPlayground.css';
 
 function Playground(props) {
   const [source] = useGlobal('source');
 
   const [iframeSourceURL, setIframeSourceURL] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [height, setHeight] = useState("auto");
 
   const [annotationData, setAnnotationData] = useState({ annotations: [] });
   const [highlightedAnnotation, setHighlightedAnnotation] = useState(null);
+
+  const id = props['data-component'];
 
   if (props.src) {
     console.warn('<Playground> props.src has been deprecated in favor of props.annotate.');
@@ -31,6 +34,8 @@ function Playground(props) {
     Client.playgroundURL(props.node.url, props.doc.id, props['data-component'], source).then(setIframeSourceURL);
   }, [setIframeSourceURL, props.node.url, props.doc.id, props.children, source]);
 
+  console.log(props)
+
   // Handle communication with iframe. This is currently happens only from the iframe to us.
   useEffect(() => {
     const handler = (ev) => {
@@ -38,34 +43,42 @@ function Playground(props) {
 
       console.debug('Received message from playground iframe:', data);
 
-      if (data?.status === 'ready') {
+      if (!data || data?.id !== id) {
+        return;
+      }
+
+      if (data.status === 'ready') {
         setIsLoading(false);
+      }
+
+      if (data.contentHeight) {
+        setHeight(data.contentHeight);
       }
     };
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);
-  }, [setIsLoading]);
+  }, [setIsLoading, setHeight, id]);
 
-  let classes = ['playground'];
+  let classes = ['react-playground'];
 
   if (isLoading) {
-    classes.push('is-loading');
+    classes.push('react-playground--is-loading');
   }
 
   if (props.background === 'checkerboard') {
-    classes.push('playground--checkerboard');
+    classes.push('react-playground--checkerboard');
   }
 
   if (props.background === 'pinstripes') {
-    classes.push('playground--pinstripes');
+    classes.push('react-playground--pinstripes');
   }
 
   if (props.background === 'plain') {
-    classes.push('playground--plain');
+    classes.push('react-playground--plain');
   }
 
   if (props.isPageComponentDemo) {
-    classes.push('playground--is-page-component-demo');
+    classes.push('react-playground--is-page-component-demo');
   }
 
   let style = {};
@@ -86,8 +99,8 @@ function Playground(props) {
 
     return (
       <div
-        className={`playground__annotation-marker ${
-          highlightedAnnotation === i ? 'playground__annotation-marker--highlight' : ''
+        className={`react-playground__annotation-marker ${
+          highlightedAnnotation === i ? 'react-playground__annotation-marker--highlight' : ''
         }`}
         style={{ left: x, top: y }}
         onMouseEnter={() => {
@@ -99,7 +112,7 @@ function Playground(props) {
         key={i}
       >
         <div
-          className="playground__annotation-badge playground__annotation-badge--highlight"
+          className="react-playground__annotation-badge react-playground__annotation-badge--highlight"
           style={{ backgroundColor: annotationData.annotationColor }}
         >
           {i + 1}
@@ -112,7 +125,7 @@ function Playground(props) {
     let backgroundColor = highlightedAnnotation === i ? annotationData.annotationColor : '';
     return (
       <div
-        className="playground__annotation"
+        className="react-playground__annotation"
         onMouseEnter={() => {
           setHighlightedAnnotation(i);
         }}
@@ -122,8 +135,8 @@ function Playground(props) {
         key={i}
       >
         <div
-          className={`playground__annotation-badge ${
-            highlightedAnnotation === i ? 'playground__annotation-badge--highlight' : ''
+          className={`react-playground__annotation-badge ${
+            highlightedAnnotation === i ? 'react-playground__annotation-badge--highlight' : ''
           }`}
           style={{ backgroundColor }}
         >
@@ -136,14 +149,14 @@ function Playground(props) {
 
   return (
     <div className={classes.join(' ')}>
-      <div className="playground__stage" style={style}>
-        {isLoading && <div className="playground__loading-message">Loading Playground …</div>}
+      <div className="react-playground__stage" style={style}>
+        {isLoading && <div className="react-playground__loading-message">Loading Playground …</div>}
         {annotationMarkers}
-        <iframe className="playground__stage-frame" src={iframeSourceURL} />
+        <iframe className="react-playground__stage-frame" src={iframeSourceURL}  allowtransparency="true" style={{height}} />
       </div>
-      {annotations.length > 0 && <div className="playground__annotations">{annotations}</div>}
+      {annotations.length > 0 && <div className="react-playground__annotations">{annotations}</div>}
 
-      {props.caption && <figcaption className="playground__caption">{props.caption}</figcaption>}
+      {props.caption && <figcaption className="react-playground__caption">{props.caption}</figcaption>}
     </div>
   );
 }

@@ -8,7 +8,7 @@
 
 import React from 'react';
 import './DoDont.css';
-import Playground from '../Playground';
+import Playground from '../PlaygroundOld';
 
 export function Do(props) {
   return (
