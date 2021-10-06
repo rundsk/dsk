@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"strconv"
 )
 
 const (
@@ -32,6 +33,7 @@ func (c *NodeDocComponent) Id() string {
 	cleaner := regexp.MustCompile(`\s`)
 
 	content := strings.ToLower(cleaner.ReplaceAllString(c.RawInner, ""))
+	content += strconv.Itoa(c.Position)
 	return fmt.Sprintf("%x", sha1.Sum([]byte(content)))
 }
 
