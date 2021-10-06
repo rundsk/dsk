@@ -23,7 +23,7 @@ function TabBar(props) {
       let classes = ['tab-bar__tab'];
 
       // If no active tab is set, the first on is considered active
-      if (props.activeTab === undefined && i === 0) {
+      if (!props.activeTab && i === 0) {
         classes.push('tab-bar__tab--is-active');
       }
 

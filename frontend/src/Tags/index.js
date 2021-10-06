@@ -6,19 +6,19 @@
  * license that can be found in the LICENSE file.
  */
 
-import React, { useState, useEffect } from 'react';
-import { useGlobal } from 'reactn';
+import React, { useState, useEffect, useContext } from 'react';
 import contrast from 'get-contrast';
+
+import { GlobalContext } from '../App';
 
 import './Tags.css';
 
 function Tags(props) {
   const [style, setStyle] = useState('');
-  const [filterTerm, setFilterTerm] = useGlobal('filterTerm');
-  const [config] = useGlobal('config');
+  const { config, filterTerm, setFilterTerm } = useContext(GlobalContext);
 
   useEffect(() => {
-    if (config.tags) {
+    if (config?.tags) {
       let styles = config.tags.map((t) => {
         let textColor = 'rgba(0,0,0,.7)';
 
@@ -41,10 +41,9 @@ function Tags(props) {
   if (props.tags) {
     tags = props.tags.map((t) => {
       return (
-        <li className="tags__tag-item">
+        <li className="tags__tag-item" key={t}>
           <button
             className="tags__tag"
-            key={t}
             tag={t}
             onClick={(ev) => {
               if (props.isClickable === false) {

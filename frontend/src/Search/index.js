@@ -7,9 +7,12 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import { Client } from '@rundsk/js-sdk';
+
 import './Search.css';
-import { withRoute } from 'react-router5';
+import { constructURL } from '../utils';
 
 function SearchResult(props) {
   const ref = React.createRef();
@@ -19,11 +22,6 @@ function SearchResult(props) {
       ref.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
   }, [props.isFocused, ref]);
-
-  function handleClick() {
-    props.onSelect();
-    props.router.navigate('node', { node: `${props.url}` });
-  }
 
   let snippet = props.description;
 
@@ -38,7 +36,7 @@ function SearchResult(props) {
   }
 
   return (
-    <div ref={ref} className={classes.join(' ')} onClick={handleClick}>
+    <div ref={ref} className={classes.join(' ')} onClick={props.onSelect}>
       <div className="search-result__title">{props.title}</div>
       {snippet && <div className="search-result__snippet" dangerouslySetInnerHTML={{ __html: snippet }} />}
       <div className="search-result__path">/{props.url}</div>
@@ -47,6 +45,8 @@ function SearchResult(props) {
 }
 
 function Search(props) {
+  const history = useHistory();
+
   const [searchTerm, setSearchTerm] = useState(props.searchTerm || '');
   const [searchIsFocused, setSearchIsFocused] = useState(false);
   const [shouldShowResults, setShouldShowResults] = useState(false);
@@ -54,6 +54,13 @@ function Search(props) {
   const [focusedResult, setFocusedResult] = useState(0);
 
   const searchInputRef = React.createRef();
+
+  const handleSelect = (url) => {
+    blur();
+    setSearchTerm('');
+    hideSearch();
+    history.push(constructURL({ node: url, activeTab: null }));
+  };
 
   const shortcutHandler = (event) => {
     if (event.key === 'ArrowDown' && searchResults.length > 0) {
@@ -74,11 +81,8 @@ function Search(props) {
 
     if (event.key === 'Enter' && searchResults.length > 0) {
       if (searchResults.length > 0 && searchResults.length >= focusedResult - 1) {
-        blur();
-        setSearchTerm('');
-        hideSearch();
         let selectedItem = searchResults[focusedResult];
-        props.router.navigate('node', { node: `${selectedItem.url}` });
+        handleSelect(selectedItem.url);
       }
     }
 
@@ -166,7 +170,7 @@ function Search(props) {
   return (
     <div
       className={classes.join(' ')}
-      onMouseDown={(ev) => {
+      onClick={(ev) => {
         if (searchIsFocused) {
           hideSearch();
         }
@@ -181,7 +185,7 @@ function Search(props) {
         >
           <input
             type="search"
-            placeholder={`Search ${props.title}…`}
+            placeholder={`Search${props.title ? ` ${props.title}` : ''}…`}
             value={searchTerm}
             onChange={onSearchTermChange}
             onFocus={(ev) => {
@@ -205,12 +209,9 @@ function Search(props) {
                   <SearchResult
                     {...r}
                     isFocused={focusedResult === i}
-                    router={props.router}
                     key={r.url}
-                    onSelect={() => {
-                      blur();
-                      setSearchTerm('');
-                      hideSearch();
+                    onSelect={(ev) => {
+                      handleSelect(r.url);
                     }}
                   />
                 );
@@ -220,7 +221,9 @@ function Search(props) {
                 <div className="search__no-dice">No aspects found :(</div>
               )}
 
-              {searchTerm === '' && <div className="search__no-dice">Start typing to search {props.title}…</div>}
+              {searchTerm === '' && (
+                <div className="search__no-dice">Start typing to search{props.title ? ` ${props.title}` : ''}…</div>
+              )}
             </div>
           </div>
         </div>
@@ -229,4 +232,4 @@ function Search(props) {
   );
 }
 
-export default withRoute(Search);
+export default Search;

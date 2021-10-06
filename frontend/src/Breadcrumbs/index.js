@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { BaseLink, withRoute } from 'react-router5';
+import { Link } from '../Link';
 import './Breadcrumbs.css';
 
 function Breadcrumbs(props) {
@@ -17,14 +17,9 @@ function Breadcrumbs(props) {
     crumbs = props.crumbs.map((c) => {
       return (
         <li className="breadcrumbs__crumb" key={c.title}>
-          <BaseLink
-            router={props.router}
-            routeName="node"
-            routeParams={{ node: `${c.url}`, v: props.route.params.v }}
-            key={'link'}
-          >
+          <Link to={`/${c.url}`} key={'link'}>
             {c.title}
-          </BaseLink>
+          </Link>
         </li>
       );
     });
@@ -34,4 +29,4 @@ function Breadcrumbs(props) {
   return <ul className="breadcrumbs">{crumbs}</ul>;
 }
 
-export default withRoute(Breadcrumbs);
+export default Breadcrumbs;

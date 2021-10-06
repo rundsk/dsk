@@ -39,7 +39,7 @@
 
 .page__description {
   font-size: var(--font-size-delta);
-  line-height: 1.5em;
+  line-height: 1.4em;
   color: var(--color-gray-200);
   margin-bottom: calc(var(--spacing-unit) * 2);
   max-width: calc(var(--spacing-unit) * 75);

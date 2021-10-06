@@ -6,17 +6,41 @@
  * license that can be found in the LICENSE file.
  */
 
-import React, { useState, useEffect } from 'react';
-import { useGlobal } from 'reactn';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 
 import { Client } from '@rundsk/js-sdk';
 import { Tree } from '@rundsk/js-sdk';
-import { BaseLink, withRoute } from 'react-router5';
+import { NavLink } from '../Link';
+
+import { GlobalContext } from '../App';
 
 import './TreeNavigation.css';
 
-function TreeNavigation(props) {
-  const [filterTerm, setFilterTerm] = useGlobal('filterTerm');
+function renderList(node, onHideMobileSidebar) {
+  if (!node) {
+    return;
+  }
+
+  let content = [
+    <NavLink activeClassName={'is-active'} exact to={`/${node.url}`} key={'Navlink'} onClick={onHideMobileSidebar}>
+      {node.title}
+    </NavLink>,
+  ];
+
+  let children = node.children.map((c) => {
+    return renderList(c);
+  });
+
+  if (children) {
+    content.push(<ul key={'children'}>{children}</ul>);
+  }
+
+  return <li key={node.title}>{content}</li>;
+}
+
+function TreeNavigation({ tree, onHideMobileSidebar }) {
+  const { filterTerm, setFilterTerm } = useContext(GlobalContext);
+
   const [filteredTree, setFilteredTree] = useState(null);
 
   const filterInputRef = React.createRef();
@@ -32,85 +56,6 @@ function TreeNavigation(props) {
     }
   };
 
-  useEffect(() => {
-    document.addEventListener('keydown', shortcutHandler);
-
-    return () => {
-      document.removeEventListener('keydown', shortcutHandler);
-    };
-  });
-
-  useEffect(() => {
-    filterTree();
-  }, [filterTerm, props.tree]); // eslint-disable-line
-
-  function onFilterTermChange(ev) {
-    setFilterTerm(ev.target.value);
-  }
-
-  async function filterTree() {
-    if (!filterTerm) {
-      // No search term given, results in showing the full unfiltered tree (clear).
-
-      setFilteredTree(null);
-      return;
-    }
-
-    Client.filter(filterTerm)
-      .then((data) => {
-        if (!data.nodes) {
-          // Filtering yielded no results, we save us iterating over the
-          // existing tree, as we already know what it should look like.
-          setFilteredTree(null);
-          return;
-        }
-        let tree = new Tree(props.tree);
-
-        let ids = data.nodes.reduce((carry, node) => {
-          carry.push(node.id);
-          return carry;
-        }, []);
-
-        setFilteredTree(tree.filteredBy(ids).root);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
-  function renderList(node, activeNode) {
-    if (!node) {
-      return;
-    }
-
-    let classList = ['node'];
-    if (activeNode && node.id === activeNode.id) {
-      classList.push('node--is-active');
-    }
-
-    let content = [
-      <BaseLink
-        router={props.router}
-        routeName="node"
-        routeParams={{ node: `${node.url}`, v: props.route.params.v }}
-        key={'link'}
-        onClick={props.hideMobileSidebar}
-      >
-        {node.title}
-      </BaseLink>,
-    ];
-
-    let children = node.children.map((c) => {
-      return renderList(c, activeNode);
-    });
-
-    if (children) {
-      content.push(<ul key={'children'}>{children}</ul>);
-    }
-
-    return <li key={node.title}>{content}</li>;
-  }
-
   function blurFilter() {
     if (filterInputRef.current) {
       filterInputRef.current.blur();
@@ -123,28 +68,70 @@ function TreeNavigation(props) {
     }
   }
 
-  let tree = renderList(filteredTree || props.tree);
+  useEffect(() => {
+    document.addEventListener('keydown', shortcutHandler);
+
+    return () => {
+      document.removeEventListener('keydown', shortcutHandler);
+    };
+  });
+
+  function handleFilterTermChange(ev) {
+    setFilterTerm(ev.target.value);
+  }
+
+  useEffect(() => {
+    async function filterTree() {
+      if (!filterTerm) {
+        // No search term given, results in showing the full unfiltered tree (clear).
+        setFilteredTree(null);
+        return;
+      }
+
+      Client.filter(filterTerm)
+        .then((data) => {
+          if (!data.nodes) {
+            // Filtering yielded no results, we save us iterating over the
+            // existing tree, as we already know what it should look like.
+            setFilteredTree(null);
+            return;
+          }
+          let treeToFilter = new Tree(tree);
+
+          setFilteredTree(treeToFilter.filteredBy(data.nodes.map((n) => n.url)).root);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+
+    filterTree();
+  }, [filterTerm, tree]);
+
+  let renderedTree = useMemo(() => {
+    return renderList(filteredTree || tree, onHideMobileSidebar);
+  }, [tree, filteredTree, onHideMobileSidebar]);
 
   // We throw out the root node and only display
   // the children
-  if (tree && tree.props.children) {
-    tree = tree.props.children[1];
+  if (renderedTree && renderedTree.props.children) {
+    renderedTree = renderedTree.props.children[1];
   }
 
   if (filteredTree && filteredTree.children.length === 0) {
-    tree = <div className="tree-navigation__empty">No aspects found</div>;
+    renderedTree = <div className="tree-navigation__empty">No aspects found</div>;
   }
 
   return (
     <nav className="tree-navigation">
-      <div className="tree-navigation__tree">{tree}</div>
+      <div className="tree-navigation__tree">{renderedTree}</div>
 
       <div className="tree-navigation__filter">
         <input
           type="search"
           placeholder="Filter Aspects"
           value={filterTerm}
-          onChange={onFilterTermChange}
+          onChange={handleFilterTermChange}
           ref={filterInputRef}
         />
       </div>
@@ -152,4 +139,4 @@ function TreeNavigation(props) {
   );
 }
 
-export default withRoute(TreeNavigation);
+export default React.memo(TreeNavigation);

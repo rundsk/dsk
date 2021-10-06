@@ -6,24 +6,60 @@
  * license that can be found in the LICENSE file.
  */
 
-import React, { useEffect, useRef } from 'react';
-import { BaseLink, withRoute } from 'react-router5';
-import { slugify } from '../utils';
+import React, { useEffect, useRef, useMemo, useCallback, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
-import './Page.css';
+import { constructURL, slugify } from '../utils';
 
 import Breadcrumbs from '../Breadcrumbs';
 import Tags from '../Tags';
-import Playground from '../Playground';
+import Playground from '../DocumentationComponents/Playground';
 import Doc from '../Doc';
 import Meta from '../Meta';
 import TabBar from '../TabBar';
 import AssetList from '../AssetList';
 import SourceView from '../SourceView';
 import NodeList from '../NodeList';
+import { Link } from '../Link';
 
-function Page(props) {
+import './Page.css';
+import { GlobalContext } from '../App';
+
+function scrollHeadingFromURLIntoView(activeTabWithHeading, docRef, smoothScroll = true) {
+  const h = activeTabWithHeading?.split('§')[1] || '';
+
+  if (h !== '' && docRef?.current) {
+    let heading = docRef.current.querySelector(`[heading-id='${h}']`);
+
+    if (heading) {
+      heading.scrollIntoView({ behavior: smoothScroll ? 'smooth' : 'auto', block: 'start' });
+    }
+  }
+}
+
+function Page({
+  url,
+  id,
+  title,
+  description,
+  version,
+  modified,
+  crumbs,
+  prev,
+  next,
+  tags,
+  related,
+  authors,
+  custom,
+  docs,
+  downloads,
+  source,
+  activeTab: activeTabWithHeading,
+  children,
+}) {
+  const history = useHistory();
+  const { config } = useContext(GlobalContext);
   const docRef = useRef(null);
 
   // Scroll to top on navigation
@@ -33,41 +69,48 @@ function Page(props) {
       left: 0,
       behavior: 'auto',
     });
-  }, [props.url]);
+  }, [url]);
 
-  function docDidRender() {
-    // Check if there is a section marker in the URL, and if their is
-    // scroll there
-    let currentRouterState = props.router.getState();
-    let h = currentRouterState.params.t || '';
-    h = h.split('§')[1] || '';
-    if (h !== '' && docRef.current) {
-      let heading = docRef.current.querySelector(`[heading-id='${h}']`);
-      if (heading) {
-        heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+  // When the Tab part of the URL changes we check if it contains
+  // a heading id and if yes scroll there.
+  useEffect(() => {
+    scrollHeadingFromURLIntoView(activeTabWithHeading, docRef);
+  }, [activeTabWithHeading]);
+
+  // We also want to this once the Doc finished rendering for the first time.
+  // We have to keep the function in a ref so a change of "activeTabWithHeading"
+  // does not trigger a rerender of the Document
+  let handleHeadingScrollRef = useRef();
+  useEffect(() => {
+    handleHeadingScrollRef.current = () => {
+      scrollHeadingFromURLIntoView(activeTabWithHeading, docRef, false);
+    };
+  }, [activeTabWithHeading]);
+  const handleDocOnRender = useCallback(() => {
+    console.log('handleDocOnRender');
+    if (!handleHeadingScrollRef.current) {
+      return;
     }
-  }
+    handleHeadingScrollRef.current();
+  }, []);
+
+  const nodeInfo = useMemo(() => {
+    return { id: id, url: url, title: title };
+  }, [id, url, title]);
 
   function navigateToActiveTab(t) {
-    // We handle tab selection completly via the URL
-    let currentRouterState = props.router.getState();
-
-    // On root there is no node parameter
-    let currentNode = currentRouterState.params.node || '';
-    t = slugify(t);
-    props.router.navigate('node', { ...currentRouterState.params, node: currentNode, t: t }, { replace: true });
+    let nextURL = constructURL({ activeTab: slugify(t) });
+    history.replace(nextURL);
   }
 
   let playground;
   let tabBar;
   let doc;
 
-  if (props.docs) {
-    let docs = [];
+  if (docs) {
     let rightSideTabs = [];
 
-    docs = props.docs.filter((d) => {
+    docs = docs.filter((d) => {
       if (d.title.toLowerCase() === 'playground') {
         playground = d;
         return false;
@@ -81,8 +124,8 @@ function Page(props) {
     // any "real" document that can be presented to the user. In this case we
     // also want to show an overview.
     const showOverview =
-      props.children &&
-      props.children.length > 0 &&
+      children &&
+      children.length > 0 &&
       docs.filter((doc) => {
         return doc.title.toLowerCase() !== 'authors';
       }).length === 0;
@@ -90,43 +133,37 @@ function Page(props) {
     if (showOverview) {
       docs.push({
         title: 'Overview',
-        content: <NodeList nodes={props.children} source={props.source} />,
+        content: <NodeList nodes={children} source={source} />,
       });
     }
 
-    if (props.downloads && props.downloads.length > 0) {
+    if (downloads && downloads.length > 0) {
       rightSideTabs.push({
         title: 'Assets',
-        content: <AssetList assets={props.downloads} source={props.source} />,
+        content: <AssetList assets={downloads} source={source} />,
       });
     }
 
-    if (props.url === '') {
+    if (url === '') {
       // On the root node we also want to display the DSK version
       rightSideTabs.push({
         title: 'Source',
         content: (
           <>
             <SourceView url={'hello'} />
-            <SourceView url={props.url} source={props.source} />
+            <SourceView url={url} source={source} />
           </>
         ),
       });
     } else {
       rightSideTabs.push({
         title: 'Source',
-        content: <SourceView url={props.url} source={props.source} />,
+        content: <SourceView url={url} source={source} />,
       });
     }
 
     // We find the active tab by removing the section part from the prop
-    let activeTab = props.activeTab;
-    if (activeTab) {
-      activeTab = activeTab.split('§')[0];
-    }
-    if (activeTab === '') {
-      activeTab = undefined;
-    }
+    const activeTab = activeTabWithHeading?.split('§')[0];
 
     tabBar = (
       <TabBar
@@ -154,8 +191,9 @@ function Page(props) {
           url={activeDoc.url}
           title={activeDoc.title}
           htmlContent={activeDoc.html}
-          node={{ id: props.id, url: props.url, title: props.title }}
-          onRender={docDidRender}
+          toc={activeDoc.toc}
+          node={nodeInfo}
+          onRender={handleDocOnRender}
         />
       );
     }
@@ -166,8 +204,9 @@ function Page(props) {
           id={activeDoc.id}
           url={activeDoc.url}
           title={activeDoc.title}
-          node={{ id: props.id, url: props.url, title: props.title }}
-          onRender={docDidRender}
+          toc={activeDoc.toc}
+          node={nodeInfo}
+          onRender={handleDocOnRender}
         >
           {activeDoc.content}
         </Doc>
@@ -175,11 +214,9 @@ function Page(props) {
     }
   }
 
-  let authors;
-
-  if (props.authors && props.authors.length > 0) {
-    let title = props.authors.length > 1 ? 'Authors' : 'Author';
-    let authorLinks = props.authors.map((a, i) => {
+  if (authors && authors.length > 0) {
+    let title = authors.length > 1 ? 'Authors' : 'Author';
+    let authorLinks = authors.map((a, i) => {
       return (
         <span className="page__author" key={a.email}>
           {i > 0 ? ', ' : ''}
@@ -191,17 +228,14 @@ function Page(props) {
     authors = <Meta title={title}>{authorLinks}</Meta>;
   }
 
-  let related;
-  if (props.related && props.related.length > 0) {
+  if (related && related.length > 0) {
     let title = 'Related';
-    let relatedLinks = props.related.map((a, i) => {
+    let relatedLinks = related.map((a, i) => {
       return (
         <span className="page__related" key={a.url}>
           {i > 0 ? ', ' : ''}
 
-          <BaseLink router={props.router} routeName="node" routeParams={{ node: `${a.url}`, v: props.route.params.v }}>
-            {a.title}
-          </BaseLink>
+          <Link to={a.url}>{a.title}</Link>
         </span>
       );
     });
@@ -209,12 +243,9 @@ function Page(props) {
     related = <Meta title={title}>{relatedLinks}</Meta>;
   }
 
-  // Custom meta data
-  let custom;
-
-  if (props.custom) {
+  if (custom) {
     // Turn props.custom object into array to be able to iterate with map()
-    custom = Object.entries(props.custom).map((data) => {
+    custom = Object.entries(custom).map((data) => {
       let title = data[0];
 
       // Display value list or single value
@@ -235,34 +266,39 @@ function Page(props) {
     });
   }
 
+  const modifiedFormatted = useMemo(() => new Date(modified * 1000).toLocaleDateString(), [modified]);
+
   return (
     <div className="page">
-      <Helmet titleTemplate={`%s – ${props.baseTitle}`} defaultTitle={props.baseTitle}>
-        <title>{props.url !== '' && props.title}</title>
-        <meta name="description" content={props.description} />
+      <Helmet
+        titleTemplate={`%s – ${config?.org} / ${config?.project}`}
+        defaultTitle={`${config?.org} / ${config?.project}`}
+      >
+        <title>{url !== '' && title}</title>
+        <meta name="description" content={description} />
       </Helmet>
       <div className="page__header">
         <div className="page__header-content">
-          <Breadcrumbs crumbs={props.crumbs} />
+          <Breadcrumbs crumbs={crumbs} />
 
-          <h1 className="page__title">{props.title}</h1>
+          <h1 className="page__title">{title}</h1>
           <p className="page__description">
-            {props.description}
+            {description}
             <span className="page__children-count">
-              {props.children && props.children.length > 0 && ` (${props.children.length} aspects)`}
+              {children && children.length > 0 && ` (${children.length} aspects)`}
             </span>
           </p>
 
-          <Tags tags={props.tags} />
+          <Tags tags={tags} />
 
           <div className="page__meta">
             <div className="page__meta-items-container">
               <div className="page__meta-item">
-                <Meta title="Last Changed">{new Date(props.modified * 1000).toLocaleDateString()}</Meta>
+                <Meta title="Last Changed">{modifiedFormatted}</Meta>
               </div>
-              {props.version && (
+              {version && (
                 <div className="page__meta-item">
-                  <Meta title="Version">{props.version}</Meta>
+                  <Meta title="Version">{version}</Meta>
                 </div>
               )}
               {authors && <div className="page__meta-item">{authors}</div>}
@@ -275,8 +311,8 @@ function Page(props) {
 
       {playground && (
         <div className="page__component-demo">
-          <Playground isPageComponentDemo>
-            <Doc htmlContent={playground.html} node={props} />
+          <Playground isPageComponentDemo contentFullWidth>
+            <Doc htmlContent={playground.html} id="playground" node={nodeInfo} />
           </Playground>
         </div>
       )}
@@ -293,26 +329,16 @@ function Page(props) {
 
       <div className="page__footer">
         <div className="page__footer-content">
-          {props.prev && (
-            <BaseLink
-              router={props.router}
-              routeName="node"
-              routeParams={{ node: `${props.prev.url}`, v: props.route.params.v }}
-              className="page__node-nav page__node-nav--prev"
-            >
-              <Meta title="Previous">{props.prev.title}</Meta>
-            </BaseLink>
+          {prev && (
+            <Link to={`/${prev.url}`} className="page__node-nav page__node-nav--prev">
+              <Meta title="Previous">{prev.title}</Meta>
+            </Link>
           )}
 
-          {props.next && (
-            <BaseLink
-              router={props.router}
-              routeName="node"
-              routeParams={{ node: `${props.next.url}`, v: props.route.params.v }}
-              className="page__node-nav page__node-nav--next"
-            >
-              <Meta title="Next">{props.next.title}</Meta>
-            </BaseLink>
+          {next && (
+            <Link to={`/${next.url}`} className="page__node-nav page__node-nav--next">
+              <Meta title="Next">{next.title}</Meta>
+            </Link>
           )}
         </div>
       </div>
@@ -320,4 +346,4 @@ function Page(props) {
   );
 }
 
-export default withRoute(Page);
+export default React.memo(Page);

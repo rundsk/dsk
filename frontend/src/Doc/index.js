@@ -8,28 +8,26 @@
 
 import React, { useEffect } from 'react';
 import { transform } from '@rundsk/js-sdk';
-import { withRoute } from 'react-router5';
 
 import './Doc.css';
 
-import Heading from '../Heading';
-import Image from '../Image';
-import Link from '../Link';
-
-import Banner from '../Banner';
-import CodeBlock from '../CodeBlock';
-import Color from '../Color';
-import ColorCard from '../ColorCard';
-import ColorGroup from '../ColorGroup';
-import Playground from '../Playground';
-import DoDont, { Do, Dont } from '../DoDont';
-import FigmaEmbed from '../FigmaEmbed';
-import TypographySpecimen from '../TypographySpecimen';
-import Glitch from '../Glitch';
-import CodeSandbox from '../CodeSandbox';
-import Asciinema from '../Asciinema';
-import ImageGrid from '../ImageGrid';
-import TableOfContents from '../TableOfContents';
+import Asciinema from '../DocumentationComponents/Asciinema';
+import Banner from '../DocumentationComponents/Banner';
+import CodeBlock from '../DocumentationComponents/CodeBlock';
+import CodeSandbox from '../DocumentationComponents/CodeSandbox';
+import Color from '../DocumentationComponents/Color';
+import ColorCard from '../DocumentationComponents/ColorCard';
+import ColorGroup from '../DocumentationComponents/ColorGroup';
+import DoDont, { Do, Dont } from '../DocumentationComponents/DoDont';
+import FigmaEmbed from '../DocumentationComponents/FigmaEmbed';
+import Glitch from '../DocumentationComponents/Glitch';
+import Heading from '../DocumentationComponents/Heading';
+import Image from '../DocumentationComponents/Image';
+import ImageGrid from '../DocumentationComponents/ImageGrid';
+import Link from '../DocumentationComponents/Link';
+import ReactPlayground from '../DocumentationComponents/ReactPlayground';
+import TableOfContents from '../DocumentationComponents/TableOfContents';
+import TypographySpecimen from '../DocumentationComponents/TypographySpecimen';
 
 function Doc(props) {
   useEffect(() => {
@@ -51,7 +49,7 @@ function Doc(props) {
   // being transformed.
   let context = {
     node: props.node,
-    doc: { id: props.id, url: props.url, title: props.title },
+    doc: { id: props.id, url: props.url, title: props.title, toc: props.toc },
   };
 
   const transforms = {
@@ -68,7 +66,7 @@ function Doc(props) {
     ColorCard: (props) => <ColorCard {...props} {...context} />,
     ColorGroup: (props) => <ColorGroup {...props} {...context} />,
     Color: (props) => <Color {...props} {...context} />,
-    Playground: (props) => <Playground {...props} {...context} />,
+    Playground: (props) => <ReactPlayground {...props} {...context} />,
     Do: (props) => <Do {...props} {...context} />,
     DoDontGroup: (props) => <DoDont {...props} {...context} />,
     Dont: (props) => <Dont {...props} {...context} />,
@@ -132,4 +130,4 @@ function Doc(props) {
   return <div className="doc">{transformedContent}</div>;
 }
 
-export default withRoute(Doc);
+export default React.memo(Doc);

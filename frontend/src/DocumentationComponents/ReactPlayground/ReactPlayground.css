@@ -6,13 +6,14 @@
  * license that can be found in the LICENSE file.
  */
 
-const proxy = require('http-proxy-middleware');
+.react-playground__stage-frame {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: 0;
+  flex-grow: 1;
+}
 
-module.exports = function (app) {
-  app.use(
-    proxy('/api', {
-      target: 'http://localhost:8080/',
-      ws: true,
-    })
-  );
-};
+.react-playground__loading-message {
+  text-align: center;
+}

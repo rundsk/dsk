@@ -1,0 +1,28 @@
+/**
+ * Copyright 2021 Marius Wilms, Christoph Labacher. All rights reserved.
+ *
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+
+.source-picker {
+  position: relative;
+}
+
+.source-picker::after {
+  content: '›';
+  position: absolute;
+  right: calc(var(--spacing-unit) * 1.5);
+  top: 0%;
+  transform: rotate(90deg);
+}
+
+.source-picker select {
+  width: 100%;
+  font-family: inherit;
+  font-size: inherit;
+  padding: calc(var(--spacing-unit) * 0.5) calc(var(--spacing-unit) * 1);
+  appearance: none;
+  border: 1px solid var(--color-gray-800);
+  background-color: white;
+}

@@ -6,111 +6,33 @@
  * license that can be found in the LICENSE file.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { routeNode, BaseLink } from 'react-router5';
-import { useGlobal } from 'reactn';
+import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
+import { BrowserRouter as Router, Switch, Redirect, Route } from 'react-router-dom';
+import { Link } from './Link';
 import { Helmet } from 'react-helmet';
 
 import { Client } from '@rundsk/js-sdk';
-import TreeNavigation from './TreeNavigation';
 
-import './Variables.css';
-import './App.css';
-import Page from './Page';
-import ErrorPage from './ErrorPage';
 import Search from './Search';
+import TreeNavigation from './TreeNavigation';
+import SourcePicker from './SourcePicker';
+import Node from './Node';
 
 import HamburgerIcon from './HamburgerIcon.svg';
 import CloseIcon from './CloseIcon.svg';
 
-function App(props) {
-  const [tree, setTree] = useState(null);
-  const [node, setNode] = useState(null);
-  const [error, setError] = useState(null);
-  const [source, setSource] = useGlobal('source');
-  const [availableSources, setAvailableSources] = useState([]);
+import './Variables.css';
+import './App.css';
+
+function Main() {
   const socket = useRef();
-  const onMessage = useRef();
-  const [config, setConfig] = useGlobal('config');
+
+  const [tree, setTree] = useState(null);
   const [mobileSidebarIsActive, setMobileSidebarIsActive] = useState(false);
 
-  // Establish a WebSocket connection and register a handler, that will trigger
-  // a full re-render of the App, once we receive a sync message. We're
-  // intentionally not displaying notifications, as we consider them to be too
-  // intrusive.
-  useEffect(() => {
-    onMessage.current = (ev) => {
-      let m = JSON.parse(ev.data);
+  const { config, setConfig, source } = useContext(GlobalContext);
 
-      if (m.topic === `${source}.tree.synced`) {
-        loadTree();
-
-        // The node might have gone away.
-        checkNode(source).then((isExistent) => {
-          if (isExistent) {
-            loadNode();
-          } else {
-            console.log('Current node has gone away after tree has synced.');
-            props.router.navigate('home', { ...props.route.params, v: source });
-          }
-        });
-      }
-
-      if (m.topic.includes('source.status.changed')) {
-        Client.sources().then((data) => {
-          setAvailableSources(data.sources);
-        });
-      }
-    };
-  }, [props.route, source]);
-
-  useEffect(() => {
-    if (socket.current) {
-      // Ensure we don't open multiple sockets.
-      return;
-    }
-    console.log('Establishing WebSocket connection...');
-    socket.current = Client.messages();
-    socket.current.addEventListener('message', (ev) => {
-      onMessage.current(ev);
-    });
-  }, [socket, onMessage]);
-
-  useEffect(() => {
-    Client.sources().then((data) => {
-      setAvailableSources(data.sources);
-
-      var sourceToLoad = null;
-      let sourceFromURL = props.route.params.v;
-
-      // First we check if the source from the url exists
-      if (sourceFromURL) {
-        data.sources.forEach((v) => {
-          if (v.name === sourceFromURL) {
-            sourceToLoad = sourceFromURL;
-          }
-        });
-      }
-
-      // Then we check if a live source exists
-      if (!sourceToLoad) {
-        data.sources.forEach((v) => {
-          if (v.name === 'live') {
-            sourceToLoad = 'live';
-          }
-        });
-      }
-
-      // If not we take the first source we can find
-      if (!sourceToLoad) {
-        sourceToLoad = data.sources[0].name;
-      }
-
-      setSource(sourceToLoad);
-    });
-  }, []);
-
-  function loadTree() {
+  function loadTree(source) {
     if (!source) {
       return;
     }
@@ -123,86 +45,68 @@ function App(props) {
       });
   }
 
-  function loadNode() {
-    if (!source) {
-      return;
-    }
-    Client.get(nodeURLFromRouter(props.route), source)
-      .then((data) => {
-        setNode({ ...data, source: source });
-        setError(null);
-      })
-      .catch((err) => {
-        console.log(`Failed to set node data: ${err}`);
-        setError('Design aspect not found.');
-      });
-  }
+  const handleHideMobileSidebar = useCallback(() => {
+    setMobileSidebarIsActive(false);
+  }, [setMobileSidebarIsActive]);
 
-  function checkNode(source) {
-    return Client.has(nodeURLFromRouter(props.route), source);
-  }
-
-  function nodeURLFromRouter(route) {
-    switch (route.name) {
-      case 'home':
-        return ''; // Is a valid node URL.
-      case 'node':
-        return route.params.node;
-      default:
-        return null;
-    }
-  }
-
-  function changeSource(newSource) {
-    setSource(newSource);
-
-    // Update URL
-    props.router.navigate(props.route.name, { ...props.route.params, v: newSource }, { replace: true });
-
-    // The node might have gone away.
-    checkNode(newSource).then((isExistent) => {
-      if (!isExistent) {
-        console.log('Current node has gone away after tree has synced.');
-        props.router.navigate('home', { ...props.route.params, v: newSource });
-      }
-    });
-  }
-
-  // This hook may run several times. We might receive an empty configuration
-  // object from the API. We must differentiate between this case and initially
-  // empty object.
+  // Establish a WebSocket connection and register a handler. We're
+  // intentionally not displaying notifications, as we consider them to be too
+  // intrusive.
   useEffect(() => {
-    if (config._populated) {
+    if (socket.current) {
+      // Ensure we don't open multiple sockets.
       return;
     }
+    console.log('Establishing WebSocket connection...');
+    socket.current = Client.messages();
+    socket.current.addEventListener('message', (ev) => {
+      // We relay the event via the window so we can listen to
+      // it in multiple components that handle different concerns
+      window.dispatchEvent(
+        new CustomEvent('socketMessage', {
+          detail: ev.data,
+        })
+      );
+    });
+  }, [socket]);
+
+  // Handle Socket Event
+  useEffect(() => {
+    const handleSocketEvent = (ev) => {
+      let m = JSON.parse(ev.detail);
+
+      if (m.topic === `${source}.tree.synced`) {
+        loadTree(source);
+      }
+    };
+    window.addEventListener('socketMessage', handleSocketEvent);
+
+    return () => {
+      window.removeEventListener('socketMessage', handleSocketEvent);
+    };
+  }, [source]);
+
+  // Load the config
+  useEffect(() => {
+    console.log('Loading Config');
     Client.config().then((data) => {
       setConfig({
         ...data,
-        _populated: true,
       });
     });
-  }, [config, setConfig]);
+  }, [setConfig]);
 
   // Initialize tree navigation.
-  useEffect(loadTree, [source]);
-
-  // Load the current node being displayed. Reload it whenever the route changes.
-  useEffect(loadNode, [props.route, source]);
-
-  let content;
-  if (error) {
-    content = <ErrorPage>{error}</ErrorPage>;
-  } else if (node) {
-    content = (
-      <Page {...node} activeTab={props.route.params.t || undefined} baseTitle={config.org + ' / ' + config.project} />
-    );
-  }
+  useEffect(() => {
+    console.log('Loading the tree');
+    loadTree(source);
+  }, [source]);
 
   let refToMain = React.createRef();
 
   return (
     <div className="app">
-      <Helmet htmlAttributes={{ lang: config.lang }} />
+      <Helmet htmlAttributes={{ lang: config?.lang }} />
 
       <button
         className="app_skip-to-content"
@@ -218,44 +122,17 @@ function App(props) {
       <div className={`app__sidebar ${mobileSidebarIsActive ? 'app__sidebar--is-visible' : ''}`}>
         <div className="app__header">
           <div>
-            {config.org || 'DSK'} /{' '}
-            <BaseLink
-              router={props.router}
-              routeName="home"
-              routeParams={{ v: props.route.params.v }}
-              className="app__title"
-            >
-              {config.project}
-            </BaseLink>
+            {config?.org || 'DSK'} /{' '}
+            <Link to="/" className="app__title">
+              {config?.project}
+            </Link>
           </div>
         </div>
         <div className="app__nav">
-          <TreeNavigation
-            tree={tree}
-            hideMobileSidebar={() => {
-              setMobileSidebarIsActive(false);
-            }}
-          />
+          <TreeNavigation tree={tree} onHideMobileSidebar={handleHideMobileSidebar} />
         </div>
         <div className="app__shoutout">
-          {availableSources && (
-            <div className="app__versions">
-              <select
-                value={source}
-                onChange={(ev) => {
-                  changeSource(ev.target.value);
-                }}
-              >
-                {availableSources.map((s) => {
-                  return (
-                    <option key={s.name} value={s.name} disabled={!s.is_ready}>
-                      Version: {s.name} {s.is_ready ? '' : '(loading...)'}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-          )}
+          <SourcePicker />
           Powered by <a href="https://github.com/rundsk/dsk">DSK</a> ·{' '}
           <a href="mailto:thankyou@rundsk.com">Get in Touch</a>
         </div>
@@ -275,25 +152,57 @@ function App(props) {
             )}
           </div>
           <div>
-            {config.org || 'DSK'} /{' '}
-            <BaseLink
-              router={props.router}
-              routeName="home"
-              routeParams={{ v: props.route.params.v }}
-              className="app__title"
-            >
-              {config.project}
-            </BaseLink>
+            {config?.org || 'DSK'} /{' '}
+            <Link to="/" className="app__title">
+              {config?.project}
+            </Link>
           </div>
         </div>
 
-        {content}
+        <Switch>
+          <Route
+            path="/tree/:node+"
+            component={({ location }) => {
+              // We redirect old URLs that still use the /tree prefix
+              return <Redirect to={`${location.pathname.replace('/tree', '')}${location.search}`} />;
+            }}
+          ></Route>
+          <Route path="/:node+">
+            <Node />
+          </Route>
+          <Route path="/">Home</Route>
+        </Switch>
       </main>
       <div className="app__search">
-        <Search title={config.project} />
+        <Search title={config?.project} />
       </div>
     </div>
   );
 }
 
-export default routeNode('')(App);
+export const GlobalContext = React.createContext();
+
+function App() {
+  const [config, setConfig] = useState();
+  const [source, setSource] = useState();
+  const [filterTerm, setFilterTerm] = useState();
+
+  return (
+    <GlobalContext.Provider
+      value={{
+        config,
+        setConfig,
+        source,
+        setSource,
+        filterTerm,
+        setFilterTerm,
+      }}
+    >
+      <Router>
+        <Main />
+      </Router>
+    </GlobalContext.Provider>
+  );
+}
+
+export default App;

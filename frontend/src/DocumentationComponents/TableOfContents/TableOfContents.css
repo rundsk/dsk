@@ -1,0 +1,94 @@
+/**
+ * Copyright 2020 Marius Wilms, Christoph Labacher. All rights reserved.
+ * Copyright 2019 Atelier Disko. All rights reserved.
+ *
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+
+.table-of-contents {
+  width: 100%;
+  max-width: calc(var(--spacing-unit) * 60);
+  margin: var(--documentation-component-spacing) 0;
+  background-color: var(--color-gray-1000);
+  padding: calc((var(--spacing-unit) * 3));
+  border-radius: 3px;
+}
+
+.table-of-contents:first-child {
+  margin-top: 0;
+}
+
+.table-of-contents:last-child {
+  margin-bottom: 0;
+}
+
+.table-of-contents__title {
+  font-size: var(--font-size-beta);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.2em;
+  margin-bottom: calc((var(--spacing-unit) * 2));
+}
+
+.table-of-contents ul {
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: -3rem;
+  list-style: none;
+}
+
+.table-of-contents ul li {
+  margin-top: 0;
+  margin-bottom: calc((var(--spacing-unit) * 0.2));
+  margin-left: 2.8rem;
+}
+
+.table-of-contents a {
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.table-of-contents a:hover {
+  opacity: 0.6;
+}
+
+.table-of-contents ul {
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: -2.8rem;
+  list-style: none;
+}
+
+.table-of-contents > ul {
+  counter-reset: level1;
+}
+.table-of-contents ul li::before {
+  color: var(--color-gray-700);
+  margin-right: calc((var(--spacing-unit) * 0.9));
+  font-variant-numeric: tabular-nums;
+}
+
+.table-of-contents > ul > li::before {
+  counter-increment: level1;
+  counter-reset: level2;
+  content: counter(level1);
+}
+
+.table-of-contents > ul > li > ul > li::before {
+  counter-increment: level2;
+  counter-reset: level3;
+  content: counter(level1) '.' counter(level2);
+}
+
+.table-of-contents > ul > li > ul > li > ul > li::before {
+  counter-increment: level3;
+  counter-reset: level4;
+  content: counter(level1) '.' counter(level2) '.' counter(level3);
+}
+
+.table-of-contents > ul > li > ul > li > ul > li > ul > li::before {
+  counter-increment: level4;
+  content: counter(level1) '.' counter(level2) '.' counter(level3) '.' counter(level4);
+}

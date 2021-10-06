@@ -74,7 +74,7 @@
   color: var(--color-blue);
 }
 
-.tree-navigation__tree ul li a.active {
+.tree-navigation__tree ul li a.is-active {
   color: var(--color-blue);
 }
 

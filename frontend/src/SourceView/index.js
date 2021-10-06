@@ -9,7 +9,7 @@
 import React, { useState, useEffect } from 'react';
 import './SourceView.css';
 import { Client } from '@rundsk/js-sdk';
-import CodeBlock from '../CodeBlock';
+import CodeBlock from '../DocumentationComponents/CodeBlock';
 
 function SourceView(props) {
   const [data, setData] = useState(null);
@@ -27,7 +27,6 @@ function SourceView(props) {
   }, [props.url, props.source]);
 
   let title = `API Response for /api/v2/tree/${props.url}`;
-  console.log(props.source);
 
   if (props.source !== 'live') {
     title = `API Response for /api/v2/tree/${props.url} (Source: ${props.source})`;

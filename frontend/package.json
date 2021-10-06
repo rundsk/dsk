@@ -10,11 +10,8 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-helmet": "^5.2.1",
-    "react-router5": "^7.1.0",
-    "react-scripts": "^4.0.3",
-    "reactn": "^1.0.0",
-    "router5": "^7.0.2",
-    "router5-plugin-browser": "^7.0.2"
+    "react-router-dom": "^5.3.0",
+    "react-scripts": "^4.0.3"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
@@ -32,7 +29,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "http-proxy-middleware": "^0.19.1",
     "jest-enzyme": "^7.1.0",
-    "prettier": "^1.18.2",
+    "prettier": "^2.4.1",
     "react-test-renderer": "^16.9.0"
   },
   "eslintConfig": {

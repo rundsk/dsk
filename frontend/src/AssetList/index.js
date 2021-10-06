@@ -9,7 +9,7 @@
 import React from 'react';
 import './AssetList.css';
 import Meta from '../Meta';
-import Heading from '../Heading';
+import Heading from '../DocumentationComponents/Heading';
 import filesize from 'filesize';
 
 function AssetList(props) {

@@ -7,11 +7,13 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { BaseLink, withRoute } from 'react-router5';
 import { Client } from '@rundsk/js-sdk';
-import './NodeList.css';
+
 import Tags from '../Tags';
-import Heading from '../Heading';
+import Heading from '../DocumentationComponents/Heading';
+import { Link } from '../Link';
+
+import './NodeList.css';
 
 function Node(props) {
   const [data, setData] = useState(null);
@@ -25,12 +27,7 @@ function Node(props) {
   }, [props.url, props.source]);
 
   return (
-    <BaseLink
-      router={props.router}
-      routeName="node"
-      routeParams={{ node: `${props.url}`, v: props.route.params.v }}
-      className="node-list__node"
-    >
+    <Link to={props.url} className="node-list__node">
       <Heading className="node-list__node-title" level="beta" isJumptarget={false}>
         {props.title}
       </Heading>
@@ -44,7 +41,7 @@ function Node(props) {
         </span>
       </div>
       {/* <div className="node-list__cta">Details</div> */}
-    </BaseLink>
+    </Link>
   );
 }
 
@@ -53,10 +50,10 @@ function NodeList(props) {
     <>
       {props.nodes &&
         props.nodes.map((n) => {
-          return <Node {...n} source={props.source} key={n.url} router={props.router} route={props.route} />;
+          return <Node {...n} source={props.source} key={n.url} />;
         })}
     </>
   );
 }
 
-export default withRoute(NodeList);
+export default NodeList;
