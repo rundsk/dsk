@@ -24,8 +24,8 @@ function ReactPlayground(props) {
   const id = props['data-component'];
 
   useEffect(() => {
-    Client.playgroundURL(props.node.url, props.doc.id, props['data-component'], source).then(setIframeSourceURL);
-  }, [setIframeSourceURL, props.node.url, props.doc.id, props.children, source]);
+    Client.playgroundURL(props.node.url, props.doc.id, id, source).then(setIframeSourceURL);
+  }, [setIframeSourceURL, props.node.url, props.doc.id, props.children, id, source]);
 
   // Handle communication with iframe. This is currently happens only from the iframe to us.
   useEffect(() => {

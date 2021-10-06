@@ -87,7 +87,6 @@ function Page({
     };
   }, [activeTabWithHeading]);
   const handleDocOnRender = useCallback(() => {
-    console.log('handleDocOnRender');
     if (!handleHeadingScrollRef.current) {
       return;
     }

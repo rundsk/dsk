@@ -7,9 +7,11 @@
  */
 
 import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import { constructURL } from '../../utils';
 
 // Replace links to internal node with links from the router.
-function Link(props) {
+function DocumentLink(props) {
   let node = props['data-node'];
   let nodeAsset = props['data-node-asset'];
 
@@ -27,13 +29,13 @@ function Link(props) {
   let url = new URL(props.href, window.location.origin);
   let urlParams = Object.fromEntries(new URLSearchParams(url.search));
 
-  // TODO: Make sure to keep any params and set the version string if necessary
+  let href = constructURL({ node: node, activeTab: urlParams.t || null, source: urlParams.v });
 
   return (
-    <Link to={props.href} target={props.target}>
+    <RouterLink to={href} target={props.target}>
       {props.children}
-    </Link>
+    </RouterLink>
   );
 }
 
-export default Link;
+export default DocumentLink;

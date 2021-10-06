@@ -81,7 +81,7 @@ const NodeWrapper = () => {
   const { activeTab } = useURL();
   const { source } = useContext(GlobalContext);
 
-  return <Node nodeURL={nodeURL} source={source} activeTab={activeTab} />;
+  return <Node nodeURL={nodeURL || ''} source={source} activeTab={activeTab} />;
 };
 
 export default NodeWrapper;

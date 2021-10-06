@@ -170,7 +170,9 @@ function Main() {
           <Route path="/:node+">
             <Node />
           </Route>
-          <Route path="/">Home</Route>
+          <Route path="/">
+            <Node />
+          </Route>
         </Switch>
       </main>
       <div className="app__search">

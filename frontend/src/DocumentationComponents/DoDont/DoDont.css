@@ -32,16 +32,11 @@
   grid-column-gap: calc((var(--spacing-unit) * 3));
 }
 
-.dodont-card {
-  /* width: 26%;
-  flex-grow: 1;
-  margin-right: calc((var(--spacing-unit) * 3));
-  margin-bottom: calc((var(--spacing-unit) * 3)); */
-  height: 100%;
-}
-
 .dodont-card__content {
   border-top: 1px solid transparent;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  overflow: hidden;
 }
 
 .dodont-card--white {
@@ -55,6 +50,10 @@
   height: 100%;
   display: flex;
   align-items: stretch;
+}
+
+.dodont-card__demo .playground__stage {
+  border-radius: 0;
 }
 
 .dodont-card__content svg {
