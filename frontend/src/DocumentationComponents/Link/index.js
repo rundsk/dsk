@@ -6,7 +6,6 @@
  * license that can be found in the LICENSE file.
  */
 
-import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { constructURL } from '../../utils';
 

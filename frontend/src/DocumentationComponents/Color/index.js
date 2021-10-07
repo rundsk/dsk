@@ -6,7 +6,6 @@
  * license that can be found in the LICENSE file.
  */
 
-import React from 'react';
 import './Color.css';
 import { copyTextToClipboard } from '../../utils';
 import contrast from 'get-contrast';

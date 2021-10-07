@@ -6,7 +6,6 @@
  * license that can be found in the LICENSE file.
  */
 
-import React from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { constructURL, slugify } from '../../utils';

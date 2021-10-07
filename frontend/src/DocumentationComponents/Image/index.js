@@ -6,8 +6,6 @@
  * license that can be found in the LICENSE file.
  */
 
-import React from 'react';
-
 import './Image.css';
 
 // Images whose `src` attribute includes `@2x` will get their height and width

@@ -6,7 +6,6 @@
  * license that can be found in the LICENSE file.
  */
 
-import React from 'react';
 import { Link } from '../Link';
 import './Breadcrumbs.css';
 
