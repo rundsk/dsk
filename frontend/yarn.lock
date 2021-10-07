@@ -2221,12 +2221,8 @@ __metadata:
     react-dom: ^17.0.2
     react-helmet: ^5.2.1
     react-router-dom: ^5.3.0
-    react-router5: ^7.1.0
     react-scripts: ^4.0.3
     react-test-renderer: ^16.9.0
-    reactn: ^1.0.0
-    router5: ^7.0.2
-    router5-plugin-browser: ^7.0.2
   dependenciesMeta:
     react@16.14.0:
       unplugged: true
@@ -11807,15 +11803,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"path-parser@npm:4.2.0":
-  version: 4.2.0
-  resolution: "path-parser@npm:4.2.0"
-  dependencies:
-    search-params: 2.1.3
-  checksum: f105773213b6994c2160c6ba51b51eeb7a90fa1bbc281167b92df14416fe3700202a39563f49eca184ee31f3640ad50c52dbb947ebec0a58712dfd092ce21880
-  languageName: node
-  linkType: hard
-
 "path-to-regexp@npm:0.1.7":
   version: 0.1.7
   resolution: "path-to-regexp@npm:0.1.7"
@@ -12967,16 +12954,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"prop-types@npm:~15.6.2":
-  version: 15.6.2
-  resolution: "prop-types@npm:15.6.2"
-  dependencies:
-    loose-envify: ^1.3.1
-    object-assign: ^4.1.1
-  checksum: 79e478b2684449295bc8c60af1cfba4f3d414a5d832e9d23f720bce7f07df9dc52105a626134d9a3f84bb5551c9da5ec6d77d10f906b5cef26fe464959b96646
-  languageName: node
-  linkType: hard
-
 "proxy-addr@npm:~2.0.5":
   version: 2.0.7
   resolution: "proxy-addr@npm:2.0.7"
@@ -13322,19 +13299,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-router5@npm:^7.1.0":
-  version: 7.1.0
-  resolution: "react-router5@npm:7.1.0"
-  dependencies:
-    prop-types: ~15.6.2
-    router5-transition-path: ^7.0.1
-  peerDependencies:
-    react: ">=16.3.0"
-    router5: ^7.0.0
-  checksum: 89a4f73622febf91f3ff53d2ff5d9fdbe0f747fe2ee5fcf8459015be2e9ce207fb26526cd4601df8e7ff093aad9afb6700423170fe815e6c81b3ef252385e51b
-  languageName: node
-  linkType: hard
-
 "react-router@npm:5.2.1":
   version: 5.2.1
   resolution: "react-router@npm:5.2.1"
@@ -13465,15 +13429,6 @@ fsevents@^1.2.7:
     loose-envify: ^1.1.0
     object-assign: ^4.1.1
   checksum: b254cc17ce3011788330f7bbf383ab653c6848902d7936a87b09d835d091e3f295f7e9dd1597c6daac5dc80f90e778c8230218ba8ad599f74adcc11e33b9d61b
-  languageName: node
-  linkType: hard
-
-"reactn@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "reactn@npm:1.0.0"
-  dependencies:
-    use-force-update: ^1.0.0
-  checksum: 574d8873b463955677511ca56ee0d4c8ebdc9091092ffc1f49414980e8bc5184d33f12cbdffa850490a8c04087e09f0186109fcf550ddd0749f6ebbe570e7d52
   languageName: node
   linkType: hard
 
@@ -14109,45 +14064,6 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"route-node@npm:3.4.2":
-  version: 3.4.2
-  resolution: "route-node@npm:3.4.2"
-  dependencies:
-    path-parser: 4.2.0
-    search-params: 2.1.3
-  checksum: b0ef3608d6a1f774aa5cdcb64cd423490b2b307d0c7d8aefe176c652d71767aec31d315e40f2f6c66732c3ed0ecee495435a89ac5505a670ad21a041fc5604e5
-  languageName: node
-  linkType: hard
-
-"router5-plugin-browser@npm:^7.0.2":
-  version: 7.0.2
-  resolution: "router5-plugin-browser@npm:7.0.2"
-  peerDependencies:
-    router5: ^7.0.0
-  checksum: a0b7628cb7bdbe8931e920e4919285c8a95c8c8050fd4fa09a1e30f257cbdb97184ecd5377ad88163909ccbd99a4252ea47d941b18cd2e38354e9477e5dea77c
-  languageName: node
-  linkType: hard
-
-"router5-transition-path@npm:^7.0.1":
-  version: 7.0.1
-  resolution: "router5-transition-path@npm:7.0.1"
-  peerDependencies:
-    router5: ^7.0.0
-  checksum: 108eb7d0506bff80ae10722e7eb7688c8437813b0e7d7a5324028f9494da8928ff274dcb03f11566c687c8f94c8d23bcd95e1437887c835f976499e918d2b1cd
-  languageName: node
-  linkType: hard
-
-"router5@npm:7.0.2, router5@npm:^7.0.2":
-  version: 7.0.2
-  resolution: "router5@npm:7.0.2"
-  dependencies:
-    route-node: 3.4.2
-    router5-transition-path: ^7.0.1
-    symbol-observable: 1.2.0
-  checksum: 3ce66cec659514ca99c22469fdb4748ba2ba3ddabaca884d4be21eab61471136df6c0fc348939612fa42c000930e822fc5fa287d7bda1838581017c1ecc55294
-  languageName: node
-  linkType: hard
-
 "rst-selector-parser@npm:^2.2.3":
   version: 2.2.3
   resolution: "rst-selector-parser@npm:2.2.3"
@@ -14330,13 +14246,6 @@ resolve@^2.0.0-next.3:
     ajv: ^6.12.5
     ajv-keywords: ^3.5.2
   checksum: fb73f3d759d43ba033c877628fe9751620a26879f6301d3dbeeb48cf2a65baec5cdf99da65d1bf3b4ff5444b2e59cbe4f81c2456b5e0d2ba7d7fd4aed5da29ce
-  languageName: node
-  linkType: hard
-
-"search-params@npm:2.1.3":
-  version: 2.1.3
-  resolution: "search-params@npm:2.1.3"
-  checksum: 637e2e97df48d53ea443bb168e1ee0fb939dc43fa27629039eda3592c5f168403bbd5ff59b94e4dfe01e5eb586660d31555b751add4e54c571d8ad095907090d
   languageName: node
   linkType: hard
 
@@ -15329,13 +15238,6 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"symbol-observable@npm:1.2.0":
-  version: 1.2.0
-  resolution: "symbol-observable@npm:1.2.0"
-  checksum: 48ffbc22e3d75f9853b3ff2ae94a44d84f386415110aea5effc24d84c502e03a4a6b7a8f75ebaf7b585780bda34eb5d6da3121f826a6f93398429d30032971b6
-  languageName: node
-  linkType: hard
-
 "symbol-tree@npm:^3.2.2, symbol-tree@npm:^3.2.4":
   version: 3.2.4
   resolution: "symbol-tree@npm:3.2.4"
@@ -16029,13 +15931,6 @@ resolve@^2.0.0-next.3:
     punycode: 1.3.2
     querystring: 0.2.0
   checksum: 50d100d3dd2d98b9fe3ada48cadb0b08aa6be6d3ac64112b867b56b19be4bfcba03c2a9a0d7922bfd7ac17d4834e88537749fe182430dfd9b68e520175900d90
-  languageName: node
-  linkType: hard
-
-"use-force-update@npm:^1.0.0":
-  version: 1.0.7
-  resolution: "use-force-update@npm:1.0.7"
-  checksum: f94c19f76f921b70ebc8b4b81e7d945402f0256174ffeeadc73af7e8692c7c161437b4200af0b418a6f3c3797a38b76f0a3035b1f3d3561b79ac3238a8b0168c
   languageName: node
   linkType: hard
 
