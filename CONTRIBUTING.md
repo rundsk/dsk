@@ -42,7 +42,7 @@ cd rundsk
 
 git clone git@github.com:rundsk/dsk.git
 git clone git@github.com:rundsk/js-sdk.git
-git clone git@github.com:rundsk/example-component-library.git
+git clone git@github.com:rundsk/example-component-library.git @rundsk/example-component-library
 git clone git@github.com:rundsk/example-design-system.git
 ```
 
