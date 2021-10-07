@@ -6,7 +6,7 @@
 
 FRONTEND ?= $(shell pwd)/frontend/build
 DDT ?= $(shell pwd)/../example-design-system
-COMPONENTS ?= $(shell pwd)/../example-component-library/build
+COMPONENTS ?= $(shell pwd)/../@rundsk/example-component-library
 
 VERSION ?= head-$(shell git rev-parse --short HEAD)
 LDFLAGS = -X main.Version=$(VERSION)
@@ -46,7 +46,7 @@ clean:
 	if [ -f ./mem.prof ]; then rm ./mem.prof; fi
 
 .PHONY: dist
-dist: dist/dsk-darwin-amd64 dist/dsk-linux-amd64 dist/dsk-windows-386.exe 
+dist: dist/dsk-darwin-amd64 dist/dsk-linux-amd64 dist/dsk-windows-386.exe
 dist: dist/dsk-darwin-amd64.zip dist/dsk-linux-amd64.tar.gz dist/dsk-windows-386.zip
 dist: container-image
 	ls -lh dist
@@ -83,5 +83,5 @@ dist/%-linux-amd64: $(ANY_DEPS) internal/frontend/vfsdata.go
 dist/%-windows-386.exe: $(ANY_DEPS) internal/frontend/vfsdata.go
 	GOOS=windows GOARCH=386 go build -ldflags "$(LDFLAGS) -s -w" -o $@ $(CMD_PKG)
 
-internal/frontend/vfsdata.go: $(shell find $(FRONTEND) -type f) 
+internal/frontend/vfsdata.go: $(shell find $(FRONTEND) -type f)
 	FRONTEND=$(FRONTEND) go run cmd/frontend/generate.go

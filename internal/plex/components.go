@@ -10,7 +10,10 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
+
+const packageJson = "package.json"
 
 var (
 	cssEntryNames = []string{
@@ -22,11 +25,21 @@ var (
 
 func NewComponents(path string) (*Components, error) {
 	log.Printf("Initializing components from path %s...", path)
+	// Allow node module resolution for component paths.
+	orgFp := filepath.Dir(path)
+
+	nodePath := path
+
+	// given <path>/@rundsk/example-component-library, this sets NODE_PATH to be <path>
+	if strings.HasPrefix(filepath.Base(orgFp), "@") {
+		nodePath = filepath.Dir(orgFp)
+	}
 
 	path, err := filepath.Abs(path)
 	return &Components{
-		FS:   http.Dir(path),
-		Path: path,
+		FS:           http.Dir(path),
+		Path:         path,
+		JSEntryPoint: nodePath,
 	}, err
 }
 
@@ -35,6 +48,7 @@ type Components struct {
 
 	Path string
 
+	PackageName   string
 	JSEntryPoint  string
 	CSSEntryPoint string
 }
@@ -48,13 +62,16 @@ func (cmps *Components) Detect() {
 		log.Printf("Failed to load %s components at %s", path, normalizedPath)
 		return false
 	}
-	if hasFile("index.js") {
-		cmps.JSEntryPoint = "index.js"
-	}
-	for _, f := range cssEntryNames {
-		if hasFile(f) {
-			cmps.CSSEntryPoint = f
-			break
+
+	// We could potentially use https://stackoverflow.com/questions/32037150/style-field-in-package-json#comment73005816_32042285, but other than bits of postcss, I haven't seen this approach used in the wild
+	for _, prefix := range []string{"build", "dist"} {
+		for _, f := range cssEntryNames {
+			curr := filepath.Join(prefix, f)
+			if hasFile(curr) {
+				log.Printf("Using path %s as CSS entry point", curr)
+				cmps.CSSEntryPoint = curr
+				return
+			}
 		}
 	}
 }

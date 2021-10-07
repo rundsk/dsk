@@ -338,7 +338,7 @@ func (api V2) PlaygroundIndexJSHandler(w http.ResponseWriter, r *http.Request) {
 	defer os.Remove(tmpPlaygroundInstance.Name())
 
 	// Example writing to the file
-	if _, err = tmpPlaygroundInstance.Write([]byte(fmt.Sprintf("import * as my from \"%s\";\n%s", filepath.Join(api.components.Path, api.components.JSEntryPoint), playground.RawInner))); err != nil {
+	if _, err = tmpPlaygroundInstance.Write([]byte(playground.RawInner)); err != nil {
 		log.Fatal("Failed to write to temporary file", err)
 	}
 
@@ -367,15 +367,21 @@ func (api V2) PlaygroundIndexJSHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("Failed to write to temporary file", err)
 	}
 
+	outdir := filepath.Join("dist", "playgrounds", playground.Id())
+
+	err = os.MkdirAll(outdir, os.ModePerm)
+	if err != nil {
+		log.Fatalf("Unable to create playground folder [%s]. %+v", outdir, err)
+	}
+
 	result := esbuild.Build(esbuild.BuildOptions{
-		EntryPointsAdvanced: []esbuild.EntryPoint{{
-			InputPath:  playgroundRuntimeTmp.Name(),
-			OutputPath: playground.Id(),
-		}},
-		Outdir:     filepath.Join(api.components.Path),
+		EntryPoints: []string{
+			playgroundRuntimeTmp.Name(),
+		},
+		Outdir:     outdir,
 		Bundle:     true,
 		Write:      true,
-		NodePaths:  []string{"frontend/node_modules"},
+		NodePaths:  []string{api.components.JSEntryPoint},
 		PublicPath: "/api/v2/playgrounds", // TODO(user-components): This path isn't correct yet, see replace trick above.
 		LogLevel:   esbuild.LogLevelDebug,
 		Plugins: []esbuild.Plugin{
