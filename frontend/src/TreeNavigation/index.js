@@ -6,7 +6,7 @@
  * license that can be found in the LICENSE file.
  */
 
-import React, { useState, useEffect, useContext, useMemo } from 'react';
+import React, { useState, useEffect, useContext, useMemo, useLayoutEffect } from 'react';
 
 import { Client } from '@rundsk/js-sdk';
 import { Tree } from '@rundsk/js-sdk';
@@ -79,6 +79,15 @@ function TreeNavigation({ tree, onHideMobileSidebar }) {
   function handleFilterTermChange(ev) {
     setFilterTerm(ev.target.value);
   }
+
+  // Scroll the link to the currently open page into view on page load
+  useLayoutEffect(() => {
+    const activeLink = document.querySelector('.tree-navigation__tree .is-active');
+
+    if (activeLink) {
+      activeLink.scrollIntoView();
+    }
+  });
 
   useEffect(() => {
     async function filterTree() {

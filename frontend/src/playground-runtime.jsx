@@ -5,20 +5,31 @@
  * license that can be found in the LICENSE file.
  */
 
-import React, { useLayoutEffect } from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import ReactDOM from 'react-dom';
 
+const handleOnLoad = () => {
+  const id = document.querySelector('body').getAttribute('data-id');
+  window.parent.postMessage(
+    JSON.stringify({
+      id,
+      contentHeight: document.querySelector('html').offsetHeight,
+    }),
+    '*'
+  );
+};
+
 const PlaygroundWrapper = () => {
-  useLayoutEffect(() => {
-    const id = document.querySelector('body').getAttribute('data-id');
-    window.parent.postMessage(
-      JSON.stringify({
-        id,
-        contentHeight: document.querySelector('html').offsetHeight,
-      }),
-      '*'
-    );
-  });
+  useLayoutEffect(handleOnLoad);
+
+  useEffect(() => {
+    // This is called after all images loaded
+    window.addEventListener('load', handleOnLoad);
+
+    return () => {
+      window.removeEventListener('load', handleOnLoad);
+    };
+  }, []);
 
   return (
     <div

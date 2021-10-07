@@ -7,7 +7,7 @@
  */
 
 import React, { useContext, useEffect, useState } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { Client } from '@rundsk/js-sdk';
 
@@ -77,8 +77,7 @@ const Node = React.memo(({ nodeURL, source, activeTab }) => {
 });
 
 const NodeWrapper = () => {
-  const { node: nodeURL } = useParams();
-  const { activeTab } = useURL();
+  const { nodeURL, activeTab } = useURL();
   const { source } = useContext(GlobalContext);
 
   return <Node nodeURL={nodeURL || ''} source={source} activeTab={activeTab} />;

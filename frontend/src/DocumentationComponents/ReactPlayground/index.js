@@ -1,6 +1,5 @@
 /**
- * Copyright 2020 Marius Wilms, Christoph Labacher. All rights reserved.
- * Copyright 2019 Atelier Disko. All rights reserved.
+ * Copyright 2021 Marius Wilms, Christoph Labacher. All rights reserved.
  *
  * Use of this source code is governed by a BSD-style
  * license that can be found in the LICENSE file.
@@ -57,16 +56,18 @@ function ReactPlayground(props) {
   }
 
   return (
-    <Playground {...props} noPadding contentFullWidth>
-      {isLoading && <div className="react-playground__loading-message">Loading Playground …</div>}
-      <iframe
-        className="react-playground__stage-frame"
-        src={iframeSourceURL}
-        allowtransparency="true"
-        style={{ height: isLoading ? 0 : height }}
-        title={id}
-      />
-    </Playground>
+    <>
+      <Playground {...props} noPadding contentFullWidth>
+        {isLoading && <div className="react-playground__loading-message">Loading Playground …</div>}
+        <iframe
+          className="react-playground__stage-frame"
+          src={iframeSourceURL}
+          allowtransparency="true"
+          style={{ height: isLoading ? 0 : height }}
+          title={id}
+        />
+      </Playground>
+    </>
   );
 }
 

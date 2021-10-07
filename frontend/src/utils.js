@@ -6,6 +6,8 @@
  * license that can be found in the LICENSE file.
  */
 
+import { useLocation } from 'react-router-dom';
+
 // Constructs a url based on the given props, while maintaining
 // the params from the current URL
 export const constructURL = ({ node, source, activeTab }) => {
@@ -42,7 +44,7 @@ export const constructURL = ({ node, source, activeTab }) => {
 // A custom hook that builds on useLocation to parse
 // the query string for you.
 export function useURL() {
-  const location = window.location;
+  const location = useLocation();
   const query = new URLSearchParams(location.search);
 
   return {
