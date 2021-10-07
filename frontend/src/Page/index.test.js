@@ -8,8 +8,18 @@
 
 import ReactDOM from 'react-dom';
 import Page from '.';
+import { GlobalContext } from '../App';
 
 it('renders without crashing', () => {
   const div = document.createElement('div');
-  ReactDOM.render(<Page />, div);
+  let config, setConfig, source, setSource, filterTerm, setFilterTerm
+
+  ReactDOM.render(<GlobalContext.Provider value={{
+    config,
+    setConfig,
+    source,
+    setSource,
+    filterTerm,
+    setFilterTerm,
+  }}><Page /></GlobalContext.Provider>, div);
 });

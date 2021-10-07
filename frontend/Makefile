@@ -10,7 +10,7 @@ dev:
 
 .PHONY: test
 test:
-	yarn react-scripts test .
+	yarn test
 
 .PHONY: build
 build:
