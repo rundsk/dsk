@@ -375,8 +375,11 @@ func (api V2) PlaygroundIndexJSHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := esbuild.Build(esbuild.BuildOptions{
-		EntryPoints: []string{
-			playgroundRuntimeTmp.Name(),
+		EntryPointsAdvanced: []esbuild.EntryPoint{
+			{
+				InputPath:  playgroundRuntimeTmp.Name(),
+				OutputPath: "index",
+			},
 		},
 		Format:     esbuild.FormatESModule,
 		Target:     esbuild.ES2020,
