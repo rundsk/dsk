@@ -379,6 +379,7 @@ func (api V2) PlaygroundIndexJSHandler(w http.ResponseWriter, r *http.Request) {
 			playgroundRuntimeTmp.Name(),
 		},
 		Format:     esbuild.FormatESModule,
+		Target:     esbuild.ES2020,
 		Outdir:     outdir,
 		Bundle:     true,
 		Write:      true,
