@@ -8,7 +8,7 @@
 
 import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import { BrowserRouter as Router, Switch, Redirect, Route } from 'react-router-dom';
-import { Link } from './Link';
+import Link from './Link';
 import { Helmet } from 'react-helmet';
 
 import { Client } from '@rundsk/js-sdk';
