@@ -98,7 +98,7 @@ func (api V2) HTTPMux() http.Handler {
 	root := mux.NewRouter()
 
 	tree := root.PathPrefix("/tree").Subrouter()
-	node := tree.PathPrefix("/{node:[0-9a-zA-Z-_/]+}").Subrouter()                   // node is one or multiple slugged path elements.
+	node := tree.PathPrefix("/{node:[0-9a-zA-Z-_/]*}").Subrouter()                   // node is one or multiple slugged path elements.
 	doc := node.PathPrefix("/_docs/{doc:[0-9a-zA-Z-_.]+}").Subrouter()               // doc is a single slugged path element, a filename.
 	playground := doc.PathPrefix("/_playgrounds/{playground:[0-9a-z]+}").Subrouter() // playground is a sha1.
 
