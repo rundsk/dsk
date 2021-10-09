@@ -119,18 +119,28 @@ type V1NodeAuthor struct {
 }
 
 type V1NodeDoc struct {
-	Id    string               `json:"id"`
-	URL   string               `json:"url"`
-	Title string               `json:"title"`
-	HTML  string               `json:"html"`
-	Raw   string               `json:"raw"`
-	Toc   []*V1NodeDocTocEntry `json:"toc"`
+	Id         string                `json:"id"`
+	URL        string                `json:"url"`
+	Title      string                `json:"title"`
+	HTML       string                `json:"html"`
+	Raw        string                `json:"raw"`
+	Toc        []*V1NodeDocTocEntry  `json:"toc"`
+	Components []*V1NodeDocComponent `json:"components"`
 }
 
 type V1NodeDocTocEntry struct {
 	Title    string               `json:"title"`
 	Level    int                  `json:"level"`
 	Children []*V1NodeDocTocEntry `json:"children"`
+}
+
+type V1NodeDocComponent struct {
+	Name     string `json:"name"`
+	Raw      string `json:"raw"`
+	RawInner string `json:"rawInner"`
+	Level    int    `json:"level"`
+	Position int    `json:"position"`
+	Length   int    `json:"length"`
 }
 
 type V1NodeAsset struct {
@@ -279,13 +289,28 @@ func (api V1) NewNode(n *ddt.Node, s *plex.Source) (*V1Node, error) {
 			toc = append(toc, parseTocChildren(n))
 		}
 
+		nComponents, _ := v.Components()
+		components := make([]*V1NodeDocComponent, 0, len(nComponents))
+
+		for _, n := range nComponents {
+			components = append(components, &V1NodeDocComponent{
+				Name:     n.Name,
+				Raw:      n.Raw,
+				RawInner: n.RawInner,
+				Level:    n.Level,
+				Position: n.Position,
+				Length:   n.Length,
+			})
+		}
+
 		docs = append(docs, &V1NodeDoc{
-			Id:    v.Id(),
-			URL:   v.URL(),
-			Title: v.Title(),
-			HTML:  string(html[:]),
-			Raw:   string(raw[:]),
-			Toc:   toc,
+			Id:         v.Id(),
+			URL:        v.URL(),
+			Title:      v.Title(),
+			HTML:       string(html[:]),
+			Raw:        string(raw[:]),
+			Toc:        toc,
+			Components: components,
 		})
 	}
 

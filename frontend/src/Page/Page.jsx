@@ -191,6 +191,7 @@ function Page({
           title={activeDoc.title}
           htmlContent={activeDoc.html}
           toc={activeDoc.toc}
+          components={activeDoc.components}
           node={nodeInfo}
           onRender={handleDocOnRender}
         />
@@ -204,6 +205,7 @@ function Page({
           url={activeDoc.url}
           title={activeDoc.title}
           toc={activeDoc.toc}
+          components={activeDoc.components}
           node={nodeInfo}
           onRender={handleDocOnRender}
         >

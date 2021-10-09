@@ -29,27 +29,27 @@ import ReactPlayground from '../DocumentationComponents/ReactPlayground';
 import TableOfContents from '../DocumentationComponents/TableOfContents';
 import TypographySpecimen from '../DocumentationComponents/TypographySpecimen';
 
-function Doc(props) {
+function Doc({ id, url, title, toc, node, onRender, htmlContent, components, children }) {
   useEffect(() => {
     // window.requestAnimationFrame should ensure that the rendering
     // has finished.
     window.requestAnimationFrame(() => {
-      if (props.onRender) {
-        props.onRender();
+      if (onRender) {
+        onRender();
       }
     });
   });
 
-  if (!props.htmlContent) {
-    return <div className="doc">{props.children}</div>;
+  if (!htmlContent) {
+    return <div className="doc">{children}</div>;
   }
 
   // Transform context: Allow to use this inside the `transforms` constant. We
   // cannot use `props.x` there as that refers to the component/element that is
   // being transformed.
   let context = {
-    node: props.node,
-    doc: { id: props.id, url: props.url, title: props.title, toc: props.toc },
+    node: node,
+    doc: { id: id, url: url, title: title, toc: toc },
   };
 
   const transforms = {
@@ -113,7 +113,7 @@ function Doc(props) {
     .map((k) => `p > ${k}`)
     .concat(['p > video']);
 
-  let transformedContent = transform(props.htmlContent, transforms, orphans, {
+  let transformedContent = transform(htmlContent, components, transforms, orphans, {
     isPreformatted: (type) => ['pre', 'CodeBlock', 'Playground'].map((v) => v.toLowerCase()).includes(type),
     noTransform: (type, props) => {
       // This gets called on HTML elements that do not need
