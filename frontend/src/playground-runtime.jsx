@@ -31,6 +31,7 @@ const PlaygroundWrapper = () => {
     };
   }, []);
 
+  /* eslint-disable react/jsx-no-undef */
   return (
     <div
       style={{
@@ -44,6 +45,7 @@ const PlaygroundWrapper = () => {
       <ThePlaygroundInQuestion />
     </div>
   );
+  /* eslint-enable */
 };
 
 document.addEventListener('DOMContentLoaded', () => {
