@@ -19,6 +19,7 @@ var (
 	cssEntryNames = []string{
 		"index.css",
 		"styles.css",
+		"style.css",
 		"main.css",
 	}
 )
