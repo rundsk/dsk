@@ -31,15 +31,17 @@ const PlaygroundWrapper = () => {
     };
   }, []);
 
+  const noPadding = window.frameElement.attributes.nopadding;
+
   /* eslint-disable react/jsx-no-undef */
   return (
     <div
       style={{
         width: '100%',
-        paddingTop: 48,
-        paddingBottom: 48,
-        paddingLeft: 64,
-        paddingRight: 64,
+        paddingTop: noPadding ? 0 : 48,
+        paddingBottom: noPadding ? 0 : 48,
+        paddingLeft: noPadding ? 0 : 64,
+        paddingRight: noPadding ? 0 : 64,
       }}
     >
       <ThePlaygroundInQuestion />

@@ -10,11 +10,14 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import { GlobalContext } from '../../App';
 import Playground from '../Playground';
+import CodeBlock from '../CodeBlock';
 
 import './ReactPlayground.css';
 
 function ReactPlayground(props) {
   const { source } = useContext(GlobalContext);
+
+  const [showPlaygroundSource, setShowPlaygroundSource] = useState(props.showsource);
 
   const [iframeSourceURL, setIframeSourceURL] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,18 +59,41 @@ function ReactPlayground(props) {
   }
 
   return (
-    <>
-      <Playground {...props} noPadding contentFullWidth>
-        {isLoading && <div className="react-playground__loading-message">Loading Playground …</div>}
-        <iframe
-          className="react-playground__stage-frame"
-          src={iframeSourceURL}
-          allowtransparency="true"
-          style={{ height: isLoading ? 0 : height }}
-          title={id}
-        />
-      </Playground>
-    </>
+    <div className={`react-playground ${showPlaygroundSource && 'react-playground--show-source'}`}>
+      <div className="react-playground__content">
+        <Playground {...props} caption={null} noPadding contentFullWidth>
+          {isLoading && <div className="react-playground__loading-message">Loading Playground …</div>}
+          <iframe
+            className="react-playground__stage-frame"
+            src={iframeSourceURL}
+            allowtransparency="true"
+            style={{ height: isLoading ? 0 : height }}
+            title={id}
+            nopadding={props.nopadding}
+          />
+        </Playground>
+
+        {!props.showsource && !props.disableshowsource && (
+          <button
+            className="react-playground__show-source"
+            onClick={() => {
+              setShowPlaygroundSource(!showPlaygroundSource);
+            }}
+            type="button"
+            style={{ backgroundColor: props.nopadding ? 'transparent' : props.backgroundcolor }}
+          >
+            {showPlaygroundSource ? 'Hide' : 'Show'} Source
+          </button>
+        )}
+      </div>
+      {showPlaygroundSource && (
+        <CodeBlock language="jsx" escaped>
+          {props.children}
+        </CodeBlock>
+      )}
+
+      {props.caption && <figcaption className="playground__caption">{props.caption}</figcaption>}
+    </div>
   );
 }
 
