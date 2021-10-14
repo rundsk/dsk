@@ -10,7 +10,7 @@
   font-size: var(--font-size-epsilon);
   line-height: 1.6em;
   font-weight: 400;
-  margin-top: calc(var(--spacing-unit) * 10);
+  margin-top: calc(var(--spacing-unit) * 11);
   margin-bottom: calc(var(--spacing-unit) * 4);
 }
 
@@ -27,7 +27,7 @@
   line-height: 1.4em;
   font-weight: 700;
   margin-top: calc(var(--spacing-unit) * 6);
-  margin-bottom: calc(var(--spacing-unit) * 2);
+  margin-bottom: calc(var(--spacing-unit) * 1.5);
 }
 
 .heading--delta {
