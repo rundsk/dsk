@@ -12,14 +12,21 @@ import { GlobalContext } from '../App';
 
 it('renders without crashing', () => {
   const div = document.createElement('div');
-  let config, setConfig, source, setSource, filterTerm, setFilterTerm
+  let config, setConfig, source, setSource, filterTerm, setFilterTerm;
 
-  ReactDOM.render(<GlobalContext.Provider value={{
-    config,
-    setConfig,
-    source,
-    setSource,
-    filterTerm,
-    setFilterTerm,
-  }}><Page /></GlobalContext.Provider>, div);
+  ReactDOM.render(
+    <GlobalContext.Provider
+      value={{
+        config,
+        setConfig,
+        source,
+        setSource,
+        filterTerm,
+        setFilterTerm,
+      }}
+    >
+      <Page />
+    </GlobalContext.Provider>,
+    div
+  );
 });
