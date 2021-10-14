@@ -39,12 +39,15 @@ var (
 	templatesFS embed.FS
 
 	playgroundIndexHTMLTemplate *template.Template
-	playgroundIndexJSTemplate   *template.Template
+	playgroundIndexJSXTemplate  *template.Template
+
+	//go:embed v2_playground_runtime.jsx
+	playgroundRuntimeJSX []byte
 )
 
 func init() {
 	playgroundIndexHTMLTemplate = template.Must(template.ParseFS(templatesFS, "v2_playground_index.html.tmpl"))
-	playgroundIndexJSTemplate = template.Must(template.ParseFS(templatesFS, "v2_playground_runtime.jsx.tmpl"))
+	playgroundIndexJSXTemplate = template.Must(template.ParseFS(templatesFS, "v2_playground_index.jsx.tmpl"))
 }
 
 func NewV2(ss *plex.Sources, cmps *plex.Components, appVersion string, b *bus.Broker, allowOrigins []string) *V2 {
@@ -342,28 +345,23 @@ func (api V2) PlaygroundIndexJSHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("Failed to write to temporary file", err)
 	}
 
-	playgroundRuntime, err := os.ReadFile(filepath.Join("frontend", "src", "playground-runtime.jsx"))
-	if err != nil {
-		log.Fatal("Cannot read playground runtime")
-	}
-
-	playgroundRuntimeTmp, err := ioutil.TempFile(os.TempDir(), "*.jsx")
+	playgroundIndexJSXTmp, err := ioutil.TempFile(os.TempDir(), "*.jsx")
 	if err != nil {
 		log.Fatal("Cannot create temporary file", err)
 	}
 
 	// Remember to clean up the file afterwards
-	defer os.Remove(playgroundRuntimeTmp.Name())
+	defer os.Remove(playgroundIndexJSXTmp.Name())
 
 	var b bytes.Buffer
-	playgroundIndexJSTemplate.Execute(&b, struct {
+	playgroundIndexJSXTemplate.Execute(&b, struct {
 		ImportPath string
 		RuntimeJS  string
 	}{
 		ImportPath: tmpPlaygroundInstance.Name(),
-		RuntimeJS:  string(playgroundRuntime),
+		RuntimeJS:  string(playgroundRuntimeJSX),
 	})
-	if _, err = playgroundRuntimeTmp.Write(b.Bytes()); err != nil {
+	if _, err = playgroundIndexJSXTmp.Write(b.Bytes()); err != nil {
 		log.Fatal("Failed to write to temporary file", err)
 	}
 
@@ -377,7 +375,7 @@ func (api V2) PlaygroundIndexJSHandler(w http.ResponseWriter, r *http.Request) {
 	result := esbuild.Build(esbuild.BuildOptions{
 		EntryPointsAdvanced: []esbuild.EntryPoint{
 			{
-				InputPath:  playgroundRuntimeTmp.Name(),
+				InputPath:  playgroundIndexJSXTmp.Name(),
 				OutputPath: "index",
 			},
 		},

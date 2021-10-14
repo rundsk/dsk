@@ -5,17 +5,17 @@
  * license that can be found in the LICENSE file.
  */
 
-import React, { useEffect, useLayoutEffect } from 'react';
-import ReactDOM from 'react-dom';
+import React, { useEffect, useLayoutEffect } from "react";
+import ReactDOM from "react-dom";
 
 const handleOnLoad = () => {
-  const id = document.querySelector('body').getAttribute('data-id');
+  const id = document.querySelector("body").getAttribute("data-id");
   window.parent.postMessage(
     JSON.stringify({
       id,
-      contentHeight: document.querySelector('html').offsetHeight,
+      contentHeight: document.querySelector("html").offsetHeight,
     }),
-    '*'
+    "*"
   );
 };
 
@@ -24,10 +24,10 @@ const PlaygroundWrapper = () => {
 
   useEffect(() => {
     // This is called after all images loaded
-    window.addEventListener('load', handleOnLoad);
+    window.addEventListener("load", handleOnLoad);
 
     return () => {
-      window.removeEventListener('load', handleOnLoad);
+      window.removeEventListener("load", handleOnLoad);
     };
   }, []);
 
@@ -37,7 +37,7 @@ const PlaygroundWrapper = () => {
   return (
     <div
       style={{
-        width: '100%',
+        width: "100%",
         paddingTop: noPadding ? 0 : 48,
         paddingBottom: noPadding ? 0 : 48,
         paddingLeft: noPadding ? 0 : 64,
@@ -50,6 +50,6 @@ const PlaygroundWrapper = () => {
   /* eslint-enable */
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(<PlaygroundWrapper />, document.getElementById('root'));
+document.addEventListener("DOMContentLoaded", () => {
+  ReactDOM.render(<PlaygroundWrapper />, document.getElementById("root"));
 });
