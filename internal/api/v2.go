@@ -18,7 +18,6 @@ import (
 	"bytes"
 	"log"
 	"os"
-	"path/filepath"
 
 	"github.com/gorilla/mux"
 
@@ -336,8 +335,7 @@ func (api V2) PlaygroundIndexJSHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal("Cannot create temporary file", err)
 	}
-
-	// Remember to clean up the file afterwards
+	defer tmpPlaygroundInstance.Close()
 	defer os.Remove(tmpPlaygroundInstance.Name())
 
 	// Example writing to the file
@@ -349,9 +347,10 @@ func (api V2) PlaygroundIndexJSHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal("Cannot create temporary file", err)
 	}
-
-	// Remember to clean up the file afterwards
 	defer os.Remove(playgroundIndexJSXTmp.Name())
+
+	outdir, _ := ioutil.TempDir("", "dsk_playground_build")
+	defer os.RemoveAll(outdir)
 
 	var b bytes.Buffer
 	playgroundIndexJSXTemplate.Execute(&b, struct {
@@ -363,13 +362,6 @@ func (api V2) PlaygroundIndexJSHandler(w http.ResponseWriter, r *http.Request) {
 	})
 	if _, err = playgroundIndexJSXTmp.Write(b.Bytes()); err != nil {
 		log.Fatal("Failed to write to temporary file", err)
-	}
-
-	outdir := filepath.Join("dist", "playgrounds", playground.Id())
-
-	err = os.MkdirAll(outdir, os.ModePerm)
-	if err != nil {
-		log.Fatalf("Unable to create playground folder [%s]. %+v", outdir, err)
 	}
 
 	result := esbuild.Build(esbuild.BuildOptions{
@@ -433,24 +425,18 @@ func (api V2) PlaygroundIndexJSHandler(w http.ResponseWriter, r *http.Request) {
 		},
 	})
 
-	// Close the file
-	if err := tmpPlaygroundInstance.Close(); err != nil {
-		log.Fatal(err)
-	}
-
 	if len(result.Errors) > 0 {
 		log.Printf("There were compliation errors %s", result.Errors[0].Text)
 		wr.Error(httputil.Err, nil)
+		return
 	}
 
-	outputFiles := result.OutputFiles
-
-	if len(outputFiles) != 1 {
-		log.Fatal("There should only be one file output from ESBuild.")
+	if len(result.OutputFiles) != 1 {
+		log.Print("There should only be one file output from ESBuild.")
 		wr.Error(httputil.Err, nil)
+		return
 	}
-
-	wr.OK(outputFiles[0].Contents)
+	wr.OK(result.OutputFiles[0].Contents)
 }
 
 // Serves a playground's assets.
