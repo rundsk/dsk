@@ -28,7 +28,7 @@ function renderList(node, onHideMobileSidebar) {
   ];
 
   let children = node.children.map((c) => {
-    return renderList(c);
+    return renderList(c, onHideMobileSidebar);
   });
 
   if (children) {
