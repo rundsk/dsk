@@ -9,7 +9,22 @@
 import React, { useState, useEffect } from 'react';
 
 import { Client } from '@rundsk/js-sdk';
-import hljs from 'highlight.js';
+
+import hljs from 'highlight.js/lib/core';
+import javascript from 'highlight.js/lib/languages/javascript';
+import css from 'highlight.js/lib/languages/css';
+import bash from 'highlight.js/lib/languages/bash';
+import php from 'highlight.js/lib/languages/php';
+import go from 'highlight.js/lib/languages/go';
+import nginx from 'highlight.js/lib/languages/nginx';
+import dockerfile from 'highlight.js/lib/languages/dockerfile';
+hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('css', css);
+hljs.registerLanguage('bash', bash);
+hljs.registerLanguage('php', php);
+hljs.registerLanguage('go', go);
+hljs.registerLanguage('nginx', nginx);
+hljs.registerLanguage('dockerfile', dockerfile);
 
 import { copyTextToClipboard } from '../../utils';
 
