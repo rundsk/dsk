@@ -107,7 +107,7 @@ function TypographySpecimen(props) {
           fontFamily: s.fontFamily,
           fontSize: s.fontSize + 'px',
           fontWeight: s.fontWeight,
-          lineHeight: s.lineHeight + 'px',
+          lineHeight: '1.4em',
           letterSpacing: s.letterSpacing + 'px',
           color: s.color,
           textTransform: s.textTransform,
