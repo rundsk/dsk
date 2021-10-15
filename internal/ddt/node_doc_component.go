@@ -68,7 +68,7 @@ func findComponentsInMarkdown(contents []byte) []*NodeDocComponent {
 	tagNameRegexp := regexp.MustCompile(`^<([a-zA-Z0-9]+)`)
 
 	for i := 0; i < len(c); i++ {
-		if c[i] == '`' && (i-1 < 0 || c[i-1] != '\\') {
+		if !isConsuming && c[i] == '`' && (i-1 < 0 || c[i-1] != '\\') {
 			if i+2 < len(c) && c[i+1] == '`' && c[i+2] == '`' {
 				i += 2
 			}
