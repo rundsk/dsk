@@ -11,6 +11,13 @@ import './SourceView.css';
 import { Client } from '@rundsk/js-sdk';
 import CodeBlock from '../DocumentationComponents/CodeBlock';
 
+function htmlEscape(input) {
+  input = input.replace(/&/g, '&amp;');
+  input = input.replace(/</g, '&lt;');
+  input = input.replace(/>/g, '&gt;');
+  return input;  
+}
+
 function SourceView(props) {
   const [data, setData] = useState(null);
 
@@ -36,7 +43,7 @@ function SourceView(props) {
     title = `API Response for /api/v2/hello`;
   }
 
-  return <CodeBlock title={title}>{data && JSON.stringify(data, null, 4)}</CodeBlock>;
+  return <CodeBlock title={title}>{data && htmlEscape(JSON.stringify(data, null, 4))}</CodeBlock>;
 }
 
 export default SourceView;
