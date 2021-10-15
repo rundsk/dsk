@@ -31,6 +31,15 @@ const PlaygroundWrapper = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(handleOnLoad);
+    resizeObserver.observe(document.body);
+
+    return () => {
+      resizeObserver.unobserve(document.body);
+    }
+  }, []);
+
   const noPadding = window.frameElement.attributes.nopadding;
 
   /* eslint-disable react/jsx-no-undef */
