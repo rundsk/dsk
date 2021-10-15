@@ -6,13 +6,9 @@
  * license that can be found in the LICENSE file.
  */
 
-const proxy = require('http-proxy-middleware');
+import ReactDOM from 'react-dom';
 
-module.exports = function (app) {
-  app.use(
-    proxy('/api', {
-      target: 'http://localhost:8080/',
-      ws: true,
-    })
-  );
-};
+import './index.css';
+import App from './App';
+
+ReactDOM.render(<App />, document.getElementById('root'));
