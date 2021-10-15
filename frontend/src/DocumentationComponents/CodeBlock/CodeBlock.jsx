@@ -18,6 +18,12 @@ import php from 'highlight.js/lib/languages/php';
 import go from 'highlight.js/lib/languages/go';
 import nginx from 'highlight.js/lib/languages/nginx';
 import dockerfile from 'highlight.js/lib/languages/dockerfile';
+
+import { copyTextToClipboard } from '../../utils';
+
+import './atelier-forest-light.css';
+import './CodeBlock.css';
+
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('css', css);
 hljs.registerLanguage('bash', bash);
@@ -25,11 +31,6 @@ hljs.registerLanguage('php', php);
 hljs.registerLanguage('go', go);
 hljs.registerLanguage('nginx', nginx);
 hljs.registerLanguage('dockerfile', dockerfile);
-
-import { copyTextToClipboard } from '../../utils';
-
-import './atelier-forest-light.css';
-import './CodeBlock.css';
 
 // This components receives a literal string with HTML escaped content as its
 // children. Independent if indirectly used with <pre> tags (coming from fenced
