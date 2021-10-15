@@ -1,0 +1,158 @@
+/**
+ * Copyright 2020 Marius Wilms, Christoph Labacher. All rights reserved.
+ * Copyright 2019 Atelier Disko. All rights reserved.
+ *
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+
+.playground {
+  width: 100%;
+  margin: var(--documentation-component-spacing) 0;
+}
+
+.playground:first-child {
+  margin-top: 0;
+}
+
+.playground:last-child {
+  margin-bottom: 0;
+}
+
+.playground__stage {
+  width: 100%;
+  padding: calc(var(--spacing-unit) * 6) calc(var(--spacing-unit) * 8);
+  background-color: var(--color-gray-1000);
+
+  background-image: url(./DefaultBackground.svg);
+  background-repeat: repeat;
+  background-size: 20px;
+  background-position: center center;
+  min-height: calc(var(--spacing-unit) * 29);
+  border-radius: 3px;
+}
+
+.playground--no-padding .playground__stage {
+  padding: 0;
+}
+
+.playground--checkerboard .playground__stage {
+  background-image: url(./CheckerboardPattern--light.png);
+  background-size: 140px;
+}
+
+.playground--pinstripes .playground__stage {
+  background-image: url(./PinstripesPattern.png);
+  background-size: 100px;
+}
+
+.playground--plain .playground__stage {
+  background-image: none;
+}
+
+.playground__stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  position: relative;
+}
+
+.playground__stage-content > figure {
+  display: inline-block;
+}
+
+/* When the playground is used as the demo on top of a page, we need to force it to
+   have a width of 100%, so that certain components, like ColorGroups display right.
+   This destorys our ability to have annotations, but we don’t have them in this playground
+   anyways.
+   */
+.playground--content-full-width .playground__stage-wrapper {
+  width: 100%;
+}
+
+/* Make sure everything is centered, even when it’s in a doc */
+.playground--is-page-component-demo .playground__stage-content > .doc {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* --- Annotations --- */
+
+.playground__annotation-badge {
+  cursor: default;
+  display: inline-block;
+  height: calc(var(--spacing-unit) * 3);
+  min-width: calc(var(--spacing-unit) * 3);
+  border-radius: calc(var(--spacing-unit) * 2);
+  background-color: var(--color-gray-600);
+  color: white;
+
+  font-size: var(--font-size-beta);
+  line-height: calc(var(--spacing-unit) * 3);
+  text-align: center;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  transition: all 0.2s;
+  font-variant-numeric: tabular-nums;
+}
+
+.playground__stage .playground__annotation-badge {
+  box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.4);
+}
+
+.playground__annotation-badge--highlight {
+  background-color: var(--color-blue);
+  color: white;
+}
+
+.playground__annotation-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s;
+  z-index: 5;
+}
+
+.playground__annotation-marker--highlight {
+  transform: translate(-50%, -50%) scale(1.5);
+}
+
+.playground__annotations {
+  padding: calc(var(--spacing-unit) * 2);
+  background-color: var(--color-gray-900);
+  border-radius: 0 0 3px 3px;
+}
+
+.playground__annotation {
+  margin-bottom: calc(var(--spacing-unit) * 1.5);
+}
+
+.playground__annotation:last-child {
+  margin-bottom: 0;
+}
+
+.playground__annotation .playground__annotation-badge {
+  margin-right: calc(var(--spacing-unit) * 1);
+}
+
+.playground__caption {
+  font-size: var(--font-size-gamma);
+  line-height: 1.7em;
+  color: var(--color-gray-500);
+  margin-top: calc(var(--spacing-unit) * 1);
+}
+
+/* --- Responsive Mobile --- */
+
+@media screen and (max-width: 600px) {
+  .playground {
+    padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 3);
+    min-height: calc(var(--spacing-unit) * 28);
+  }
+}

@@ -15,6 +15,7 @@
   flex-direction: column;
   align-items: stretch;
   -webkit-overflow-scrolling: touch;
+  scroll-padding: calc(var(--spacing-unit) * 5);
 }
 
 .tree-navigation__tree {
@@ -74,7 +75,7 @@
   color: var(--color-blue);
 }
 
-.tree-navigation__tree ul li a.active {
+.tree-navigation__tree ul li a.is-active {
   color: var(--color-blue);
 }
 

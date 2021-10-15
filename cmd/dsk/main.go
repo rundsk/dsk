@@ -58,10 +58,11 @@ func main() {
 		}
 	}()
 
-	host := flag.String("host", "127.0.0.1", "host IP to bind to")
-	port := flag.String("port", "8080", "port to bind to")
-	version := flag.Bool("version", false, "print DSK version")
-	noColor := flag.Bool("no-color", false, "disables color output")
+	fhost := flag.String("host", "127.0.0.1", "host IP to bind to")
+	fport := flag.String("port", "8080", "port to bind to")
+	fversion := flag.Bool("version", false, "print DSK version")
+	fnoColor := flag.Bool("no-color", false, "disables color output")
+	fcomponents := flag.String("components", "", "path to component library assets")
 	ffrontend := flag.String("frontend", "", "path to a frontend, to use instead of the built-in")
 	fallowOrigin := flag.String("allow-origin", "", "origins from which browsers can access the HTTP API; for multiple origins, use a comma as a separator, the wildcard * is supported; to allow all use *")
 	flag.Parse()
@@ -70,14 +71,14 @@ func main() {
 		log.Fatalf("Too many arguments given, expecting exactly 0 or 1")
 	}
 
-	if *version {
+	if *fversion {
 		fmt.Println(Version)
 		os.Exit(1)
 	}
 
 	// Color package automatically disables colors when not a TTY. We
 	// don't need to check for an interactive terminal here again.
-	if *noColor {
+	if *fnoColor {
 		color.NoColor = true
 	}
 	whiteOnBlue := color.New(color.FgWhite, color.BgBlue)
@@ -114,7 +115,17 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	log.Printf("Detected live path: %s", livePath)
+	log.Printf("Using live path: %s", livePath)
+
+	var componentsPath string
+	if *fcomponents != "" {
+		componentsPath = *fcomponents
+	}
+
+	var frontendPath string
+	if *ffrontend != "" {
+		frontendPath = *ffrontend
+	}
 
 	allowOrigins := strings.Split(*fallowOrigin, ",")
 	if len(allowOrigins) != 0 {
@@ -124,13 +135,20 @@ func main() {
 	app = plex.NewApp( // assign to global
 		Version,
 		livePath,
-		*ffrontend,
+		componentsPath,
+		frontendPath,
 	)
 	ctx, cancel := context.WithCancel(context.Background())
 	app.Teardown.AddCancelFunc(cancel)
 
 	if err := app.Open(); err != nil {
 		log.Fatal(red.Sprintf("Failed to initialize application: %s", err))
+	}
+
+	if componentsPath != "" {
+		if err := app.OpenComponents(ctx); err != nil {
+			log.Print(red.Sprintf("Failed to start application: %s", err))
+		}
 	}
 
 	if app.HasMultiVersionsSupport() {
@@ -145,7 +163,7 @@ func main() {
 
 	apis := map[int]httputil.Mountable{
 		1: api.NewV1(app.Sources, app.Version, app.Broker, allowOrigins),
-		2: api.NewV2(app.Sources, app.Version, app.Broker, allowOrigins),
+		2: api.NewV2(app.Sources, app.Components, app.Version, app.Broker, allowOrigins),
 	}
 	for av, a := range apis {
 		log.Printf("Mounting APIv%d HTTP mux...", av)
@@ -159,7 +177,7 @@ func main() {
 	log.Print("Mounting frontend HTTP mux...")
 	mux.Handle("/", app.Frontend.HTTPMux())
 
-	addr := fmt.Sprintf("%s:%s", *host, *port)
+	addr := fmt.Sprintf("%s:%s", *fhost, *fport)
 	if isTerminal {
 		log.Print("-------------------------------------------")
 		log.Printf("Please visit: %s", green.Sprint("http://"+addr))

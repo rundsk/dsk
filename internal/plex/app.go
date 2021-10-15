@@ -20,14 +20,15 @@ import (
 	git "gopkg.in/src-d/go-git.v4"
 )
 
-func NewApp(version string, livePath string, frontendPath string) *App {
+func NewApp(version string, livePath string, componentsPath string, frontendPath string) *App {
 	log.Print("Initializing application...")
 
 	return &App{
-		Teardown:     &Teardown{Scope: "app"},
-		Version:      version,
-		livePath:     livePath,
-		frontendPath: frontendPath,
+		Teardown:       &Teardown{Scope: "app"},
+		Version:        version,
+		livePath:       livePath,
+		componentsPath: componentsPath,
+		frontendPath:   frontendPath,
 	}
 }
 
@@ -44,6 +45,9 @@ type App struct {
 	// livePath is the absolute path to the live DDT.
 	livePath string
 
+	// componentsPath is an absolute path to a directory containing (transpiled and bundled) assets of a component library
+	componentsPath string
+
 	LiveConfigDB config.DB
 
 	Broker *bus.Broker
@@ -51,6 +55,8 @@ type App struct {
 	Watcher *notify.Watcher
 
 	Sources *Sources
+
+	Components *Components
 
 	Frontend *frontend.Frontend
 }
@@ -206,6 +212,13 @@ func (app *App) OpenVersions(ctx context.Context) error {
 		return nil
 	})
 	return nil
+}
+
+func (app *App) OpenComponents(ctx context.Context) error {
+	cmps, err := NewComponents(app.componentsPath)
+	cmps.Detect()
+	app.Components = cmps
+	return err
 }
 
 func (app *App) Close() error {

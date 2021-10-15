@@ -2,6 +2,8 @@
 
 ## 1.4.0
 
+- Components of a user provided component library can now be used inside
+  `<Playground>` to create interactive demos of components.
 - Support _Table of Contents_ on documents.
 - Introduced new `<ImageGrid>` documentation component.
 

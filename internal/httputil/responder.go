@@ -54,7 +54,9 @@ func (re *Responder) OK(data interface{}) {
 
 	if re.ContentType != "application/json" {
 		re.w.WriteHeader(http.StatusOK)
-		re.w.Write(data.([]byte))
+		if data != nil {
+			re.w.Write(data.([]byte))
+		}
 		return
 	}
 

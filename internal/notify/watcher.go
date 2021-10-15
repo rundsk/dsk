@@ -12,8 +12,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/rundsk/dsk/internal/bus"
 	core "github.com/rjeczalik/notify"
+	"github.com/rundsk/dsk/internal/bus"
 )
 
 func NewWatcher(path string) (*Watcher, error) {

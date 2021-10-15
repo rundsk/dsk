@@ -308,7 +308,9 @@ func (dt NodeDocTransformer) maybeMakeAbsolute(t html.Token, attrName string) (h
 		q := u.Query()
 		// We programatically add to the query, and add
 		// it store it on the dnu after we are finished.
-		q.Set("v", dt.nodeSource)
+		if (!q.Has("v")) {
+			q.Set("v", dt.nodeSource)
+		}
 		dnu.RawQuery = q.Encode()
 
 		ok, _, dna := dt.attr(t, "data-node-asset")

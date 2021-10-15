@@ -7,10 +7,11 @@
 package ddt
 
 import (
+	"crypto/sha1"
 	"fmt"
-	"math/rand"
 	"regexp"
 	"strings"
+	"strconv"
 )
 
 const (
@@ -18,25 +19,26 @@ const (
 )
 
 type NodeDocComponent struct {
-	Id       int // Unique ID
+	Name string // i.e. CodeBlock
+
 	Raw      string
+	RawInner string
+
 	Level    int // Nesting level
 	Position int // Start position inside document.
 	Length   int // Length of the component code.
 }
 
-func NewNodeDocComponent(raw string, level int, position int) *NodeDocComponent {
-	return &NodeDocComponent{
-		Id:       rand.Intn(maxComponentsPerNodeDoc),
-		Raw:      raw,
-		Level:    level,
-		Position: position,
-		Length:   len(raw),
-	}
+func (c *NodeDocComponent) Id() string {
+	cleaner := regexp.MustCompile(`\s`)
+
+	content := strings.ToLower(cleaner.ReplaceAllString(c.RawInner, ""))
+	content += strconv.Itoa(c.Position)
+	return fmt.Sprintf("%x", sha1.Sum([]byte(content)))
 }
 
 func (c *NodeDocComponent) Placeholder() string {
-	return fmt.Sprintf("dsk+component+%d", c.Id)
+	return fmt.Sprintf("dsk+component+%s", c.Id())
 }
 
 // TODO: Implement
@@ -57,10 +59,13 @@ func findComponentsInMarkdown(contents []byte) []*NodeDocComponent {
 	var isCode bool
 
 	var current strings.Builder
+	var tagName string
 	var openingTag string
 	var closingTag string
 
 	var openingTagPosition int
+
+	tagNameRegexp := regexp.MustCompile(`^<([a-zA-Z0-9]+)`)
 
 	for i := 0; i < len(c); i++ {
 		if c[i] == '`' && (i-1 < 0 || c[i-1] != '\\') {
@@ -81,23 +86,30 @@ func findComponentsInMarkdown(contents []byte) []*NodeDocComponent {
 			// need to check if we need to end consumption.
 			if c[i] == '>' {
 				if isLookingForTag {
-					re := regexp.MustCompile(`^<[a-zA-Z0-9]+`)
+					tagName = tagNameRegexp.FindStringSubmatch(current.String())[1]
 
 					openingTag = current.String()
-					closingTag = fmt.Sprintf("%s>", strings.Replace(re.FindString(openingTag), "<", "</", 1))
+					closingTag = fmt.Sprintf("</%s>", tagName)
 
 					isLookingForTag = false
 					continue
 				}
 
 				if strings.Contains(current.String(), closingTag) {
-					found = append(found, NewNodeDocComponent(
-						current.String(),
-						0, // Currently finding only top level components.
-						openingTagPosition,
-					))
+					cmp := &NodeDocComponent{
+						Name: tagName,
+
+						Raw:      current.String(),
+						RawInner: strings.TrimSuffix(strings.TrimPrefix(current.String(), openingTag), closingTag),
+
+						Level:    0, // Currently finding only top level components.
+						Position: openingTagPosition,
+						Length:   current.Len(),
+					}
+					found = append(found, cmp)
 
 					current.Reset()
+					tagName = ""
 					openingTag = ""
 					closingTag = ""
 
