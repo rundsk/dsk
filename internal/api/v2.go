@@ -377,7 +377,6 @@ func (api V2) PlaygroundIndexJSHandler(w http.ResponseWriter, r *http.Request) {
 		Bundle:     true,
 		Write:      true,
 		NodePaths:  []string{api.components.JSEntryPoint},
-		PublicPath: "/api/v2/playgrounds", // TODO(user-components): This path isn't correct yet, see replace trick above.
 		LogLevel:   esbuild.LogLevelDebug,
 		Plugins: []esbuild.Plugin{
 			{
