@@ -64,15 +64,3 @@ description: &gt;
 `;
   expect(component.find('code').html()).toEqual(`<code class="code-block__code-content">${expected}</code>`);
 });
-
-it('renders component build up content', () => {
-  const component = mount(
-    <CodeBlock title="Example">
-      <div>test</div>
-    </CodeBlock>
-  );
-
-  const expected = `&lt;div&gt;test&lt;/div&gt;`;
-
-  expect(component.find('code').html()).toEqual(`<code class="code-block__code-content">${expected}</code>`);
-});

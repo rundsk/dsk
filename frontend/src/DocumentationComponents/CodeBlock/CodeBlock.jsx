@@ -7,7 +7,6 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import ReactDOMServer from 'react-dom/server';
 
 import { Client } from '@rundsk/js-sdk';
 import hljs from 'highlight.js';
@@ -57,10 +56,11 @@ function CodeBlock({ title, src, escaped, language, children, ...props }) {
 
       if (children === undefined) {
         content = '';
-      } else if (typeof children === 'object') {
-        content = ReactDOMServer.renderToStaticMarkup(children);
       } else if (typeof children === 'string') {
         content = children;
+      } else {
+        console.debug('Unsupported type (%s) of children content in <CodeBlock>.', typeof children);
+        return;
       }
       content = trimInitialLine(content);
 
