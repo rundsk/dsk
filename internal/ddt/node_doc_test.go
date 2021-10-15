@@ -43,11 +43,10 @@ func TestAddComponentProtection(t *testing.T) {
 </CodeBlock>
 `
 	expected0 := `
-dsk+component+23
+dsk+component+356a192b7913b04c54574d18c28d46e6395428ab
 `
 	components0 := []*NodeDocComponent{
 		&NodeDocComponent{
-			uniqueId: 23,
 			Raw:      raw0[1 : len(raw0)-1],
 			Length:   77,
 			Position: 1,
@@ -63,11 +62,10 @@ dsk+component+23
 Yellow and <ColorSwatch>green</ColorSwatch> are the colors of spring.
 `
 	expected1 := `
-Yellow and dsk+component+23 are the colors of spring.
+Yellow and dsk+component+7b52009b64fd0a2a49e6d8a939753077792b0554 are the colors of spring.
 `
 	components1 := []*NodeDocComponent{
 		&NodeDocComponent{
-			uniqueId: 23,
 			Raw:      "<ColorSwatch>green</ColorSwatch>",
 			Length:   len("<ColorSwatch>green</ColorSwatch>"),
 			Position: 12,
@@ -89,13 +87,13 @@ The following visual design has been agreed upon by our team:
 	expected2 := `
 The following visual design has been agreed upon by our team:
 
-dsk+component+0
+dsk+component+c66c65175fecc3103b3b587be9b5b230889c8628
 
-dsk+component+1
+dsk+component+8ee51caaa2c2f4ee2e5b4b7ef5a89db7df1068d7
 `
 	components2 := []*NodeDocComponent{
-		&NodeDocComponent{uniqueId: 0, Level: 0, Raw: "<Banner>Hi there!</Banner>", Position: 64, Length: 26},
-		&NodeDocComponent{uniqueId: 1, Level: 0, Raw: "<Warning>Don't do this</Warning>", Position: 92, Length: 32},
+		&NodeDocComponent{Level: 0, Raw: "<Banner>Hi there!</Banner>", Position: 64, Length: 26},
+		&NodeDocComponent{Level: 0, Raw: "<Warning>Don't do this</Warning>", Position: 92, Length: 32},
 	}
 	result2 := extractComponents([]byte(raw2), components2)
 
@@ -110,13 +108,13 @@ func TestAddComponentProtectionOnLastLine(t *testing.T) {
 
 <Banner title="Banner" type="warning">Use banners to highlight things people shouldn’t miss.</Banner>`
 	expected0 := `
-dsk+component+0
+dsk+component+356a192b7913b04c54574d18c28d46e6395428ab
 
-dsk+component+1`
+dsk+component+7224f997fc148baa0b7f81c1eda6fcc3fd003db0`
 
 	components0 := []*NodeDocComponent{
-		&NodeDocComponent{uniqueId: 0, Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 1, Length: 103},
-		&NodeDocComponent{uniqueId: 1, Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 106, Length: 103},
+		&NodeDocComponent{Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 1, Length: 103},
+		&NodeDocComponent{Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 106, Length: 103},
 	}
 
 	result0 := extractComponents([]byte(raw0), components0)
@@ -127,14 +125,14 @@ dsk+component+1`
 
 func TestRemoveComponentProtection(t *testing.T) {
 	raw0 := `
-Yellow and dsk+component+23 are the colors of spring.
+Yellow and dsk+component+356a192b7913b04c54574d18c28d46e6395428ab are the colors of spring.
 `
 	expected0 := `
-Yellow and <ColorSwatch>green</ColorSwatch> are the colors of spring.
+Yellow and <ColorSwatch data-component="356a192b7913b04c54574d18c28d46e6395428ab">green</ColorSwatch> are the colors of spring.
 `
 	components0 := []*NodeDocComponent{
 		&NodeDocComponent{
-			uniqueId: 23,
+			Name:     "ColorSwatch",
 			Raw:      "<ColorSwatch>green</ColorSwatch>",
 			Length:   len("<ColorSwatch>green</ColorSwatch>") - 2,
 			Position: 1,
@@ -212,13 +210,13 @@ hello
 
 <p>The following visual design has been agreed upon by our team:</p>
 
-<p><Banner>Hi there!</Banner></p>
+<p><Banner data-component="98d46fb0d1853f526bcd2d87bd34f8eb3d10c052">Hi there!</Banner></p>
 
-<p><Warning>Don't do this</Warning></p>
+<p><Warning data-component="c2ed9b50692b1d8ce112f958a24b2f8330b16e00">Don't do this</Warning></p>
 
 <p>hello</p>
 
-<p><CodeBlock title="test">
+<p><CodeBlock data-component="aa6dcf95bdf5f4a73c4473e3844bd69b3605f7e4" title="test">
 	<h1>Hello Headline</h1>
 </CodeBlock></p>
 `
@@ -242,11 +240,9 @@ func TestAddRemoveComponentProtectionSymmetry(t *testing.T) {
 `
 
 	components0 := findComponentsInMarkdown([]byte(raw0))
-	components0[0].uniqueId = 0
-	components0[1].uniqueId = 1
 	expectedComponents0 := []*NodeDocComponent{
-		&NodeDocComponent{uniqueId: 0, Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 1, Length: 103},
-		&NodeDocComponent{uniqueId: 1, Level: 0, Raw: "<Banner title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 106, Length: 103},
+		&NodeDocComponent{Level: 0, Raw: "<Banner data-component=\"a13029de9a7c3e98cab5a4b7643e04c0506e5f87\" title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 1, Length: 103},
+		&NodeDocComponent{Level: 0, Raw: "<Banner data-component=\"6db2e565d313338d2ff3134499686b3198c4a1f4\" title=\"Banner\" type=\"warning\">Use banners to highlight things people shouldn’t miss.</Banner>", Position: 106, Length: 103},
 	}
 	if len(components0) != len(expectedComponents0) {
 		t.Errorf("Failed number of components mismatch, got: %d", len(components0))
@@ -262,18 +258,22 @@ func TestAddRemoveComponentProtectionSymmetry(t *testing.T) {
 
 	added0 := extractComponents([]byte(raw0), components0)
 	addedExpected0 := `
-dsk+component+0
+dsk+component+a13029de9a7c3e98cab5a4b7643e04c0506e5f87
 
-dsk+component+1
+dsk+component+6db2e565d313338d2ff3134499686b3198c4a1f4
 `
 	if string(added0) != addedExpected0 {
 		t.Errorf("Failed, got: %s", added0)
 	}
 
 	removed0 := insertComponents(added0, components0)
-	removedExpected0 := raw0
+	removedExpected0 := `
+<Banner data-component="a13029de9a7c3e98cab5a4b7643e04c0506e5f87" title="Banner" type="warning">Use banners to highlight things people shouldn’t miss.</Banner>
+
+<Banner data-component="6db2e565d313338d2ff3134499686b3198c4a1f4" title="Banner" type="warning">Use banners to highlight things people shouldn’t miss.</Banner>
+`
 	if string(removed0) != removedExpected0 {
-		t.Errorf("Failed, got: %s", removed0)
+		t.Errorf("Failed, expected\n%s\ngot\n%s", removedExpected0, removed0)
 	}
 }
 
