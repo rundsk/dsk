@@ -54,7 +54,7 @@ function Playground(props) {
 
   useEffect(() => {
     if (props.annotate) {
-      Client.fetch(props.annotate).then((data) => setAnnotationData(data));
+      Client.fetch(props.annotate).then(data => setAnnotationData(data));
     }
   }, [props.annotate]);
 
