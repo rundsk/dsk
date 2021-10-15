@@ -86,11 +86,7 @@ function ReactPlayground(props) {
           </button>
         )}
       </div>
-      {showPlaygroundSource && (
-        <CodeBlock language="jsx" escaped>
-          {props.children}
-        </CodeBlock>
-      )}
+      {showPlaygroundSource && <CodeBlock language="jsx">{props.children}</CodeBlock>}
 
       {props.caption && <figcaption className="playground__caption">{props.caption}</figcaption>}
     </div>

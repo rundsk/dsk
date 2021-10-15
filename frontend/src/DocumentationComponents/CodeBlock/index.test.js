@@ -18,22 +18,13 @@ it('renders without crashing', () => {
 
 it('wraps content in code block', () => {
   const component = mount(<CodeBlock>Hello World!</CodeBlock>);
-  const code = <code className="code-block__code-content">Hello World!</code>;
-  expect(component).toContainReact(code);
-});
 
-it('escapes HTML content', () => {
-  const HTML = '<button>Fancy</button>';
-  const component = mount(<CodeBlock>{HTML}</CodeBlock>);
-
-  expect(component.find('code').html()).toEqual(
-    '<code class="code-block__code-content">&lt;button&gt;Fancy&lt;/button&gt;</code>'
-  );
+  expect(component.find('code').html()).toEqual('<code class="code-block__code-content">Hello World!</code>');
 });
 
 it('does not escape pre-escaped HTML content', () => {
   const HTML = '&lt;button&gt;Fancy&lt;/button&gt;';
-  const component = mount(<CodeBlock escaped>{HTML}</CodeBlock>);
+  const component = mount(<CodeBlock>{HTML}</CodeBlock>);
 
   expect(component.find('code').html()).toEqual(
     '<code class="code-block__code-content">&lt;button&gt;Fancy&lt;/button&gt;</code>'
@@ -51,7 +42,7 @@ description: &gt;
   sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
   magna aliquyam erat, sed diam voluptua.
 `;
-  const component = mount(<CodeBlock escaped>{HTML}</CodeBlock>);
+  const component = mount(<CodeBlock>{HTML}</CodeBlock>);
 
   const expected = `authors:
   - christoph@atelierdisko.de

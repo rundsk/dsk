@@ -31,17 +31,15 @@ import { copyTextToClipboard } from '../../utils';
 import './atelier-forest-light.css';
 import './CodeBlock.css';
 
-// There are two possible ways this component is used, in the first case
-// children is a React object, in the second children is a string with
-// (escaped) HTML.
+// This components receives a literal string with HTML escaped content as its
+// children. Independent if indirectly used with <pre> tags (coming from fenced
+// Markdown syntax) or directly when <CodeBlock> was used inside the document.
 //
-// We see the first case when the component is used explictly and the second,
-// when it is instantiated by the DocTransformer, turning a <pre> into a
-// CodeBlock.
-function CodeBlock({ title, src, escaped, language, children, ...props }) {
+// The DocTransformer will ensure that the content is considered pre-formatted
+// in any case.
+function CodeBlock({ title, src, language, children, ...props }) {
   const [code, setCode] = useState(null);
   const [copyText, setCopyText] = useState('Copy');
-  let isEscaped = !!escaped;
   const codeRef = React.createRef();
 
   // Sometimes a CodeBlock start with a empty line, because of the way
@@ -79,13 +77,9 @@ function CodeBlock({ title, src, escaped, language, children, ...props }) {
       }
       content = trimInitialLine(content);
 
-      if (isEscaped) {
-        setCode(<code className="code-block__code-content" dangerouslySetInnerHTML={{ __html: content }} />);
-      } else {
-        setCode(<code className="code-block__code-content">{content}</code>);
-      }
+      setCode(<code className="code-block__code-content" dangerouslySetInnerHTML={{ __html: content }} />);
     }
-  }, [src, children, isEscaped]);
+  }, [src, children]);
 
   useEffect(() => {
     if (language && codeRef.current) {
@@ -110,7 +104,7 @@ function CodeBlock({ title, src, escaped, language, children, ...props }) {
         <div className="code-block__copy" onClick={copyCode}>
           {copyText}
         </div>
-        <pre className={`code-block__code ${language}`} ref={codeRef}>
+        <pre className={`code-block__code ${language || ''}`} ref={codeRef}>
           {code}
         </pre>
       </div>

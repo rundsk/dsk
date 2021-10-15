@@ -54,7 +54,7 @@ function Doc({ id, url, title, toc, node, onRender, htmlContent, components, chi
 
   const transforms = {
     Banner: (props) => <Banner {...props} />,
-    CodeBlock: (props) => <CodeBlock escaped {...props} {...context} />,
+    CodeBlock: (props) => <CodeBlock {...props} {...context} />,
     ColorCard: (props) => <ColorCard {...props} {...context} />,
     ColorGroup: (props) => <ColorGroup {...props} {...context} />,
     Color: (props) => <Color {...props} {...context} />,
@@ -95,7 +95,7 @@ function Doc({ id, url, title, toc, node, onRender, htmlContent, components, chi
       // empty "ghost" elements.
       let children = props.children.replace(/^<code>/, '').replace(/<\/code>$/, '');
 
-      return <CodeBlock escaped {...props} {...context} children={children} />;
+      return <CodeBlock {...props} {...context} children={children} />;
     },
   };
 
