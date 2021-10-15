@@ -196,7 +196,7 @@ func (n *Node) CalculateHash() (string, error) {
 	return n.hash, nil
 }
 
-func (n Node) Id() string {
+func (n *Node) Id() string {
 	return strings.ToUpper(fmt.Sprintf("N%x", adler32.Checksum([]byte(n.Path))))
 }
 
