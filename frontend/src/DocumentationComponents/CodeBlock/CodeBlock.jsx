@@ -11,26 +11,32 @@ import React, { useState, useEffect } from 'react';
 import { Client } from '@rundsk/js-sdk';
 
 import hljs from 'highlight.js/lib/core';
-import javascript from 'highlight.js/lib/languages/javascript';
-import css from 'highlight.js/lib/languages/css';
 import bash from 'highlight.js/lib/languages/bash';
-import php from 'highlight.js/lib/languages/php';
-import go from 'highlight.js/lib/languages/go';
-import nginx from 'highlight.js/lib/languages/nginx';
+import css from 'highlight.js/lib/languages/css';
 import dockerfile from 'highlight.js/lib/languages/dockerfile';
+import go from 'highlight.js/lib/languages/go';
+import javascript from 'highlight.js/lib/languages/javascript';
+import markdown from 'highlight.js/lib/languages/markdown';
+import nginx from 'highlight.js/lib/languages/nginx';
+import php from 'highlight.js/lib/languages/php';
+import scss from 'highlight.js/lib/languages/scss';
+import xml from 'highlight.js/lib/languages/xml';
 
 import { copyTextToClipboard } from '../../utils';
 
 import './atelier-forest-light.css';
 import './CodeBlock.css';
 
-hljs.registerLanguage('javascript', javascript);
-hljs.registerLanguage('css', css);
 hljs.registerLanguage('bash', bash);
-hljs.registerLanguage('php', php);
-hljs.registerLanguage('go', go);
-hljs.registerLanguage('nginx', nginx);
+hljs.registerLanguage('css', css);
 hljs.registerLanguage('dockerfile', dockerfile);
+hljs.registerLanguage('go', go);
+hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('markdown', markdown);
+hljs.registerLanguage('nginx', nginx);
+hljs.registerLanguage('php', php);
+hljs.registerLanguage('scss', scss);
+hljs.registerLanguage('xml', xml);
 
 // This components receives a literal string with HTML escaped content as its
 // children. Independent if indirectly used with <pre> tags (coming from fenced
