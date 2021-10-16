@@ -147,7 +147,7 @@ func main() {
 
 	if componentsPath != "" {
 		if err := app.OpenComponents(ctx); err != nil {
-			log.Print(red.Sprintf("Failed to start application: %s", err))
+			log.Fatal(red.Sprintf("Failed to start application: %s", err))
 		}
 	}
 

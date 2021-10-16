@@ -216,6 +216,10 @@ func (app *App) OpenVersions(ctx context.Context) error {
 
 func (app *App) OpenComponents(ctx context.Context) error {
 	cmps, err := NewComponents(app.componentsPath)
+	if err != nil {
+		return err
+	}
+
 	cmps.Detect()
 	app.Components = cmps
 	return err
