@@ -7,6 +7,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import clsx from 'clsx';
 
 import { Client } from '@rundsk/js-sdk';
 
@@ -75,7 +76,7 @@ function CodeBlock({ title, src, language, children, ...props }) {
 
       setCode(
         <code
-          className={`code-block__code-content ${language ? `language-${language}` : ''}`}
+          className={clsx('code-block__code-content', language ? `language-${language}` : false)}
           dangerouslySetInnerHTML={{ __html: content }}
         />
       );

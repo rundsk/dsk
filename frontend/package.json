@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "@rundsk/js-sdk": "rundsk/js-sdk#user-components",
+    "clsx": "^1.1.1",
     "filesize": "^4.1.2",
     "get-contrast": "^2.0.0",
     "jest": "^27.2.4",

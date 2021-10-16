@@ -2526,6 +2526,7 @@ __metadata:
     "@rundsk/js-sdk": "rundsk/js-sdk#user-components"
     "@wojtekmaj/enzyme-adapter-react-17": ^0.6.3
     babel-eslint: ^10.1.0
+    clsx: ^1.1.1
     enzyme: ^3.11.0
     eslint: ^7.32.0
     eslint-config-react-app: ^6.0.0
@@ -5131,6 +5132,13 @@ __metadata:
     strip-ansi: ^6.0.0
     wrap-ansi: ^7.0.0
   checksum: ce2e8f578a4813806788ac399b9e866297740eecd4ad1823c27fd344d78b22c5f8597d548adbcc46f0573e43e21e751f39446c5a5e804a12aace402b7a315d7f
+  languageName: node
+  linkType: hard
+
+"clsx@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "clsx@npm:1.1.1"
+  checksum: ff052650329773b9b245177305fc4c4dc3129f7b2be84af4f58dc5defa99538c61d4207be7419405a5f8f3d92007c954f4daba5a7b74e563d5de71c28c830063
   languageName: node
   linkType: hard
 
