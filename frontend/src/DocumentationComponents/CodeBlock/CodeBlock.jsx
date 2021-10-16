@@ -14,9 +14,8 @@ import Prism from 'prismjs';
 
 import { copyTextToClipboard } from '../../utils';
 
-import './atelier-forest-light.css';
 import './CodeBlock.css';
-import 'prismjs/themes/prism.css';
+import './PrismThemeDSK.css';
 
 import 'prismjs/components/prism-bash';
 import 'prismjs/components/prism-css';
@@ -74,13 +73,18 @@ function CodeBlock({ title, src, language, children, ...props }) {
       }
       content = trimInitialLine(content);
 
-      setCode(<code className={`code-block__code-content${language ? ` language-${language}`: ''}`} dangerouslySetInnerHTML={{ __html: content }} />);
+      setCode(
+        <code
+          className={`code-block__code-content ${language ? `language-${language}` : ''}`}
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+      );
     }
   }, [src, children, language]);
 
   useEffect(() => {
     if (language && codeRef.current) {
-      Prism.highlightAllUnder(codeRef.current)
+      Prism.highlightAllUnder(codeRef.current);
     }
   }, [code, language, codeRef]);
 
