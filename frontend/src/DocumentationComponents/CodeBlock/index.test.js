@@ -10,6 +10,7 @@ import ReactDOM from 'react-dom';
 import CodeBlock from '.';
 import { mount } from 'enzyme';
 import 'jest-enzyme';
+import { expect, it } from '@jest/globals';
 
 it('renders without crashing', () => {
   const div = document.createElement('div');

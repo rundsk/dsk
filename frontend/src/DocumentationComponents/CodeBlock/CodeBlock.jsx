@@ -74,7 +74,7 @@ function CodeBlock({ title, src, language, children, ...props }) {
       }
       content = trimInitialLine(content);
 
-      setCode(<code className={`code-block__code-content ${language ? `language-${language}`: ''}`} dangerouslySetInnerHTML={{ __html: content }} />);
+      setCode(<code className={`code-block__code-content${language ? ` language-${language}`: ''}`} dangerouslySetInnerHTML={{ __html: content }} />);
     }
   }, [src, children, language]);
 
