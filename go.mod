@@ -13,11 +13,13 @@ require (
 	github.com/RoaringBitmap/roaring v0.5.5 // indirect
 	github.com/blevesearch/bleve v1.0.14
 	github.com/coreos/go-semver v0.3.0
+	github.com/evanw/esbuild v0.12.8 // indirect
 	github.com/fatih/color v1.10.0
 	github.com/glycerine/go-unsnap-stream v0.0.0-20210130063903-47dfef350d96 // indirect
 	github.com/go-yaml/yaml v2.1.0+incompatible
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.3 // indirect
+	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/icza/dyno v0.0.0-20200205103839-49cb13720835
 	github.com/kevinburke/ssh_config v1.1.0 // indirect

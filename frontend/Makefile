@@ -10,7 +10,7 @@ dev:
 
 .PHONY: test
 test:
-	yarn react-scripts test .
+	yarn test
 
 .PHONY: build
 build:
@@ -26,7 +26,7 @@ lint:
 .PHONY: format
 format:
 	yarn eslint --fix --cache src
-	yarn prettier --write src/**
+	yarn prettier --write 'src/**/*.{js,jsx,css,scss,json}'
 
 .PHONY: clean
 clean:

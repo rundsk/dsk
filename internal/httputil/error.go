@@ -9,11 +9,13 @@ package httputil
 import "net/http"
 
 var (
-	Err            = &Error{http.StatusInternalServerError, "Techniker ist informiert"}
-	ErrUnsafePath  = &Error{http.StatusBadRequest, "Directory traversal attempt detected!"}
-	ErrNotFound    = &Error{http.StatusNotFound, "Not found"}
-	ErrNoSuchNode  = &Error{http.StatusNotFound, "No such node"}
-	ErrNoSuchAsset = &Error{http.StatusNotFound, "No such asset"}
+	Err                 = &Error{http.StatusInternalServerError, "Techniker ist informiert"}
+	ErrUnsafePath       = &Error{http.StatusBadRequest, "Directory traversal attempt detected!"}
+	ErrNotFound         = &Error{http.StatusNotFound, "Not found"}
+	ErrNoSuchNode       = &Error{http.StatusNotFound, "No such node"}
+	ErrNoSuchAsset      = &Error{http.StatusNotFound, "No such asset"}
+	ErrNoSuchDoc        = &Error{http.StatusNotFound, "No such document"}
+	ErrNoSuchPlayground = &Error{http.StatusNotFound, "No such playground"}
 )
 
 type Error struct {

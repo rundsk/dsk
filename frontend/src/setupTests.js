@@ -1,12 +1,10 @@
 /**
- * Copyright 2020 Marius Wilms, Christoph Labacher. All rights reserved.
- * Copyright 2019 Atelier Disko. All rights reserved.
+ * Copyright 2021 Marius Wilms, Christoph Labacher. All rights reserved.
  *
  * Use of this source code is governed by a BSD-style
  * license that can be found in the LICENSE file.
  */
+import Enzyme from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 
-import { configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-
-configure({ adapter: new Adapter() });
+Enzyme.configure({ adapter: new Adapter() });

@@ -9,6 +9,7 @@ package ddt
 import (
 	"crypto/sha1"
 	"fmt"
+	"hash/adler32"
 	"io/ioutil"
 	"log"
 	"os"
@@ -193,6 +194,10 @@ func (n *Node) CalculateHash() (string, error) {
 	defer n.Unlock()
 	n.hash = fmt.Sprintf("%x", h.Sum(nil))
 	return n.hash, nil
+}
+
+func (n *Node) Id() string {
+	return strings.ToUpper(fmt.Sprintf("N%x", adler32.Checksum([]byte(n.Path))))
 }
 
 // Returns the normalized URL path fragment, that can be used to
@@ -439,6 +444,19 @@ func (n *Node) Docs() ([]*NodeDoc, error) {
 		})
 	}
 	return docs, nil
+}
+
+func (n *Node) GetDoc(id string) (bool, *NodeDoc, error) {
+	docs, err := n.Docs()
+	if err != nil {
+		return false, nil, err
+	}
+	for _, doc := range docs {
+		if doc.Id() == id {
+			return true, doc, nil
+		}
+	}
+	return false, nil, nil
 }
 
 // Returns a list of crumbs. The last element is the current active

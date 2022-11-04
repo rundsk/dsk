@@ -1,0 +1,62 @@
+/**
+ * Copyright 2020 Marius Wilms, Christoph Labacher. All rights reserved.
+ * Copyright 2019 Atelier Disko. All rights reserved.
+ *
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+
+.heading--alpha {
+  font-size: var(--font-size-epsilon);
+  line-height: 1.6em;
+  font-weight: 400;
+  margin-top: calc(var(--spacing-unit) * 11);
+  margin-bottom: calc(var(--spacing-unit) * 4);
+}
+
+.heading--beta {
+  font-size: var(--font-size-delta);
+  line-height: 1.4em;
+  font-weight: 400;
+  margin-top: calc(var(--spacing-unit) * 8);
+  margin-bottom: calc(var(--spacing-unit) * 3);
+}
+
+.heading--gamma {
+  font-size: var(--font-size-gamma);
+  line-height: 1.4em;
+  font-weight: 700;
+  margin-top: calc(var(--spacing-unit) * 6);
+  margin-bottom: calc(var(--spacing-unit) * 1.5);
+}
+
+.heading--delta {
+  font-size: var(--font-size-beta);
+  line-height: 1.4em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-top: calc(var(--spacing-unit) * 4);
+  margin-bottom: calc(var(--spacing-unit) * 1);
+  color: var(--color-gray-500);
+}
+
+.heading__jumplink {
+  color: var(--color-gray-700);
+  position: absolute;
+  left: calc(var(--spacing-unit) * -6);
+  width: calc(var(--spacing-unit) * 6);
+  text-align: right;
+  padding-right: 0.2em;
+  opacity: 0;
+  transition: opacity 0.3s 0.2s, color 0.3s;
+  cursor: pointer;
+}
+
+.heading__jumplink:hover {
+  color: var(--color-blue);
+}
+
+.heading:hover .heading__jumplink {
+  opacity: 1;
+}

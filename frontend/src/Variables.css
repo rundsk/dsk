@@ -11,7 +11,7 @@
   --color-black: hsl(0, 0%, 0%);
   --color-blue: #0e26fc; /* Electric Blue */
   --color-green: #52d0af; /* Toothpaste Green */
-  --color-teal: #33cedc;
+  --color-teal: #b7edf2;
   --color-teal--dark: #00838f;
   --color-yellow--light: rgb(255, 242, 180);
   --color-yellow: #ffe874;
@@ -26,6 +26,7 @@
   --color-gray-700: #adb0b3; /* Gray-600 60% */
   --color-gray-800: #d2d6d9; /* Gray-800 85% */
   --color-gray-900: #e1e4e6; /* Gray-900 90% */
+  --color-gray-950: #e8eaed; /* Gray-950 93% */
   --color-gray-1000: #f2f6f7; /* Gray-1000 97% */
 
   /* Font Families */
@@ -37,7 +38,7 @@
   --font-size-beta: 12px;
   --font-size-gamma: 15px;
   --font-size-delta: 24px;
-  --font-size-epsilon: 32px;
+  --font-size-epsilon: 34px;
   --font-size-zeta: 48px;
 
   /* Spacing */
