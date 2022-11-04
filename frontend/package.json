@@ -35,7 +35,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "http-proxy-middleware": "^0.19.1",
     "jest-enzyme": "^7.1.0",
-    "prettier": "^2.4.1",
+    "prettier": "2.7.1",
     "react-test-renderer": "^16.9.0"
   },
   "eslintConfig": {
@@ -55,5 +55,8 @@
       "\\.(css)$": "<rootDir>/config/jest/cssStub.js"
     }
   },
-  "packageManager": "yarn@3.0.2"
+  "packageManager": "yarn@3.0.2",
+  "resolutions": {
+    "@rundsk/js-sdk": "portal:/Users/christoph.labacher/Documents/DSK-new/js-sdk"
+  }
 }

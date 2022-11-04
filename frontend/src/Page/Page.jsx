@@ -14,7 +14,6 @@ import { constructURL, slugify } from '../utils';
 
 import Breadcrumbs from '../Breadcrumbs';
 import Tags from '../Tags';
-import Playground from '../DocumentationComponents/Playground';
 import Doc from '../Doc';
 import Meta from '../Meta';
 import TabBar from '../TabBar';
@@ -312,9 +311,13 @@ function Page({
 
       {playground && (
         <div className="page__component-demo">
-          <Playground isPageComponentDemo contentFullWidth>
-            <Doc htmlContent={playground.html} id="playground" node={nodeInfo} />
-          </Playground>
+          <Doc
+            htmlContent={playground.html}
+            components={playground.components}
+            id={playground.id}
+            node={nodeInfo}
+            isPageComponentDemo
+          />
         </div>
       )}
 

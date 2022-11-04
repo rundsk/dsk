@@ -69,9 +69,8 @@ function ColorCard(props) {
           Copied!
         </div>
       </div>
-      <div className="color-card__name">
-        {props.children} <span className="color-card__id">({props.id})</span>
-      </div>
+      <div className="color-card__name">{props.children}</div>
+      {props.id && <div className="color-card__id">{props.id}</div>}
       <div className="color-card__spec">{props.color}</div>
       <div className="color-card__comment">{props.comment}</div>
     </button>

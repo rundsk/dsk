@@ -8,7 +8,7 @@
 
 .typography-specimen {
   width: 100%;
-  margin: var(--documentation-component-spacing) 0;
+  margin: calc(var(--documentation-component-spacing) * 2) 0;
 }
 
 .typography-specimen:first-child {
@@ -32,9 +32,9 @@
 }
 
 .type-sample + .type-sample {
-  padding-top: calc(var(--spacing-unit) * 4);
+  padding-top: calc(var(--spacing-unit) * 3);
   border-top: 1px dotted var(--color-gray-800);
-  margin-top: calc(var(--spacing-unit) * 4);
+  margin-top: calc(var(--spacing-unit) * 3);
 }
 
 .type-sample__name {

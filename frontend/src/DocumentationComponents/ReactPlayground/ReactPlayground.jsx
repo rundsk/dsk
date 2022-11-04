@@ -7,6 +7,8 @@
 
 import { Client } from '@rundsk/js-sdk';
 import React, { useContext, useEffect, useState } from 'react';
+import clsx from 'clsx';
+import contrast from 'get-contrast';
 
 import { GlobalContext } from '../../App';
 import Playground from '../Playground';
@@ -32,20 +34,18 @@ function ReactPlayground(props) {
   // Handle communication with iframe. This is currently happens only from the iframe to us.
   useEffect(() => {
     const handler = (ev) => {
-      let data = JSON.parse(ev.data);
+      // console.debug('Received message from playground iframe:', ev.data);
 
-      console.debug('Received message from playground iframe:', data);
-
-      if (!data || data?.id !== id) {
+      if (!ev.data || ev.data?.id !== id) {
         return;
       }
 
-      if (data.status === 'ready') {
+      if (ev.data.status === 'ready') {
         setIsLoading(false);
       }
 
-      if (data.contentHeight) {
-        setHeight(data.contentHeight);
+      if (ev.data.contentHeight) {
+        setHeight(ev.data.contentHeight);
       }
     };
     window.addEventListener('message', handler);
@@ -58,10 +58,22 @@ function ReactPlayground(props) {
     classes.push('react-playground--is-loading');
   }
 
+  const isDark =
+    props.backgroundcolor &&
+    contrast.ratio(props.backgroundcolor, 'white') > contrast.ratio(props.backgroundcolor, 'black');
+
   return (
-    <div className={`react-playground ${showPlaygroundSource && 'react-playground--show-source'}`}>
+    <div
+      className={clsx(
+        'react-playground',
+        showPlaygroundSource && 'react-playground--show-source',
+        isDark && 'react-playground--dark',
+        props.isPageComponentDemo && 'react-playground--full-size',
+        height === 'auto' && 'react-playground--hide'
+      )}
+    >
       <div className="react-playground__content">
-        <Playground {...props} caption={null} noPadding contentFullWidth>
+        <Playground {...props} caption={null} noPadding contentFullWidth isDark={isDark}>
           {isLoading && <div className="react-playground__loading-message">Loading Playground …</div>}
           <iframe
             className="react-playground__stage-frame"

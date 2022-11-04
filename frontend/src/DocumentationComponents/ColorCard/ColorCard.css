@@ -122,11 +122,12 @@
 }
 
 .color-card__id {
+  font-size: var(--font-size-beta);
+  line-height: 1.4em;
   color: var(--color-gray-700);
   font-weight: 500;
-  opacity: 0;
+  opacity: 1;
   transition: all 0.4s 0.2s;
-  display: none;
 }
 
 .color-card:hover .color-card__id {

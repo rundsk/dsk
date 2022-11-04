@@ -15,7 +15,7 @@ function htmlEscape(input) {
   input = input.replace(/&/g, '&amp;');
   input = input.replace(/</g, '&lt;');
   input = input.replace(/>/g, '&gt;');
-  return input;  
+  return input;
 }
 
 function SourceView(props) {

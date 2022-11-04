@@ -29,7 +29,7 @@ import ReactPlayground from '../DocumentationComponents/ReactPlayground';
 import TableOfContents from '../DocumentationComponents/TableOfContents';
 import TypographySpecimen from '../DocumentationComponents/TypographySpecimen';
 
-function Doc({ id, url, title, toc, node, onRender, htmlContent, components, children }) {
+function Doc({ id, url, title, toc, node, onRender, htmlContent, components, children, isPageComponentDemo }) {
   useEffect(() => {
     // window.requestAnimationFrame should ensure that the rendering
     // has finished.
@@ -104,6 +104,10 @@ function Doc({ id, url, title, toc, node, onRender, htmlContent, components, chi
     .filter((k) => k !== 'Color')
     .map((k) => `p > ${k}`)
     .concat(['p > video']);
+
+  if (isPageComponentDemo) {
+    transforms['Playground'] = (props) => <ReactPlayground {...props} {...context} isPageComponentDemo />;
+  }
 
   let transformedContent = transform(htmlContent, components, transforms, orphans, {
     isPreformatted: (type) => ['pre', 'CodeBlock', 'Playground'].map((v) => v.toLowerCase()).includes(type),

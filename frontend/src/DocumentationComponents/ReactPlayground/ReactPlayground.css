@@ -31,6 +31,10 @@
   flex-grow: 1;
 }
 
+.react-playground--hide .react-playground__stage-frame {
+  opacity: 0;
+}
+
 .react-playground__loading-message {
   text-align: center;
 }
@@ -46,13 +50,17 @@
   margin: 0;
 }
 
-.react-playground .playground__stage {
+.react-playgroundr .playgound__stage {
   border-radius: 3px;
   overflow: hidden;
 }
 
 .react-playground--show-source .playground__stage {
   border-radius: 3px 3px 0 0;
+}
+
+.react-playground--full-size .playground__stage {
+  border-radius: 0;
 }
 
 .react-playground__show-source {
@@ -70,6 +78,10 @@
   opacity: 0;
   transition: all 0.2s 0.4s;
   border-radius: 3px;
+}
+
+.react-playground--full-size .playground__show-source {
+  border-radius: 0;
 }
 
 .react-playground__content:hover .react-playground__show-source,
@@ -93,4 +105,11 @@
   top: 10px;
   right: 12px;
   z-index: 2;
+}
+
+.react-playground--dark .react-playground__loading-message {
+  color: #fff;
+}
+.react-playground--dark .react-playground__show-source {
+  color: var(--color-gray-900);
 }

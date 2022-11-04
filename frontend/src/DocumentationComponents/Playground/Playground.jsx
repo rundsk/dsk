@@ -22,6 +22,10 @@ function Playground(props) {
 
   let classes = ['playground'];
 
+  if (props.isDark) {
+    classes.push('playground--is-dark');
+  }
+
   if (props.background === 'checkerboard') {
     classes.push('playground--checkerboard');
   }
@@ -54,7 +58,7 @@ function Playground(props) {
 
   useEffect(() => {
     if (props.annotate) {
-      Client.fetch(props.annotate).then(data => setAnnotationData(data));
+      Client.fetch(props.annotate).then((data) => setAnnotationData(data));
     }
   }, [props.annotate]);
 
