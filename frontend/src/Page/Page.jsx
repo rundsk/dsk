@@ -285,7 +285,7 @@ function Page({
           <p className="page__description">
             {description}
             <span className="page__children-count">
-              {children && children.length > 0 && ` (${children.length} aspects)`}
+              {children && children.length > 0 && ` (${children.length} aspect${children.length === 1 ? '' : 's'})`}
             </span>
           </p>
 
