@@ -55,8 +55,5 @@
       "\\.(css)$": "<rootDir>/config/jest/cssStub.js"
     }
   },
-  "packageManager": "yarn@3.0.2",
-  "resolutions": {
-    "@rundsk/js-sdk": "portal:/Users/christoph.labacher/Documents/DSK-new/js-sdk"
-  }
+  "packageManager": "yarn@3.0.2"
 }
